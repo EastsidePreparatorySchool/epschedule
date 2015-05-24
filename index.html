@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <title>EPSchedule</title>
+
+  <meta name="viewport" 
+  content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+  <script src="bower_components/webcomponentsjs/webcomponents.js">
+  </script>
+  <script>
+  var schedule = {{ schedule | safe }};
+  window.onload = function() {
+    var div = document.getElementById("xxxx");
+    appendPara(div, "fdsfds");
+    appendPara(div, "fdsafdsafda");
+  }
+  function appendPara(div, text) {
+    var para = document.createElement("p");
+    var node = document.createTextNode(text);
+    para.appendChild(node);
+    div.appendChild(para);
+  }
+  </script>
+
+  <link rel="import" href="bower_components/font-roboto/roboto.html">
+  <link rel="import"
+    href="bower_components/core-toolbar/core-toolbar.html">
+  <link rel="import"
+    href="bower_components/core-header-panel/core-header-panel.html">
+  <link rel="import"
+    href="bower_components/core-icons/core-icons.html">
+  <link rel="import"
+    href="bower_components/paper-icon-button/paper-icon-button.html">
+
+  <style>
+  html,body {
+    height: 100%;
+    margin: 0;
+    background-color: #E5E5E5;
+    font-family: 'RobotoDraft', sans-serif;
+  }
+  .container {
+    width: 80%;
+    margin: 50px auto;
+  }
+  @media (min-width: 481px) {
+    #tabs {
+      width: 200px;
+    }
+    .container {
+      width: 400px;
+    }
+  }
+  </style>
+
+</head>
+
+<body fullbleed vertical layout unresolved>
+  <core-header-panel flex>
+    <core-toolbar id="mainheader">
+      <paper-icon-button id="navicon"
+        icon="arrow-back"></paper-icon-button>
+      <span flex>EPSchedule</span>
+      <paper-icon-button id="searchbutton"
+        icon="search"></paper-icon-button>
+    </core-toolbar>
+    <div id="xxxx" layout vertical center>
+    </div>
+  </core-header-panel>
+  <div id="list">
+   </div>
+</body>
+
+</html>
