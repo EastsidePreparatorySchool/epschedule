@@ -44,14 +44,12 @@ def getClass(textbox):#Each textbox is passed in
     if len(textboxlist) == 4:#All classes have a length of four lines. This throws away anything that isn't a class
         roomteacher = string.split(textboxlist[1], ": ")#Splits up the room and teacher into two different strings
         if (roomteacher[1] == "n/a"):#Assembly periods are also four lines. This weeds out assembly so it doesn't overwrite the A period class
-            period = 8
-            class_obj = {'name': textboxlist[2], 'room':roomteacher[0], 'teacher': "N/A", 'period': "S"}
-            return {'period_num':period, 'class':class_obj }
+            return None
         period = letterToNum(textboxlist[0][0])#Takes the first character of the first line of the text box
         class_obj = {'name':textboxlist[2], 'room':roomteacher[0], 'teacher':roomteacher[1], 'period':textboxlist[0][0]}#Shoves all the information into a object
         return {'period_num':period, 'class':class_obj }#Returns an object containing the class info and the period info
-    elif len(textboxlist) = 3:
-        if 
+    #elif len(textboxlist) = 3:
+    #    if 
     else:
         return None
     

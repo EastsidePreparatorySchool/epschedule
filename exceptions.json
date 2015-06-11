@@ -1,4 +1,59 @@
-[{"Monday":{
-"MS": [{"period": 1, "time": "8:00-8:40"}, {"period": 2, "time": "8:45-9:25"}, {"period": 3, "time": "9:30-10:10"}, {"period": 4, "time": "10:15-10:55"}, {"period": 9, "time": "11:00-11:30"}, {"period": 5, "time": "11:35-12:15"}, {"period": 6, "time": "12:20-1:00"}, {"period":7, "time": "1:05-1:45"}, {"period": 10, "time": "1:50-2:30"}, {"period": 8, "time": "2:35-3:15"}], 
-"US": [{"period": 1, "time": "8:00-8:40"}, {"period": 2, "time": "8:45-9:25"}, {"period": 3, "time": "9:30-10:10"}, {"period": 4, "time": "10:15-10:55"}, {"period": 5, "time": "11:00-11:30"}, {"period": 9, "time": "11:35-12:15"}, {"period": 6, "time": "12:20-1:00"}, {"period":7, "time": "1:05-1:45"}, {"period": 8, "time": "1:50-2:30"}, {"period": 10, "time": "2:35-3:15"}]
-}},[{"day": 3, "month": 6, "year": 2015, "schedule": "15SpringFinalsD1"},{"day": 4, "month": 6, "year": 2015, "schedule": "15SpringFinalsD2"},{"day": 5, "month": 6, "year": 2015, "schedule": "15SpringFinalsD3"}]]
+[{
+"Monday":{"MS": [
+  {"period": 1, "time": "8:00-8:40"}, 
+  {"period": 2, "time": "8:45-9:25"}, 
+  {"period": 3, "time": "9:30-10:10"}, 
+  {"period": 4, "time": "10:15-10:55"}, 
+  {"period": 9, "time": "11:00-11:30"}, 
+  {"period": 5, "time": "11:35-12:15"}, 
+  {"period": 6, "time": "12:20-1:00"}, 
+  {"period":7, "time": "1:05-1:45"}, 
+  {"period": 10, "time": "1:50-2:30"}, 
+  {"period": 8, "time": "2:35-3:15"}
+]}, 
+"Tuesday":{"MS": [
+  {"period": 1, "time": "8:00-9:25"},
+  {"period": 2, "time": "9:35-11:00"},
+  {"period": 9, "time": "11:05-11:35"},
+  {"period": 11, "time": "11:40-12:10"},
+  {"period": 3, "time": "12:15-1:40"},
+  {"period": 4, "time": "1:50-3:15"}
+]},
+"Wednesday":{"MS": [
+  {"period": 5, "time": "8:00-9:25"},
+  {"period": 6, "time": "9:35-11:00"},
+  {"period": 9, "time": "11:05-11:35"},
+  {"period": 12, "time": "11:40-12:10"},
+  {"period": 7, "time": "12:15-1:40"},
+  {"period": 8, "time": "1:50-3:15"}
+]},
+"Thursday":{"MS": [
+  {"period": 4, "time": "8:00-9:25"},
+  {"period": 3, "time": "9:35-11:00"},
+  {"period": 9, "time": "11:05-11:35"},
+  {"period": 13, "time": "11:40-12:10"},
+  {"period": 2, "time": "12:15-1:40"},
+  {"period": 1, "time": "1:50-3:15"}
+]},
+"Friday":{"MS": [
+  {"period": 8, "time": "8:00-9:25"},
+  {"period": 7, "time": "9:35-11:00"},
+  {"period": 9, "time": "11:05-11:35"},
+  {"period": 11, "time": "11:40-12:10"},
+  {"period": 6, "time": "12:15-1:40"},
+  {"period": 5, "time": "1:50-3:15"}
+]},
+"AllSchoolMonday":{"MS": [
+  {"period": 1, "time": "8:00-8:40"}, 
+  {"period": 2, "time": "8:45-9:25"}, 
+  {"period": 3, "time": "9:30-10:10"}, 
+  {"period": 4, "time": "10:15-10:55"}, 
+  {"period": 9, "time": "11:00-11:30"}, 
+  {"period": 5, "time": "11:35-12:15"}, 
+  {"period": 6, "time": "12:20-1:00"}, 
+  {"period":7, "time": "1:05-1:45"}, 
+  {"period": 8, "time": "1:50-2:30"}, 
+  {"period": 10, "time": "2:35-3:15"}
+]}
+},
+[{"day": 3, "month": 6, "year": 2015, "schedule": "15SpringFinalsD1"},{"day": 4, "month": 6, "year": 2015, "schedule": "15SpringFinalsD2"},{"day": 5, "month": 6, "year": 2015, "schedule": "15SpringFinalsD3"},{"day": 10, "month": 6, "year": 2015, "schedule": "AllSchoolMonday"}]]

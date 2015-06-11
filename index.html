@@ -12,10 +12,82 @@
   </script>
   <script>
   var schedule = {{ schedule | safe }};
+  var days = {{days | safe }};
+  function renderSchedule() {
+    return;
+  }
   window.onload = function() {
-    var div = document.getElementById("xxxx");
-    appendPara(div, "fdsfds");
-    appendPara(div, "fdsafdsafda");
+    var div = document.getElementById("schedule");
+    var day;
+    var date = new Date();
+    switch (date.getDay()) { //Spits out the day of the week as a string
+        case 0:
+            day = "Monday";
+            break;
+        case 1:
+            day = "Monday";
+            break;
+        case 2:
+            day = "Tuesday";
+            break;
+        case 3:
+            day = "Wednesday";
+            break;
+        case 4:
+            day = "Thursday";
+            break;
+        case 5:
+            day = "Friday";
+            break;
+        case 6:
+            day = "Friday";
+            break;
+    }
+    dayNumber = date.getDate();
+    month = date.getMonth() + 1; //getMonth() returns a number from 0-11, need to add one to make it 1-12
+    year = date.getFullYear();
+    console.log("Exception tracking is beginning");
+    console.log("Day is " + dayNumber + ", month is " + month + ", year is " + year);
+    for (var exception = 0; exception < days[1].length; exception++) {
+        if (days[1][exception]["day"] == dayNumber && days[1][exception]["month"] == month && days[1][exception]["year"] == year) {
+            day = days[1][exception]["schedule"];
+            console.log("Found an exception");
+        }
+    }
+    var currentSlot;
+    for (currentSlot = 0; currentSlot < days[0][day]["MS"].length; currentSlot++) {
+        switch(days[0][day]["MS"][currentSlot]["period"]) { //Falling through is intended in switch statement
+            case 1: //A period
+            case 2: //B period
+            case 3: //C period
+            case 4: //D period
+            case 5: //E period
+            case 6: //F period
+            case 7: //G period
+            case 8: //H period
+                var slotString = schedule["classes"][days[0][day]["MS"][currentSlot]["period"] - 1]["name"] + " - " + 
+                schedule["classes"][days[0][day]["MS"][currentSlot]["period"] - 1]["teacher"] + " - " + 
+                schedule["classes"][days[0][day]["MS"][currentSlot]["period"] - 1]["room"] + " - ";
+                break;
+            case 9: //Lunch
+                var slotString = "Lunch - LPC Commons - ";
+                break;
+            case 10: //Assembly
+                var slotString = "Assembly - LPC Commons - ";
+                break;
+            case 11: //Lunch
+                var slotString = "Advisory - "; //TODO - Make this box display the user's advisor and advisory location
+                break;
+            case 12: //Class Meeting
+                var slotString = "Class Meeting - "; //TODO - Make this box display the user's class meeting location
+                break;
+            case 13: //Clubs
+                var slotString = "Club - ";
+                break;
+        }
+        slotString += days[0][day]["MS"][currentSlot]["time"];
+        appendPara(div, slotString);
+    }
   }
   function appendPara(div, text) {
     var para = document.createElement("p");
@@ -67,7 +139,7 @@
       <paper-icon-button id="searchbutton"
         icon="search"></paper-icon-button>
     </core-toolbar>
-    <div id="xxxx" layout vertical center>
+    <div id="schedule" layout vertical center>
     </div>
   </core-header-panel>
   <div id="list">

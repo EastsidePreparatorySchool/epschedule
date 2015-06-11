@@ -53,7 +53,12 @@ class MainHandler(webapp2.RequestHandler):
             if schedule['id'] == id:
                 return schedule
         return None
-        
+    
+    def get_days(self):
+        file = open('exceptions.json', 'rb')
+        days = json.load(file)
+        return days
+    
     def send_login_response(self):
         template_values = {}
         template = JINJA_ENVIRONMENT.get_template('login.html')
@@ -67,8 +72,9 @@ class MainHandler(webapp2.RequestHandler):
             return
         #schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
+        days = self.get_days()
         if schedule is not None:
-            template_values = {'schedule':json.dumps(schedule)}
+            template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(days)}
             template = JINJA_ENVIRONMENT.get_template('index.html')
             self.response.write(template.render(template_values))
         else:

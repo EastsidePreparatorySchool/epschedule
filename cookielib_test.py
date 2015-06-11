@@ -44,7 +44,10 @@ def dump():
 def download_schedule(student_id, term):
     url = 'https://four11.eastsideprep.org/registrar/pdf_schedules?color=1&student_id=' + str(student_id) + '&term_id=' + str(term) + '&year_id=15'
     filename = str(student_id) + '-' + str(term)
-    download(url, filename)
+    try:
+        download(url, filename)
+    except urllib2.HTTPError:
+        print "Failed to download " + str(student_id) + ", that number must not be in use"
 
 uri = 'https://four11.eastsideprep.org/auth/auth'
 if len(sys.argv) < 3:
@@ -55,5 +58,7 @@ res = post(uri, obj)
 dump()
 
 #('https://four11.eastsideprep.org/registrar/pdf_schedules?color=1&student_id=4093&term_id=3&year_id=15')
-download_schedule(4093, 3)
-download_schedule(4268, 3)
+for k in range(3300, 4300):
+    download_schedule(k, 3)
+#download_schedule(4093, 3)
+#download_schedule(4268, 3)
