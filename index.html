@@ -13,25 +13,22 @@
   <script>
   var schedule = {{ schedule | safe }};
   var days = {{days | safe }};
-  function renderSchedule() {
-    return;
-  }
-  window.onload = function() {
+  function renderSchedule(dateObj, emptyDiv) {
     var div = document.getElementById("schedule");
-    var day;
-    var date = new Date();
-    switch (date.getDay()) { //Spits out the day of the week as a string
-        case 0:
-            day = "Monday";
-            break;
+    if (emptyDiv) {
+        div.innerHTML = "";
+    }
+    switch (dateObj.getDay()) { //Spits out the day of the week as a string
+        case 0: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
+        case 6:
         case 1:
-            day = "Monday";
+            var day = "Monday";
             break;
         case 2:
-            day = "Tuesday";
+            var day = "Tuesday";
             break;
         case 3:
-            day = "Wednesday";
+            var day = "Wednesday";
             break;
         case 4:
             day = "Thursday";
@@ -39,19 +36,10 @@
         case 5:
             day = "Friday";
             break;
-        case 6:
-            day = "Friday";
-            break;
     }
-    dayNumber = date.getDate();
-    month = date.getMonth() + 1; //getMonth() returns a number from 0-11, need to add one to make it 1-12
-    year = date.getFullYear();
-    console.log("Exception tracking is beginning");
-    console.log("Day is " + dayNumber + ", month is " + month + ", year is " + year);
-    for (var exception = 0; exception < days[1].length; exception++) {
-        if (days[1][exception]["day"] == dayNumber && days[1][exception]["month"] == month && days[1][exception]["year"] == year) {
+    for (var exception = 0; exception < days[1].length; exception++) { //Handles exceptions, also handles special weekend schedules
+        if (days[1][exception]["day"] == (dateObj.getDate() + 1) && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getYear()) {
             day = days[1][exception]["schedule"];
-            console.log("Found an exception");
         }
     }
     var currentSlot;
@@ -88,6 +76,12 @@
         slotString += days[0][day]["MS"][currentSlot]["time"];
         appendPara(div, slotString);
     }
+    
+  }
+  window.onload = function() {
+    //var div = document.getElementById("schedule");
+    var date = new Date();
+    renderSchedule(date, false);
   }
   function appendPara(div, text) {
     var para = document.createElement("p");
