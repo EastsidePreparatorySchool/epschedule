@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -36,7 +37,7 @@ def convert_pdf_to_txt(path):
     return str
 
 def letterToNum(letter):#Converts a period into a list index
-    letters = ["A", "B", "C", "D", "E", "F", "G", "H", "S", "V", "M", "L"] #S - aSsembly, V - adVisory, M - class Meeting, L - cLubs and activities
+    letters = ["A", "B", "C", "D", "E", "F", "G", "H", "S", "V", "M", "L", "O"] #S - aSsembly, V - adVisory, M - class Meeting, L - cLubs and activities, O - Zero Period IME
     return letters.index(letter)
 
 def getClass(textbox):#Each textbox is passed in
@@ -64,7 +65,7 @@ def explode_pdf(path):
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     ##################################################
-    classes = ["", "", "", "", "", "", "", ""]  #Creates an 8 long list with a space for each class
+    classes = []  #Creates an 8 long list with a space for each class
     for page in PDFPage.create_pages(document): #Run the following code on each page in the pdf
         interpreter.process_page(page)
         layout = device.get_result()
@@ -72,11 +73,19 @@ def explode_pdf(path):
           if isinstance(obj, LTTextBox):    #If the object is a text box
             class_obj = getClass(obj.get_text())    #Extract the information from the text box
             if class_obj != None:   #If getClass() didn't return an error
-                classes[class_obj['period_num']] = class_obj['class']   #Shove the information passed back from getClass() into it's appropriate space in the list
+                #print classes
+                #print class_obj["period_num"]
+                classes.append(class_obj['class'])  #Shove the information passed back from getClass() into it's appropriate space in the list
     device.close()
+    
+    cleaned_classes = [] #Remove duplicates from classes
+    for l in classes:
+        if l not in cleaned_classes:
+            cleaned_classes.append(l)
+    
     path_properties = string.split(path, "\\")  #Split the file name into a series of directories
-    schedule_properties = string.split(path_properties[8], "-") #Extract the information from the name of the pdf
-    schedule_obj = {'firstname':schedule_properties[3], 'lastname':schedule_properties[2], 'term':schedule_properties[1], 'id':schedule_properties[0], 'classes':classes}
+    schedule_properties = string.split(path_properties[7], "-") #Extract the information from the name of the pdf
+    schedule_obj = {'firstname':schedule_properties[3], 'lastname':schedule_properties[2], 'term':schedule_properties[1], 'id':schedule_properties[0], 'classes':cleaned_classes}
     return schedule_obj    #Return object created in the previous line
     
 #print convert_pdf_to_txt("c:\\users\\guberti\\Documents\\My Projects\\Python\\Schedule Downloader\\4093-3-Uberti-Gavin.pdf")
@@ -84,9 +93,12 @@ students = []
 files = [f for f in os.listdir('.' + os.sep + 'schedules')]#Create a list of all files in the directory
 for f in files:    #For each file in the directory
     if f[len(f) - 4:len(f)] == ".pdf":  #If the last 4 characters of the file name are .pdf (meaning the file is a schedule)
-        filepath = "c:\\users\\guberti\\Documents\\My Projects\\App Engine\\epschedule\\schedules\\" + f   #Create the full filepath for the schedule
-        students.append(explode_pdf(filepath))  #Add to the list of schedules the object returned by explode_pdf()
+        filepath = "c:\\users\\guberti\\Documents\\Github\\EPSchedule\\schedules\\" + f   #Create the full filepath for the schedule
+        #print filepath
+        exploded_schedule = explode_pdf(filepath)
+        if len(exploded_schedule["classes"]) > 0:
+            students.append(exploded_schedule)  #Add to the list of schedules the object returned by explode_pdf()
 
 file = open('schedules.json', 'wb')
 file.write(json.dumps(students))
-print students  #Print the list of schedules
+#print students  #Print the list of schedules

@@ -20,7 +20,9 @@ import jinja2
 import os
 import string
 import logging
-ID_TABLE = [['guberti', 4093], ['kuberti', 4268]]
+id_table_file = open('id_table.json', 'rb')
+ID_TABLE = json.load(id_table_file)
+logging.info(ID_TABLE)
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -44,6 +46,17 @@ class LoginHandler (webapp2.RequestHandler):
         else:
             self.response.write(email + " is not a valid e-mail address, please hit back to try again.")
 
+class ClassHandler(webapp2.RequestHandler):
+  def get(self, class_id):
+        #Get the cookie
+        id = self.request.cookies.get("SID")
+        if id is None:
+            self.send_login_response()
+            return
+        #schedule = self.get_schedule(self.request.get('id'))
+        self.response.write(class_id)
+          
+            
 class MainHandler(webapp2.RequestHandler):
     #def __init__(self):
     def get_schedule(self, id):
@@ -83,6 +96,7 @@ class MainHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/login', LoginHandler)
+    ('/login', LoginHandler),
+    ('/class/(\w+)', ClassHandler)
 ], debug=True)
     

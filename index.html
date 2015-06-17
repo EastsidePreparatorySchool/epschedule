@@ -4,20 +4,34 @@
 <head>
 
   <title>EPSchedule</title>
-
+  <meta charset="utf=8">
   <meta name="viewport" 
-  content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-
+        content="width=device-width, minimum-scale=1.0, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <script src="bower_components/webcomponentsjs/webcomponents.js">
+  </script>
+  <script>
+  document.onkeydown = function(event) {
+    if (event.keyCode == 37) { //Left
+        globalDate.setDate(globalDate.getDate()-1);
+        renderSchedule(globalDate, true);
+    } else if (event.keyCode == 39) { //Right
+        globalDate.setDate(globalDate.getDate()+1);
+        renderSchedule(globalDate, true);
+    }
+  }
   </script>
   <script>
   var schedule = {{ schedule | safe }};
   var days = {{days | safe }};
+  var globalDate = new Date();
   function renderSchedule(dateObj, emptyDiv) {
     var div = document.getElementById("schedule");
     if (emptyDiv) {
         div.innerHTML = "";
     }
+    appendPara(div, ((dateObj.getMonth() + 1) + "/" + dateObj.getDate() + "/" + dateObj.getFullYear())); //Display date
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
         case 0: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
         case 6:
@@ -38,57 +52,113 @@
             break;
     }
     for (var exception = 0; exception < days[1].length; exception++) { //Handles exceptions, also handles special weekend schedules
-        if (days[1][exception]["day"] == (dateObj.getDate() + 1) && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getYear()) {
+        if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
             day = days[1][exception]["schedule"];
         }
     }
     var currentSlot;
     for (currentSlot = 0; currentSlot < days[0][day]["MS"].length; currentSlot++) {
         switch(days[0][day]["MS"][currentSlot]["period"]) { //Falling through is intended in switch statement
-            case 1: //A period
-            case 2: //B period
-            case 3: //C period
-            case 4: //D period
-            case 5: //E period
-            case 6: //F period
-            case 7: //G period
-            case 8: //H period
-                var slotString = schedule["classes"][days[0][day]["MS"][currentSlot]["period"] - 1]["name"] + " - " + 
-                schedule["classes"][days[0][day]["MS"][currentSlot]["period"] - 1]["teacher"] + " - " + 
-                schedule["classes"][days[0][day]["MS"][currentSlot]["period"] - 1]["room"] + " - ";
+            case "A": //A period
+            case "B": //B period
+            case "C": //C period
+            case "D": //D period
+            case "E": //E period
+            case "F": //F period
+            case "G": //G period
+            case "H": //H period
+                for (var k = 0; k < schedule["classes"].length; k++) {
+                    if (schedule["classes"][k]["period"] == days[0][day]["MS"][currentSlot]["period"]) {
+                        var scheduleObj = { name: schedule["classes"][k]["name"], 
+                        teacher: schedule["classes"][k]["teacher"], 
+                        room: schedule["classes"][k]["room"],
+                        period: days[0][day]["MS"][currentSlot]["period"],
+                        time: "will be determined later" };
+                    }
+                }
                 break;
-            case 9: //Lunch
-                var slotString = "Lunch - LPC Commons - ";
+            case "Lunch":
+                var scheduleObj = { name: "Lunch", teacher: "N/A", room: "LPC Commons", period: 9, time: "will be determined later" };
                 break;
-            case 10: //Assembly
-                var slotString = "Assembly - LPC Commons - ";
+            case "Assembly":
+                var scheduleObj = { name: "Assembly", teacher: "N/A", room: "LPC Commons", period: 10, time: "will be determined later" };
                 break;
-            case 11: //Lunch
-                var slotString = "Advisory - "; //TODO - Make this box display the user's advisor and advisory location
+            case "Advisory":
+                var scheduleObj = { name: "Advisory", teacher: "Advisor", room: "Varies", period: 11, time: "will be determined later" }; //TODO - Make this box display the user's advisor and advisory location
                 break;
-            case 12: //Class Meeting
-                var slotString = "Class Meeting - "; //TODO - Make this box display the user's class meeting location
+            case "Class Meeting":
+                var scheduleObj = { name: "Class Meeting", teacher: "Grade Level Advisors", room: "Varies", period: 12, time: "will be determined later" };
                 break;
-            case 13: //Clubs
-                var slotString = "Club - ";
+            case "Clubs":
+                var scheduleObj = { name: "Clubs", teacher: "Varies", room: "Varies", period: 13, time: "will be determined later" };
                 break;
         }
-        slotString += days[0][day]["MS"][currentSlot]["time"];
-        appendPara(div, slotString);
+        try {
+            scheduleObj["time"] = days[0][day]["MS"][currentSlot]["time"];
+            appendParaLink(div, scheduleObj);
+        } catch (error) {
+        }
     }
     
-  }
+  } 
   window.onload = function() {
     //var div = document.getElementById("schedule");
     var date = new Date();
     renderSchedule(date, false);
   }
+  function appendLink(url, text) {
+    var anchor = document.createElement("a");
+    anchor.href = url;
+    var node = document.createTextNode(text);
+    anchor.appendChild(node);
+    return anchor
+  }
+  function appendParaLink(div, obj) {
+    var para = document.createElement("p"); //Creates the para
+    para.appendChild(appendLink(("/class/" + cleanString(obj["name"])), obj["name"]));
+    para.appendChild(document.createTextNode(" - "));
+    para.appendChild(appendLink(("/teacher/" + obj["teacher"]), obj["teacher"]));
+    para.appendChild(document.createTextNode(" - "));
+    para.appendChild(appendLink(("/room/" + obj["room"]), obj["room"]));
+    para.appendChild(document.createTextNode(" - "));
+    para.appendChild(appendLink(("/period/" + obj["period"]), obj["time"]));
+    div.appendChild(para); //Adds the para to the div
+  }
+  
   function appendPara(div, text) {
     var para = document.createElement("p");
     var node = document.createTextNode(text);
     para.appendChild(node);
     div.appendChild(para);
   }
+  
+  function cleanString(text) {
+    text = text.toLowerCase();
+    text = text.replace(/ /g, "_"); //Remove spaces
+    text = text.replace(/-/g, ""); //Remove dashes
+    text = text.replace(/\./g, ""); //Remove periods
+    return text;
+  }
+  
+  /*function convertNumToChar(number) {
+    switch(number){
+        case 1:
+            return "A";
+        case 2:
+            return "B";
+        case 3:
+            return "C";
+        case 4:
+            return "D";
+        case 5:
+            return "E";
+        case 6:
+            return "F";
+        case 7:
+            return "G";
+        case 8:
+            return "H";
+  }*/
   </script>
 
   <link rel="import" href="bower_components/font-roboto/roboto.html">
@@ -105,12 +175,16 @@
   html,body {
     height: 100%;
     margin: 0;
-    background-color: #E5E5E5;
+    #background-color: #f32a61;
     font-family: 'RobotoDraft', sans-serif;
   }
   .container {
     width: 80%;
     margin: 50px auto;
+  }
+  core-scaffold::shadow core-toolbar {
+    background-color: #032a61;
+    color: #fff
   }
   @media (min-width: 481px) {
     #tabs {
@@ -125,19 +199,18 @@
 </head>
 
 <body fullbleed vertical layout unresolved>
-  <core-header-panel flex>
-    <core-toolbar id="mainheader">
-      <paper-icon-button id="navicon"
-        icon="arrow-back"></paper-icon-button>
+  <core-scaffold>
+    <core-header-panel navigation flex>
+      <core-toolbar id="mainheader">
       <span flex>EPSchedule</span>
-      <paper-icon-button id="searchbutton"
-        icon="search"></paper-icon-button>
+      <span>Today</span>   
     </core-toolbar>
-    <div id="schedule" layout vertical center>
-    </div>
   </core-header-panel>
-  <div id="list">
-   </div>
+  <section layout vertical fit>
+   <div id="schedule" layout vertical center>
+    </div>
+   </section>
+  </core-scaffold>
 </body>
 
 </html>
