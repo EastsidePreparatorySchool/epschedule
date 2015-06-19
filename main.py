@@ -47,16 +47,39 @@ class LoginHandler (webapp2.RequestHandler):
             self.response.write(email + " is not a valid e-mail address, please hit back to try again.")
 
 class ClassHandler(webapp2.RequestHandler):
-  def get(self, class_id):
+    @staticmethod
+    def clean_string(text):
+        #logging.info("Original text: " + text)
+        text = text.lower()
+        text = text.replace(".", "")
+        text = text.replace("-", "")
+        text = text.replace(" ", "_")
+        #logging.info("New text: " + text)
+        return text
+    def get_students(self, name, period):
+        file = open('schedules.json', 'rb')
+        schedules = json.load(file)
+        students_in_class = []
+        for schedule in schedules:
+            for classinfo in schedule["classes"]:
+                logging.info("Is |" + ClassHandler.clean_string(classinfo["name"]) + "| the same as |" + name + "|?")
+                logging.info("And, is |" + classinfo["period"].lower() + "| the same as |" + period + "|?")
+                if ClassHandler.clean_string(classinfo["name"]) == name and classinfo["period"].lower() == period:
+                    logging.info("Yes")
+                    students_in_class.append(schedule["firstname"])
+                else:
+                    logging.info("No")
+        return students_in_class
+    def get(self, class_id, period):
         #Get the cookie
         id = self.request.cookies.get("SID")
         if id is None:
             self.send_login_response()
             return
         #schedule = self.get_schedule(self.request.get('id'))
-        self.response.write(class_id)
+        students_in_class = self.get_students(class_id, period)
+        self.response.write(students_in_class)
           
-            
 class MainHandler(webapp2.RequestHandler):
     #def __init__(self):
     def get_schedule(self, id):
@@ -97,6 +120,6 @@ class MainHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/login', LoginHandler),
-    ('/class/(\w+)', ClassHandler)
+    ('/class/(\w+)/(\w+)', ClassHandler)
 ], debug=True)
     

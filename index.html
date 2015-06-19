@@ -115,7 +115,7 @@
   }
   function appendParaLink(div, obj) {
     var para = document.createElement("p"); //Creates the para
-    para.appendChild(appendLink(("/class/" + cleanString(obj["name"])), obj["name"]));
+    para.appendChild(appendLink((("/class/" + cleanString(obj["name"])) + "/" + obj["period"].toLowerCase()), obj["name"]));
     para.appendChild(document.createTextNode(" - "));
     para.appendChild(appendLink(("/teacher/" + obj["teacher"]), obj["teacher"]));
     para.appendChild(document.createTextNode(" - "));
