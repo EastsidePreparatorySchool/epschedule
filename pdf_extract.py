@@ -85,7 +85,8 @@ def explode_pdf(path):
     
     path_properties = string.split(path, "\\")  #Split the file name into a series of directories
     schedule_properties = string.split(path_properties[7], "-") #Extract the information from the name of the pdf
-    schedule_obj = {'firstname':schedule_properties[3], 'lastname':schedule_properties[2], 'term':schedule_properties[1], 'id':schedule_properties[0], 'classes':cleaned_classes}
+    first_name = schedule_properties[3]
+    schedule_obj = {'firstname':first_name[:-4], 'lastname':schedule_properties[2], 'term':schedule_properties[1], 'id':schedule_properties[0], 'classes':cleaned_classes}
     return schedule_obj    #Return object created in the previous line
     
 #print convert_pdf_to_txt("c:\\users\\guberti\\Documents\\My Projects\\Python\\Schedule Downloader\\4093-3-Uberti-Gavin.pdf")
