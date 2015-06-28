@@ -5,7 +5,7 @@
 
   <title>EPSchedule</title>
   <meta charset="utf=8">
-  <meta name="viewport" 
+  <meta name="viewport"
         content="width=device-width, minimum-scale=1.0, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -27,7 +27,7 @@
   var days = {{days | safe }};
   var globalDate = new Date();
   function renderSchedule(dateObj, emptyDiv) {
-    var div = document.getElementById("schedule");
+    var div = document.getElementById("container");
     if (emptyDiv) {
         div.innerHTML = "";
     }
@@ -69,8 +69,8 @@
             case "H": //H period
                 for (var k = 0; k < schedule["classes"].length; k++) {
                     if (schedule["classes"][k]["period"] == days[0][day]["MS"][currentSlot]["period"]) {
-                        var scheduleObj = { name: schedule["classes"][k]["name"], 
-                        teacher: schedule["classes"][k]["teacher"], 
+                        var scheduleObj = { name: schedule["classes"][k]["name"],
+                        teacher: schedule["classes"][k]["teacher"],
                         room: schedule["classes"][k]["room"],
                         period: days[0][day]["MS"][currentSlot]["period"],
                         time: "will be determined later" };
@@ -99,8 +99,8 @@
         } catch (error) {
         }
     }
-    
-  } 
+
+  }
   window.onload = function() {
     //var div = document.getElementById("schedule");
     var date = new Date();
@@ -124,14 +124,14 @@
     para.appendChild(appendLink(("/period/" + obj["period"]), obj["time"]));
     div.appendChild(para); //Adds the para to the div
   }
-  
+
   function appendPara(div, text) {
     var para = document.createElement("p");
     var node = document.createTextNode(text);
     para.appendChild(node);
     div.appendChild(para);
   }
-  
+
   function cleanString(text) {
     text = text.toLowerCase();
     text = text.replace(/ /g, "_"); //Remove spaces
@@ -139,7 +139,7 @@
     text = text.replace(/\./g, ""); //Remove periods
     return text;
   }
-  
+
   /*function convertNumToChar(number) {
     switch(number){
         case 1:
@@ -170,47 +170,61 @@
     href="bower_components/core-icons/core-icons.html">
   <link rel="import"
     href="bower_components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="item.html">
 
   <style>
   html,body {
     height: 100%;
     margin: 0;
-    #background-color: #f32a61;
+    #background-color: #e6eef4;
     font-family: 'RobotoDraft', sans-serif;
+  }
+  core-header-panel {
+    height: 100%;
+    #background: green;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  core-toolbar {
+    background: #025992;
+    color: white;
+  }
+  #tabs {
+    width: 100%;
+    margin: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  text-transform: uppercase;
   }
   .container {
     width: 80%;
-    margin: 50px auto;
+    margin: 24px auto;
+    #background:blue;
   }
-  core-scaffold::shadow core-toolbar {
-    background-color: #032a61;
-    color: #fff
-  }
-  @media (min-width: 481px) {
-    #tabs {
-      width: 200px;
-    }
+  @media (min-width: 720px) {
     .container {
-      width: 400px;
+      width: 540px;
     }
   }
   </style>
 
 </head>
 
-<body fullbleed vertical layout unresolved>
-  <core-scaffold>
-    <core-header-panel navigation flex>
-      <core-toolbar id="mainheader">
-      <span flex>EPSchedule</span>
-      <span>Today</span>   
+<body unresolved>
+  <core-header-panel>
+
+    <core-toolbar>
+     <paper-icon-button id="navicon"
+        icon="menu"></paper-icon-button>
+    <span flex>Today</span>
+    <span><paper-icon-button icon="arrow-back"></paper-icon-button></span>
+    <span><paper-icon-button icon="arrow-forward"></paper-icon-button></span>
     </core-toolbar>
-  </core-header-panel>
-  <section layout vertical fit>
-   <div id="schedule" layout vertical center>
+    <div class="container" layout vertical center>
     </div>
-   </section>
-  </core-scaffold>
+  </core-header-panel>
 </body>
 
 </html>

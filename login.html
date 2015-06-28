@@ -1,9 +1,40 @@
 <html>
-<body>
-<form action="login" method="post">
-<input type="text" name="email" placeholder="Email Address"><br>
-<input type="password" name="password" placeholder="Password" ><br>
-<input type="submit" value="Submit">
-</form>
+<head>
+  <title>Sign in to EPSchedule</title>
+  <meta name="viewport"
+        content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+  <link rel="import" href="bower_components/font-roboto/roboto.html">
+  <link rel="import"
+    href="bower_components/paper-shadow/paper-shadow.html">
+  <link rel="import"
+    href="bower_components/paper-input/paper-input-decorator.html">
+  <link rel="import"
+    href="bower_components/paper-button/paper-button.html">
+  <style>
+    body {
+      font-family: "Roboto", 'Helvetica Neue, Helvetica, Arial', sans-serif;
+      background: #023a61; // Light Blue 800
+      padding: 20px;
+    }
+  </style>
+</head>
+<body background=>
+  <form action="login" method="post">
+	<paper-shadow class="card" z="2" style="background: white; max-width: 480px; margin: 20px auto; border 20px">
+	<img src="http://upload.wikimedia.org/wikipedia/commons/c/cb/EPS10FB.jpg"></img>
+	<h1>EPSchedule</h1>
+	<p>The easiest way to keep track of your classes and classmates.</p>
+
+      <paper-input-decorator label="Email address">
+          <input type="text" id="email" is="core-input" name="email"/>
+      </paper-input-decorator>
+
+      <paper-input-decorator label="Password">
+          <input id="password" is="core-input" name="password" type="password"/>
+      </paper-input-decorator>
+
+      <paper-button type="submit" raised id="login" class="login">SIGN IN</paper-button>
+  </form>
 </body>
 </html>

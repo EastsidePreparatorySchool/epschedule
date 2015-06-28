@@ -43,6 +43,7 @@ Temporary Items
 .apdisk
 
 bower_components
+node_modules
 crawler.bat
 main.pyc
 schedules
