@@ -20,7 +20,7 @@
   </style>
 </head>
 <body background=>
-  <form action="login" method="post">
+  <form id="loginForm" action="login" method="post">
 	<paper-shadow class="card" z="2" style="background: white; max-width: 480px; margin: 20px auto; border 20px">
 	<img src="http://upload.wikimedia.org/wikipedia/commons/c/cb/EPS10FB.jpg"></img>
 	<h1>EPSchedule</h1>
@@ -34,7 +34,7 @@
           <input id="password" is="core-input" name="password" type="password"/>
       </paper-input-decorator>
 
-      <paper-button type="submit" raised id="login" class="login">SIGN IN</paper-button>
+      <paper-button onclick="loginForm.submit()" type="submit" raised id="login" class="login">SIGN IN</paper-button>
   </form>
 </body>
 </html>
