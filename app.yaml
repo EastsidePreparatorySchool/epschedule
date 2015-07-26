@@ -9,6 +9,10 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
+- url: /item\.html
+  static_files: item.html
+  upload: item\.html
+
 - url: /bower_components
   static_dir: bower_components
 
