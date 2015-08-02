@@ -37,10 +37,7 @@
     if (emptyDiv) {
         div.innerHTML = "";
     }
-    var dateText = ((dateObj.getMonth() + 1) + "/" + dateObj.getDate() + "/" + dateObj.getFullYear());
-    var daySpan = document.getElementById("day");
-    daySpan.removeChild(daySpan.firstChild);
-    daySpan.appendChild(document.createTextNode(dateText));
+
     //appendPara(div, )); //Display date
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
         case 0: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
@@ -61,6 +58,12 @@
             day = "Friday";
             break;
     }
+
+    var dateText = (day + ', ' + (dateObj.getMonth() + 1) + "/" + dateObj.getDate());
+    var daySpan = document.getElementById("day");
+    daySpan.removeChild(daySpan.firstChild);
+    daySpan.appendChild(document.createTextNode(dateText));
+
     for (var exception = 0; exception < days[1].length; exception++) { //Handles exceptions, also handles special weekend schedules
         if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
             day = days[1][exception]["schedule"];
@@ -135,6 +138,7 @@
     div.appendChild(para); //Adds the para to the div*/
     var x = document.createElement("post-card");
     var img = document.createElement("img");
+    img.src = "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRnMYiYEfApvYM4UInOpImjt2IKhVlJvkxxN89chxnd90Z6l9CMWQ";
     var paraText = obj["time"] + ' (' + obj["teacher"] + ')';
     var p = document.createElement("p");
     p.appendChild(document.createTextNode(paraText));
