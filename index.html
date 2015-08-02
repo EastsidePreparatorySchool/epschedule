@@ -37,7 +37,11 @@
     if (emptyDiv) {
         div.innerHTML = "";
     }
-    appendPara(div, ((dateObj.getMonth() + 1) + "/" + dateObj.getDate() + "/" + dateObj.getFullYear())); //Display date
+    var dateText = ((dateObj.getMonth() + 1) + "/" + dateObj.getDate() + "/" + dateObj.getFullYear());
+    var daySpan = document.getElementById("day");
+    daySpan.removeChild(daySpan.firstChild);
+    daySpan.appendChild(document.createTextNode(dateText));
+    //appendPara(div, )); //Display date
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
         case 0: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
         case 6:
@@ -120,7 +124,7 @@
     return anchor
   }
   function appendParaLink(div, obj) {
-    var para = document.createElement("p"); //Creates the para
+    /*var para = document.createElement("p"); //Creates the para
     para.appendChild(appendLink(("/class/" + cleanString(obj["name"])), obj["name"]));
     para.appendChild(document.createTextNode(" - "));
     para.appendChild(appendLink(("/teacher/" + obj["teacher"]), obj["teacher"]));
@@ -128,7 +132,18 @@
     para.appendChild(appendLink(("/room/" + obj["room"]), obj["room"]));
     para.appendChild(document.createTextNode(" - "));
     para.appendChild(appendLink(("/period/" + obj["period"]), obj["time"]));
-    div.appendChild(para); //Adds the para to the div
+    div.appendChild(para); //Adds the para to the div*/
+    var x = document.createElement("post-card");
+    var img = document.createElement("img");
+    var paraText = obj["time"] + ' (' + obj["teacher"] + ')';
+    var p = document.createElement("p");
+    p.appendChild(document.createTextNode(paraText));
+    var h2 = document.createElement("h2");
+    h2.appendChild(document.createTextNode(obj["name"]));
+    x.appendChild(img);
+    x.appendChild(p);
+    x.appendChild(h2);
+    div.appendChild(x);
   }
 
   function appendPara(div, text) {
@@ -188,7 +203,7 @@
   }
   core-header-panel {
     height: 100%;
-    #background: green;
+    background: #efefef;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -225,9 +240,15 @@
     <core-toolbar>
      <paper-icon-button id="navicon"
         icon="menu"></paper-icon-button>
+<<<<<<< Updated upstream
     <span flex>Today</span>
     <span><paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button></span>
     <span><paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button></span>
+=======
+    <span flex id="day">Today</span>
+    <span><paper-icon-button icon="arrow-back"></paper-icon-button></span>
+    <span><paper-icon-button icon="arrow-forward"></paper-icon-button></span>
+>>>>>>> Stashed changes
     </core-toolbar>
     <div id="container" class="container" layout vertical center>
     </div>
