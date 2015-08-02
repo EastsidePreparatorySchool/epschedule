@@ -14,11 +14,9 @@
   <script>
   document.onkeydown = function(event) {
     if (event.keyCode == 37) { //Left
-        globalDate.setDate(globalDate.getDate()-1);
-        renderSchedule(globalDate, true);
+        dateBack();
     } else if (event.keyCode == 39) { //Right
-        globalDate.setDate(globalDate.getDate()+1);
-        renderSchedule(globalDate, true);
+        dateForward;
     }
   }
   </script>
@@ -26,6 +24,14 @@
   var schedule = {{ schedule | safe }};
   var days = {{days | safe }};
   var globalDate = new Date();
+  function dateBack() {
+    globalDate.setDate(globalDate.getDate()-1);
+    renderSchedule(globalDate, true);
+  }
+  function dateForward() {
+    globalDate.setDate(globalDate.getDate()+1);
+    renderSchedule(globalDate, true);
+  }
   function renderSchedule(dateObj, emptyDiv) {
     var div = document.getElementById("container");
     if (emptyDiv) {
@@ -220,8 +226,8 @@
      <paper-icon-button id="navicon"
         icon="menu"></paper-icon-button>
     <span flex>Today</span>
-    <span><paper-icon-button icon="arrow-back"></paper-icon-button></span>
-    <span><paper-icon-button icon="arrow-forward"></paper-icon-button></span>
+    <span><paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button></span>
+    <span><paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button></span>
     </core-toolbar>
     <div id="container" class="container" layout vertical center>
     </div>
