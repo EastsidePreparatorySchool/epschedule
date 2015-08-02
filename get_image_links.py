@@ -11,46 +11,60 @@ meaning that it might need to be updated if that happens.
 import urllib
 import urllib2
 import string
+import sys
 
-images = [];
-exceptions = [["(Tina)", "Hadden"], ["(Rikki)"]]
+exceptions = [["Ginger-Ellingson", "Virginia-Ellingson"], ["Marcela-Winspear", "Marcela-Stepanova-Winspea"]]
 
-def checkText(text, character):
+def checkText(text, character, textblock):
     for i in range (0, len(text)):
-        if html[character + i] != text[i]:
+        if textblock[character + i] != text[i]:
             return False
     return True
 
-response = urllib2.urlopen('http://www.eastsideprep.org/who-we-are/biographies/')
-html = response.read()
+mainresponse = urllib2.urlopen('http://www.eastsideprep.org/who-we-are/biographies/')
+mainhtml = mainresponse.read()
 
-for char in range (0, len(html)):
-    if checkText("<img src='", char):
-        char += 10
-        imageurl = ""
-        name = ""
-        while (html[char] != "'"):
-            imageurl += html[char]
-            char += 1
-        while not checkText("title='", char):
-            char += 1
-        char += 7
-        while not checkText("'", char):
-            name += html[char]
-            char += 1
-        images.append({"url":imageurl, "name":name})
-        print imageurl
-        print name
-
-        name = name.split()
-        name = name[1]
-        name = name.lower()
-        name += imageurl[len(imageurl) - 4:len(imageurl)] #Add on the extension
-        while (True):
-            try:
-                urllib.urlretrieve(imageurl, "teacher_photos\\" + name)
-                break
-            except:
-                print "Open connection was forcibly closed by a remote host, trying to download again"
+for mainchar in range (0, len(mainhtml)):
+        if checkText("title='", mainchar, mainhtml):
+            name = ""
+            mainchar += 7
+            while not checkText("'", mainchar, mainhtml):
+                name += mainhtml[mainchar]
+                mainchar += 1
+            
+            urlname = name.replace(" ", "-")
+            urlname = urlname.replace("(", "")
+            urlname = urlname.replace(")", "")
+            
+            for exception in exceptions:
+                #print "Is " + exception[0] + " the same as " + urlname
+                if exception[0] == urlname:
+                    urlname = exception[1]
+                
+            response = urllib2.urlopen('http://www.eastsideprep.org/team/' + urlname + '/')
+            html = response.read()
+            imageurl = "";
+            for char in range (0, len(html)):
+                if checkText("post-thumbnail-link", char, html):
+                    while not checkText("src=\"", char, html):
+                        char += 1;
+                    char += 5;
+                    while not checkText("\"", char, html):
+                        imageurl += html[char]
+                        char += 1;
+ 
+            print imageurl
+            print name
+            
+            name = name.split()
+            name = name[1]
+            name = name.lower()
+            name += imageurl[len(imageurl) - 4:len(imageurl)] #Add on the extension
+            while (True):
+                try:
+                    urllib.urlretrieve(imageurl, "teacher_photos\\" + name)
+                    break
+                except:
+                    print "Open connection was forcibly closed by a remote host, trying to download again"
 #file = open('teacherimageurls.json', 'wb')
 #file.write(json.dumps(images))
