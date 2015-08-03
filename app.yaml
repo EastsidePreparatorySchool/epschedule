@@ -15,6 +15,9 @@ handlers:
 
 - url: /bower_components
   static_dir: bower_components
+  
+- url: /teacher_photos
+  static_dir: teacher_photos
 
 - url: .*
   script: main.app
