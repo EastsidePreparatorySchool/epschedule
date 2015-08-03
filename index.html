@@ -161,11 +161,18 @@
     if (obj.teacher != "N/A") {
         img.src = "/teacher_photos/" + obj.teacher.toLowerCase() + ".jpg";
     }
-    var paraText = obj["time"] + ' (' + obj["teacher"] + ')';
+    var timeText = obj["time"];
+    var parensText = ' (' + obj["teacher"] + ', ' + obj["room"]+ ')';
     var p = document.createElement("p");
-    p.appendChild(document.createTextNode(paraText));
+    var b = document.createElement("b");
+    b.appendChild(document.createTextNode(timeText));
+    p.appendChild(b);
+    p.appendChild(document.createTextNode(parensText));
+    var a = document.createElement("a");
+    a.href = "/class/" + cleanString(obj["name"]);
     var h2 = document.createElement("h2");
-    h2.appendChild(document.createTextNode(obj["name"]));
+    a.appendChild(document.createTextNode(obj["name"]));
+    h2.appendChild(a);
     x.appendChild(img);
     x.appendChild(p);
     x.appendChild(h2);
