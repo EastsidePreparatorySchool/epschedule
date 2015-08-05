@@ -15,11 +15,15 @@
 # limitations under the License.
 #
 import webapp2
+import aes
+import base64
 import json
 import jinja2
 import os
 import string
 import logging
+
+CRYPTO_KEY = open('crypto.key', 'rb').read()
 id_table_file = open('id_table.json', 'rb')
 ID_TABLE = json.load(id_table_file)
 logging.info(ID_TABLE)
@@ -47,7 +51,8 @@ class LoginHandler (webapp2.RequestHandler):
         id = convert_email_to_id(email)
         logging.info("id is: " + str(id))
         if id is not None:
-            self.response.set_cookie('SID', str(id))
+            encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
+            self.response.set_cookie('SID', encoded_id)
             self.redirect("/")
         else:
             self.response.write(email + " is not a valid e-mail address, please hit back to try again.")
@@ -76,14 +81,15 @@ class ClassHandler(webapp2.RequestHandler):
         return classdataobj
     def get(self, class_id):
         #Get the cookie
-        id = self.request.cookies.get("SID")
-        if id is None:
+        encoded_id = self.request.cookies.get("SID")
+        if encoded_id is None:
             self.send_login_response()
             return
+
+        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         #schedule = self.get_schedule(self.request.get('id'))
         self.response.write(self.get_class_schedule(class_id))
-          
-            
+
 class MainHandler(webapp2.RequestHandler):
     #def __init__(self):
     def get_schedule(self, id):
@@ -92,23 +98,25 @@ class MainHandler(webapp2.RequestHandler):
             if schedule['id'] == id:
                 return schedule
         return None
-        
+    
     def get_days(self):
         file = open('exceptions.json', 'rb')
         days = json.load(file)
         return days
-    
+
     def send_login_response(self):
         template_values = {}
         template = JINJA_ENVIRONMENT.get_template('login.html')
         self.response.write(template.render(template_values))
-        
+
     def get(self):
         #Get the cookie
-        id = self.request.cookies.get("SID")
-        if id is None:
+        encoded_id = self.request.cookies.get("SID")
+        if encoded_id is None:
             self.send_login_response()
             return
+
+        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         #schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
         days = self.get_days()
@@ -118,11 +126,11 @@ class MainHandler(webapp2.RequestHandler):
             self.response.write(template.render(template_values))
         else:
             self.response.write("No schedule for id " + id)
-        
+
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/login', LoginHandler),
     ('/class/(\w+)', ClassHandler)
 ], debug=True)
-    
+
