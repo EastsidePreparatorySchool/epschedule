@@ -50,3 +50,5 @@ schedules
 schedules.json
 id_table.json
 teacher_photos
+96x96_photos
+face_detect_test

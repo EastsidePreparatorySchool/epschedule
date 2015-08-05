@@ -35,6 +35,12 @@ def convert_email_to_id(email):
         if (student[0] == username):
             return student[1]
     return None
+
+def load_schedule_data():
+    file = open('schedules.json', 'rb')
+    schedules = json.load(file)
+    return schedules
+
 class LoginHandler (webapp2.RequestHandler):
     def post(self):
         email = self.request.get('email')
@@ -47,26 +53,46 @@ class LoginHandler (webapp2.RequestHandler):
             self.response.write(email + " is not a valid e-mail address, please hit back to try again.")
 
 class ClassHandler(webapp2.RequestHandler):
-  def get(self, class_id):
+    def get_class_schedule(self, classname):
+        schedules = load_schedule_data();
+        classdataobj = []
+        for schedule in schedules:                                    #Load up each student's schedule
+            for classobj in schedule['classes']:                      #For each one of their classes
+                if classobj['name'].lower() == classname:             #If that classes' name is the same as the class name we're looking for
+                    if classobj['teacher'] != "":                     #If they aren't a student (teacher names will be added later)
+       
+                        createnewperiod = True                        #Assume that we need to create a new period
+                        for period in classdataobj:                   #For each period that we know the target class is held in
+                            if period['period'] == classobj['period']:#If that period is the same as the period 
+                                createnewperiod = False               #We know that we don't need to create a new period
+
+                        if createnewperiod:                           #If we need to create a new period, create one and set the teacher
+                            classdataobj.append({"period":classobj['period'], "teacher":classobj['teacher'], "students":[]})
+                        
+                        for i in range (0, len(classdataobj)):                             #For each known period in the class
+                            if classdataobj[i]['period'] == classobj['period']:            #If the student belongs in that period
+                                name = schedule['firstname'] + " " + schedule['lastname']  #Append their name to a list of students in that period
+                                classdataobj[i]['students'].append(name)
+        return classdataobj
+    def get(self, class_id):
         #Get the cookie
         id = self.request.cookies.get("SID")
         if id is None:
             self.send_login_response()
             return
         #schedule = self.get_schedule(self.request.get('id'))
-        self.response.write(class_id)
+        self.response.write(self.get_class_schedule(class_id))
           
             
 class MainHandler(webapp2.RequestHandler):
     #def __init__(self):
     def get_schedule(self, id):
-        file = open('schedules.json', 'rb')
-        schedules = json.load(file)
+        schedules = load_schedule_data();
         for schedule in schedules:
             if schedule['id'] == id:
                 return schedule
         return None
-    
+        
     def get_days(self):
         file = open('exceptions.json', 'rb')
         days = json.load(file)
