@@ -15,7 +15,7 @@
   var touchStartPos = [0, 0];
   function handleTouchStart(evt) {
     touchStartPos[0] = evt.changedTouches[0].pageX;
-    touchStartPos[1] = evt.changedTouches[0].pageY;    
+    touchStartPos[1] = evt.changedTouches[0].pageY;
   }
   function handleTouchEnd(evt) {
     if (Math.abs(touchStartPos[0] - evt.changedTouches[0].pageX) > Math.abs(touchStartPos[1] - evt.changedTouches[0].pageY)) { //If the swipe is horizontal
@@ -27,7 +27,7 @@
     }
     console.log(evt.changedTouches[0].pageX);
   }
-  
+
   document.onkeydown = function(event) {
     if (event.keyCode == 37) { //Left
         dateBack();
@@ -168,11 +168,11 @@
     b.appendChild(document.createTextNode(timeText));
     p.appendChild(b);
     p.appendChild(document.createTextNode(parensText));
-    var a = document.createElement("a");
-    a.href = "/class/" + cleanString(obj["name"]);
+    //var a = document.createElement("a");
+    //a.href = "/class/" + cleanString(obj["name"]);
     var h2 = document.createElement("h2");
-    a.appendChild(document.createTextNode(obj["name"]));
-    h2.appendChild(a);
+    h2.appendChild(document.createTextNode(obj["name"]));
+    //h2.appendChild(a);
     x.appendChild(img);
     x.appendChild(p);
     x.appendChild(h2);
