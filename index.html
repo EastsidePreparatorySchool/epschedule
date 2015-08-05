@@ -161,8 +161,12 @@
     if (obj.teacher != "N/A") {
         img.src = "/96x96_photos/" + obj.teacher.toLowerCase() + ".jpg";
     }
-    var timeText = obj["time"];
-    var parensText = ' (' + obj["teacher"] + ', ' + obj["room"]+ ')';
+    var timeText = obj.time;
+    var parensText = ' (';
+    if (obj.teacher != "N/A") {
+      parensText += obj.teacher + ', ';
+    }
+    parensText += obj.room + ')';
     var p = document.createElement("p");
     var b = document.createElement("b");
     b.appendChild(document.createTextNode(timeText));
