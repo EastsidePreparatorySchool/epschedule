@@ -42,10 +42,10 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+*.pyc
 bower_components
 node_modules
 crawler.bat
-main.pyc
 schedules
 schedules.json
 id_table.json
@@ -53,4 +53,5 @@ teacher_photos
 96x96_photos
 face_detect_test
 crypto.key
+lib
 
