@@ -18,6 +18,9 @@ handlers:
   
 - url: /96x96_photos
   static_dir: 96x96_photos
+  
+- url: /misc_photos
+  static_dir: misc_photos
 
 - url: .*
   script: main.app

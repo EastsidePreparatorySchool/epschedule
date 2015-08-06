@@ -44,10 +44,16 @@
   var days = {{days | safe }};
   var globalDate = new Date();
   function dateBack() {
+    if (globalDate.getDay() == 1) {
+        globalDate.setDate(globalDate.getDate()-2);
+    }
     globalDate.setDate(globalDate.getDate()-1);
     renderSchedule(globalDate, true);
   }
   function dateForward() {
+    if (globalDate.getDay() == 5) {
+        globalDate.setDate(globalDate.getDate()+2);
+    }
     globalDate.setDate(globalDate.getDate()+1);
     renderSchedule(globalDate, true);
   }
@@ -160,6 +166,10 @@
     img.src = "";
     if (obj.teacher != "N/A") {
         img.src = "/96x96_photos/" + obj.teacher.toLowerCase() + ".jpg";
+    } else {
+        
+        img.src = "/misc_photos/" + obj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
+        console.log(img.src);
     }
     var timeText = obj.time;
     var parensText = ' (';
