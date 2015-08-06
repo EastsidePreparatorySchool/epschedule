@@ -5,33 +5,65 @@
 
   <title>EPSchedule</title>
   <meta charset="utf=8">
-  <meta name="viewport" 
+  <meta name="viewport"
         content="width=device-width, minimum-scale=1.0, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <script src="bower_components/webcomponentsjs/webcomponents.js">
   </script>
   <script>
+  var touchStartPos = [0, 0];
+  function handleTouchStart(evt) {
+    touchStartPos[0] = evt.changedTouches[0].pageX;
+    touchStartPos[1] = evt.changedTouches[0].pageY;
+  }
+  function handleTouchEnd(evt) {
+    if (Math.abs(touchStartPos[0] - evt.changedTouches[0].pageX) > Math.abs(touchStartPos[1] - evt.changedTouches[0].pageY)) { //If the swipe is horizontal
+        if (touchStartPos[0] > evt.changedTouches[0].pageX) {
+            dateBack();
+        } else if (touchStartPos[0] < evt.changedTouches[0].pageX) {
+            dateForward();
+        }
+    }
+    console.log(evt.changedTouches[0].pageX);
+  }
+
   document.onkeydown = function(event) {
     if (event.keyCode == 37) { //Left
-        globalDate.setDate(globalDate.getDate()-1);
-        renderSchedule(globalDate, true);
+        dateBack();
     } else if (event.keyCode == 39) { //Right
-        globalDate.setDate(globalDate.getDate()+1);
-        renderSchedule(globalDate, true);
+        dateForward();
     }
   }
+  document.addEventListener("touchstart", handleTouchStart, false);
+  document.addEventListener("touchend", handleTouchEnd, false);
+  document.addEventListener("touchleave", handleTouchEnd, false);
   </script>
   <script>
   var schedule = {{ schedule | safe }};
   var days = {{days | safe }};
   var globalDate = new Date();
+  function dateBack() {
+    if (globalDate.getDay() == 1) {
+        globalDate.setDate(globalDate.getDate()-2);
+    }
+    globalDate.setDate(globalDate.getDate()-1);
+    renderSchedule(globalDate, true);
+  }
+  function dateForward() {
+    if (globalDate.getDay() == 5) {
+        globalDate.setDate(globalDate.getDate()+2);
+    }
+    globalDate.setDate(globalDate.getDate()+1);
+    renderSchedule(globalDate, true);
+  }
   function renderSchedule(dateObj, emptyDiv) {
-    var div = document.getElementById("schedule");
+    var div = document.getElementById("container");
     if (emptyDiv) {
         div.innerHTML = "";
     }
-    appendPara(div, ((dateObj.getMonth() + 1) + "/" + dateObj.getDate() + "/" + dateObj.getFullYear())); //Display date
+
+    //appendPara(div, )); //Display date
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
         case 0: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
         case 6:
@@ -51,6 +83,12 @@
             day = "Friday";
             break;
     }
+
+    var dateText = (day + ', ' + (dateObj.getMonth() + 1) + "/" + dateObj.getDate());
+    var daySpan = document.getElementById("day");
+    daySpan.removeChild(daySpan.firstChild);
+    daySpan.appendChild(document.createTextNode(dateText));
+
     for (var exception = 0; exception < days[1].length; exception++) { //Handles exceptions, also handles special weekend schedules
         if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
             day = days[1][exception]["schedule"];
@@ -69,8 +107,8 @@
             case "H": //H period
                 for (var k = 0; k < schedule["classes"].length; k++) {
                     if (schedule["classes"][k]["period"] == days[0][day]["MS"][currentSlot]["period"]) {
-                        var scheduleObj = { name: schedule["classes"][k]["name"], 
-                        teacher: schedule["classes"][k]["teacher"], 
+                        var scheduleObj = { name: schedule["classes"][k]["name"],
+                        teacher: schedule["classes"][k]["teacher"],
                         room: schedule["classes"][k]["room"],
                         period: days[0][day]["MS"][currentSlot]["period"],
                         time: "will be determined later" };
@@ -84,13 +122,13 @@
                 var scheduleObj = { name: "Assembly", teacher: "N/A", room: "LPC Commons", period: 10, time: "will be determined later" };
                 break;
             case "Advisory":
-                var scheduleObj = { name: "Advisory", teacher: "Advisor", room: "Varies", period: 11, time: "will be determined later" }; //TODO - Make this box display the user's advisor and advisory location
+                var scheduleObj = { name: "Advisory", teacher: "N/A", room: "Varies", period: 11, time: "will be determined later" }; //TODO - Make this box display the user's advisor and advisory location
                 break;
             case "Class Meeting":
-                var scheduleObj = { name: "Class Meeting", teacher: "Grade Level Advisors", room: "Varies", period: 12, time: "will be determined later" };
+                var scheduleObj = { name: "Class Meeting", teacher: "N/A", room: "Varies", period: 12, time: "will be determined later" };
                 break;
             case "Clubs":
-                var scheduleObj = { name: "Clubs", teacher: "Varies", room: "Varies", period: 13, time: "will be determined later" };
+                var scheduleObj = { name: "Clubs", teacher: "N/A", room: "Varies", period: 13, time: "will be determined later" };
                 break;
         }
         try {
@@ -99,8 +137,8 @@
         } catch (error) {
         }
     }
-    
-  } 
+
+  }
   window.onload = function() {
     //var div = document.getElementById("schedule");
     var date = new Date();
@@ -114,24 +152,54 @@
     return anchor
   }
   function appendParaLink(div, obj) {
-    var para = document.createElement("p"); //Creates the para
-    para.appendChild(appendLink((("/class/" + cleanString(obj["name"])) + "/" + obj["period"].toLowerCase()), obj["name"]));
+    /*var para = document.createElement("p"); //Creates the para
+    para.appendChild(appendLink(("/class/" + cleanString(obj["name"])), obj["name"]));
     para.appendChild(document.createTextNode(" - "));
     para.appendChild(appendLink(("/teacher/" + obj["teacher"]), obj["teacher"]));
     para.appendChild(document.createTextNode(" - "));
     para.appendChild(appendLink(("/room/" + obj["room"]), obj["room"]));
     para.appendChild(document.createTextNode(" - "));
     para.appendChild(appendLink(("/period/" + obj["period"]), obj["time"]));
-    div.appendChild(para); //Adds the para to the div
+    div.appendChild(para); //Adds the para to the div*/
+    var x = document.createElement("post-card");
+    var img = document.createElement("img");
+    img.src = "";
+    if (obj.teacher != "N/A") {
+        img.src = "/96x96_photos/" + obj.teacher.toLowerCase() + ".jpg";
+    } else {
+
+        img.src = "/misc_photos/" + obj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
+        console.log(img.src);
+    }
+    var timeText = obj.time;
+    var parensText = ' (';
+    if (obj.teacher != "N/A") {
+      parensText += obj.teacher + ', ';
+    }
+    parensText += obj.room + ')';
+    var p = document.createElement("p");
+    var b = document.createElement("b");
+    b.appendChild(document.createTextNode(timeText));
+    p.appendChild(b);
+    p.appendChild(document.createTextNode(parensText));
+    //var a = document.createElement("a");
+    //a.href = "/class/" + cleanString(obj["name"]);
+    var h2 = document.createElement("h2");
+    h2.appendChild(document.createTextNode(obj["name"]));
+    //h2.appendChild(a);
+    x.appendChild(img);
+    x.appendChild(p);
+    x.appendChild(h2);
+    div.appendChild(x);
   }
-  
+
   function appendPara(div, text) {
     var para = document.createElement("p");
     var node = document.createTextNode(text);
     para.appendChild(node);
     div.appendChild(para);
   }
-  
+
   function cleanString(text) {
     text = text.toLowerCase();
     text = text.replace(/ /g, "_"); //Remove spaces
@@ -139,7 +207,7 @@
     text = text.replace(/\./g, ""); //Remove periods
     return text;
   }
-  
+
   /*function convertNumToChar(number) {
     switch(number){
         case 1:
@@ -161,6 +229,7 @@
   }*/
   </script>
 
+  <link rel="import" href="bower_components/polymer/polymer.html">
   <link rel="import" href="bower_components/font-roboto/roboto.html">
   <link rel="import"
     href="bower_components/core-toolbar/core-toolbar.html">
@@ -170,47 +239,61 @@
     href="bower_components/core-icons/core-icons.html">
   <link rel="import"
     href="bower_components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="item.html">
 
   <style>
   html,body {
     height: 100%;
     margin: 0;
-    #background-color: #f32a61;
+    #background-color: #e6eef4;
     font-family: 'RobotoDraft', sans-serif;
+  }
+  core-header-panel {
+    height: 100%;
+    background: #efefef;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  core-toolbar {
+    background: #025992;
+    color: white;
+  }
+  #tabs {
+    width: 100%;
+    margin: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  text-transform: uppercase;
   }
   .container {
     width: 80%;
-    margin: 50px auto;
+    margin: 24px auto;
+    #background:blue;
   }
-  core-scaffold::shadow core-toolbar {
-    background-color: #032a61;
-    color: #fff
-  }
-  @media (min-width: 481px) {
-    #tabs {
-      width: 200px;
-    }
+  @media (min-width: 720px) {
     .container {
-      width: 400px;
+      width: 540px;
     }
   }
   </style>
 
 </head>
 
-<body fullbleed vertical layout unresolved>
-  <core-scaffold>
-    <core-header-panel navigation flex>
-      <core-toolbar id="mainheader">
-      <span flex>EPSchedule</span>
-      <span>Today</span>   
+<body unresolved>
+  <core-header-panel>
+
+    <core-toolbar>
+      <paper-icon-button id="navicon"
+        icon="menu"></paper-icon-button>
+      <span flex id="day">Today</span>
+      <span><paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button></span>
+      <span><paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button></span>
     </core-toolbar>
-  </core-header-panel>
-  <section layout vertical fit>
-   <div id="schedule" layout vertical center>
+    <div id="container" class="container" layout vertical center>
     </div>
-   </section>
-  </core-scaffold>
+  </core-header-panel>
 </body>
 
 </html>

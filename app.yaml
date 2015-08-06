@@ -9,8 +9,18 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
+- url: /item\.html
+  static_files: item.html
+  upload: item\.html
+
 - url: /bower_components
   static_dir: bower_components
+  
+- url: /96x96_photos
+  static_dir: 96x96_photos
+  
+- url: /misc_photos
+  static_dir: misc_photos
 
 - url: .*
   script: main.app
