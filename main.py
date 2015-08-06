@@ -15,13 +15,20 @@
 # limitations under the License.
 #
 import webapp2
-import aes
 import base64
 import json
 import jinja2
 import os
 import string
 import logging
+
+from google.appengine.ext import vendor
+# Add any libraries installed in the "lib" folder.
+vendor.add('lib')
+
+# External libraries.
+from slowaes import aes
+from py_bcrypt import bcrypt
 
 CRYPTO_KEY = open('crypto.key', 'rb').read()
 id_table_file = open('id_table.json', 'rb')
@@ -31,6 +38,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
+
 def convert_email_to_id(email):
     email = email.lower()
     pieces = string.split(email, "@")
@@ -65,15 +73,15 @@ class ClassHandler(webapp2.RequestHandler):
             for classobj in schedule['classes']:                      #For each one of their classes
                 if classobj['name'].lower() == classname:             #If that classes' name is the same as the class name we're looking for
                     if classobj['teacher'] != "":                     #If they aren't a student (teacher names will be added later)
-       
+
                         createnewperiod = True                        #Assume that we need to create a new period
                         for period in classdataobj:                   #For each period that we know the target class is held in
-                            if period['period'] == classobj['period']:#If that period is the same as the period 
+                            if period['period'] == classobj['period']:#If that period is the same as the period
                                 createnewperiod = False               #We know that we don't need to create a new period
 
                         if createnewperiod:                           #If we need to create a new period, create one and set the teacher
                             classdataobj.append({"period":classobj['period'], "teacher":classobj['teacher'], "students":[]})
-                        
+
                         for i in range (0, len(classdataobj)):                             #For each known period in the class
                             if classdataobj[i]['period'] == classobj['period']:            #If the student belongs in that period
                                 name = schedule['firstname'] + " " + schedule['lastname']  #Append their name to a list of students in that period
@@ -98,7 +106,7 @@ class MainHandler(webapp2.RequestHandler):
             if schedule['id'] == id:
                 return schedule
         return None
-    
+
     def get_days(self):
         file = open('exceptions.json', 'rb')
         days = json.load(file)
