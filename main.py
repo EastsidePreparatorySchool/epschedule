@@ -21,7 +21,8 @@ import jinja2
 import os
 import string
 import logging
-
+import datetime
+from google.appengine.ext import db
 from google.appengine.ext import vendor
 # Add any libraries installed in the "lib" folder.
 vendor.add('lib')
@@ -33,11 +34,15 @@ from py_bcrypt import bcrypt
 CRYPTO_KEY = open('crypto.key', 'rb').read()
 id_table_file = open('id_table.json', 'rb')
 ID_TABLE = json.load(id_table_file)
-logging.info(ID_TABLE)
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
+
+class User(db.Model):
+    email = db.StringProperty(required=True)
+    password = db.StringProperty(required=True)
+    join_date = db.DateProperty(required=True)
 
 def convert_email_to_id(email):
     email = email.lower()
@@ -48,6 +53,27 @@ def convert_email_to_id(email):
             return student[1]
     return None
 
+def check_password(password, email):
+    logging.error("Checking passwords")
+    user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
+    returned_entries = False
+    for query_result in user_obj_query:
+        returned_entries = True
+        logging.error("----------------")
+        logging.error(query_result.password)
+        logging.error(password)
+        if (query_result.password == password):
+            logging.error("Works!")
+            logging.error("-----------------")
+            return True
+        else:
+            logging.error("Wrong password!")
+            logging.error("-----------------")
+            return False
+    logging.error("Wrong password!")
+    return False;
+        #TODO hash passwords
+
 def load_schedule_data():
     file = open('schedules.json', 'rb')
     schedules = json.load(file)
@@ -56,14 +82,17 @@ def load_schedule_data():
 class LoginHandler (webapp2.RequestHandler):
     def post(self):
         email = self.request.get('email')
-        id = convert_email_to_id(email)
-        logging.info("id is: " + str(id))
-        if id is not None:
-            encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
-            self.response.set_cookie('SID', encoded_id)
-            self.redirect("/")
+        password = self.request.get('password')
+        if not check_password(password, email):
+            self.response.write("Your username or password is incorrect")
         else:
-            self.response.write(email + " is not a valid e-mail address, please hit back to try again.")
+            id = convert_email_to_id(email)
+            if id is not None:
+                encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
+                self.response.set_cookie('SID', encoded_id)
+                self.redirect("/")
+            else:
+                self.response.write("Something went wrong! " + email + " is in the password database, but it is not in schedules.json. Please contact the administrators.")
 
 class ClassHandler(webapp2.RequestHandler):
     def get_class_schedule(self, classname):
