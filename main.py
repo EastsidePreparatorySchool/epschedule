@@ -53,26 +53,16 @@ def convert_email_to_id(email):
             return student[1]
     return None
 
-def check_password(password, email):
+def check_password(email, password):
     logging.error("Checking passwords")
     user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
-    returned_entries = False
     for query_result in user_obj_query:
-        returned_entries = True
-        logging.error("----------------")
-        logging.error(query_result.password)
-        logging.error(password)
-        if (query_result.password == password):
-            logging.error("Works!")
-            logging.error("-----------------")
-            return True
-        else:
-            logging.error("Wrong password!")
-            logging.error("-----------------")
-            return False
-    logging.error("Wrong password!")
-    return False;
-        #TODO hash passwords
+        test_hashed_password = bcrypt.hashpw(password, query_result.password)
+        logging.info("original: " + query_result.password + " test: " + test_hashed_password)
+        return test_hashed_password == query_result.password
+
+    logging.info("User " + email + " does not exist")        
+    return False
 
 def load_schedule_data():
     file = open('schedules.json', 'rb')
@@ -83,7 +73,7 @@ class LoginHandler (webapp2.RequestHandler):
     def post(self):
         email = self.request.get('email')
         password = self.request.get('password')
-        if not check_password(password, email):
+        if not check_password(email, password):
             self.response.write("Your username or password is incorrect")
         else:
             id = convert_email_to_id(email)
