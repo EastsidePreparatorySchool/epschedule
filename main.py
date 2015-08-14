@@ -22,8 +22,10 @@ import os
 import string
 import logging
 import datetime
+import binascii
 from google.appengine.ext import db
 from google.appengine.ext import vendor
+from google.appengine.api import mail
 # Add any libraries installed in the "lib" folder.
 vendor.add('lib')
 
@@ -42,7 +44,8 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 class User(db.Model):
     email = db.StringProperty(required=True)
     password = db.StringProperty(required=True)
-    join_date = db.DateProperty(required=True)
+    join_date = db.DateTimeProperty()
+    verified = db.BooleanProperty(required=True)
 
 def convert_email_to_id(email):
     email = email.lower()
@@ -53,27 +56,87 @@ def convert_email_to_id(email):
             return student[1]
     return None
 
-def check_password(email, password):
-    logging.error("Checking passwords")
-    user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
-    for query_result in user_obj_query:
-        test_hashed_password = bcrypt.hashpw(password, query_result.password)
-        logging.info("original: " + query_result.password + " test: " + test_hashed_password)
-        return test_hashed_password == query_result.password
-
-    logging.info("User " + email + " does not exist")        
-    return False
-
 def load_schedule_data():
     file = open('schedules.json', 'rb')
     schedules = json.load(file)
     return schedules
 
+class RegisterHandler (webapp2.RequestHandler):
+    def post(self):
+        email = self.request.get('email')
+        password = self.request.get('password')
+        
+        if email[-17:] != "@eastsideprep.org":
+            self.response.write("Please sign up with your Eastside Prep email account.")             #TODO redirect user to custom error page
+            logging.error(email[-17:])
+            return
+        
+        if not self.check_signed_up(email):
+            self.response.write("This email has already been registered!")            #TODO redirect user to 'email has already been registered' page
+            return
+        
+        self.response.write("Success! Check your email to complete registration.")   #TODO redirect user to custom success page
+        hashed = bcrypt.hashpw(password, bcrypt.gensalt(1))  
+        user_obj = User(email = email, password = hashed, verified = False)
+        user_obj.join_date = datetime.datetime.now()
+        db.put(user_obj)
+        row_id = str(user_obj.key().id())
+        logging.info("row id = " + row_id)
+        self.send_confirmation_email(email, row_id)
+        
+    def check_signed_up(self, email):           #Returns false if there is already a registered user signed up, returns true if there is not
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
+        for query_result in user_obj_query:
+            return False
+        return True
+    
+    def send_confirmation_email(self, email, row_id):       #TODO customize message to include the user's name
+        message = mail.EmailMessage()
+        message.sender = "The EPSchedule Team"
+        message.to = email
+        message.subject = "Sign up for EPSchedule"
+        message.body = self.get_confirmation_link(row_id)
+        logging.info("Sending " + email + " a link to " + message.body)
+        message.send()
+        
+    def get_confirmation_link(self, row_id):
+        encoded_row_id = binascii.hexlify(aes.encryptData(CRYPTO_KEY, row_id))
+        url = "epscheduleapp.appspot.com/confirm/" + encoded_row_id
+        return url
+    
+    def get(self):
+        #      TODO redirect user to main schedule page if they have a auth cookie
+        #template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(days)}
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('signup.html')
+        self.response.write(template.render(template_values))
+
+class ConfirmHandler(webapp2.RequestHandler):
+    def get(self, encoded_row_id):
+        logging.info("Trying to confirm!")
+        row_id = aes.decryptData(CRYPTO_KEY, binascii.unhexlify(encoded_row_id))
+        logging.info(row_id)
+        user_obj_query = User.get_by_id(int(row_id)) #FIX Instead of email, use row id
+        if not user_obj_query.verified:
+            user_obj_query.verified = True
+            user_obj_query.put()
+            self.redirect("/")
+            return
+            #TODO redirect user to main page
+        else: 
+            self.response.write("This account has already been confirmed!")
+            #TODO redirect user to schedule page
+            return
+        self.response.write("Something went wrong! There is no object with row_id " + row_id + " in the database")
+        
 class LoginHandler (webapp2.RequestHandler):
     def post(self):
         email = self.request.get('email')
         password = self.request.get('password')
-        if not check_password(email, password):
+        password_valid = self.check_password(email, password)
+        if password_valid == 1:
+            self.response.write("You need to confirm your account")
+        elif password_valid == 2:
             self.response.write("Your username or password is incorrect")
         else:
             id = convert_email_to_id(email)
@@ -83,7 +146,20 @@ class LoginHandler (webapp2.RequestHandler):
                 self.redirect("/")
             else:
                 self.response.write("Something went wrong! " + email + " is in the password database, but it is not in schedules.json. Please contact the administrators.")
-
+    
+    def check_password(self, email, password):  #Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
+        logging.info("Checking passwords")
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
+        for query_result in user_obj_query:
+            test_hashed_password = bcrypt.hashpw(password, query_result.password)
+            logging.info("original: " + query_result.password + " test: " + test_hashed_password)
+            password_match = test_hashed_password == query_result.password
+            if password_match:
+                if query_result.verified:
+                    return 0
+                return 1
+        return 2
+        
 class ClassHandler(webapp2.RequestHandler):
     def get_class_schedule(self, classname):
         schedules = load_schedule_data();
@@ -158,6 +234,8 @@ class MainHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/login', LoginHandler),
+    ('/register',RegisterHandler),
+    ('/confirm/(\w+)',ConfirmHandler),
     ('/class/(\w+)', ClassHandler)
 ], debug=True)
 
