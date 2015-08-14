@@ -92,7 +92,7 @@ class RegisterHandler (webapp2.RequestHandler):
     
     def send_confirmation_email(self, email, row_id):       #TODO customize message to include the user's name
         message = mail.EmailMessage()
-        message.sender = "The EPSchedule Team"
+        message.sender = "The EPSchedule Team <gavin.uberti@gmail.com>"   #TODO make sender fooy@epscheduleapp.appspot.com
         message.to = email
         message.subject = "Sign up for EPSchedule"
         message.body = self.get_confirmation_link(row_id)
@@ -100,8 +100,9 @@ class RegisterHandler (webapp2.RequestHandler):
         message.send()
         
     def get_confirmation_link(self, row_id):
-        encoded_row_id = binascii.hexlify(aes.encryptData(CRYPTO_KEY, row_id))
-        url = "epscheduleapp.appspot.com/confirm/" + encoded_row_id
+        encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
+        encoded_row_id = binascii.hexlify(encrypted_row_id)
+        url = "http://epscheduleapp.appspot.com/confirm/" + encoded_row_id
         return url
     
     def get(self):
