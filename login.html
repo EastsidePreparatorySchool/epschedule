@@ -4,7 +4,10 @@
   <meta name="viewport"
         content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
-  <link rel="import" href="bower_components/font-roboto/roboto.html">
+  <xlink rel="import" href="bower_components/font-roboto/roboto.html">
+  <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+  <link rel="import"
+    href="bower_components/polymer/polymer.html">
   <link rel="import"
     href="bower_components/paper-shadow/paper-shadow.html">
   <link rel="import"
@@ -13,28 +16,60 @@
     href="bower_components/paper-button/paper-button.html">
   <style>
     body {
-      font-family: "Roboto", 'Helvetica Neue, Helvetica, Arial', sans-serif;
-      background: #025992;
+      font-family: 'Roboto', sans-serif;
+      background: #0d47a1;
       padding: 20px;
+      text-align: center;
+    }
+    .card {
+      background: white;
+      max-width: 360px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 2px;
+    }
+    .copy {
+    }
+    paper-button {
+      margin: 12px auto;
+      width: 360px;
+      color: white;
+      background: #2196f3;
+    }
+    .register {
+      font-size: 14;
+    }
+    .reglink {
+      text-decoration: none;
     }
   </style>
 </head>
-<body background=>
-  <form id="loginForm" action="login" method="post">
-	<paper-shadow class="card" z="2" style="background: white; max-width: 480px; margin: 20px auto; border 20px">
-	<img src="http://upload.wikimedia.org/wikipedia/commons/c/cb/EPS10FB.jpg"></img>
+<body>
+	<paper-shadow class="card" z="2">
+	<div class="image-container">
+    <img src="http://upload.wikimedia.org/wikipedia/commons/c/cb/EPS10FB.jpg"></img>
+  </div>
 	<h1>EPSchedule</h1>
-	<p>The easiest way to keep track of your classes and classmates.</p>
-
-      <paper-input-decorator label="Email address">
-          <input type="text" id="email" is="core-input" name="email"/>
+	<p class="copy">The easiest way to keep track of your classes and classmates.</p>
+    <form id="loginForm" action="login" method="post">
+      <paper-input-decorator label="Email address (@eastsideprep.org)">
+        <input type="text" id="email" is="core-input" name="email"/>
       </paper-input-decorator>
 
       <paper-input-decorator label="Password">
-          <input id="password" is="core-input" name="password" type="password"/>
+        <input id="password" is="core-input" name="password" type="password" onkeypress="checkSubmit(event)"/>
       </paper-input-decorator>
 
       <paper-button onclick="loginForm.submit()" type="submit" raised id="login" class="login">SIGN IN</paper-button>
+
+      <p class="register"><a class="reglink" href="register">Create account</a></p>
   </form>
+  <script>
+  function checkSubmit(e) {
+    if (e && e.keyCode === 13) {
+      loginForm.submit();
+     }
+  }
+  </script>
 </body>
 </html>
