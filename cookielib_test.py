@@ -41,8 +41,8 @@ def dump():
     for cookie in cookies:
         print cookie.name, cookie.value
 		
-def download_schedule(student_id, term):
-    url = 'https://four11.eastsideprep.org/registrar/pdf_schedules?color=1&student_id=' + str(student_id) + '&term_id=' + str(term) + '&year_id=15'
+def download_schedule(student_id, term, year):
+    url = 'https://four11.eastsideprep.org/registrar/pdf_schedules?color=1&student_id=' + str(student_id) + '&term_id=' + str(term) + '&year_id=' + str(year)
     filename = str(student_id) + '-' + str(term)
     try:
         download(url, filename)
@@ -51,14 +51,13 @@ def download_schedule(student_id, term):
 
 uri = 'https://four11.eastsideprep.org/auth/auth'
 if len(sys.argv) < 3:
-    print "Usage: cookielib_test.py <username> <password>"
+    print "Usage: cookielib_test.py <username> <password> <term (1-3)> <year (eg. 16)>"
     sys.exit()
 obj =  {'user[user_name]' : sys.argv[1], 'user[password]' : sys.argv[2]}
+term = sys.argv[3]
+year = sys.argv[4]
 res = post(uri, obj)
 dump()
 
-#('https://four11.eastsideprep.org/registrar/pdf_schedules?color=1&student_id=4093&term_id=3&year_id=15')
-for k in range(3300, 4300):
-    download_schedule(k, 3)
-#download_schedule(4093, 3)
-#download_schedule(4268, 3)
+for k in range(3300, 4600):
+    download_schedule(k, term, year)
