@@ -34,20 +34,16 @@
       margin-botton: 0px;
     }
     .copy {
-      margin: 10px;
       font-size: 16;
+    }
+    .link {
+      text-decoration: none;
     }
     paper-button {
       margin: 12px auto;
       width: 100%;
       color: white;
       background: #2196f3;
-    }
-    .register {
-      font-size: 16;
-    }
-    .reglink {
-      text-decoration: none;
     }
   </style>
 </head>
@@ -58,7 +54,7 @@
   </div>
 	<h1>EPSchedule</h1>
 	<p class="copy">The easiest way to keep track of your classes and classmates.</p>
-    <form id="loginForm" action="login" method="post">
+    <form id="form" action="login" method="post">
       <paper-input-decorator label="Email address (@eastsideprep.org)">
         <input type="text" id="email" is="core-input" name="email"/>
       </paper-input-decorator>
@@ -67,14 +63,25 @@
         <input id="password" is="core-input" name="password" type="password" onkeypress="checkSubmit(event)"/>
       </paper-input-decorator>
 
-      <paper-button onclick="loginForm.submit()" type="submit" raised id="login" class="login">SIGN IN</paper-button>
+      <paper-button onclick="form.submit()" type="submit" raised id="submit">SIGN IN</paper-button>
 
-      <p class="register"><a class="reglink" href="register">Create account</a></p>
+      <p class="copy"><a href="#action" id="toggle" class="link" onclick="toggleMode()">Create account</a></p>
   </form>
   <script>
+  var modes = [
+    { action: "login", button: "SIGN IN", link: "Create account" },
+    { action: "register", button: "CREATE ACCOUNT", link: "Sign in" },
+  ];
+  var currMode = 0;
+  function toggleMode() {
+    currMode = (currMode + 1) % 2;
+    form.action = modes[currMode].action;
+    submit.innerText = modes[currMode].button;
+    toggle.innerText = modes[currMode].link;
+  }
   function checkSubmit(e) {
     if (e && e.keyCode === 13) {
-      loginForm.submit();
+      form.submit();
      }
   }
   </script>
