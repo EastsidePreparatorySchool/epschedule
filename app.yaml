@@ -13,12 +13,15 @@ handlers:
   static_files: item.html
   upload: item\.html
 
+- url: /images
+  static_dir: images
+
 - url: /bower_components
   static_dir: bower_components
-  
+
 - url: /96x96_photos
   static_dir: 96x96_photos
-  
+
 - url: /misc_photos
   static_dir: misc_photos
 

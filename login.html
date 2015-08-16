@@ -2,12 +2,14 @@
 <head>
   <title>Sign in to EPSchedule</title>
   <meta name="viewport"
-        content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+        content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
   <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
   <xlink rel="import" href="bower_components/font-roboto/roboto.html">
   <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
   <link rel="import"
     href="bower_components/polymer/polymer.html">
+  <link rel="import"
+    href="bower_components/core-style/core-style.html">
   <link rel="import"
     href="bower_components/paper-shadow/paper-shadow.html">
   <link rel="import"
@@ -28,16 +30,21 @@
       padding: 20px;
       border-radius: 2px;
     }
+    .image-container {
+      margin-botton: 0px;
+    }
     .copy {
+      margin: 10px;
+      font-size: 16;
     }
     paper-button {
       margin: 12px auto;
-      width: 360px;
+      width: 100%;
       color: white;
       background: #2196f3;
     }
     .register {
-      font-size: 14;
+      font-size: 16;
     }
     .reglink {
       text-decoration: none;
@@ -47,7 +54,7 @@
 <body>
 	<paper-shadow class="card" z="2">
 	<div class="image-container">
-    <img src="http://upload.wikimedia.org/wikipedia/commons/c/cb/EPS10FB.jpg"></img>
+    <img src="images/epslogo.jpg"></img>
   </div>
 	<h1>EPSchedule</h1>
 	<p class="copy">The easiest way to keep track of your classes and classmates.</p>
