@@ -1,5 +1,4 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
-<link rel="import" href="bower_components/core-icon-button/core-icon-button.html">
 
 <polymer-element name="post-card">
   <template>
@@ -12,7 +11,8 @@
       width: 100%;
       font-size: 1.2rem;
       font-weight: 300;
-      margin-bottom: 12px;
+      margin-bottom: 1px;
+      border-radius: 2px;
     }
     .card-header {
       margin-bottom: 1px;
@@ -49,5 +49,27 @@
   </template>
   <script>
   Polymer();
+  </script>
+</polymer-element>
+
+<polymer-element name="post-list" attributes="posts">
+  <template>
+    <style>
+    :host {
+      width: 100%;
+    }
+    </style>
+    <div layout vertical center>
+      <template repeat="{{post in posts}}">
+        <post-card>
+          <img src="{{post.avatar}}" width="48" height="48">
+          <h2>{{post.name}}</h2>
+          <p>{{post.startTime}} - {{post.endTime}} ({{post.infoString}})</p>
+        </post-card>
+      </template>
+    </div>
+  </template>
+  <script>
+  Polymer('post-list', {});
   </script>
 </polymer-element>

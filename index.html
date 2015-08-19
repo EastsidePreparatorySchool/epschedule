@@ -43,6 +43,7 @@
   var schedule = {{ schedule | safe }};
   var days = {{days | safe }};
   var globalDate = new Date();
+
   function dateBack() {
     if (globalDate.getDay() == 1) {
         globalDate.setDate(globalDate.getDate()-2);
@@ -58,12 +59,6 @@
     renderSchedule(globalDate, true);
   }
   function renderSchedule(dateObj, emptyDiv) {
-    var div = document.getElementById("container");
-    if (emptyDiv) {
-        div.innerHTML = "";
-    }
-
-    //appendPara(div, )); //Display date
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
         case 0: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
         case 6:
@@ -84,11 +79,13 @@
             break;
     }
 
+    // TODO: replace this gross HTML munging with data binding
     var dateText = (day + ', ' + (dateObj.getMonth() + 1) + "/" + dateObj.getDate());
     var daySpan = document.getElementById("day");
     daySpan.removeChild(daySpan.firstChild);
     daySpan.appendChild(document.createTextNode(dateText));
 
+    todaySchedule = [];
     for (var exception = 0; exception < days[1].length; exception++) { //Handles exceptions, also handles special weekend schedules
         if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
             day = days[1][exception]["schedule"];
@@ -108,10 +105,11 @@
                 for (var k = 0; k < schedule["classes"].length; k++) {
                     if (schedule["classes"][k]["period"] == days[0][day]["MS"][currentSlot]["period"]) {
                         var scheduleObj = { name: schedule["classes"][k]["name"],
-                        teacher: schedule["classes"][k]["teacher"],
-                        room: schedule["classes"][k]["room"],
-                        period: days[0][day]["MS"][currentSlot]["period"],
-                        time: "will be determined later" };
+                            teacher: schedule["classes"][k]["teacher"],
+                            room: schedule["classes"][k]["room"],
+                            period: days[0][day]["MS"][currentSlot]["period"],
+                            time: "will be determined later"
+                        };
                     }
                 }
                 break;
@@ -131,73 +129,28 @@
                 var scheduleObj = { name: "Clubs", teacher: "N/A", room: "Varies", period: 13, time: "will be determined later" };
                 break;
         }
+        if (scheduleObj.teacher != "N/A") {
+          scheduleObj.avatar = "/96x96_photos/" + scheduleObj.teacher.toLowerCase() + ".jpg";
+          scheduleObj.infoString = scheduleObj.teacher + ', ' + scheduleObj.room;
+        } else {
+          scheduleObj.avatar = "/misc_photos/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
+          scheduleObj.infoString = scheduleObj.room;
+        }
+
         try {
-            scheduleObj["time"] = days[0][day]["MS"][currentSlot]["time"];
-            appendParaLink(div, scheduleObj);
+            var times = days[0][day]["MS"][currentSlot]["time"].split('-');
+            scheduleObj.startTime = times[0].trim();
+            scheduleObj.endTime = times[1].trim();
+            todaySchedule.push(scheduleObj);
         } catch (error) {
         }
+        document.querySelector('post-list').posts = todaySchedule;
     }
 
   }
   window.onload = function() {
-    //var div = document.getElementById("schedule");
     var date = new Date();
     renderSchedule(date, false);
-  }
-  function appendLink(url, text) {
-    var anchor = document.createElement("a");
-    anchor.href = url;
-    var node = document.createTextNode(text);
-    anchor.appendChild(node);
-    return anchor
-  }
-  function appendParaLink(div, obj) {
-    /*var para = document.createElement("p"); //Creates the para
-    para.appendChild(appendLink(("/class/" + cleanString(obj["name"])), obj["name"]));
-    para.appendChild(document.createTextNode(" - "));
-    para.appendChild(appendLink(("/teacher/" + obj["teacher"]), obj["teacher"]));
-    para.appendChild(document.createTextNode(" - "));
-    para.appendChild(appendLink(("/room/" + obj["room"]), obj["room"]));
-    para.appendChild(document.createTextNode(" - "));
-    para.appendChild(appendLink(("/period/" + obj["period"]), obj["time"]));
-    div.appendChild(para); //Adds the para to the div*/
-    var x = document.createElement("post-card");
-    var img = document.createElement("img");
-    img.src = "";
-    if (obj.teacher != "N/A") {
-        img.src = "/96x96_photos/" + obj.teacher.toLowerCase() + ".jpg";
-    } else {
-
-        img.src = "/misc_photos/" + obj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
-        console.log(img.src);
-    }
-    var timeText = obj.time;
-    var parensText = ' (';
-    if (obj.teacher != "N/A") {
-      parensText += obj.teacher + ', ';
-    }
-    parensText += obj.room + ')';
-    var p = document.createElement("p");
-    var b = document.createElement("b");
-    b.appendChild(document.createTextNode(timeText));
-    p.appendChild(b);
-    p.appendChild(document.createTextNode(parensText));
-    //var a = document.createElement("a");
-    //a.href = "/class/" + cleanString(obj["name"]);
-    var h2 = document.createElement("h2");
-    h2.appendChild(document.createTextNode(obj["name"]));
-    //h2.appendChild(a);
-    x.appendChild(img);
-    x.appendChild(p);
-    x.appendChild(h2);
-    div.appendChild(x);
-  }
-
-  function appendPara(div, text) {
-    var para = document.createElement("p");
-    var node = document.createTextNode(text);
-    para.appendChild(node);
-    div.appendChild(para);
   }
 
   function cleanString(text) {
@@ -294,6 +247,7 @@
       <span><paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button></span>
     </core-toolbar>
     <div id="container" class="container" layout vertical center>
+      <post-list show="all"></post-list>
     </div>
   </core-header-panel>
 </body>
