@@ -1,5 +1,6 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
-<link rel="import" href="bower_components/core-icon-button/core-icon-button.html">
+<link rel="import"
+    href="bower_components/paper-shadow/paper-shadow.html">
 
 <polymer-element name="post-card">
   <template>
@@ -8,11 +9,11 @@
       display: block;
       position: relative;
       background-color: white;
-      padding: 10px;
       width: 100%;
       font-size: 1.2rem;
       font-weight: 300;
-      margin-bottom: 12px;
+      margin-bottom: 1px;
+      border-radius: 2px;
     }
     .card-header {
       margin-bottom: 1px;
@@ -27,7 +28,7 @@
     .card-header ::content img {
       width: 48px;
       border-radius: 50%;
-      margin: 10px;
+      margin: 16px;
       #background: #9e9e9e url() center center no-repeat;
     }
     polyfill-next-selector { content: '.card-header p'; }
@@ -49,5 +50,29 @@
   </template>
   <script>
   Polymer();
+  </script>
+</polymer-element>
+
+<polymer-element name="post-list" attributes="posts">
+  <template>
+    <style>
+    :host {
+      width: 100%;
+    }
+    </style>
+    <paper-shadow class="card" z="2">
+    <div layout vertical center>
+      <template repeat="{{post in posts}}">
+        <post-card>
+          <img src="{{post.avatar}}" width="48" height="48">
+          <h2>{{post.name}}</h2>
+          <p>{{post.startTime}} - {{post.endTime}} ({{post.infoString}})</p>
+        </post-card>
+      </template>
+    </div>
+    </paper-shadow>
+  </template>
+  <script>
+  Polymer('post-list', {});
   </script>
 </polymer-element>

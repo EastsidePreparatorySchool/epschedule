@@ -2,12 +2,14 @@
 <head>
   <title>Sign in to EPSchedule</title>
   <meta name="viewport"
-        content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+        content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
   <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
   <xlink rel="import" href="bower_components/font-roboto/roboto.html">
   <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
   <link rel="import"
     href="bower_components/polymer/polymer.html">
+  <link rel="import"
+    href="bower_components/core-style/core-style.html">
   <link rel="import"
     href="bower_components/paper-shadow/paper-shadow.html">
   <link rel="import"
@@ -28,30 +30,31 @@
       padding: 20px;
       border-radius: 2px;
     }
+    .image-container {
+      margin-botton: 0px;
+    }
     .copy {
+      font-size: 16;
+    }
+    .link {
+      text-decoration: none;
     }
     paper-button {
       margin: 12px auto;
-      width: 360px;
+      width: 100%;
       color: white;
       background: #2196f3;
-    }
-    .register {
-      font-size: 14;
-    }
-    .reglink {
-      text-decoration: none;
     }
   </style>
 </head>
 <body>
 	<paper-shadow class="card" z="2">
 	<div class="image-container">
-    <img src="http://upload.wikimedia.org/wikipedia/commons/c/cb/EPS10FB.jpg"></img>
+    <img src="images/epslogo.jpg"></img>
   </div>
 	<h1>EPSchedule</h1>
 	<p class="copy">The easiest way to keep track of your classes and classmates.</p>
-    <form id="loginForm" action="login" method="post">
+    <form id="form" action="login" method="post">
       <paper-input-decorator label="Email address (@eastsideprep.org)">
         <input type="text" id="email" is="core-input" name="email"/>
       </paper-input-decorator>
@@ -60,14 +63,25 @@
         <input id="password" is="core-input" name="password" type="password" onkeypress="checkSubmit(event)"/>
       </paper-input-decorator>
 
-      <paper-button onclick="loginForm.submit()" type="submit" raised id="login" class="login">SIGN IN</paper-button>
+      <paper-button onclick="form.submit()" type="submit" raised id="submit">SIGN IN</paper-button>
 
-      <p class="register"><a class="reglink" href="register">Create account</a></p>
+      <p class="copy"><a href="#action" id="toggle" class="link" onclick="toggleMode()">Create account</a></p>
   </form>
   <script>
+  var modes = [
+    { action: "login", button: "SIGN IN", link: "Create account" },
+    { action: "register", button: "CREATE ACCOUNT", link: "Sign in" },
+  ];
+  var currMode = 0;
+  function toggleMode() {
+    currMode = (currMode + 1) % 2;
+    form.action = modes[currMode].action;
+    submit.innerText = modes[currMode].button;
+    toggle.innerText = modes[currMode].link;
+  }
   function checkSubmit(e) {
     if (e && e.keyCode === 13) {
-      loginForm.submit();
+      form.submit();
      }
   }
   </script>

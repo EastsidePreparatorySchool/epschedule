@@ -292,19 +292,29 @@ class RoomHandler(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('login.html')
         self.response.write(template.render(template_values))
 
-"""class TeacherHandler(webapp2.RequestHandler):
+class TeacherHandler(webapp2.RequestHandler):
     def get(self, teacher):
+        logging.info("BOy, I don't have to restart!")
         encoded_id = self.request.cookies.get("SID")
         if encoded_id is None:
             self.send_login_response()
             return
+        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         schedule_data = load_schedule_data()
+        teachernames =  string.split(teachernames, "-")
+        dataobj = {}
+        
         for schedule in schedule_data:
-            if 
+            if schedule['firstname'] == teachernames[0] and schedule['lastname'] == teachernames[1]:
+                logging.info("Found teacher " + teacher)
+                dataobj['teacherschedule'] = schedule
+            elif schedule['id'] == id:
+                dataobj['studentschedule'] = schedule
+        return dataobj
     def send_login_response(self):
         template_values = {}
         template = JINJA_ENVIRONMENT.get_template('login.html')
-        self.response.write(template.render(template_values))"""
+        self.response.write(template.render(template_values))
 
 class MainHandler(webapp2.RequestHandler):
     #def __init__(self):
@@ -352,6 +362,5 @@ app = webapp2.WSGIApplication([
     ('/class/(\w+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
     ('/room/(\w+)', RoomHandler),
-    #('/teacher/(\w+)', TeacherHandler)
+    ('/teacher/(\w+)', TeacherHandler)
 ], debug=True)
-
