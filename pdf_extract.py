@@ -106,7 +106,7 @@ def explode_pdf(path):
                 grade = graduating_year_to_grade(graduating_year)
                 advisor = info[2][9:-1]
                 advisor_names = string.split(advisor, ", ")
-                advisor_first = advisor_names[1]
+                advisor_first = advisor_names[1][1:]
                 advisor_last = advisor_names[0]
     device.close()
     
@@ -135,6 +135,16 @@ for f in files:    #For each file in the directory
         else:
             print "Schedule is empty!"
 
+print "Entering full names!"
+for person_num in range (0, len(students)):
+    if students[person_num]['grade'] is not None: #If the person is a students
+        for class_num in range (0, len(students[person_num]['classes'])): #For each class
+            for teacher in students:
+                if teacher['grade'] is None: #If the person is a teacher
+                    for taught_class in teacher['classes']:
+                        if students[person_num]['classes'][class_num]['period'] == taught_class['period'] and students[person_num]['classes'][class_num]['room'] == taught_class['room'] and students[person_num]['classes'][class_num]['name'] == taught_class['name']:
+                            students[person_num]['classes'][class_num]['teacher'] = teacher['firstname'] + " " + teacher['lastname']
+                            
 file = open('schedules.json', 'wb')
 file.write(json.dumps(students))
 #print students  #Print the list of schedules

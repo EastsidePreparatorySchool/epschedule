@@ -165,7 +165,10 @@
     var img = document.createElement("img");
     img.src = "";
     if (obj.teacher != "N/A") {
-        img.src = "/96x96_photos/" + obj.teacher.toLowerCase() + ".jpg";
+        teachername = obj.teacher.toLowerCase();
+        teachername = teachername.replace(" ", "_");
+        
+        img.src = "/96x96_photos/" + teachername + ".jpg";
     } else {
 
         img.src = "/misc_photos/" + obj.name.toLowerCase().replace(/\s/g, '') + ".jpg";

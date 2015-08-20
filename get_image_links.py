@@ -40,7 +40,7 @@ for mainchar in range (0, len(mainhtml)):
                 #print "Is " + exception[0] + " the same as " + urlname
                 if exception[0] == urlname:
                     urlname = exception[1]
-                
+            
             response = urllib2.urlopen('http://www.eastsideprep.org/team/' + urlname + '/')
             html = response.read()
             imageurl = "";
@@ -56,8 +56,8 @@ for mainchar in range (0, len(mainhtml)):
             print imageurl
             print name
             
-            name = name.split()
-            name = name[1]
+            name = name.replace(" ", "_")
+            name = name.replace("-", "_")
             name = name.lower()
             name += imageurl[len(imageurl) - 4:len(imageurl)] #Add on the extension
             while (True):

@@ -194,6 +194,118 @@ class ClassHandler(webapp2.RequestHandler):
         #schedule = self.get_schedule(self.request.get('id'))
         self.response.write(self.get_class_schedule(class_id))
 
+    def send_login_response(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('login.html')
+        self.response.write(template.render(template_values))
+
+class PeriodHandler(webapp2.RequestHandler):
+    def get(self, period):
+        #Should return back which of your teachers are free, which rooms are free, what class you currently have then, and what classes you could take then
+        dataobj = {'freeteachers':[], 'freerooms':[], 'currentclass':{}, 'potentialclassschedules':[]}
+        encoded_id = self.request.cookies.get("SID")
+        if encoded_id is None:
+            self.send_login_response()
+            return
+        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
+        
+        schedule_data = load_schedule_data()
+        user_schedule = None
+        
+        period = period.upper()
+        for schedule in schedule_data:
+            if schedule['id'] == id:
+                user_schedule = schedule
+                break
+        logging.info("Getting here!")
+        for class_obj in user_schedule['classes']: #Find out which class the user has then
+            logging.info("Is " + class_obj['period'] + " equal to " + period + "? I guess not!")
+            if class_obj['period'] == period:
+                dataobj['currentclass'] = class_obj
+                logging.info("Writing to currentclass")
+                break
+        
+        for schedule in schedule_data:
+            if schedule['grade'] is None: #If the schedule is a teacher's schedule
+                for class_obj in user_schedule['classes']: #For each of your classes
+                    if class_obj['teacher'] == (schedule['firstname'] + " " + schedule['lastname']): #If the teacher is one of your teachers
+                        is_free = True
+                        for taught_class in schedule['classes']:
+                            if taught_class['period'] == period:
+                                is_free = False
+                                break
+                        if is_free:
+                            dataobj['freeteachers'].append(class_obj['teacher'])
+        
+            if schedule['grade'] == user_schedule['grade']: #Get all classes the user could be taking at that point in time
+                for class_obj in schedule['classes']:
+                    unique = True #Whether the current class is also had by the user
+                    for user_class_obj in user_schedule['classes']:
+                        if (class_obj == user_class_obj):
+                            unique = False
+                            break
+                    if unique:
+                        dataobj['potentialclassschedules'].append(class_obj)
+        
+            for class_obj in schedule['classes']: #Get list of periods
+                if dataobj['freerooms'].count(class_obj['room']) == 0:
+                    dataobj['freerooms'].append(class_obj['room'])
+    
+        for schedule in schedule_data: #Find out which periods are free
+            for class_obj in schedule['classes']:
+                if class_obj['period'] == period:
+                    if (dataobj['freerooms'].count(class_obj['room']) > 0):
+                        dataobj['freerooms'].remove(class_obj['room'])
+        
+        self.response.write(dataobj)
+    
+    def send_login_response(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('login.html')
+        self.response.write(template.render(template_values))        
+
+class RoomHandler(webapp2.RequestHandler):
+    def get(self, room):
+        logging.info("Room request!")
+        encoded_id = self.request.cookies.get("SID")
+        if encoded_id is None:
+            self.send_login_response()
+            return
+        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
+        schedules = load_schedule_data()
+        room = room.lower()
+        room_schedule = {'name':room, 'classes':[]}
+        for schedule in schedules:
+            for class_obj in schedules['classes']:
+                if room == class_obj['room'].lower(): #If the class is in the room
+                    already_there = False
+                    for room_class_obj in room_schedule['classes']:
+                        if class_obj == room_class_obj:
+                            already_there = True
+                    if not already_there:
+                        room_schedule['classes'].append(class_obj)
+        self.response.write(room_schedule)
+                    
+        
+    def send_login_response(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('login.html')
+        self.response.write(template.render(template_values))
+
+"""class TeacherHandler(webapp2.RequestHandler):
+    def get(self, teacher):
+        encoded_id = self.request.cookies.get("SID")
+        if encoded_id is None:
+            self.send_login_response()
+            return
+        schedule_data = load_schedule_data()
+        for schedule in schedule_data:
+            if 
+    def send_login_response(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('login.html')
+        self.response.write(template.render(template_values))"""
+
 class MainHandler(webapp2.RequestHandler):
     #def __init__(self):
     def get_schedule(self, id):
@@ -237,6 +349,9 @@ app = webapp2.WSGIApplication([
     ('/login', LoginHandler),
     ('/register',RegisterHandler),
     ('/confirm/(\w+)',ConfirmHandler),
-    ('/class/(\w+)', ClassHandler)
+    ('/class/(\w+)', ClassHandler),
+    ('/period/(\w+)', PeriodHandler),
+    ('/room/(\w+)', RoomHandler),
+    #('/teacher/(\w+)', TeacherHandler)
 ], debug=True)
 

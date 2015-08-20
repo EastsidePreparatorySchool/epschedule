@@ -59,5 +59,5 @@ year = sys.argv[4]
 res = post(uri, obj)
 dump()
 
-for k in range(3300, 4600):
+for k in range(2600, 4600):
     download_schedule(k, term, year)
