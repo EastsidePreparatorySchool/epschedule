@@ -114,28 +114,30 @@
                 }
                 break;
             case "Lunch":
-                var scheduleObj = { name: "Lunch", teacher: "N/A", room: "LPC Commons", period: 9, time: "will be determined later" };
+                var scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: 9, time: "will be determined later" };
                 break;
             case "Assembly":
-                var scheduleObj = { name: "Assembly", teacher: "N/A", room: "LPC Commons", period: 10, time: "will be determined later" };
+                var scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: 10, time: "will be determined later" };
                 break;
             case "Advisory":
-                var scheduleObj = { name: "Advisory", teacher: "N/A", room: "Varies", period: 11, time: "will be determined later" }; //TODO - Make this box display the user's advisor and advisory location
+                var scheduleObj = { name: "Advisory", teacher: "", room: "Varies", period: 11, time: "will be determined later" }; //TODO - Make this box display the user's advisor and advisory location
                 break;
             case "Class Meeting":
-                var scheduleObj = { name: "Class Meeting", teacher: "N/A", room: "Varies", period: 12, time: "will be determined later" };
+                var scheduleObj = { name: "Class Meeting", teacher: "", room: "Varies", period: 12, time: "will be determined later" };
                 break;
             case "Clubs":
-                var scheduleObj = { name: "Clubs", teacher: "N/A", room: "Varies", period: 13, time: "will be determined later" };
+                var scheduleObj = { name: "Clubs", teacher: "", room: "Varies", period: 13, time: "will be determined later" };
                 break;
         }
         if (scheduleObj.teacher != "N/A") {
           scheduleObj.avatar = "/96x96_photos/" + scheduleObj.teacher.toLowerCase() + ".jpg";
-          scheduleObj.infoString = scheduleObj.teacher + ', ' + scheduleObj.room;
+          scheduleObj.teacherLink = "/teacher/" + scheduleObj.teacher.toLowerCase();
         } else {
+          scheduleObj.teacher = scheduleObj.teacherLink = ""
           scheduleObj.avatar = "/misc_photos/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
           scheduleObj.infoString = scheduleObj.room;
         }
+        scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase();
 
         try {
             var times = days[0][day]["MS"][currentSlot]["time"].split('-');
@@ -146,11 +148,6 @@
         }
         document.querySelector('post-list').posts = todaySchedule;
     }
-
-  }
-  window.onload = function() {
-    var date = new Date();
-    renderSchedule(date, false);
   }
 
   function cleanString(text) {
@@ -161,25 +158,16 @@
     return text;
   }
 
-  /*function convertNumToChar(number) {
-    switch(number){
-        case 1:
-            return "A";
-        case 2:
-            return "B";
-        case 3:
-            return "C";
-        case 4:
-            return "D";
-        case 5:
-            return "E";
-        case 6:
-            return "F";
-        case 7:
-            return "G";
-        case 8:
-            return "H";
-  }*/
+  document.addEventListener('polymer-ready', function() {
+    var navicon = document.getElementById('navicon');
+    var drawerPanel = document.getElementById('drawerPanel');
+    navicon.addEventListener('click', function() {
+      drawerPanel.togglePanel();
+    });
+    var date = new Date();
+    renderSchedule(date, false);
+  });
+
   </script>
 
   <link rel="import" href="bower_components/polymer/polymer.html">
@@ -189,7 +177,13 @@
   <link rel="import"
     href="bower_components/core-toolbar/core-toolbar.html">
   <link rel="import"
+    href="bower_components/core-drawer-panel/core-drawer-panel.html">
+  <link rel="import"
     href="bower_components/core-header-panel/core-header-panel.html">
+  <link rel="import"
+    href="../../components/core-menu/core-menu.html">
+  <link rel="import"
+    href="../../components/core-item/core-item.html">
   <link rel="import"
     href="bower_components/core-icons/core-icons.html">
   <link rel="import"
@@ -213,15 +207,6 @@
     background: #0d47a1;
     color: white;
   }
-  #tabs {
-    width: 100%;
-    margin: 0;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  text-transform: uppercase;
-  }
   .container {
     width: 80%;
     margin: 24px auto;
@@ -237,19 +222,29 @@
 </head>
 
 <body unresolved>
-  <core-header-panel>
-
-    <core-toolbar>
-      <paper-icon-button id="navicon"
-        icon="menu"></paper-icon-button>
-      <span flex id="day">Today</span>
-      <span><paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button></span>
-      <span><paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button></span>
-    </core-toolbar>
-    <div id="container" class="container" layout vertical center>
-      <post-list show="all"></post-list>
-    </div>
-  </core-header-panel>
+  <core-drawer-panel id="drawerPanel">
+    <core-header-panel drawer hidden>
+      <core-toolbar id="navheader">
+        <span>EPSchedule</span>
+      </core-toolbar>
+      <core-menu>
+        <core-item label="One"></core-item>
+        <core-item label="Two"></core-item>
+      </core-menu>
+    </core-header-panel>
+    <core-header-panel main>
+      <core-toolbar id="mainheader">
+        <paper-icon-button id="navicon"
+          icon="menu"></paper-icon-button>
+        <span flex id="day">Today</span>
+        <span><paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button></span>
+        <span><paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button></span>
+      </core-toolbar>
+      <div id="container" class="container" layout vertical center>
+        <post-list show="all"></post-list>
+      </div>
+    </core-header-panel>
+  </core-drawer-panel>
 </body>
 
 </html>
