@@ -120,7 +120,17 @@ def explode_pdf(path):
     schedule_properties[3] = schedule_properties[3][:-4] #Remove the .pdf extention
     schedule_obj = {'firstname':schedule_properties[3], 'lastname':schedule_properties[2], 'term':schedule_properties[1], 'id':schedule_properties[0], 'grade':grade, 'advisorfirstname':advisor_first, 'advisorlastname':advisor_last, 'classes':cleaned_classes}
     return schedule_obj    #Return object created in the previous line
+
+def add_free_periods(schedule_obj):
+    periods = ["A", "B", "C", "D", "E", "F", "G", "H"]
+    for class_obj in schedule_obj['classes']:
+        if periods.count(class_obj['period']):
+            periods.remove(class_obj['period'])
+            
+    for period in periods:
+        schedule_obj['classes'].append({'period':period, 'teacher':"None", 'room':"None", 'name':"Free Period"})
     
+    return schedule_obj
 #print convert_pdf_to_txt("c:\\users\\guberti\\Documents\\My Projects\\Python\\Schedule Downloader\\4093-3-Uberti-Gavin.pdf")
 students = []
 files = [f for f in os.listdir('.' + os.sep + 'schedules')]#Create a list of all files in the directory
@@ -131,6 +141,7 @@ for f in files:    #For each file in the directory
         print f
         exploded_schedule = explode_pdf(filepath)
         if exploded_schedule is not None: #If exploded_schedule is not none
+            exploded_schedule = add_free_periods(exploded_schedule)
             students.append(exploded_schedule)  #Add to the list of schedules the object returned by explode_pdf()
         else:
             print "Schedule is empty!"

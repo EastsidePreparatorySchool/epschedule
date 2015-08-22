@@ -61,6 +61,9 @@ def load_schedule_data():
     schedules = json.load(file)
     return schedules
 
+def create_error_obj(error_message}):
+    return {'error':error_message}
+
 class RegisterHandler (webapp2.RequestHandler):
     def post(self):
         email = self.request.get('email')
@@ -136,17 +139,17 @@ class LoginHandler (webapp2.RequestHandler):
         password = self.request.get('password')
         password_valid = self.check_password(email, password)
         if password_valid == 1:
-            self.response.write("You need to confirm your account")
+            self.response.write(create_error_obj("You need to confirm your account"))
         elif password_valid == 2:
-            self.response.write("Your username or password is incorrect")
+            self.response.write(create_error_obj("Your username or password is incorrect"))
         else:
             id = convert_email_to_id(email)
             if id is not None:
                 encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
                 self.response.set_cookie('SID', encoded_id)
-                self.redirect("/")
+                self.response.write({})
             else:
-                self.response.write("Something went wrong! " + email + " is in the password database, but it is not in schedules.json. Please contact the administrators.")
+                self.response.write(create_error_obj("Something went wrong! " + email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
     
     def check_password(self, email, password):  #Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
         logging.info("Checking passwords")
@@ -294,23 +297,25 @@ class RoomHandler(webapp2.RequestHandler):
 
 class TeacherHandler(webapp2.RequestHandler):
     def get(self, teacher):
-        logging.info("BOy, I don't have to restart!")
+        logging.info("Boy, I don't have to restart!")
         encoded_id = self.request.cookies.get("SID")
         if encoded_id is None:
             self.send_login_response()
             return
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         schedule_data = load_schedule_data()
-        teachernames =  string.split(teachernames, "-")
+        teachernames = string.split(teacher, "_")
         dataobj = {}
         
         for schedule in schedule_data:
-            if schedule['firstname'] == teachernames[0] and schedule['lastname'] == teachernames[1]:
+            if schedule['firstname'].lower() == teachernames[0] and schedule['lastname'].lower() == teachernames[1]:
                 logging.info("Found teacher " + teacher)
                 dataobj['teacherschedule'] = schedule
             elif schedule['id'] == id:
                 dataobj['studentschedule'] = schedule
-        return dataobj
+        
+        self.response.write(dataobj)
+    
     def send_login_response(self):
         template_values = {}
         template = JINJA_ENVIRONMENT.get_template('login.html')
