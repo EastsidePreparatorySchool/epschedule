@@ -68,32 +68,32 @@ class RegisterHandler (webapp2.RequestHandler):
     def post(self):
         email = self.request.get('email')
         password = self.request.get('password')
-        
+
         if email[-17:] != "@eastsideprep.org":
             logging.info(email)
             logging.info(email[-17:])
             self.response.write(create_error_obj("Please sign up with your Eastside Prep email account."))
             return
-        
+
         if not self.check_signed_up(email):
             self.response.write(create_error_obj("This email has already been registered!"))            #TODO redirect user to 'email has already been registered' page
             return
-        
+
         self.response.write("Success! Check your email to complete registration.")   #TODO redirect user to custom success page
-        hashed = bcrypt.hashpw(password, bcrypt.gensalt(1))  
+        hashed = bcrypt.hashpw(password, bcrypt.gensalt(1))
         user_obj = User(email = email, password = hashed, verified = False)
         user_obj.join_date = datetime.datetime.now()
         db.put(user_obj)
         row_id = str(user_obj.key().id())
         logging.info("row id = " + row_id)
         self.send_confirmation_email(email, row_id)
-        
+
     def check_signed_up(self, email):           #Returns false if there is already a registered user signed up, returns true if there is not
         user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
         for query_result in user_obj_query:
             return False
         return True
-    
+
     def send_confirmation_email(self, email, row_id):       #TODO customize message to include the user's name
         message = mail.EmailMessage()
         message.sender = "The EPSchedule Team <gavin.uberti@gmail.com>"   #TODO make sender fooy@epscheduleapp.appspot.com
@@ -102,13 +102,13 @@ class RegisterHandler (webapp2.RequestHandler):
         message.body = self.get_confirmation_link(row_id)
         logging.info("Sending " + email + " a link to " + message.body)
         message.send()
-        
+
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
         encoded_row_id = binascii.hexlify(encrypted_row_id)
         url = "http://epscheduleapp.appspot.com/confirm/" + encoded_row_id
         return url
-    
+
     def get(self):
         #      TODO redirect user to main schedule page if they have a auth cookie
         #template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(days)}
@@ -128,12 +128,12 @@ class ConfirmHandler(webapp2.RequestHandler):
             self.redirect("/")
             return
             #TODO redirect user to main page
-        else: 
+        else:
             self.response.write(create_error_obj("This account has already been confirmed!"))
             #TODO redirect user to schedule page
             return
         self.response.write(create_error_obj("Something went wrong! There is no object with row_id " + row_id + " in the database"))
-        
+
 class LoginHandler (webapp2.RequestHandler):
     def post(self):
         email = self.request.get('email')
@@ -151,7 +151,7 @@ class LoginHandler (webapp2.RequestHandler):
                 self.response.write(create_error_obj(""))
             else:
                 self.response.write(create_error_obj("Something went wrong! " + email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
-    
+
     def check_password(self, email, password):  #Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
         logging.info("Checking passwords")
         if email[-17:] != "@eastsideprep.org":
@@ -167,7 +167,7 @@ class LoginHandler (webapp2.RequestHandler):
                 return "You need to verify your account"
             return "Your username or password is incorrect"
         return "That email is not registered. Would you like to register?"
-        
+
 class ClassHandler(webapp2.RequestHandler):
     def get_class_schedule(self, classname):
         schedules = load_schedule_data();
@@ -215,10 +215,10 @@ class PeriodHandler(webapp2.RequestHandler):
             self.send_login_response()
             return
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
-        
+
         schedule_data = load_schedule_data()
         user_schedule = None
-        
+
         period = period.upper()
         for schedule in schedule_data:
             if schedule['id'] == id:
@@ -231,7 +231,7 @@ class PeriodHandler(webapp2.RequestHandler):
                 dataobj['currentclass'] = class_obj
                 logging.info("Writing to currentclass")
                 break
-        
+
         for schedule in schedule_data:
             if schedule['grade'] is None: #If the schedule is a teacher's schedule
                 for class_obj in user_schedule['classes']: #For each of your classes
@@ -243,7 +243,7 @@ class PeriodHandler(webapp2.RequestHandler):
                                 break
                         if is_free:
                             dataobj['freeteachers'].append(class_obj['teacher'])
-        
+
             if schedule['grade'] == user_schedule['grade']: #Get all classes the user could be taking at that point in time
                 for class_obj in schedule['classes']:
                     unique = True #Whether the current class is also had by the user
@@ -253,23 +253,23 @@ class PeriodHandler(webapp2.RequestHandler):
                             break
                     if unique:
                         dataobj['potentialclassschedules'].append(class_obj)
-        
+
             for class_obj in schedule['classes']: #Get list of periods
                 if dataobj['freerooms'].count(class_obj['room']) == 0:
                     dataobj['freerooms'].append(class_obj['room'])
-    
+
         for schedule in schedule_data: #Find out which periods are free
             for class_obj in schedule['classes']:
                 if class_obj['period'] == period:
                     if (dataobj['freerooms'].count(class_obj['room']) > 0):
                         dataobj['freerooms'].remove(class_obj['room'])
-        
+
         self.response.write(dataobj)
-    
+
     def send_login_response(self):
         template_values = {}
         template = JINJA_ENVIRONMENT.get_template('login.html')
-        self.response.write(template.render(template_values))        
+        self.response.write(template.render(template_values))
 
 class RoomHandler(webapp2.RequestHandler):
     def get(self, room):
@@ -292,8 +292,8 @@ class RoomHandler(webapp2.RequestHandler):
                     if not already_there:
                         room_schedule['classes'].append(class_obj)
         self.response.write(room_schedule)
-                    
-        
+
+
     def send_login_response(self):
         template_values = {}
         template = JINJA_ENVIRONMENT.get_template('login.html')
@@ -310,16 +310,16 @@ class TeacherHandler(webapp2.RequestHandler):
         schedule_data = load_schedule_data()
         teachernames = string.split(teacher, "_")
         dataobj = {}
-        
+
         for schedule in schedule_data:
             if schedule['firstname'].lower() == teachernames[0] and schedule['lastname'].lower() == teachernames[1]:
                 logging.info("Found teacher " + teacher)
                 dataobj['teacherschedule'] = schedule
             elif schedule['id'] == id:
                 dataobj['studentschedule'] = schedule
-        
+
         self.response.write(dataobj)
-    
+
     def send_login_response(self):
         template_values = {}
         template = JINJA_ENVIRONMENT.get_template('login.html')
