@@ -61,8 +61,8 @@ def load_schedule_data():
     schedules = json.load(file)
     return schedules
 
-def create_error_obj(error_message}):
-    return {'error':error_message}
+def create_error_obj(error_message):
+    return json.dumps({"error":error_message})
 
 class RegisterHandler (webapp2.RequestHandler):
     def post(self):
@@ -70,12 +70,13 @@ class RegisterHandler (webapp2.RequestHandler):
         password = self.request.get('password')
         
         if email[-17:] != "@eastsideprep.org":
-            self.response.write("Please sign up with your Eastside Prep email account.")             #TODO redirect user to custom error page
-            logging.error(email[-17:])
+            logging.info(email)
+            logging.info(email[-17:])
+            self.response.write(create_error_obj("Please sign up with your Eastside Prep email account."))
             return
         
         if not self.check_signed_up(email):
-            self.response.write("This email has already been registered!")            #TODO redirect user to 'email has already been registered' page
+            self.response.write(create_error_obj("This email has already been registered!"))            #TODO redirect user to 'email has already been registered' page
             return
         
         self.response.write("Success! Check your email to complete registration.")   #TODO redirect user to custom success page
@@ -128,31 +129,33 @@ class ConfirmHandler(webapp2.RequestHandler):
             return
             #TODO redirect user to main page
         else: 
-            self.response.write("This account has already been confirmed!")
+            self.response.write(create_error_obj("This account has already been confirmed!"))
             #TODO redirect user to schedule page
             return
-        self.response.write("Something went wrong! There is no object with row_id " + row_id + " in the database")
+        self.response.write(create_error_obj("Something went wrong! There is no object with row_id " + row_id + " in the database"))
         
 class LoginHandler (webapp2.RequestHandler):
     def post(self):
         email = self.request.get('email')
         password = self.request.get('password')
-        password_valid = self.check_password(email, password)
-        if password_valid == 1:
-            self.response.write(create_error_obj("You need to confirm your account"))
-        elif password_valid == 2:
-            self.response.write(create_error_obj("Your username or password is incorrect"))
+        logging.info(email)
+        logging.info(password) #TODO remove this line
+        password_invalid = self.check_password(email, password)
+        if password_invalid:
+            self.response.write(create_error_obj(password_invalid))
         else:
             id = convert_email_to_id(email)
             if id is not None:
                 encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
                 self.response.set_cookie('SID', encoded_id)
-                self.response.write({})
+                self.response.write(create_error_obj(""))
             else:
                 self.response.write(create_error_obj("Something went wrong! " + email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
     
     def check_password(self, email, password):  #Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
         logging.info("Checking passwords")
+        if email[-17:] != "@eastsideprep.org":
+            return "Please sign in with your Eastside Prep email"
         user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
         for query_result in user_obj_query:
             test_hashed_password = bcrypt.hashpw(password, query_result.password)
@@ -160,9 +163,10 @@ class LoginHandler (webapp2.RequestHandler):
             password_match = test_hashed_password == query_result.password
             if password_match:
                 if query_result.verified:
-                    return 0
-                return 1
-        return 2
+                    return ""
+                return "You need to verify your account"
+            return "Your username or password is incorrect"
+        return "That email is not registered. Would you like to register?"
         
 class ClassHandler(webapp2.RequestHandler):
     def get_class_schedule(self, classname):

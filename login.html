@@ -8,6 +8,7 @@
   <link rel="import" href="bower_components/paper-material/paper-material.html">
   <link rel="import" href="bower_components/paper-input/paper-input.html">
   <link rel="import" href="bower_components/paper-button/paper-button.html">
+  <link rel="import" href="bower_components/paper-toast/paper-toast.html">
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -69,7 +70,7 @@
 
   <paper-button onclick="submitForm()" raised id="loginButton">SIGN IN</paper-button>
   <paper-button onclick="submitForm()" raised id="registerButton">CREATE ACCOUNT</paper-button>
-
+  <paper-toast id="toast" text=""></paper-toast>
   <p class="copy" id="registerText"><a href="#action" id="toggle" class="link" onclick="switchToRegister()">Create account</a></p>
   <p class="copy" id="loginText"><a href="#action" id="toggle" class="link" onclick="switchToLogin()">Sign in</a></p>
 
@@ -103,6 +104,9 @@
   }
   function submitForm() {
     locked = true;
+    var data = new FormData();
+    data.append('email', email.value)
+    data.append('password', password.value)
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status==200) {
@@ -116,18 +120,26 @@
       }
     }
     xhr.open("POST", action, true);
-    xhr.send();
+    xhr.send(data);
+  }
+  function processToast(error) {
+    toast = document.getElementById("toast");
+    toast.setAttribute("text", error);
+    console.log(toast);
+    toast.show();
   }
   function onSuccess() {
     if (action == "login") {
       location.reload();
     } else {
       // register - display toast
+      processToast("Success! Check your email to complete verification.");
     }
   }
   function onError(error) {
-    // display toast
+    processToast(error);
   }
+  
   </script>
 
 </paper-material>
