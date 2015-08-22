@@ -7,7 +7,7 @@
   <link rel="import" href="bower_components/polymer/polymer.html">
   <link rel="import" href="bower_components/core-style/core-style.html">
   <link rel="import" href="bower_components/paper-material/paper-material.html">
-  <link rel="import" href="bower_components/paper-input/paper-input-decorator.html">
+  <link rel="import" href="bower_components/paper-input/paper-input.html">
   <link rel="import" href="bower_components/paper-button/paper-button.html">
   <style>
     body {
@@ -24,10 +24,14 @@
       border-radius: 2px;
     }
     .image-container {
-      margin-botton: 0px;
+      margin-bottom: 0px;
     }
     .copy {
       font-size: 16;
+      margin-bottom: 0px;
+    }
+    paper-input {
+      text-align: left;
     }
     .link {
       text-decoration: none;
@@ -48,13 +52,11 @@
 	<h1>EPSchedule</h1>
 	<p class="copy">The easiest way to keep track of your classes and classmates.</p>
     <form id="form" action="login" method="post">
-      <paper-input-decorator label="Email address (@eastsideprep.org)">
-        <input type="text" id="email" is="core-input" name="email">
-      </paper-input-decorator>
+      <paper-input id="email" name="email" label="Email address (@eastsideprep.org)">
+      </paper-input>
 
-      <paper-input-decorator label="Password">
-        <input id="password" is="core-input" name="password" type="password" onkeypress="checkSubmit(event)">
-      </paper-input-decorator>
+      <paper-input label="Password" id="password" name="password" type="password" onkeypress="checkSubmit(event)">
+      </paper-input>
 
       <paper-button onclick="form.submit()" type="submit" raised="" id="submit">SIGN IN</paper-button>
 
