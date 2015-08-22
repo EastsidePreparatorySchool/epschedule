@@ -1,21 +1,13 @@
-<html>
-<head>
+<html><head>
   <title>Sign in to EPSchedule</title>
-  <meta name="viewport"
-        content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
-  <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
-  <xlink rel="import" href="bower_components/font-roboto/roboto.html">
-  <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-  <link rel="import"
-    href="bower_components/polymer/polymer.html">
-  <link rel="import"
-    href="bower_components/core-style/core-style.html">
-  <link rel="import"
-    href="bower_components/paper-shadow/paper-shadow.html">
-  <link rel="import"
-    href="bower_components/paper-input/paper-input-decorator.html">
-  <link rel="import"
-    href="bower_components/paper-button/paper-button.html">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  </head><body>
+  <link href="http://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+  <link rel="import" href="bower_components/polymer/polymer.html">
+  <link rel="import" href="bower_components/paper-material/paper-material.html">
+  <link rel="import" href="bower_components/paper-input/paper-input.html">
+  <link rel="import" href="bower_components/paper-button/paper-button.html">
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -31,10 +23,14 @@
       border-radius: 2px;
     }
     .image-container {
-      margin-botton: 0px;
+      margin-bottom: 0px;
     }
     .copy {
       font-size: 16;
+      margin-bottom: 0px;
+    }
+    paper-input {
+      text-align: left;
     }
     .link {
       text-decoration: none;
@@ -45,45 +41,94 @@
       color: white;
       background: #2196f3;
     }
+    #loginButton {
+      display: block;
+    }
+    #registerButton {
+      display: none;
+    }
+    #loginText {
+      display: none;
+    }
+    #registerText {
+      display: block;
+    }
   </style>
-</head>
-<body>
-	<paper-shadow class="card" z="2">
+
+	<paper-material class="card" elevation="2">
 	<div class="image-container">
-    <img src="images/epslogo.jpg"></img>
+    <img src="images/epslogo.jpg">
   </div>
 	<h1>EPSchedule</h1>
 	<p class="copy">The easiest way to keep track of your classes and classmates.</p>
-    <form id="form" action="login" method="post">
-      <paper-input-decorator label="Email address (@eastsideprep.org)">
-        <input type="text" id="email" is="core-input" name="email"/>
-      </paper-input-decorator>
+  <paper-input id="email" label="Email address (@eastsideprep.org)">
+  </paper-input>
 
-      <paper-input-decorator label="Password">
-        <input id="password" is="core-input" name="password" type="password" onkeypress="checkSubmit(event)"/>
-      </paper-input-decorator>
+  <paper-input label="Password" id="password" type="password" onkeypress="checkSubmit(event)">
+  </paper-input>
 
-      <paper-button onclick="form.submit()" type="submit" raised id="submit">SIGN IN</paper-button>
+  <paper-button onclick="submitForm()" raised id="loginButton">SIGN IN</paper-button>
+  <paper-button onclick="submitForm()" raised id="registerButton">CREATE ACCOUNT</paper-button>
 
-      <p class="copy"><a href="#action" id="toggle" class="link" onclick="toggleMode()">Create account</a></p>
-  </form>
+  <p class="copy" id="registerText"><a href="#action" id="toggle" class="link" onclick="switchToRegister()">Create account</a></p>
+  <p class="copy" id="loginText"><a href="#action" id="toggle" class="link" onclick="switchToLogin()">Sign in</a></p>
+
   <script>
-  var modes = [
-    { action: "login", button: "SIGN IN", link: "Create account" },
-    { action: "register", button: "CREATE ACCOUNT", link: "Sign in" },
-  ];
-  var currMode = 0;
-  function toggleMode() {
-    currMode = (currMode + 1) % 2;
-    form.action = modes[currMode].action;
-    submit.innerText = modes[currMode].button;
-    toggle.innerText = modes[currMode].link;
+  var action = "login";
+  var locked = false;
+  function switchToRegister() {
+    // Don't allow mode changes while an XHR is outstanding.
+    if (locked)
+      return;
+    action = "register";
+    registerButton.style.display = "block";
+    loginText.style.display = "block";
+    loginButton.style.display = "none";
+    registerText.style.display = "none";
+  }
+  function switchToLogin() {
+    // Don't allow mode changes while an XHR is outstanding.
+    if (locked)
+      return;
+    action = "login";
+    registerButton.style.display = "none";
+    loginText.style.display = "none";
+    loginButton.style.display = "block";
+    registerText.style.display = "block";
   }
   function checkSubmit(e) {
     if (e && e.keyCode === 13) {
-      form.submit();
+      submitForm();
      }
   }
+  function submitForm() {
+    locked = true;
+    xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status==200) {
+        result = JSON.parse(xhr.responseText);
+        if (result.error == "") {
+          onSuccess();
+        } else {
+          onError(result.error);
+        }
+        locked = false;
+      }
+    }
+    xhr.open("POST", action, true);
+    xhr.send();
+  }
+  function onSuccess() {
+    if (action == "login") {
+      location.reload();
+    } else {
+      // register - display toast
+    }
+  }
+  function onError(error) {
+    // display toast
+  }
   </script>
-</body>
-</html>
+
+</paper-material>
+</body></html>
