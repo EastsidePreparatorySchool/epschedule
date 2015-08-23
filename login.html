@@ -54,6 +54,10 @@
     #registerText {
       display: block;
     }
+    #toastButton {
+      display: none;
+      color: #2196f3;
+    }
   </style>
 
 	<paper-material class="card" elevation="2">
@@ -70,9 +74,13 @@
 
   <paper-button onclick="submitForm()" raised id="loginButton">SIGN IN</paper-button>
   <paper-button onclick="submitForm()" raised id="registerButton">CREATE ACCOUNT</paper-button>
-  <paper-toast id="toast" text=""></paper-toast>
   <p class="copy" id="registerText"><a href="#action" id="toggle" class="link" onclick="switchToRegister()">Create account</a></p>
   <p class="copy" id="loginText"><a href="#action" id="toggle" class="link" onclick="switchToLogin()">Sign in</a></p>
+  </paper-material>
+
+  <paper-toast id="toast" text="" duration=10000>
+    <span role="button" id="toastButton"></span>
+  </paper-toast>
 
   <script>
   var action = "login";
@@ -114,7 +122,7 @@
         if (result.error == "") {
           onSuccess();
         } else {
-          onError(result.error);
+          onError(result);
         }
         locked = false;
       }
@@ -122,10 +130,31 @@
     xhr.open("POST", action, true);
     xhr.send(data);
   }
-  function processToast(error) {
+
+  function resendConfirmationEmail() {
+    console.log("Called resendConfirmationEmail");
+  }
+  function processToast(errorObj) {
     toast = document.getElementById("toast");
-    toast.setAttribute("text", error);
-    console.log(toast);
+    toast.setAttribute("text", errorObj.error);
+    if (errorObj.hasOwnProperty('action')) {
+      toastButton = document.getElementById("toastButton");
+      toastButton.innerHTML = errorObj.buttonText;
+      if (errorObj.actionId == 'url') {
+        toastButton.onclick = function() { self.location = action; }
+      } else if (errorObj.actionId == 'button') {
+        switch (errorObj.action) {
+          case "resendConfirmationEmail":
+            toastButton.onclick = resendConfirmationEmail;
+            break;
+          case "switchToRegister":
+            toastButton.onclick = switchToRegister;
+            break;
+        }
+      }
+
+    }
+    toastButton.style.display = (errorObj.hasOwnProperty('action')) ? "block" : "none";
     toast.show();
   }
   function onSuccess() {
@@ -133,14 +162,14 @@
       location.reload();
     } else {
       // register - display toast
-      processToast("Success! Check your email to complete verification.");
+      processToast({'error':"Success! Check your email to complete verification."});
     }
   }
-  function onError(error) {
-    processToast(error);
+  function onError(errorObj) {
+
+    processToast(errorObj);
   }
-  
+
   </script>
 
-</paper-material>
 </body></html>

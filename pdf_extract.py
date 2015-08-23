@@ -67,10 +67,10 @@ def getClass(textbox):#Each textbox is passed in
             class_obj = {'name':textboxlist[2], 'room':roomteacher[0], 'teacher':roomteacher[1], 'period':textboxlist[0][0]}#Shoves all the information into a object
         return {'period_num':period, 'class':class_obj }#Returns an object containing the class info and the period info
     #elif len(textboxlist) = 3:
-    #    if 
+    #    if
     else:
         return None
-    
+
 
 def explode_pdf(path):
     path_properties = string.split(path, "\\")  #Split the file name into a series of directories
@@ -109,14 +109,14 @@ def explode_pdf(path):
                 advisor_first = advisor_names[1][1:]
                 advisor_last = advisor_names[0]
     device.close()
-    
+
     if classes == []: #If the schedule is blank or not a schedule
         return None
     cleaned_classes = [] #Remove duplicates from classes
     for l in classes:
         if l not in cleaned_classes:
             cleaned_classes.append(l)
-    
+
     schedule_properties[3] = schedule_properties[3][:-4] #Remove the .pdf extention
     schedule_obj = {'firstname':schedule_properties[3], 'lastname':schedule_properties[2], 'term':schedule_properties[1], 'id':schedule_properties[0], 'grade':grade, 'advisorfirstname':advisor_first, 'advisorlastname':advisor_last, 'classes':cleaned_classes}
     return schedule_obj    #Return object created in the previous line
@@ -126,10 +126,10 @@ def add_free_periods(schedule_obj):
     for class_obj in schedule_obj['classes']:
         if periods.count(class_obj['period']):
             periods.remove(class_obj['period'])
-            
+
     for period in periods:
         schedule_obj['classes'].append({'period':period, 'teacher':"None", 'room':"None", 'name':"Free Period"})
-    
+
     return schedule_obj
 #print convert_pdf_to_txt("c:\\users\\guberti\\Documents\\My Projects\\Python\\Schedule Downloader\\4093-3-Uberti-Gavin.pdf")
 students = []
@@ -155,7 +155,7 @@ for person_num in range (0, len(students)):
                     for taught_class in teacher['classes']:
                         if students[person_num]['classes'][class_num]['period'] == taught_class['period'] and students[person_num]['classes'][class_num]['room'] == taught_class['room'] and students[person_num]['classes'][class_num]['name'] == taught_class['name']:
                             students[person_num]['classes'][class_num]['teacher'] = teacher['firstname'] + " " + teacher['lastname']
-                            
+
 file = open('schedules.json', 'wb')
 file.write(json.dumps(students))
 #print students  #Print the list of schedules
