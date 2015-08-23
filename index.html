@@ -15,7 +15,7 @@
   <link rel="import" href="bower_components/paper-button/paper-button.html">
   <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
   <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">`
-
+  <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
   <link rel="import" href="item.html">
 
   <script>
@@ -34,6 +34,33 @@
     }
   }
 
+  function signOut() {
+    xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        if (xhr.status==200) {
+          location.reload();
+        } else {
+          result = JSON.parse(xhr.responseText);
+          console.log(result.error);
+        }
+      }
+    }
+    xhr.open("POST", "logout", true);
+    xhr.send();
+  }
+  function reportBug() {
+    window.open("https://github.com/guberti/epschedule/issues");
+  }
+  function about() {
+    window.open("about");
+  }
+  function openDialog() {
+      var dialog = document.getElementById("dialog");
+      if (dialog) {
+        dialog.open();
+      }
+  }
   document.onkeydown = function(event) {
     if (event.keyCode == 37) { //Left
         dateBack();
@@ -223,6 +250,10 @@
       width: 540px;
     }
   }
+  #dialog {
+    width: 100%;
+    height: 100%;
+  }
   </style>
 </head>
 
@@ -236,10 +267,9 @@
         <div class="image-container">
           <img src="images/epslogo.jpg">
         </div>
-        <paper-button noink><iron-icon icon="account-circle"></iron-icon>Sign out</paper-button>
-        <paper-button noink><iron-icon icon="bug-report"></iron-icon>Report a bug</paper-button>
-        <!-- "https://github.com/epschedule/issues/" -->
-        <paper-button noink><iron-icon icon="info"></iron-icon>About</paper-button>
+        <paper-button noink onclick="signOut()"><iron-icon icon="account-circle"></iron-icon>Sign out</paper-button>
+        <paper-button noink onclick="reportBug()"><iron-icon icon="bug-report"></iron-icon>Report a bug</paper-button>
+        <paper-button noink onclick="about()"><iron-icon icon="info"></iron-icon>About</paper-button>
       </div>
     </paper-header-panel>
     <paper-header-panel id="mainheader" main>
@@ -249,13 +279,17 @@
         <paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button>
         <paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
         <!-- example of showing avatar in toolbar. could also go in drawer -->
-        <paper-icon-button src="96x96_photos/steve_fassino.jpg"></paper-icon-button>
+        <paper-icon-button src="96x96_photos/steve_fassino.jpg" onclick="openDialog()"></paper-icon-button>
       </paper-toolbar>
       <div id="container" class="container" layout="" vertical="" center="">
         <post-list show="all"></post-list>
       </div>
     </paper-header-panel>
   </paper-drawer-panel>
+  <paper-dialog id="dialog">
+      <h2>Dialog Title</h2>
+      <p>Lorem ipsum dolor sit amet</p>
+  </paper-dialog>
 
 
 </body></html>

@@ -217,6 +217,10 @@ class LoginHandler (webapp2.RequestHandler):
 
         return {}  # success
 
+class LogoutHandler(webapp2.RequestHandler):
+    def post(self):
+        self.response.delete_cookie("SID")
+
 class ClassHandler(webapp2.RequestHandler):
     def get_class_schedule(self, classname):
         schedules = load_schedule_data();
@@ -415,6 +419,7 @@ class MainHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/login', LoginHandler),
+    ('/logout', LogoutHandler),
     ('/register',RegisterHandler),
     ('/confirm/(\w+)',ConfirmHandler),
     ('/class/(\w+)', ClassHandler),
