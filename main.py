@@ -88,8 +88,6 @@ class RegisterHandler (webapp2.RequestHandler):
         password = self.request.get('password')
 
         if email[-17:] != "@eastsideprep.org":
-            logging.info(email)
-            logging.info(email[-17:])
             self.response.write(json.dumps(ERR_SIGNUP_EMAIL_NOT_EPS))
             return
 
@@ -194,19 +192,30 @@ class LoginHandler (webapp2.RequestHandler):
 
     def check_password(self, email, password):  #Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
         logging.info("Checking passwords")
+        account_confirmed = False
+        known_username = False
+
         if email[-17:] != "@eastsideprep.org":
             return ERR_NOT_EPS_EMAIL
+
         user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
         for query_result in user_obj_query:
+            known_username = True
             test_hashed_password = bcrypt.hashpw(password, query_result.password)
             logging.info("original: " + query_result.password + " test: " + test_hashed_password)
             password_match = test_hashed_password == query_result.password
-            if password_match:
-                if query_result.verified:
-                    return ""
-                return ERR_UNCONFIRMED_ACCOUNT
-            return ERR_FORGOT_PASSWORD
-        return ERR_NO_ACCOUNT
+            if not password_match:
+                return ERR_FORGOT_PASSWORD
+            if query_result.verified:
+                account_confirmed = True
+                break
+
+        if not known_username:
+            return ERR_NO_ACCOUNT
+        elif not account_confirmed:
+            return ERR_UNCONFIRMED_ACCOUNT
+
+        return {}  # success
 
 class ClassHandler(webapp2.RequestHandler):
     def get_class_schedule(self, classname):
