@@ -35,6 +35,6 @@ libraries:
 - name: jinja2
   version: latest
 
-ignore:
-- ^schedules$
+skip_files:
+- ^(.*/)?.*\.pdf$
 - ^(.*/)?.*\.py[co]$
