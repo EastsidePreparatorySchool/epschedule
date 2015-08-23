@@ -15,6 +15,8 @@
   <link rel="import" href="bower_components/paper-item/paper-item.html">
   <link rel="import" href="bower_components/iron-icons/iron-icons.html">
   <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">`
+
   <link rel="import" href="item.html">
 
   <script>
@@ -163,8 +165,8 @@
             todaySchedule.push(scheduleObj);
         } catch (error) {
         }
-        document.querySelector('post-list').posts = todaySchedule;
     }
+    document.querySelector('post-list').posts = todaySchedule;
   }
 
   function cleanString(text) {
@@ -175,12 +177,7 @@
     return text;
   }
 
-  document.addEventListener('polymer-ready', function() {
-    var navicon = document.getElementById('navicon');
-    var drawerPanel = document.getElementById('drawerPanel');
-    navicon.addEventListener('click', function() {
-      drawerPanel.togglePanel();
-    });
+  document.addEventListener('WebComponentsReady', function() {
     var date = new Date();
     renderSchedule(date, false);
   });
@@ -194,13 +191,19 @@
     #background-color: #e6eef4;
     font-family: 'RobotoDraft', sans-serif;
   }
-  core-header-panel {
+  #drawerheader {
+    background: white;
+  }
+  .image-container {
+    text-align: center;
+  }
+  #mainheader {
     height: 100%;
     background: #efefef;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
-  core-toolbar {
+  paper-toolbar {
     background: #0d47a1;
     color: white;
   }
@@ -215,46 +218,32 @@
     }
   }
   </style>
-
-  <style is="custom-style">
-    /* TODO(polyup): For speed, consider reworking these styles with .classes
-                     and #ids rather than [attributes].
-    */
-    [hidden] {
-      display: none !important;
-    }
-    [layout] {
-      @apply(--layout);
-    }
-    [layout][vertical] {
-      @apply(--layout-vertical);
-    }
-    [layout][center] {
-      @apply(--layout-center);
-    }
-  </style>
-  <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
 </head>
 
-
-
 <body unresolved="">
-  <paper-drawer-panel id="drawerPanel">
-    <paper-header-panel drawer="" hidden="">
-      <paper-toolbar id="navheader">
-        <span>EPSchedule</span>
+  <paper-drawer-panel id="drawerpanel" force-narrow>
+    <paper-header-panel id="drawerheader" drawer>
+      <paper-toolbar>
+        <span class="title">EPSchedule</span>
       </paper-toolbar>
-      <paper-menu>
-        <paper-item undefined="One"></paper-item>
-        <paper-item undefined="Two"></paper-item>
-      </paper-menu>
+      <div>
+        <div class="image-container">
+          <img src="images/epslogo.jpg">
+        </div>
+        <paper-item>Sign out</paper-item>
+        <paper-item>Report a bug</paper-item>
+        <paper-item>About</paper-item>
+        </paper-menu>
+      </div>
     </paper-header-panel>
-    <paper-header-panel main="">
-      <paper-toolbar id="mainheader">
-        <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
-        <span flex="" id="day">Today</span>
-        <span><paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button></span>
-        <span><paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button></span>
+    <paper-header-panel id="mainheader" main>
+      <paper-toolbar>
+        <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+        <span class="title" id="day">Today</span>
+        <paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button>
+        <paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
+        <!-- example of showing avatar in toolbar. could also go in drawer -->
+        <paper-icon-button src="96x96_photos/fassino.jpg"></paper-icon-button>
       </paper-toolbar>
       <div id="container" class="container" layout="" vertical="" center="">
         <post-list show="all"></post-list>

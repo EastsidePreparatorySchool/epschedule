@@ -98,7 +98,7 @@
   <template>
     <paper-material class="card" elevation="2">
     <div layout="" vertical="" center="">
-      <template is="dom-repeat" items="{{posts}}" as="item">
+      <template is="dom-repeat" items="{{posts}}">
         <post-card>
           <img src="{{item.avatar}}" width="48" height="48">
           <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
