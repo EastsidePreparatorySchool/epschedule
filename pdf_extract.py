@@ -128,7 +128,7 @@ def add_free_periods(schedule_obj):
             periods.remove(class_obj['period'])
 
     for period in periods:
-        schedule_obj['classes'].append({'period':period, 'teacher':"None", 'room':"None", 'name':"Free Period"})
+        schedule_obj['classes'].append({'period':period, 'teacher':"", 'room':"", 'name':"Free Period"})
 
     return schedule_obj
 #print convert_pdf_to_txt("c:\\users\\guberti\\Documents\\My Projects\\Python\\Schedule Downloader\\4093-3-Uberti-Gavin.pdf")

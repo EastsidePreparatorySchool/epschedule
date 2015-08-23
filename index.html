@@ -33,7 +33,6 @@
             dateForward();
         }
     }
-    console.log(evt.changedTouches[0].pageX);
   }
 
   document.onkeydown = function(event) {
@@ -135,28 +134,31 @@
                 var scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: 10, time: "will be determined later" };
                 break;
             case "Advisory":
-                var scheduleObj = { name: "Advisory", teacher: "", room: "N/A", period: 11, time: "will be determined later" }; //TODO - Make this box display the user's advisor and advisory location
+                var scheduleObj = { name: "Advisory", teacher: "", room: "", period: 11, time: "will be determined later" }; //TODO - Make this box display the user's advisor and advisory location
                 break;
             case "Class Meeting":
-                var scheduleObj = { name: "Class Meeting", teacher: "", room: "N/A", period: 12, time: "will be determined later" };
+                var scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: 12, time: "will be determined later" };
                 break;
             case "Clubs":
                 var scheduleObj = { name: "Clubs", teacher: "", room: "Varies", period: 13, time: "will be determined later" };
                 break;
         }
-        if (scheduleObj.teacher != "N/A") {
-          scheduleObj.avatar = "/96x96_photos/" + scheduleObj.teacher.toLowerCase() + ".jpg";
-          scheduleObj.teacherLink = "/teacher/" + scheduleObj.teacher.toLowerCase();
-        } else {
-          scheduleObj.teacher = scheduleObj.teacherLink = ""
-          scheduleObj.avatar = "/misc_photos/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
-          if (scheduleObj.room != "N/A") {
-            scheduleObj.infoString = "(" + scheduleObj.room + ")";
-          } else {
-            scheduleObj.infoString = "";
-          }
+        if (scheduleObj.teacher == "N/A") {
+          scheduleObj.teacher = "";
         }
-        scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase();
+        if (scheduleObj.room == "N/A") {
+          scheduleObj.room = "";
+        }
+        if (scheduleObj.teacher != "") {
+          sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
+          sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
+          scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
+          scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
+        } else {
+          scheduleObj.teacherLink = "";
+          scheduleObj.avatar = "/misc_photos/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
+        }
+        scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
 
         try {
             var times = days[0][day]["MS"][currentSlot]["time"].split('-');
