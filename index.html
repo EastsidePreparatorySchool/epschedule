@@ -229,6 +229,10 @@
     width: 100%;
     text-align: left;
     text-transform: none;
+    font-size: 14px;
+  }
+  .drawer-icon {
+    padding-right: 16px;
   }
   #mainheader {
     height: 100%;
@@ -267,9 +271,15 @@
         <div class="image-container">
           <img src="images/epslogo.jpg">
         </div>
-        <paper-button noink onclick="signOut()"><iron-icon icon="account-circle"></iron-icon>Sign out</paper-button>
-        <paper-button noink onclick="reportBug()"><iron-icon icon="bug-report"></iron-icon>Report a bug</paper-button>
-        <paper-button noink onclick="about()"><iron-icon icon="info"></iron-icon>About</paper-button>
+        <paper-button noink onclick="signOut()">
+          <iron-icon class="drawer-icon" icon="account-circle"></iron-icon>Sign out
+        </paper-button>
+        <paper-button noink onclick="reportBug()">
+          <iron-icon class="drawer-icon" icon="bug-report"></iron-icon>Report a bug
+        </paper-button>
+        <paper-button noink onclick="about()">
+          <iron-icon class="drawer-icon" icon="info"></iron-icon>About
+        </paper-button>
       </div>
     </paper-header-panel>
     <paper-header-panel id="mainheader" main>
