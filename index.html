@@ -14,10 +14,16 @@
   <link rel="import" href="bower_components/iron-icons/iron-icons.html">
   <link rel="import" href="bower_components/paper-button/paper-button.html">
   <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">`
   <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+  <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">`
+  <link rel="import" href="bower_components/google-map/google-map.html">
+  <link rel="import" href="bower_components/google-map/google-map-search.html">
+  <link rel="import" href="bower_components/google-map/google-map-marker.html">
+  <link rel="import" href="bower_components/google-map/google-map-directions.html">
+  <link rel="import" href="bower_components/paper-toast/paper-toast.html">
   <link rel="import" href="item.html">
 
+  <script src="bcrypt.js"></script>
   <script>
   var touchStartPos = [0, 0];
   function handleTouchStart(evt) {
@@ -90,10 +96,77 @@
     globalDate.setDate(globalDate.getDate()+1);
     renderSchedule(globalDate, true);
   }
+  function renderToast(text) {
+    toast = document.getElementById("toast");
+    toast.setAttribute("text", text);
+    toast.show();
+  }
+  function getGpsSuccess(position, roomObj) {
+    var radius = 6371000; //Radius of the earth
+    var phi1 = position.coords.latitude * (Math.PI / 180);
+    var phi2 = roomObj.latitude * (Math.PI / 180);
+    var deltaPhi = (roomObj.latitude-position.coords.latitude) * (Math.PI / 180);
+    var deltaLambda = (roomObj.longitude-position.coords.longitude) * (Math.PI / 180);
+    var a = Math.sin(deltaPhi/2) * Math.sin(deltaPhi/2) + Math.cos(phi1) *
+    Math.cos(phi2) *Math.sin(deltaLambda/2) * Math.sin(deltaLambda/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = radius * c;
+    if (d > 200) {
+      console.log("Too far away from EPS")
+      return;
+    }
+    map = document.getElementById("map");
+    marker = document.createElement("google-map-marker");
+    marker.latitude = position.coords.latitude;
+    marker.longitude = position.coords.longitude;
+    marker.draggable = false;
+    marker.title = "Your face";
+    map.appendChild(marker);
+  }
+  function getGpsFail(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            console.log("User did not allow access to GPS")
+            break;
+        case error.POSITION_UNAVAILABLE:
+            console.log("EPSchedule was not able to get location information")
+            break;
+        case error.TIMEOUT:
+            console.log("Request to enable GPS timed out")
+            break;
+        case error.UNKNOWN_ERROR:
+            console.log("Geolocation failed, error unknown")
+            break;
+    }
+  }
+  function renderRoom(roomObj) {
+    /*renderToast("Please allow EPSchedule to use your current location"); //TODO check to see if browser allows geolocation by default*/
+    paperDialog = document.getElementById("dialog");
+    paperDialog.innerHTML = '<google-map latitude="47.643455" longitude="-122.198935" id="map" zoom="18" disable-default-ui fit-to-markers>' +
+      '<google-map-marker latitude="' + roomObj.latitude + '" longitude="' + roomObj.longitude + '"' +
+      'draggable="false" title="' + roomObj.room + '"></google-map-marker></google-map>';
+    openDialog();
+    /*if (navigator.geolocation) {
+        var success = function(gpsObj) {
+          getGpsSuccess(gpsObj, roomObj);
+        }
+        var fail = function() {
+          getGpsFail();
+        }
+        navigator.geolocation.getCurrentPosition(success, fail);
+    } else {
+        renderToast("Your browser does not support Geolocation");
+    }*/
+  }
+  function renderClass() {
+
+  }
   function renderSchedule(dateObj, emptyDiv) {
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
-        case 0: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
-        case 6:
+        case 6: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
+          dateObj.setDate(dateObj.getDate() + 1);
+        case 0:
+          dateObj.setDate(dateObj.getDate() + 1);
         case 1:
             var day = "Monday";
             break;
@@ -104,10 +177,10 @@
             var day = "Wednesday";
             break;
         case 4:
-            day = "Thursday";
+            var day = "Thursday";
             break;
         case 5:
-            day = "Friday";
+            var day = "Friday";
             break;
     }
 
@@ -222,6 +295,10 @@
   #drawerheader {
     background: white;
   }
+  #toastButton {
+      display: none;
+      color: #2196f3;
+  }
   .image-container {
     text-align: center;
   }
@@ -229,6 +306,9 @@
     width: 100%;
     text-align: left;
     text-transform: none;
+  }
+  google-map {
+    height: 600px;
   }
   #mainheader {
     height: 100%;
@@ -258,6 +338,8 @@
 </head>
 
 <body unresolved="">
+  <paper-toast id="toast" text="" duration=10000>
+  </paper-toast>
   <paper-drawer-panel id="drawerpanel" force-narrow>
     <paper-header-panel id="drawerheader" drawer>
       <paper-toolbar>
@@ -279,7 +361,7 @@
         <paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button>
         <paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
         <!-- example of showing avatar in toolbar. could also go in drawer -->
-        <paper-icon-button src="96x96_photos/steve_fassino.jpg" onclick="openDialog()"></paper-icon-button>
+        <paper-icon-button src="96x96_photos/steve_fassino.jpg" onclick="renderRoom({'room':'MS-22A', 'latitude':47.643502, 'longitude':-122.198576})"></paper-icon-button>
       </paper-toolbar>
       <div id="container" class="container" layout="" vertical="" center="">
         <post-list show="all"></post-list>
