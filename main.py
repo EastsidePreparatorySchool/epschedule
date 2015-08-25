@@ -176,11 +176,14 @@ class LoginHandler (webapp2.RequestHandler):
     def post(self):
         email = self.request.get('email')
         password = self.request.get('password')
-        logging.info(email)
-        logging.info(password) #TODO remove this line
+
         err = self.check_password(email, password) #Returns an object, so we don't have to call create_error_obj() on this
         if err:
             self.response.write(json.dumps(err))
+        elif email == "demo@eastsideprep.org": #Checks if user is signing into demo account
+            encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, "9999")) #Gives the user an SID of 9999 if the account is the demo account
+            self.response.set_cookie('SID', encoded_id)
+            self.response.write(create_error_obj(""))
         else:
             id = convert_email_to_id(email)
             if id is not None:
@@ -268,7 +271,9 @@ class PeriodHandler(webapp2.RequestHandler):
             self.send_login_response()
             return
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
-
+        if id == "9999": #If this is the demo accound
+            id = "4093"
+            demo = True
         schedule_data = load_schedule_data()
         user_schedule = None
 
@@ -354,14 +359,18 @@ class RoomHandler(webapp2.RequestHandler):
 
 class TeacherHandler(webapp2.RequestHandler):
     def get(self, teacher):
-        logging.info("Boy, I don't have to restart!")
+        logging.error("Getting here!")
         encoded_id = self.request.cookies.get("SID")
         if encoded_id is None:
             self.send_login_response()
             return
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
+        if id == "9999": #If this is the demo accound
+            id = "4093"
+            demo = True
         schedule_data = load_schedule_data()
         teachernames = string.split(teacher, "_")
+        logging.error(teachernames)
         dataobj = {}
 
         for schedule in schedule_data:
@@ -403,8 +412,10 @@ class MainHandler(webapp2.RequestHandler):
         if encoded_id is None:
             self.send_login_response()
             return
-
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
+        if id == "9999": #If this is the demo accound
+            id = "4093"
+            demo = True
         #schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
         days = self.get_days()
