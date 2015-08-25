@@ -49,6 +49,8 @@ class User(db.Model):
 
 def convert_email_to_id(email):
     email = email.lower()
+    if email == "demo@eastsideprep.org":
+        return 9999
     pieces = string.split(email, "@")
     username = pieces[0]
     for student in ID_TABLE:
@@ -60,6 +62,13 @@ def load_schedule_data():
     file = open('schedules.json', 'rb')
     schedules = json.load(file)
     return schedules
+
+def check_id(encoded_id):
+    if encoded_id is None:
+        return None
+    #TODO add code to check if id is valid
+    id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
+    return id
 
 def create_error_obj(error_message, action="", buttontext=""):
     error_obj = {"error":error_message}
@@ -180,10 +189,6 @@ class LoginHandler (webapp2.RequestHandler):
         err = self.check_password(email, password) #Returns an object, so we don't have to call create_error_obj() on this
         if err:
             self.response.write(json.dumps(err))
-        elif email == "demo@eastsideprep.org": #Checks if user is signing into demo account
-            encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, "9999")) #Gives the user an SID of 9999 if the account is the demo account
-            self.response.set_cookie('SID', encoded_id)
-            self.response.write(create_error_obj(""))
         else:
             id = convert_email_to_id(email)
             if id is not None:
@@ -248,12 +253,11 @@ class ClassHandler(webapp2.RequestHandler):
         return classdataobj
     def get(self, class_id):
         #Get the cookie
-        encoded_id = self.request.cookies.get("SID")
-        if encoded_id is None:
+        id = check_id(self.request.cookies.get("SID"))
+        if id is None:
             self.send_login_response()
             return
 
-        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         #schedule = self.get_schedule(self.request.get('id'))
         self.response.write(self.get_class_schedule(class_id))
 
@@ -266,14 +270,12 @@ class PeriodHandler(webapp2.RequestHandler):
     def get(self, period):
         #Should return back which of your teachers are free, which rooms are free, what class you currently have then, and what classes you could take then
         dataobj = {'freeteachers':[], 'freerooms':[], 'currentclass':{}, 'potentialclassschedules':[]}
-        encoded_id = self.request.cookies.get("SID")
-        if encoded_id is None:
+        id = check_id(self.request.cookies.get("SID"))
+        if id is None:
             self.send_login_response()
             return
-        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         if id == "9999": #If this is the demo accound
             id = "4093"
-            demo = True
         schedule_data = load_schedule_data()
         user_schedule = None
 
@@ -331,12 +333,10 @@ class PeriodHandler(webapp2.RequestHandler):
 
 class RoomHandler(webapp2.RequestHandler):
     def get(self, room):
-        logging.info("Room request!")
-        encoded_id = self.request.cookies.get("SID")
-        if encoded_id is None:
+        id = check_id(self.request.cookies.get("SID"))
+        if id is None:
             self.send_login_response()
             return
-        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         schedules = load_schedule_data()
         room = room.lower()
         room_schedule = {'name':room, 'classes':[]}
@@ -359,28 +359,16 @@ class RoomHandler(webapp2.RequestHandler):
 
 class TeacherHandler(webapp2.RequestHandler):
     def get(self, teacher):
-        logging.error("Getting here!")
-        encoded_id = self.request.cookies.get("SID")
-        if encoded_id is None:
+        id = check_id(self.request.cookies.get("SID"))
+        if id is None:
             self.send_login_response()
             return
-        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
-        if id == "9999": #If this is the demo accound
-            id = "4093"
-            demo = True
         schedule_data = load_schedule_data()
         teachernames = string.split(teacher, "_")
-        logging.error(teachernames)
-        dataobj = {}
 
         for schedule in schedule_data:
             if schedule['firstname'].lower() == teachernames[0] and schedule['lastname'].lower() == teachernames[1]:
-                logging.info("Found teacher " + teacher)
-                dataobj['teacherschedule'] = schedule
-            elif schedule['id'] == id:
-                dataobj['studentschedule'] = schedule
-
-        self.response.write(dataobj)
+                self.response.write(dataobj['teacherschedule'])
 
     def send_login_response(self):
         template_values = {}
@@ -408,14 +396,12 @@ class MainHandler(webapp2.RequestHandler):
 
     def get(self):
         #Get the cookie
-        encoded_id = self.request.cookies.get("SID")
-        if encoded_id is None:
+        id = check_id(self.request.cookies.get("SID"))
+        if id is None:
             self.send_login_response()
             return
-        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         if id == "9999": #If this is the demo accound
             id = "4093"
-            demo = True
         #schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
         days = self.get_days()
