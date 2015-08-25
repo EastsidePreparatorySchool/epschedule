@@ -66,5 +66,5 @@ for mainchar in range (0, len(mainhtml)):
                     break
                 except:
                     print "Open connection was forcibly closed by a remote host, trying to download again"
-#file = open('teacherimageurls.json', 'wb')
-#file.write(json.dumps(images))
+print "Images downloaded, now cropping them"
+import create_teacher_icons #Runs create teacher icons

@@ -1,0 +1,7 @@
+cron:
+- description: download parse and crop schedules
+  url: /scripts/cookielib_test
+  schedule: every 24 hours synchronized
+- description: download and crop teacher images
+  url: /scripts/get_image_links
+  schedule: first of month 00:00

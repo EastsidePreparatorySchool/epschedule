@@ -61,3 +61,7 @@ dump()
 
 for k in range(2600, 4600):
     download_schedule(k, term, year)
+print "Schedules downloaded"
+print "Pasing schedules"
+import pdf_extract #Runs pdf_extract.py
+import id_table_generator #Runs id_table_generator.py
