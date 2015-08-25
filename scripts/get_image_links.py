@@ -31,16 +31,16 @@ for mainchar in range (0, len(mainhtml)):
             while not checkText("'", mainchar, mainhtml):
                 name += mainhtml[mainchar]
                 mainchar += 1
-            
+
             urlname = name.replace(" ", "-")
             urlname = urlname.replace("(", "")
             urlname = urlname.replace(")", "")
-            
+
             for exception in exceptions:
                 #print "Is " + exception[0] + " the same as " + urlname
                 if exception[0] == urlname:
                     urlname = exception[1]
-            
+
             response = urllib2.urlopen('http://www.eastsideprep.org/team/' + urlname + '/')
             html = response.read()
             imageurl = "";
@@ -52,17 +52,17 @@ for mainchar in range (0, len(mainhtml)):
                     while not checkText("\"", char, html):
                         imageurl += html[char]
                         char += 1;
- 
+
             print imageurl
             print name
-            
+
             name = name.replace(" ", "_")
             name = name.replace("-", "_")
             name = name.lower()
             name += imageurl[len(imageurl) - 4:len(imageurl)] #Add on the extension
             while (True):
                 try:
-                    urllib.urlretrieve(imageurl, "teacher_photos\\" + name)
+                    urllib.urlretrieve(imageurl, "..\\teacher_photos\\" + name)
                     break
                 except:
                     print "Open connection was forcibly closed by a remote host, trying to download again"

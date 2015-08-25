@@ -26,7 +26,7 @@ def download(uri, filename):
     _, params = cgi.parse_header(f.headers.get('Content-Disposition', ''))
     xfilename = params['filename']
     filenamelist = extract_name(xfilename)
-    finalfilename = 'schedules' + os.sep + filename + '-' + filenamelist[1] + '-' + filenamelist[2] + '.pdf'
+    finalfilename = '..' + os.sep + 'schedules' + os.sep + filename + '-' + filenamelist[1] + '-' + filenamelist[2] + '.pdf'
     with open(finalfilename, "wb") as pdf:
 	  pdf.write(f.read())
     print "done"
@@ -40,7 +40,7 @@ def post(uri, obj):
 def dump():
     for cookie in cookies:
         print cookie.name, cookie.value
-		
+
 def download_schedule(student_id, term, year):
     url = 'https://four11.eastsideprep.org/registrar/pdf_schedules?color=1&student_id=' + str(student_id) + '&term_id=' + str(term) + '&year_id=' + str(year)
     filename = str(student_id) + '-' + str(term)

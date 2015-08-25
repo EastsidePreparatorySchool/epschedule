@@ -13,7 +13,7 @@ for image in os.listdir("teacher_photos"):
             img.resize(96, (96 * img.height) / img.width)
             border = (img.height - 96) / 2
             cropparams = [0, border]
-        
+
         x_except = 0
         y_except = 0
         for exception in exceptions:
@@ -24,5 +24,5 @@ for image in os.listdir("teacher_photos"):
         print "Calling: img.crop(" + str(cropparams[0] + x_except) + ", " + str(cropparams[1] + y_except) + ", " + str(img.width - cropparams[0] + x_except) + ", " + str(img.height - cropparams[1] + y_except) + ")"
         img.crop(cropparams[0] + x_except, cropparams[1] + y_except, img.width - cropparams[0] + x_except, img.height - cropparams[1] + y_except)
         img.convert('jpeg')
-        
-        img.save(filename='96x96_photos\\' + os.path.splitext(image)[0] + '.jpg')
+
+        img.save(filename='..\\96x96_photos\\' + os.path.splitext(image)[0] + '.jpg')

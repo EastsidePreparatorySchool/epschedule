@@ -11,5 +11,5 @@ for filename in files:
     studentname = filenamelist[3][0] + filenamelist[2]
     output.append([studentname, studentid])
 print output
-file = open('id_table.json', 'wb')
+file = open('..\\id_table.json', 'wb')
 file.write(json.dumps(output))
