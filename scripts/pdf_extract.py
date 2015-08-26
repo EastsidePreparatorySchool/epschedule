@@ -133,7 +133,7 @@ def add_free_periods(schedule_obj):
     return schedule_obj
 #print convert_pdf_to_txt("c:\\users\\guberti\\Documents\\My Projects\\Python\\Schedule Downloader\\4093-3-Uberti-Gavin.pdf")
 students = []
-files = [f for f in os.listdir('.' + os.sep + 'schedules')]#Create a list of all files in the directory
+files = [f for f in os.listdir('..' + os.sep + 'schedules')]#Create a list of all files in the directory
 for f in files:    #For each file in the directory
     if f[len(f) - 4:len(f)] == ".pdf":  #If the last 4 characters of the file name are .pdf (meaning the file is a schedule)
         filepath = "c:\\users\\guberti\\Documents\\Github\\EPSchedule\\schedules\\" + f   #Create the full filepath for the schedule
