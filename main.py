@@ -415,12 +415,17 @@ class MainHandler(BaseHandler):
         else:
             self.response.write("No schedule for id " + id)
 
+class AboutHandler(webapp2.RequestHandler):
+    def get(self):
+            template = JINJA_ENVIRONMENT.get_template('about.html')
+            self.response.write(template.render({}))
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
+    ('/about', AboutHandler),
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
-    ('/register',RegisterHandler),
+    ('/register', RegisterHandler),
     ('/confirm/(\w+)',ConfirmHandler),
     ('/class/(\w+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
