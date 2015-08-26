@@ -36,6 +36,8 @@ from py_bcrypt import bcrypt
 CRYPTO_KEY = open('crypto.key', 'rb').read()
 id_table_file = open('id_table.json', 'rb')
 ID_TABLE = json.load(id_table_file)
+lat_lon_coords_file = open('room_locations.json', 'rb')
+LAT_LON_COORDS = json.load(lat_lon_coords_file)
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -259,7 +261,7 @@ class ClassHandler(webapp2.RequestHandler):
             return
 
         #schedule = self.get_schedule(self.request.get('id'))
-        self.response.write(self.get_class_schedule(class_id))
+        self.response.write(json.dumps(self.get_class_schedule(class_id)))
 
     def send_login_response(self):
         template_values = {}
@@ -339,9 +341,10 @@ class RoomHandler(webapp2.RequestHandler):
             return
         schedules = load_schedule_data()
         room = room.lower()
+        room = room.replace('_', '-');
         room_schedule = {'name':room, 'classes':[]}
         for schedule in schedules:
-            for class_obj in schedules['classes']:
+            for class_obj in schedule['classes']:
                 if room == class_obj['room'].lower(): #If the class is in the room
                     already_there = False
                     for room_class_obj in room_schedule['classes']:
@@ -349,7 +352,13 @@ class RoomHandler(webapp2.RequestHandler):
                             already_there = True
                     if not already_there:
                         room_schedule['classes'].append(class_obj)
-        self.response.write(room_schedule)
+
+        for room_obj in LAT_LON_COORDS:
+            if room_obj['name'] == room:
+                room_schedule['latitude'] = room_obj['latitude']
+                room_schedule['longitude'] = room_obj['longitude']
+                break
+        self.response.write(json.dumps(room_schedule))
 
 
     def send_login_response(self):
