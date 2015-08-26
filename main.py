@@ -22,7 +22,6 @@ import os
 import string
 import logging
 import datetime
-import binascii
 from google.appengine.ext import db
 from google.appengine.ext import vendor
 from google.appengine.api import mail
@@ -133,14 +132,14 @@ class RegisterHandler (BaseHandler):
 
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
-        encoded_row_id = binascii.hexlify(encrypted_row_id)
+        encoded_row_id = base64.urlsafe_b64encode(encrypted_row_id)
         url = "http://epscheduleapp.appspot.com/confirm/" + encoded_row_id
         return url
 
 class ConfirmHandler(BaseHandler):
     def get(self, encoded_row_id):
         logging.info("Trying to confirm!")
-        row_id = aes.decryptData(CRYPTO_KEY, binascii.unhexlify(encoded_row_id))
+        row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
         logging.info(row_id)
         user_obj_query = User.get_by_id(int(row_id)) #FIX Instead of email, use row id
         if not user_obj_query.verified:
