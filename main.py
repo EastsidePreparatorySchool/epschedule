@@ -122,13 +122,39 @@ class RegisterHandler (BaseHandler):
             return False
         return True
 
-    def send_confirmation_email(self, email, row_id):       #TODO customize message to include the user's name
+    def get_name(self, email):
+        id = None
+        for id_pair in ID_TABLE:
+            if id_pair[0] + "@eastsideprep.org" == email:
+                id = id_pair[1]
+                break
+
+        schedules = load_schedule_data()
+        for schedule in schedules:
+            if int(schedule['id']) == int(id):
+                return schedule['firstname']
+
+    def format_html(self, email_text, properties):
+        for item in properties:
+            search = "{" + item['name'] + "}"
+            message_parts = string.split(email_text, search)
+            logging.error(len(message_parts))
+            email_text = message_parts[0] + item['value'] + message_parts[1]
+        return email_text
+
+    def send_confirmation_email(self, email, row_id):
+        email_file = open('confirme_mail.html', 'rb')
+        email_text = email_file.read()
+        email_properties = []
+        email_properties.append({'name':'name', 'value':str(self.get_name(email))})
+        email_properties.append({'name':'email', 'value':email})
+        email_properties.append({'name':'url', 'value':self.get_confirmation_link(row_id)})
         message = mail.EmailMessage()
         message.sender = "The EPSchedule Team <gavin.uberti@gmail.com>"   #TODO make sender fooy@epscheduleapp.appspot.com
         message.to = email
         message.subject = "Sign up for EPSchedule"
-        message.body = self.get_confirmation_link(row_id)
-        logging.info("Sending " + email + " a link to " + message.body)
+        message.html = self.format_html(email_text, email_properties)
+        logging.info("Sending " + email + " a link to " + email_properties[2]['value'])
         message.send()
 
     def get_confirmation_link(self, row_id):
