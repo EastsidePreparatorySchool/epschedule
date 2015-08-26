@@ -19,7 +19,7 @@ for schedule in schedules:
 	for classObj in schedule['classes']:
 		inRooms = False;
 		for room in rooms:
-			if room['name'] == classObj['room']:
+			if room['name'] == classObj['room'].lower():
 				inRooms = True;
 				break;
 		if not inRooms:
