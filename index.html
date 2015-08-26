@@ -22,8 +22,6 @@
   <link rel="import" href="bower_components/google-map/google-map-directions.html">
   <link rel="import" href="bower_components/paper-toast/paper-toast.html">
   <link rel="import" href="item.html">
-
-  <script src="bcrypt.js"></script>
   <script>
   var touchStartPos = [0, 0];
   function handleTouchStart(evt) {
@@ -139,6 +137,20 @@
             break;
     }
   }
+  function requestAdditionalData(name, type, funct) {
+    //Type is the type of data being requested - [class, teacher, student, room, period]
+    //Name is the name of the class, teacher, student, etc.
+    var url = type + "/" + name;
+    xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status==200) {
+        result = JSON.parse(xhr.responseText);
+        funct(result);
+      }
+    }
+    xhr.open("GET", url, true);
+    xhr.send();
+  }
   function renderRoom(roomObj) {
     /*renderToast("Please allow EPSchedule to use your current location"); //TODO check to see if browser allows geolocation by default*/
     paperDialog = document.getElementById("dialog");
@@ -158,8 +170,17 @@
         renderToast("Your browser does not support Geolocation");
     }*/
   }
-  function renderClass() {
-
+  function renderClass(classObj) {
+    console.log(classObj);
+  }
+  function renderTeacher(teacherObj) {
+    console.log(teacherObj);
+  }
+  function renderStudent(studentObj) {
+    console.log(studentObj);
+  }
+  function renderPeriod(periodObj) {
+    console.log(periodObj);
   }
   function renderSchedule(dateObj, emptyDiv) {
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
@@ -371,7 +392,7 @@
         <paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button>
         <paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
         <!-- example of showing avatar in toolbar. could also go in drawer -->
-        <paper-icon-button src="96x96_photos/steve_fassino.jpg" onclick="renderRoom({'room':'MS-22A', 'latitude':47.643502, 'longitude':-122.198576})"></paper-icon-button>
+        <paper-icon-button src="96x96_photos/steve_fassino.jpg" onclick="renderClass('geometry')"></paper-icon-button>
       </paper-toolbar>
       <div id="container" class="container" layout="" vertical="" center="">
         <post-list show="all"></post-list>
