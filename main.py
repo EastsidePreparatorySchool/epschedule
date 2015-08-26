@@ -65,13 +65,6 @@ def load_schedule_data():
     schedules = json.load(file)
     return schedules
 
-def check_id(encoded_id):
-    if encoded_id is None:
-        return None
-    #TODO add code to check if id is valid
-    id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
-    return id
-
 def create_error_obj(error_message, action="", buttontext=""):
     error_obj = {"error":error_message}
     if action: #If action is present (meaning the error has a button)
@@ -92,8 +85,16 @@ REGISTER_SUCCESS = {
   "error": "Success! Check your email to complete registration"
 }
 
+class BaseHandler(webapp2.RequestHandler): #All handlers inherit from this handler
+    def check_id(self):
+        encoded_id = self.request.cookies.get("SID")
+        if encoded_id is None:
+            return None
+        #TODO add code to check if id is valid
+        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
+        return id
 
-class RegisterHandler (webapp2.RequestHandler):
+class RegisterHandler (BaseHandler):
     def post(self):
         email = self.request.get('email')
         password = self.request.get('password')
@@ -136,14 +137,7 @@ class RegisterHandler (webapp2.RequestHandler):
         url = "http://epscheduleapp.appspot.com/confirm/" + encoded_row_id
         return url
 
-    def get(self):
-        #      TODO redirect user to main schedule page if they have a auth cookie
-        #template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(days)}
-        template_values = {}
-        template = JINJA_ENVIRONMENT.get_template('signup.html')
-        self.response.write(template.render(template_values))
-
-class ConfirmHandler(webapp2.RequestHandler):
+class ConfirmHandler(BaseHandler):
     def get(self, encoded_row_id):
         logging.info("Trying to confirm!")
         row_id = aes.decryptData(CRYPTO_KEY, binascii.unhexlify(encoded_row_id))
@@ -183,7 +177,7 @@ ERR_NOT_EPS_EMAIL = {
   "error": "Please sign in with your Eastside Prep email account "
 }
 
-class LoginHandler (webapp2.RequestHandler):
+class LoginHandler (BaseHandler):
     def post(self):
         email = self.request.get('email')
         password = self.request.get('password')
@@ -227,12 +221,13 @@ class LoginHandler (webapp2.RequestHandler):
 
         return {}  # success
 
-class LogoutHandler(webapp2.RequestHandler):
+class LogoutHandler(BaseHandler):
     def post(self):
         self.response.delete_cookie("SID")
 
-class ClassHandler(webapp2.RequestHandler):
+class ClassHandler(BaseHandler):
     def get_class_schedule(self, classname):
+
         schedules = load_schedule_data();
         classdataobj = []
         for schedule in schedules:                                    #Load up each student's schedule
@@ -255,27 +250,22 @@ class ClassHandler(webapp2.RequestHandler):
         return classdataobj
     def get(self, class_id):
         #Get the cookie
-        id = check_id(self.request.cookies.get("SID"))
+        id = self.check_id()
         if id is None:
-            self.send_login_response()
+            self.error(403)
             return
 
         #schedule = self.get_schedule(self.request.get('id'))
         self.response.write(json.dumps(self.get_class_schedule(class_id)))
 
-    def send_login_response(self):
-        template_values = {}
-        template = JINJA_ENVIRONMENT.get_template('login.html')
-        self.response.write(template.render(template_values))
-
-class PeriodHandler(webapp2.RequestHandler):
+class PeriodHandler(BaseHandler):
     def get(self, period):
+        id = self.check_id()
+        if id is None:
+            self.error(403)
+            return
         #Should return back which of your teachers are free, which rooms are free, what class you currently have then, and what classes you could take then
         dataobj = {'freeteachers':[], 'freerooms':[], 'currentclass':{}, 'potentialclassschedules':[]}
-        id = check_id(self.request.cookies.get("SID"))
-        if id is None:
-            self.send_login_response()
-            return
         if id == "9999": #If this is the demo accound
             id = "4093"
         schedule_data = load_schedule_data()
@@ -333,11 +323,11 @@ class PeriodHandler(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('login.html')
         self.response.write(template.render(template_values))
 
-class RoomHandler(webapp2.RequestHandler):
+class RoomHandler(BaseHandler):
     def get(self, room):
-        id = check_id(self.request.cookies.get("SID"))
+        id = self.check_id()
         if id is None:
-            self.send_login_response()
+            self.error(403)
             return
         schedules = load_schedule_data()
         room = room.lower()
@@ -366,11 +356,11 @@ class RoomHandler(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('login.html')
         self.response.write(template.render(template_values))
 
-class TeacherHandler(webapp2.RequestHandler):
+class TeacherHandler(BaseHandler):
     def get(self, teacher):
-        id = check_id(self.request.cookies.get("SID"))
+        id = self.check_id()
         if id is None:
-            self.send_login_response()
+            self.error(403)
             return
         schedule_data = load_schedule_data()
         teachernames = string.split(teacher, "_")
@@ -384,7 +374,7 @@ class TeacherHandler(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('login.html')
         self.response.write(template.render(template_values))
 
-class MainHandler(webapp2.RequestHandler):
+class MainHandler(BaseHandler):
     #def __init__(self):
     def get_schedule(self, id):
         schedules = load_schedule_data();
@@ -405,11 +395,11 @@ class MainHandler(webapp2.RequestHandler):
 
     def get(self):
         #Get the cookie
-        id = check_id(self.request.cookies.get("SID"))
+        id = self.check_id()
         if id is None:
             self.send_login_response()
             return
-        if id == "9999": #If this is the demo accound
+        if id == "9999": #If this is the demo account
             id = "4093"
         #schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
