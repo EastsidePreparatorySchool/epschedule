@@ -43,6 +43,8 @@ Temporary Items
 .apdisk
 
 *.pyc
+*.csr
+*.key
 bower_components
 node_modules
 crawler.bat
@@ -52,6 +54,7 @@ id_table.json
 teacher_photos
 96x96_photos
 face_detect_test
-crypto.key
 lib
+
+
 
