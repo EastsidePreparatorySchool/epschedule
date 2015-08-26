@@ -22,7 +22,6 @@ import os
 import string
 import logging
 import datetime
-import binascii
 from google.appengine.ext import db
 from google.appengine.ext import vendor
 from google.appengine.api import mail
@@ -159,14 +158,14 @@ class RegisterHandler (BaseHandler):
 
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
-        encoded_row_id = binascii.hexlify(encrypted_row_id)
+        encoded_row_id = base64.urlsafe_b64encode(encrypted_row_id)
         url = "http://epscheduleapp.appspot.com/confirm/" + encoded_row_id
         return url
 
 class ConfirmHandler(BaseHandler):
     def get(self, encoded_row_id):
         logging.info("Trying to confirm!")
-        row_id = aes.decryptData(CRYPTO_KEY, binascii.unhexlify(encoded_row_id))
+        row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
         logging.info(row_id)
         user_obj_query = User.get_by_id(int(row_id)) #FIX Instead of email, use row id
         if not user_obj_query.verified:
@@ -256,29 +255,26 @@ class LogoutHandler(BaseHandler):
         self.response.delete_cookie("SID")
 
 class ClassHandler(BaseHandler):
-    def get_class_schedule(self, classname):
-
+    def get_class_schedule(self, class_name, period):
         schedules = load_schedule_data();
-        classdataobj = []
+        result = None
         for schedule in schedules:                                    #Load up each student's schedule
             for classobj in schedule['classes']:                      #For each one of their classes
-                if classobj['name'].lower() == classname:             #If that classes' name is the same as the class name we're looking for
+                if classobj['name'].lower() == class_name.lower() and \
+                   classobj['period'].lower() == period.lower():       #Check class name and period match
                     if classobj['teacher'] != "":                     #If they aren't a student (teacher names will be added later)
+                        if not result:
+                            result = {"period": classobj['period'], \
+                                      "teacher": classobj['teacher'], \
+                                      "students": []}
+                        student = {"firstname": schedule['firstname'], \
+                                   "lastname": schedule['lastname'], \
+                                   "email": "nobody@eastsideprep.org"}  #Append their name to a list of students in that period
+                        result['students'].append(student)
 
-                        createnewperiod = True                        #Assume that we need to create a new period
-                        for period in classdataobj:                   #For each period that we know the target class is held in
-                            if period['period'] == classobj['period']:#If that period is the same as the period
-                                createnewperiod = False               #We know that we don't need to create a new period
-
-                        if createnewperiod:                           #If we need to create a new period, create one and set the teacher
-                            classdataobj.append({"period":classobj['period'], "teacher":classobj['teacher'], "students":[]})
-
-                        for i in range (0, len(classdataobj)):                             #For each known period in the class
-                            if classdataobj[i]['period'] == classobj['period']:            #If the student belongs in that period
-                                name = schedule['firstname'] + " " + schedule['lastname']  #Append their name to a list of students in that period
-                                classdataobj[i]['students'].append(name)
-        return classdataobj
-    def get(self, class_id):
+        return result
+    def get(self, class_name, period):
+        logging.info("get()")
         #Get the cookie
         id = self.check_id()
         if id is None:
@@ -286,7 +282,7 @@ class ClassHandler(BaseHandler):
             return
 
         #schedule = self.get_schedule(self.request.get('id'))
-        self.response.write(json.dumps(self.get_class_schedule(class_id)))
+        self.response.write(json.dumps(self.get_class_schedule(class_name, period)))
 
 class PeriodHandler(BaseHandler):
     def get(self, period):
@@ -348,11 +344,6 @@ class PeriodHandler(BaseHandler):
 
         self.response.write(dataobj)
 
-    def send_login_response(self):
-        template_values = {}
-        template = JINJA_ENVIRONMENT.get_template('login.html')
-        self.response.write(template.render(template_values))
-
 class RoomHandler(BaseHandler):
     def get(self, room):
         id = self.check_id()
@@ -380,12 +371,6 @@ class RoomHandler(BaseHandler):
                 break
         self.response.write(json.dumps(room_schedule))
 
-
-    def send_login_response(self):
-        template_values = {}
-        template = JINJA_ENVIRONMENT.get_template('login.html')
-        self.response.write(template.render(template_values))
-
 class TeacherHandler(BaseHandler):
     def get(self, teacher):
         id = self.check_id()
@@ -398,11 +383,6 @@ class TeacherHandler(BaseHandler):
         for schedule in schedule_data:
             if schedule['firstname'].lower() == teachernames[0] and schedule['lastname'].lower() == teachernames[1]:
                 self.response.write(dataobj['teacherschedule'])
-
-    def send_login_response(self):
-        template_values = {}
-        template = JINJA_ENVIRONMENT.get_template('login.html')
-        self.response.write(template.render(template_values))
 
 class MainHandler(BaseHandler):
     #def __init__(self):
@@ -441,14 +421,19 @@ class MainHandler(BaseHandler):
         else:
             self.response.write("No schedule for id " + id)
 
+class AboutHandler(webapp2.RequestHandler):
+    def get(self):
+            template = JINJA_ENVIRONMENT.get_template('about.html')
+            self.response.write(template.render({}))
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
+    ('/about', AboutHandler),
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
-    ('/register',RegisterHandler),
+    ('/register', RegisterHandler),
     ('/confirm/(\w+)',ConfirmHandler),
-    ('/class/(\w+)', ClassHandler),
+    ('/class/(\w+)/(\w+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
     ('/room/(\w+)', RoomHandler),
     ('/teacher/(\w+)', TeacherHandler)
