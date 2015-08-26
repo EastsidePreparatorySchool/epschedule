@@ -4,4 +4,4 @@ cron:
   schedule: every 24 hours synchronized
 - description: download and crop teacher images
   url: /scripts/get_image_links
-  schedule: first of month 00:00
+  schedule: 1 of jan,april,july,oct 00:00
