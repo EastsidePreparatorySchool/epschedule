@@ -94,6 +94,8 @@
     loginText.style.display = "block";
     loginButton.style.display = "none";
     registerText.style.display = "none";
+    passwordBox = document.getElementById("password");
+    passwordBox.setAttribute("label", "Password (Don't use your Canvas password)");
   }
   function switchToLogin() {
     // Don't allow mode changes while an XHR is outstanding.
@@ -104,6 +106,8 @@
     loginText.style.display = "none";
     loginButton.style.display = "block";
     registerText.style.display = "block";
+    passwordBox = document.getElementById("password");
+    passwordBox.setAttribute("label", "Password");
   }
   function checkSubmit(e) {
     if (e && e.keyCode === 13) {
