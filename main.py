@@ -199,6 +199,10 @@ class LoginHandler (BaseHandler):
         account_confirmed = False
         known_username = False
 
+        # If only username is supplied, assume eastsideprep.org.
+        if '@' not in email:
+            email += "@eastsideprep.org"
+        # If a domain is specified, it must be eastsideprep.org.
         if email[-17:] != "@eastsideprep.org":
             return ERR_NOT_EPS_EMAIL
 
