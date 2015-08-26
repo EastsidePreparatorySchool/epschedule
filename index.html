@@ -31,9 +31,9 @@
   function handleTouchEnd(evt) {
     if (Math.abs(touchStartPos[0] - evt.changedTouches[0].pageX) > Math.abs(touchStartPos[1] - evt.changedTouches[0].pageY)) { //If the swipe is horizontal
         if (touchStartPos[0] > evt.changedTouches[0].pageX) {
-            dateBack();
-        } else if (touchStartPos[0] < evt.changedTouches[0].pageX) {
             dateForward();
+        } else if (touchStartPos[0] < evt.changedTouches[0].pageX) {
+            dateBack();
         }
     }
   }
