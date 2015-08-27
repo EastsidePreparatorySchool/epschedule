@@ -133,21 +133,20 @@ class RegisterHandler (BaseHandler):
             if int(schedule['id']) == int(id):
                 return schedule['firstname']
 
-    def format_html(self, email_text, properties):
-        for item in properties:
-            search = "{" + item['name'] + "}"
+    def format_html(self, email_text, obj):
+        for prop in obj:
+            search = "{" + prop + "}"
             message_parts = string.split(email_text, search)
-            logging.error(len(message_parts))
-            email_text = message_parts[0] + item['value'] + message_parts[1]
+            email_text = message_parts[0] + item[prop] + message_parts[1]
         return email_text
 
     def send_confirmation_email(self, email, row_id):
         email_file = open('confirme_mail.html', 'rb')
         email_text = email_file.read()
-        email_properties = []
-        email_properties.append({'name':'name', 'value':str(self.get_name(email))})
-        email_properties.append({'name':'email', 'value':email})
-        email_properties.append({'name':'url', 'value':self.get_confirmation_link(row_id)})
+        email_properties = {}
+        email_properties['name'] = self.get_name(email)
+        email_properties['email'] = email
+        email_properties['url'] = self.get_confirmation_link(row_id)
         message = mail.EmailMessage()
         message.sender = "The EPSchedule Team <gavin.uberti@gmail.com>"   #TODO make sender fooy@epscheduleapp.appspot.com
         message.to = email
