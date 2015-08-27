@@ -172,7 +172,7 @@ class RegisterHandler (BaseHandler):
         return email_text
 
     def send_confirmation_email(self, email, row_id):
-        email_file = open('confirme_mail.html', 'rb')
+        email_file = open('confirm_email.html', 'rb')
         email_text = email_file.read()
         email_properties = {}
         email_properties['name'] = self.get_name(email)
@@ -254,8 +254,7 @@ class ChangePasswordHandler(BaseHandler):
         email = self.request.get('email')
         old_password = self.request.get('oldpassword')
         new_password = self.request.get('newpassword')
-        logging.info(email)
-        logging.info(old_password) #MajorTODO remove this line
+        logging.info(email + " would like to change their password")
         err = self.check_password(email, str(old_password))
         if err:
             self.response.write(json.dumps({"error":"Your password is incorrect."}))

@@ -93,13 +93,13 @@
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status==200) {
         result = JSON.parse(xhr.responseText);
-        if (result.error == "") {
+        if (!result.error) {
           renderToast("Password changed successfully.");
           oldPassword.value = "";
           newPassword.value = "";
           console.log("Changed password!");
         } else {
-          console.log("Was not able to change password!");
+          console.log(result.error);
           renderToast(result.error);
         }
       }
