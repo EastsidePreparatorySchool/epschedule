@@ -1,79 +1,6 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 <link rel="import" href="bower_components/paper-material/paper-material.html">
-
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
-<dom-module id="post-card">
-  <style>
-    /* TODO(polyup): For speed, consider reworking these styles with .classes
-                     and #ids rather than [attributes].
-    */
-    [layout] {
-      @apply(--layout);
-    }
-    [layout][horizontal] {
-      @apply(--layout-horizontal);
-    }
-    [layout][center] {
-      @apply(--layout-center);
-    }
-    [layout][vertical] {
-      @apply(--layout-vertical);
-    }
-  </style>
-  <style>
-    :host {
-      display: block;
-      position: relative;
-      background-color: white;
-      width: 100%;
-      font-size: 1.2rem;
-      font-weight: 300;
-      margin-bottom: 1px;
-      border-radius: 2px;
-    }
-    .card-header {
-      margin-bottom: 1px;
-    }
-    polyfill-next-selector { content: '.card-header img'; }
-    .card-header ::content img {
-      width: 48px;
-      border-radius: 50%;
-      margin: 16px;
-      #background: #9e9e9e url() center center no-repeat;
-    }
-    polyfill-next-selector { content: '.card-header h2'; }
-    .card-header ::content h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 300;
-    }
-    polyfill-next-selector { content: '.card-header p'; }
-    .card-header ::content p {
-      margin: 0;
-      font-size: 0.9rem;
-      font-weight: 300;
-      color: gray;
-    }
-    .card-header ::content a:link {
-      color: gray;
-      font-weight: 300;
-      text-decoration: none;
-    }
-    </style>
-  <template>
-    <div class="card-header" layout="" horizontal="" center="">
-      <content select="img"></content>
-      <div class="card-mid" layout="" vertical="">
-        <content select="p"></content>
-        <content select="h2"></content>
-      </div>
-    </div>
-    <content></content>
-  </template>
-  <script>
-    Polymer({ is: 'post-card' });
-  </script>
-</dom-module>
 
 <dom-module id="post-list">
   <style>
@@ -93,25 +20,53 @@
   <style>
     :host {
       width: 100%;
+      display: block;
+      position: relative;
+      background-color: white;
+      width: 100%;
+      font-size: 1.2rem;
+      font-weight: 300;
+      margin-bottom: 1px;
+      border-radius: 2px;
     }
-    </style>
+    .card-header {
+      margin-bottom: 1px;
+    }
+    .card-header ::content img {
+      width: 48px;
+      border-radius: 50%;
+      margin: 16px;
+    }
+    .card-header ::content h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 300;
+    }
+    .card-header ::content p {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: gray;
+    }
+    .card-header ::content a:link {
+      color: gray;
+      font-weight: 300;
+      text-decoration: none;
+    }
+  </style>
   <template>
     <paper-material class="card" elevation="2">
-    <div layout="" vertical="" center="">
+    <div layout="" vertical="">
       <template is="dom-repeat" items="{{posts}}">
-        <post-card>
           <img src="{{item.avatar}}" width="48" height="48">
-          <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
-            <template is="dom-if" if="{{item.teacher}}">
-              (<a item="link" href$="{{item.teacherLink}}">{{item.teacher}}</a>,
-              <a item="link" href$="{{item.roomLink}}">{{item.room}}</a>)
-            </template>
-            <template is="dom-if" if="{{!item.teacher}}">
-              (<a item="link" href$="{{item.roomLink}}">{{item.room}}</a>)
-            </template>
-          </p>
-          <h2>{{item.name}}</h2>
-        </post-card>
+          <div class="card-mid" layout="" vertical="">
+            <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
+              <template is="dom-if" if="{{item.teacher}}">
+              </template>
+              <template is="dom-if" if="{{!item.teacher}}">
+              </template>
+            </p>
+            <h2>{{item.name}}</h2>
       </template>
     </div>
     </paper-material>
@@ -119,7 +74,5 @@
   <script>
     Polymer({
       is: 'post-list',
-      properties: { posts: { notify: true } }
     });
   </script>
-</dom-module>
