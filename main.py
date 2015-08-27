@@ -93,6 +93,37 @@ class BaseHandler(webapp2.RequestHandler): #All handlers inherit from this handl
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         return id
 
+    def check_password(self, email, password):  #Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
+        logging.info("Checking passwords")
+        account_confirmed = False
+        known_username = False
+
+        # If only username is supplied, assume eastsideprep.org.
+        if '@' not in email:
+            email += "@eastsideprep.org"
+        # If a domain is specified, it must be eastsideprep.org.
+        if email[-17:] != "@eastsideprep.org":
+            return ERR_NOT_EPS_EMAIL
+
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
+        for query_result in user_obj_query:
+            known_username = True
+            test_hashed_password = bcrypt.hashpw(password, query_result.password)
+            logging.info("original: " + query_result.password + " test: " + test_hashed_password)
+            password_match = test_hashed_password == query_result.password
+            if not password_match:
+                return ERR_FORGOT_PASSWORD
+            if query_result.verified:
+                account_confirmed = True
+                break
+
+        if not known_username:
+            return ERR_NO_ACCOUNT
+        elif not account_confirmed:
+            return ERR_UNCONFIRMED_ACCOUNT
+
+        return {}  # success
+
 class RegisterHandler (BaseHandler):
     def post(self):
         email = self.request.get('email')
@@ -218,36 +249,24 @@ class LoginHandler (BaseHandler):
             else:
                 self.response.write(create_error_obj("Something went wrong! " + email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
 
-    def check_password(self, email, password):  #Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
-        logging.info("Checking passwords")
-        account_confirmed = False
-        known_username = False
-
-        # If only username is supplied, assume eastsideprep.org.
-        if '@' not in email:
-            email += "@eastsideprep.org"
-        # If a domain is specified, it must be eastsideprep.org.
-        if email[-17:] != "@eastsideprep.org":
-            return ERR_NOT_EPS_EMAIL
-
-        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
-        for query_result in user_obj_query:
-            known_username = True
-            test_hashed_password = bcrypt.hashpw(password, query_result.password)
-            logging.info("original: " + query_result.password + " test: " + test_hashed_password)
-            password_match = test_hashed_password == query_result.password
-            if not password_match:
-                return ERR_FORGOT_PASSWORD
-            if query_result.verified:
-                account_confirmed = True
+class ChangePasswordHandler(BaseHandler):
+    def post(self):
+        email = self.request.get('email')
+        old_password = self.request.get('oldpassword')
+        new_password = self.request.get('newpassword')
+        logging.info(email)
+        logging.info(old_password) #MajorTODO remove this line
+        err = self.check_password(email, str(old_password))
+        if err:
+            self.response.write(json.dumps({"error":"Your password is incorrect."}))
+        else:
+            hashed = bcrypt.hashpw(new_password, bcrypt.gensalt(1))
+            user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
+            for query_result in user_obj_query:
+                query_result.password = hashed
+                db.put(query_result)
+                self.response.write(json.dumps({}))
                 break
-
-        if not known_username:
-            return ERR_NO_ACCOUNT
-        elif not account_confirmed:
-            return ERR_UNCONFIRMED_ACCOUNT
-
-        return {}  # success
 
 class LogoutHandler(BaseHandler):
     def post(self):
@@ -431,6 +450,7 @@ app = webapp2.WSGIApplication([
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/register', RegisterHandler),
+    ('/changepassword', ChangePasswordHandler),
     ('/confirm/([\w\-]+)', ConfirmHandler),
     ('/class/(\w+)/(\w+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),

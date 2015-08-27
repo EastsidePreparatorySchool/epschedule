@@ -15,12 +15,17 @@
   <link rel="import" href="bower_components/paper-button/paper-button.html">
   <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
   <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+  <link rel="import" href="bower_components/paper-input/paper-input.html">
   <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">`
   <link rel="import" href="bower_components/google-map/google-map.html">
   <link rel="import" href="bower_components/google-map/google-map-search.html">
   <link rel="import" href="bower_components/google-map/google-map-marker.html">
   <link rel="import" href="bower_components/google-map/google-map-directions.html">
   <link rel="import" href="bower_components/paper-toast/paper-toast.html">
+  <link rel="import" href="bower_components/iron-icons/communication-icons.html">
+  <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
+  <link rel="import" href="bower_components/neon-animation/neon-animations.html">
+  <link rel="import" href="bower_components/neon-animation/demo/dropdown/animated-dropdown.html">
   <link rel="import" href="item.html">
   <script>
   var touchStartPos = [0, 0];
@@ -65,6 +70,43 @@
         dialog.open();
       }
   }
+  function openSettings() {
+    paperDialog = document.getElementById("dialog");
+    paperDialog.style.width = "425px";
+    paperDialog.innerHTML = '<div id="settingspanel"><h2>Settings</h2><h3>Change password</h3>' +
+    '<paper-input label="Old password" id="oldpassword" type="password"></paper-input>' +
+    '<paper-input label="New password" id="newpassword" type="password"></paper-input>' +
+    '<paper-button onclick="submitChangePassword()" raised id="changepassword">CHANGE PASSWORD</paper-button></div>';
+    openDialog();
+  }
+  function submitChangePassword() {
+    var data = new FormData();
+    var email = schedule['firstname'][0] + schedule['lastname'];
+    email = email + "@eastsideprep.org";
+    email = email.toLowerCase();
+    var oldPassword = document.getElementById("oldpassword")
+    var newPassword = document.getElementById("newpassword")
+    data.append('email', email)
+    data.append('oldpassword', oldPassword.value)
+    data.append('newpassword', newPassword.value)
+    xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status==200) {
+        result = JSON.parse(xhr.responseText);
+        if (result.error == "") {
+          renderToast("Password changed successfully.");
+          oldPassword.value = "";
+          newPassword.value = "";
+          console.log("Changed password!");
+        } else {
+          console.log("Was not able to change password!");
+          renderToast(result.error);
+        }
+      }
+    }
+    xhr.open("POST", "changepassword", true);
+    xhr.send(data);
+  }
   document.onkeydown = function(event) {
     if (event.keyCode == 37) { //Left
         dateBack();
@@ -96,6 +138,8 @@
   }
   function renderToast(text) {
     toast = document.getElementById("toast");
+    console.log("Displaying toast");
+    console.log(toast);
     toast.setAttribute("text", text);
     toast.show();
   }
@@ -154,6 +198,7 @@
   function renderRoom(roomObj) {
     /*renderToast("Please allow EPSchedule to use your current location"); //TODO check to see if browser allows geolocation by default*/
     paperDialog = document.getElementById("dialog");
+    paperDialog.removeAttribute("style")
     paperDialog.innerHTML = '<google-map latitude="47.643455" longitude="-122.198935" id="map" zoom="18" disable-default-ui fit-to-markers>' +
       '<google-map-marker latitude="' + roomObj.latitude + '" longitude="' + roomObj.longitude + '"' +
       'draggable="false" title="' + roomObj.room + '"></google-map-marker></google-map>';
@@ -329,6 +374,10 @@
     text-transform: none;
     font-size: 14px;
   }
+  #changepassword {
+    color:white;
+    background:#2196f3;
+  }
   .drawer-icon {
     padding-right: 16px;
   }
@@ -377,6 +426,9 @@
         <paper-button noink onclick="signOut()">
           <iron-icon class="drawer-icon" icon="account-circle"></iron-icon>Sign out
         </paper-button>
+        <paper-button noink onclick="openSettings()">
+          <iron-icon class="drawer-icon" icon="settings"></iron-icon>Settings
+        </paper-button>
         <paper-button noink onclick="reportBug()">
           <iron-icon class="drawer-icon" icon="bug-report"></iron-icon>Report a bug
         </paper-button>
@@ -400,8 +452,6 @@
     </paper-header-panel>
   </paper-drawer-panel>
   <paper-dialog id="dialog">
-      <h2>Dialog Title</h2>
-      <p>Lorem ipsum dolor sit amet</p>
   </paper-dialog>
 
 
