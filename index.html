@@ -288,7 +288,15 @@
         } catch (error) {
         }
     }
-    document.querySelector('post-list').posts = todaySchedule;
+
+    var list = document.querySelector('post-list');
+    list.posts = todaySchedule;
+    list.onTeacherTap = function(e) {
+      window.alert("teach-tap");
+    }
+    list.onRoomTap = function(e) {
+      renderRoom({latitude:47.643455, longitude:-122.198935, room:e.model.item.room})
+    }
   }
 
   function cleanString(text) {
