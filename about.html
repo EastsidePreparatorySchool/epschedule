@@ -6,6 +6,10 @@
   <link href="http://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
   <link rel="import" href="bower_components/polymer/polymer.html">
   <link rel="import" href="bower_components/paper-material/paper-material.html">
+  <link rel="import" href="bower_components/iron-icons/iron-icons.html">
+  <link rel="import" href="bower_components/iron-image/iron-image.html"
+  <link rel="import" href="bower_components/iron-icons/hardware-icons.html">
+  <link rel="import" href="/bower_components/core-icon/core-icon.html">
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -15,17 +19,77 @@
     }
     .card {
       background: white;
-      max-width: 360px;
+      max-width: 90%;
       margin: 20px auto;
       padding: 20px;
       border-radius: 2px;
+    }
+    .container {
+      display: flex;
+    }
+
+    .column {
+      flex: 1;
+    }
+
+    .column-one {
+      order: 1;
+    }
+    .column-two {
+      order: 2;
+    }
+    .column-three {
+      order: 3;
+    }
+    .featureimage {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #features {
+      background-color: #EEEEEE;
     }
   </style>
 
 	<paper-material class="card" elevation="2">
 	  <div>
-      <h1>About EPSchedule</h1>
-      <p>Welcome to the about page! If this was an actual about page, there would be interesting text here.</p>
+      <section id="introduction">
+        <h1>About EPSchedule</h1>
+        <p>EPSchedule is an open-source schedule app designed by Gavin Uberti</p>
+      </section>
+      <section id="features">
+        <div class="container">
+          <div class="column column-one">
+            <iron-image class="featureimage" src="misc_photos/advisory.jpg"></iron-image>
+            <h2>Secure</h2>
+            <p>EPSchedule is built on state-of-the-art security. All traffic is sent of HTTPS and TLS, and passwords are hashed via Bcrypt.</p>
+          </div>
+          <div class="column column-two">
+            <h2>Powerful</h2>
+            <p>EPSchedule allows for easy viewing of things such as which rooms are free during your study hall, or how to get to your chemistry class.</p>
+          </div>
+          <div class="column column-three">
+            <h2>Open</h2>
+            <p>EPSchedule is fully open source. If you're curious about exactly how something works, view EPSchedule on
+              <a href="https://github.com/guberti/epschedule">Github</a>.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="inaction">
+        <div>
+          <h2>Learn about your schedule beforehand</h2>
+          <p>Don't wait to learn who's in your class until the first day. Or see if it's possible for you to take History with your favorite teacher. Or find which rooms are open to practice your Spanish presentation in.</p>
+        </div>
+        <div>
+          <h2>Day-by-day looks at what's coming</h2>
+          <p>See the day before whether Assembly is before or after H period. Or learn exactly what time your Lit final starts. Or discover what your schedule will be like on Field Day</p>
+        </div>
+        <div>
+          <h2>Integrated campus maps</h2>
+          <p>
+      </section>
+    </div>
+
     </div>
   </paper-material>
 
