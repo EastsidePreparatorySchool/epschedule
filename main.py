@@ -432,7 +432,7 @@ app = webapp2.WSGIApplication([
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/register', RegisterHandler),
-    ('/confirm/(\w+)',ConfirmHandler),
+    ('/confirm/([\w\-]+)', ConfirmHandler),
     ('/class/(\w+)/(\w+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
     ('/room/(\w+)', RoomHandler),
