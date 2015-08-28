@@ -183,7 +183,7 @@ class RegisterHandler (BaseHandler):
         message.to = email
         message.subject = "Sign up for EPSchedule"
         message.html = self.format_html(email_text, email_properties)
-        logging.info("Sending " + email + " a link to " + email_properties[2]['value'])
+        logging.info("Sending " + email + " a link to " + email_properties['url'])
         message.send()
 
     def get_confirmation_link(self, row_id):
