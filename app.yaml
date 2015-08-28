@@ -25,6 +25,9 @@ handlers:
 - url: /misc_photos
   static_dir: misc_photos
 
+- url: /teacher_photos_fullsize
+  static_dir: teacher_photos_fullsize
+
 - url: .*
   script: main.app
   secure: always

@@ -37,6 +37,8 @@ id_table_file = open('id_table.json', 'rb')
 ID_TABLE = json.load(id_table_file)
 lat_lon_coords_file = open('room_locations.json', 'rb')
 LAT_LON_COORDS = json.load(lat_lon_coords_file)
+bios_file = open('bios.json', 'rb')
+BIOS = json.load(bios_file)
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -395,13 +397,20 @@ class TeacherHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
+        teacher = teacher.lower()
+        bio = self.getBio(teacher)
         schedule_data = load_schedule_data()
         teachernames = string.split(teacher, "_")
 
         for schedule in schedule_data:
             if schedule['firstname'].lower() == teachernames[0] and schedule['lastname'].lower() == teachernames[1]:
-                self.response.write(dataobj['teacherschedule'])
+                schedule['bio'] = bio
+                self.response.write(json.dumps(schedule))
 
+    def getBio(self, teacher):
+        for bio in BIOS:
+            if bio['name'] == teacher:
+                return bio['bio']
 class MainHandler(BaseHandler):
     #def __init__(self):
     def get_schedule(self, id):
@@ -439,7 +448,7 @@ class MainHandler(BaseHandler):
         else:
             self.response.write("No schedule for id " + id)
 
-class AboutHandler(webapp2.RequestHandler):
+class AboutHandler(BaseHandler):
     def get(self):
             template = JINJA_ENVIRONMENT.get_template('about.html')
             self.response.write(template.render({}))

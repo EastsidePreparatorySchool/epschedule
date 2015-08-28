@@ -20,7 +20,9 @@
   <link rel="import" href="bower_components/google-map/google-map.html">
   <link rel="import" href="bower_components/google-map/google-map-marker.html">
   <link rel="import" href="bower_components/paper-toast/paper-toast.html">
+  <link rel="import" href="bower_components/iron-image/iron-image.html">
   <link rel="import" href="schedule.html">
+
   <script>
   var touchStartPos = [0, 0];
   function handleTouchStart(evt) {
@@ -179,9 +181,11 @@
     //Type is the type of data being requested - [class, teacher, student, room, period]
     //Name is the name of the class, teacher, student, etc.
     var url = type + "/" + name;
+    console.log("Requesting " + url);
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status==200) {
+        console.log(xhr.responseText);
         result = JSON.parse(xhr.responseText);
         funct(result);
       }
@@ -191,8 +195,11 @@
   }
   function renderRoom(roomObj) {
     /*renderToast("Please allow EPSchedule to use your current location"); //TODO check to see if browser allows geolocation by default*/
+    //Bug here that causes latitude and longitude of google map tag to not exist
     paperDialog = document.getElementById("dialog");
-    paperDialog.removeAttribute("style")
+    paperDialog.removeAttribute("style");
+    console.log("Latitude = " + roomObj.latitude);
+    console.log("Longitude = " + roomObj.longitude);
     paperDialog.innerHTML = '<google-map latitude="47.643455" longitude="-122.198935" id="map" zoom="18" disable-default-ui fit-to-markers>' +
       '<google-map-marker latitude="' + roomObj.latitude + '" longitude="' + roomObj.longitude + '"' +
       'draggable="false" title="' + roomObj.room + '"></google-map-marker></google-map>';
@@ -213,7 +220,20 @@
     console.log(classObj);
   }
   function renderTeacher(teacherObj) {
-    console.log(teacherObj);
+    paperDialog = document.getElementById("dialog");
+    paperDialog.removeAttribute("style");
+    paperDialog.style.width = "700px";
+    var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
+    imgSrc = imgSrc + teacherObj.lastname + ".jpg";
+    imgSrc = imgSrc.toLowerCase();
+    email = teacherObj.firstname[0] + teacherObj.lastname + "@eastsideprep.org";
+    email = email.toLowerCase();
+    paperDialog.innerHTML = '<div>' + '<img src="' + imgSrc +
+    '" align="right" class="fullsizeimage"></img><h1>' + teacherObj.firstname +
+    ' ' + teacherObj.lastname + '</h1><h3><a href="mailto:' + email + '">' +
+    email + '</a></h3><p>' + teacherObj.bio + '</p></div>' +
+    '<div id="teacherschedulecontainer"></div>';
+    paperDialog.open();
   }
   function renderStudent(studentObj) {
     console.log(studentObj);
@@ -331,10 +351,12 @@
     var scheduleElement = document.querySelector('x-schedule');
     scheduleElement.entries = todaySchedule;
     scheduleElement.onTeacherTap = function(e) {
-      window.alert("teach-tap");
-    }
+      name = e.model.item.teacher.replace(" ", "_");
+      console.log(e.model.item);
+      requestAdditionalData(name, "teacher", renderTeacher);    }
     scheduleElement.onRoomTap = function(e) {
-      renderRoom({latitude:47.643455, longitude:-122.198935, room:e.model.item.room})
+      name = e.model.item.room.replace("-", "_")
+      requestAdditionalData(name, "room", renderRoom);
     }
   }
 
@@ -400,6 +422,9 @@
     width: 80%;
     margin: 24px auto;
     #background:blue;
+  }
+  .fullsizeimage {
+    margin: 16px;
   }
   @media (min-width: 720px) {
     .container {
