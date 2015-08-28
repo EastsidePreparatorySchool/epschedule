@@ -168,7 +168,7 @@ class RegisterHandler (BaseHandler):
         for prop in obj:
             search = "{" + prop + "}"
             message_parts = string.split(email_text, search)
-            email_text = message_parts[0] + item[prop] + message_parts[1]
+            email_text = message_parts[0] + obj[prop] + message_parts[1]
         return email_text
 
     def send_confirmation_email(self, email, row_id):
