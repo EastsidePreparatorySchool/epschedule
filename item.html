@@ -54,27 +54,48 @@
       font-weight: 300;
       text-decoration: none;
     }
+    .selected {
+      margin-top: 16px;
+      margin-bottom: 16px;
+    }
+    .student {
+      background-color: white;
+    }
+    .student img {
+      margin-left: 32px;
+      margin-right: 16px;
+    }
+    .student p {
+      font-size: 0.9rem;
+    }
   </style>
   <template>
     <paper-material class="card" elevation="2">
     <div layout="" vertical="">
-      <template is="dom-repeat" items="{{posts}}">
-        <div class="card-header" layout="" horizontal="" center="" on-click="toggleExpand">
-          <img src="{{item.avatar}}" width="48" height="48">
-          <div class="card-mid" layout="" vertical="">
-            <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
-              <template is="dom-if" if="{{item.teacher}}">
-                (<a on-click="teacherThunk" item="link" href="#">{{item.teacher}}</a>,
-                <a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
-              </template>
-              <template is="dom-if" if="{{!item.teacher}}">
-                (<a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
-              </template>
-            </p>
-            <h2>{{item.name}}</h2>
+      <template is="dom-repeat" id="itemList" items="{{posts}}">
+        <div class="card" layout="" vertical="" xcenter="" on-click="toggleExpand">
+          <div class="card-header" layout="" horizontal="" center="">
+            <img src="{{item.avatar}}" width="48" height="48">
+            <div class="card-mid" layout="" vertical="">
+              <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
+                <template is="dom-if" if="{{item.teacher}}">
+                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacher}}</a>,
+                  <a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
+                </template>
+                <template is="dom-if" if="{{!item.teacher}}">
+                  (<a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
+                </template>
+              </p>
+              <h2>{{item.name}}</h2>
+            </div>
+          </div>
+          <div layout vertical>
             <template is="dom-repeat" items="{{item.students}}">
-              <p>{{item.name}}</p>
-            </template
+              <div class="student" layout="" horizontal="" center="">
+                <img src="http://www.writersincharge.com/wp-content/uploads/2015/04/Clement-Lim-Headshot-32x32.jpg" width="32" height="32">
+                <p><span>{{item.firstname}}</span> <span>{{item.lastname}}</span></p>
+              </div>
+            </template>
           </div>
         </div>
       </template>
@@ -82,7 +103,6 @@
     </paper-material>
   </template>
   <script>
-
     Polymer({
       is: 'post-list',
       properties: { posts: { notify: true } },
@@ -90,7 +110,24 @@
       },
       toggleExpand: function(e) {
         // if expanding, XHR, and then set model
-        e.model.set('item.students', [{"name":"Student 1"},{"name":"Student 2"},{"name":"Student 3"}])
+        var el = e.currentTarget;
+        el.classList.toggle("selected");
+        var students = [];
+        if (el.classList.contains("selected")) {
+          var item = this.$.itemList.itemForElement(el);
+          var xhr = new XMLHttpRequest();
+          var url = "class/" + item.name.replace(/ /g, '_') + "/" + item.period.toLowerCase();
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+              var obj = JSON.parse(this.responseText);
+              e.model.set('item.students', obj.students)
+            }
+          }
+          xhr.open("GET", url, true);
+          xhr.send();
+        } else {
+          e.model.set('item.students', []);
+        }
       },
       roomThunk: function(e) {
         e.stopPropagation()
