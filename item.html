@@ -64,11 +64,11 @@
           <div class="card-mid" layout="" vertical="">
             <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
               <template is="dom-if" if="{{item.teacher}}">
-                (<a on-click="onTeacherTap" item="link" href="#">{{item.teacher}}</a>,
-                <a on-click="onRoomTap" item="link" href="#">{{item.room}}</a>)
+                (<a on-click="teacherThunk" item="link" href="#">{{item.teacher}}</a>,
+                <a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
               </template>
               <template is="dom-if" if="{{!item.teacher}}">
-                (<a on-click="onRoomTap" item="link" href="#">{{item.room}}</a>)
+                (<a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
               </template>
             </p>
             <h2>{{item.name}}</h2>
@@ -91,6 +91,18 @@
       toggleExpand: function(e) {
         // if expanding, XHR, and then set model
         e.model.set('item.students', [{"name":"Student 1"},{"name":"Student 2"},{"name":"Student 3"}])
+      },
+      roomThunk: function(e) {
+        e.stopPropagation()
+        if (this.onRoomTap) {
+          this.onRoomTap(e);
+        }
+      },
+      teacherThunk: function(e) {
+        e.stopPropagation()
+        if (this.onTeacherTap) {
+          this.onTeacherTap(e);
+        }
       }
     });
   </script>

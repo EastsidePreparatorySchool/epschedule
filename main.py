@@ -170,7 +170,7 @@ class RegisterHandler (BaseHandler):
         for prop in obj:
             search = "{" + prop + "}"
             message_parts = string.split(email_text, search)
-            email_text = message_parts[0] + item[prop] + message_parts[1]
+            email_text = message_parts[0] + obj[prop] + message_parts[1]
         return email_text
 
     def send_confirmation_email(self, email, row_id):
@@ -185,7 +185,7 @@ class RegisterHandler (BaseHandler):
         message.to = email
         message.subject = "Sign up for EPSchedule"
         message.html = self.format_html(email_text, email_properties)
-        logging.info("Sending " + email + " a link to " + email_properties[2]['value'])
+        logging.info("Sending " + email + " a link to " + email_properties['url'])
         message.send()
 
     def get_confirmation_link(self, row_id):
