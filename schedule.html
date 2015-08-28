@@ -1,8 +1,9 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 <link rel="import" href="bower_components/paper-material/paper-material.html">
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="bower_components/iron-icons/communication-icons.html">
 
-<dom-module id="post-list">
+<dom-module id="x-schedule">
   <style>
     /* TODO(polyup): For speed, consider reworking these styles with .classes
                      and #ids rather than [attributes].
@@ -28,9 +29,11 @@
       margin-bottom: 1px;
       border-radius: 2px;
     }
-    .card-header {
-      background-color: white;
+    .card {
       margin-bottom: 1px;
+    }
+    .card-header {
+      background: white;
     }
     .card-header ::content img {
       width: 48px;
@@ -55,24 +58,28 @@
       text-decoration: none;
     }
     .selected {
-      margin-top: 16px;
+      #margin-top: 16px;
       margin-bottom: 16px;
     }
     .student {
       background-color: white;
     }
     .student img {
-      margin-left: 32px;
-      margin-right: 16px;
+      margin-left: 24px;
+      margin-right: 24px;
     }
     .student p {
       font-size: 0.9rem;
+    }
+    .student iron-icon {
+      color: gray;
+      margin-right: 24px;
     }
   </style>
   <template>
     <paper-material class="card" elevation="2">
     <div layout="" vertical="">
-      <template is="dom-repeat" id="itemList" items="{{posts}}">
+      <template is="dom-repeat" id="entryList" items="{{entries}}">
         <div class="card" layout="" vertical="" xcenter="" on-click="toggleExpand">
           <div class="card-header" layout="" horizontal="" center="">
             <img src="{{item.avatar}}" width="48" height="48">
@@ -93,7 +100,14 @@
             <template is="dom-repeat" items="{{item.students}}">
               <div class="student" layout="" horizontal="" center="">
                 <img src="http://www.writersincharge.com/wp-content/uploads/2015/04/Clement-Lim-Headshot-32x32.jpg" width="32" height="32">
-                <p><span>{{item.firstname}}</span> <span>{{item.lastname}}</span></p>
+                <div class="flex">
+                  <p>
+                    <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
+                  </p>
+                </div>
+                <a href="{{createEmailLink(item.email)}}">
+                  <iron-icon icon="communication:email"></iron-icon>
+                </a>
               </div>
             </template>
           </div>
@@ -104,9 +118,12 @@
   </template>
   <script>
     Polymer({
-      is: 'post-list',
-      properties: { posts: { notify: true } },
+      is: 'x-schedule',
+      properties: { entries: { notify: true } },
       listeners: {
+      },
+      createEmailLink: function(email) {
+        return "mailto:" + email;
       },
       toggleExpand: function(e) {
         // if expanding, XHR, and then set model
@@ -114,7 +131,7 @@
         el.classList.toggle("selected");
         var students = [];
         if (el.classList.contains("selected")) {
-          var item = this.$.itemList.itemForElement(el);
+          var item = this.$.entryList.itemForElement(el);
           var xhr = new XMLHttpRequest();
           var url = "class/" + item.name.replace(/ /g, '_') + "/" + item.period.toLowerCase();
           xhr.onreadystatechange = function() {

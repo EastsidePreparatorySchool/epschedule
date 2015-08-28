@@ -289,6 +289,7 @@ class ClassHandler(BaseHandler):
                                    "email": "nobody@eastsideprep.org"}  #Append their name to a list of students in that period
                         result['students'].append(student)
 
+        result['students'].sort(key=lambda s: s['firstname'])
         return result
     def get(self, class_name, period):
         logging.info("get()")

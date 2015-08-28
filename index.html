@@ -18,15 +18,9 @@
   <link rel="import" href="bower_components/paper-input/paper-input.html">
   <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">`
   <link rel="import" href="bower_components/google-map/google-map.html">
-  <link rel="import" href="bower_components/google-map/google-map-search.html">
   <link rel="import" href="bower_components/google-map/google-map-marker.html">
-  <link rel="import" href="bower_components/google-map/google-map-directions.html">
   <link rel="import" href="bower_components/paper-toast/paper-toast.html">
-  <link rel="import" href="bower_components/iron-icons/communication-icons.html">
-  <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
-  <link rel="import" href="bower_components/neon-animation/neon-animations.html">
-  <link rel="import" href="bower_components/neon-animation/demo/dropdown/animated-dropdown.html">
-  <link rel="import" href="item.html">
+  <link rel="import" href="schedule.html">
   <script>
   var touchStartPos = [0, 0];
   function handleTouchStart(evt) {
@@ -334,12 +328,12 @@
         }
     }
 
-    var list = document.querySelector('post-list');
-    list.posts = todaySchedule;
-    list.onTeacherTap = function(e) {
+    var scheduleElement = document.querySelector('x-schedule');
+    scheduleElement.entries = todaySchedule;
+    scheduleElement.onTeacherTap = function(e) {
       window.alert("teach-tap");
     }
-    list.onRoomTap = function(e) {
+    scheduleElement.onRoomTap = function(e) {
       renderRoom({latitude:47.643455, longitude:-122.198935, room:e.model.item.room})
     }
   }
@@ -455,7 +449,7 @@
         <paper-icon-button src="96x96_photos/steve_fassino.jpg" onclick="renderClass('geometry')"></paper-icon-button>
       </paper-toolbar>
       <div id="container" class="container" layout="" vertical="" center="">
-        <post-list show="all"></post-list>
+        <x-schedule show="all"></x-schedule>
       </div>
     </paper-header-panel>
   </paper-drawer-panel>

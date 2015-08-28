@@ -9,9 +9,9 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
-- url: /item\.html
-  static_files: item.html
-  upload: item\.html
+- url: /schedule\.html
+  static_files: schedule.html
+  upload: schedule\.html
 
 - url: /images
   static_dir: images
