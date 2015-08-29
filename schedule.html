@@ -1,5 +1,6 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 <link rel="import" href="bower_components/paper-material/paper-material.html">
+<link rel="import" href="bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="bower_components/iron-icons/communication-icons.html">
 
@@ -96,21 +97,23 @@
               <h2>{{item.name}}</h2>
             </div>
           </div>
-          <div layout vertical>
-            <template is="dom-repeat" items="{{item.students}}">
-              <div class="student" layout="" horizontal="" center="">
-                <img src="http://www.writersincharge.com/wp-content/uploads/2015/04/Clement-Lim-Headshot-32x32.jpg" width="32" height="32">
-                <div class="flex">
-                  <p>
-                    <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
-                  </p>
+          <iron-collapse id="{{computeCollapseId(item.name)}}">
+            <div layout vertical>
+              <template is="dom-repeat" items="{{item.students}}">
+                <div class="student" layout="" horizontal="" center="">
+                  <img src="http://www.writersincharge.com/wp-content/uploads/2015/04/Clement-Lim-Headshot-32x32.jpg" width="32" height="32">
+                  <div class="flex">
+                    <p>
+                      <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
+                    </p>
+                  </div>
+                  <a href="{{computeEmailLink(item.email)}}">
+                    <iron-icon icon="communication:email"></iron-icon>
+                  </a>
                 </div>
-                <a href="{{createEmailLink(item.email)}}">
-                  <iron-icon icon="communication:email"></iron-icon>
-                </a>
-              </div>
-            </template>
-          </div>
+              </template>
+            </div>
+          </iron-collapse>
         </div>
       </template>
     </div>
@@ -122,28 +125,33 @@
       properties: { entries: { notify: true } },
       listeners: {
       },
-      createEmailLink: function(email) {
+      computeCollapseId: function(name) {
+        return "collapse-" + name;
+      },
+      computeEmailLink: function(email) {
         return "mailto:" + email;
       },
       toggleExpand: function(e) {
         // if expanding, XHR, and then set model
         var el = e.currentTarget;
         el.classList.toggle("selected");
-        var students = [];
+        var item = this.$.entryList.itemForElement(el);
+        var collapse = document.getElementById(this.computeCollapseId(item.name));
         if (el.classList.contains("selected")) {
-          var item = this.$.entryList.itemForElement(el);
           var xhr = new XMLHttpRequest();
           var url = "class/" + item.name.replace(/ /g, '_') + "/" + item.period.toLowerCase();
           xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
               var obj = JSON.parse(this.responseText);
-              e.model.set('item.students', obj.students)
+              e.model.set('item.students', obj.students);
+              collapse.toggle();
             }
           }
           xhr.open("GET", url, true);
           xhr.send();
         } else {
-          e.model.set('item.students', []);
+          collapse.toggle();
+          //e.model.set('item.students', []);
         }
       },
       roomThunk: function(e) {
