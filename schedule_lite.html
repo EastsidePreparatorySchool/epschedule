@@ -1,0 +1,93 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-material/paper-material.html">
+<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<dom-module id="schedule-lite">
+  <style>
+    /* TODO(polyup): For speed, consider reworking these styles with .classes
+                     and #ids rather than [attributes].
+    */
+    [layout] {
+      @apply(--layout);
+    }
+    [layout][vertical] {
+      @apply(--layout-vertical);
+    }
+    [layout][center] {
+      @apply(--layout-center);
+    }
+  </style>
+  <style>
+    :host {
+      width: 100%;
+      display: block;
+      position: relative;
+      background-color: #efefef;
+      font-size: 1.2rem;
+      font-weight: 300;
+      margin-bottom: 1px;
+      border-radius: 2px;
+    }
+    .card-header {
+      background-color: white;
+      margin-bottom: 1px;
+    }
+    .card-header ::content img {
+      width: 48px;
+      border-radius: 50%;
+      margin: 16px;
+      background: #efefef url() center center no-repeat;
+    }
+    .card-header ::content h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 300;
+    }
+    .card-header ::content p {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: gray;
+    }
+    .card-header ::content a:link {
+      color: gray;
+      font-weight: 300;
+      text-decoration: none;
+    }
+  </style>
+  <template>
+    <a href="{{item.url}}">
+    <paper-material class="card" elevation="2">
+    <div layout="" vertical="">
+      <template is="dom-repeat" items="{{posts}}">
+        <div class="card-header" layout="" horizontal="" center="">
+          <img src="{{item.avatar}}" width="48" height="48">
+          <div class="card-mid" layout="" vertical="">
+            <p item="time">
+              <a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
+            </p>
+            <h2>{{item.name}}</h2>
+          </div>
+        </div>
+      </template>
+    </div>
+    </paper-material>
+    </a>
+  </template>
+  <script>
+
+    Polymer({
+      is: 'schedule-lite',
+      properties: { posts: { notify: true } },
+      listeners: {
+      },
+      roomThunk: function(e) {
+        e.stopPropagation()
+        if (this.onRoomTap) {
+          this.onRoomTap(e);
+        }
+      },
+      }
+    });
+  </script>
+</dom-module>
