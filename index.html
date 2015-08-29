@@ -128,14 +128,14 @@
         globalDate.setDate(globalDate.getDate()-2);
     }
     globalDate.setDate(globalDate.getDate()-1);
-    renderSchedule(globalDate, true);
+    renderSchedule(globalDate, "user", "post-list");
   }
   function dateForward() {
     if (globalDate.getDay() == 5) {
         globalDate.setDate(globalDate.getDate()+2);
     }
     globalDate.setDate(globalDate.getDate()+1);
-    renderSchedule(globalDate, true);
+    renderSchedule(globalDate, "user", "post-list");
   }
   function renderToast(text) {
     toast = document.getElementById("toast");
@@ -246,7 +246,7 @@
   function renderPeriod(periodObj) {
     console.log(periodObj);
   }
-  function renderSchedule(dateObj, emptyDiv) {
+  function renderSchedule(dateObj, type, location) {
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
         case 6: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
           dateObj.setDate(dateObj.getDate() + 1);
@@ -333,17 +333,37 @@
         if (scheduleObj.room == "N/A") {
           scheduleObj.room = "";
         }
-        if (scheduleObj.teacher != "") {
-          sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
-          sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
-          scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
-          scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
-        } else {
-          scheduleObj.teacherLink = "";
-          scheduleObj.avatar = "/misc_photos/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
-        }
-        scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
+        if (type == "user") {
+          if (scheduleObj.teacher != "") {
+            sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
+            sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
+            scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
+            scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
+          } else {
+            scheduleObj.teacherLink = "";
+            scheduleObj.avatar = "/misc_photos/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
+          }
+          scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
+        /*} else if (type == "teacher") {
+          if (scheduleObj.period <= 8) { //If it's a class period
+            var userOpenPeriod = false; //Find out if the user has a class that period
+            for (var i = 0; i < schedule.length; i++) {
+              if (schedule[i].period == scheduleObj.period && \
+                (schedule[i].name == "Free Period" || \
+                  schedule[i] == "MS Study Hall" || \
+                  schedule[i] == "Guided Study Hall")) { //TODO find the name of GSH
+                userOpenPeriod = true;
+                break;
+              }
+            }
 
+            if (scheduleObj.name = "Free Period" && userOpenPeriod) {
+              scheduleObj.avatar =
+            } else {
+
+            }
+          }*/
+        }
         try {
             var times = days[0][day]["MS"][currentSlot]["time"].split('-');
             scheduleObj.startTime = times[0].trim();
@@ -352,7 +372,7 @@
         } catch (error) {
         }
     }
-
+    schedule = todaySchedule;
     var list = document.querySelector('post-list');
     list.posts = todaySchedule;
     list.onTeacherTap = function(e) {
@@ -376,7 +396,7 @@
 
   document.addEventListener('WebComponentsReady', function() {
     var date = new Date();
-    renderSchedule(date, false);
+    renderSchedule(date, "user", "post-list");
   });
 
   </script>
