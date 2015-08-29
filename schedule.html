@@ -1,0 +1,172 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-material/paper-material.html">
+<link rel="import" href="bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="bower_components/iron-icons/communication-icons.html">
+
+<dom-module id="x-schedule">
+  <style>
+    /* TODO(polyup): For speed, consider reworking these styles with .classes
+                     and #ids rather than [attributes].
+    */
+    [layout] {
+      @apply(--layout);
+    }
+    [layout][vertical] {
+      @apply(--layout-vertical);
+    }
+    [layout][center] {
+      @apply(--layout-center);
+    }
+  </style>
+  <style>
+    :host {
+      width: 100%;
+      display: block;
+      position: relative;
+      background-color: #efefef;
+      font-size: 1.2rem;
+      font-weight: 300;
+      margin-bottom: 1px;
+      border-radius: 2px;
+      transition: 2.5s ease-in;
+    }
+    .card {
+      margin-bottom: 1px;
+    }
+    .card-header {
+      background: white;
+    }
+    .card-header ::content img {
+      width: 48px;
+      border-radius: 50%;
+      margin: 16px;
+      background: #efefef url() center center no-repeat;
+    }
+    .card-header ::content h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 300;
+    }
+    .card-header ::content p {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: gray;
+    }
+    .card-header ::content a:link {
+      color: gray;
+      font-weight: 300;
+      text-decoration: none;
+    }
+    .selected {
+      #margin-top: 16px;
+      margin-bottom: 16px;
+    }
+    .student {
+      background-color: white;
+    }
+    .student img {
+      margin-left: 24px;
+      margin-right: 24px;
+    }
+    .student p {
+      font-size: 0.9rem;
+    }
+    .student iron-icon {
+      color: gray;
+      margin-right: 24px;
+    }
+  </style>
+  <template>
+    <paper-material class="card" elevation="2">
+    <div layout="" vertical="">
+      <template is="dom-repeat" id="entryList" items="{{entries}}">
+        <div class="card" layout="" vertical="" xcenter="" on-click="toggleExpand">
+          <div class="card-header" layout="" horizontal="" center="">
+            <img src="{{item.avatar}}" width="48" height="48">
+            <div class="card-mid" layout="" vertical="">
+              <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
+                <template is="dom-if" if="{{item.teacher}}">
+                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacher}}</a>,
+                  <a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
+                </template>
+                <template is="dom-if" if="{{!item.teacher}}">
+                  (<a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
+                </template>
+              </p>
+              <h2>{{item.name}}</h2>
+            </div>
+          </div>
+          <iron-collapse id="{{computeCollapseId(item.name)}}">
+            <div layout vertical>
+              <template is="dom-repeat" items="{{item.students}}">
+                <div class="student" layout="" horizontal="" center="">
+                  <img src="http://www.writersincharge.com/wp-content/uploads/2015/04/Clement-Lim-Headshot-32x32.jpg" width="32" height="32">
+                  <div class="flex">
+                    <p>
+                      <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
+                    </p>
+                  </div>
+                  <a href="{{computeEmailLink(item.email)}}">
+                    <iron-icon icon="communication:email"></iron-icon>
+                  </a>
+                </div>
+              </template>
+            </div>
+          </iron-collapse>
+        </div>
+      </template>
+    </div>
+    </paper-material>
+  </template>
+  <script>
+    Polymer({
+      is: 'x-schedule',
+      properties: { entries: { notify: true } },
+      listeners: {
+      },
+      computeCollapseId: function(name) {
+        return "collapse-" + name;
+      },
+      computeEmailLink: function(email) {
+        return "mailto:" + email;
+      },
+      toggleExpand: function(e) {
+        // if expanding, XHR, and then set model
+        var el = e.currentTarget;
+        el.classList.toggle("selected");
+        var item = this.$.entryList.itemForElement(el);
+        var collapse = document.getElementById(this.computeCollapseId(item.name));
+        if (el.classList.contains("selected")) {
+          var xhr = new XMLHttpRequest();
+          var url = "class/" + item.name.replace(/ /g, '_') + "/" + item.period.toLowerCase();
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+              var obj = JSON.parse(this.responseText);
+              e.model.set('item.students', obj.students);
+              collapse.toggle();
+            }
+          }
+          xhr.open("GET", url, true);
+          xhr.send();
+        } else {
+          collapse.toggle();
+          //e.model.set('item.students', []);
+        }
+      },
+      roomThunk: function(e) {
+        e.stopPropagation()
+        if (this.onRoomTap) {
+          this.onRoomTap(e);
+        }
+      },
+      teacherThunk: function(e) {
+        e.stopPropagation()
+        if (this.onTeacherTap) {
+          this.onTeacherTap(e);
+        }
+      }
+    });
+  </script>
+</dom-module>
