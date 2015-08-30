@@ -215,13 +215,13 @@
     console.log(classObj);
   }
   function renderTeacher(teacherObj) {
-    var popup = document.getElementById("popup");
+    var popupContainer = document.getElementById("popupContainer");
     var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
     imgSrc = imgSrc + teacherObj.lastname + ".jpg";
     imgSrc = imgSrc.toLowerCase();
     email = teacherObj.firstname[0] + teacherObj.lastname + "@eastsideprep.org";
     email = email.toLowerCase();
-    popup.innerHTML = '<div>' + '<img src="' + imgSrc +
+    popupContainer.innerHTML = '<div>' + '<img src="' + imgSrc +
     '" align="right" class="fullsizeimage"></img><h1>' + teacherObj.firstname +
     ' ' + teacherObj.lastname + '</h1><h3><a href="mailto:' + email + '">' +
     email + '</a></h3><p>' + teacherObj.bio + '</p></div>' +
