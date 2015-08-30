@@ -279,7 +279,7 @@ class ClassHandler(BaseHandler):
         result = None
         for schedule in schedules:                                    #Load up each student's schedule
             for classobj in schedule['classes']:                      #For each one of their classes
-                if classobj['name'].lower() == class_name.lower() and \
+                if classobj['name'].lower().replace(" ", "_") == class_name.lower() and \
                    classobj['period'].lower() == period.lower():       #Check class name and period match
                     if classobj['teacher'] != "":                     #If they aren't a student (teacher names will be added later)
                         if not result:

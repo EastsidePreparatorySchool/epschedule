@@ -19,6 +19,8 @@ handlers:
 - url: /bower_components
   static_dir: bower_components
 
+- url: /html
+  static_dir: html
 - url: /96x96_photos
   static_dir: 96x96_photos
 
