@@ -3,13 +3,11 @@
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   </head><body>
-  <link href="http://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
   <link rel="import" href="bower_components/polymer/polymer.html">
   <link rel="import" href="bower_components/paper-material/paper-material.html">
-  <link rel="import" href="bower_components/iron-icons/iron-icons.html">
-  <link rel="import" href="bower_components/iron-image/iron-image.html"
-  <link rel="import" href="bower_components/iron-icons/hardware-icons.html">
-  <link rel="import" href="/bower_components/core-icon/core-icon.html">
+  <link rel="import" href="bower_components/iron-image/iron-image.html">
+
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -20,15 +18,21 @@
     .card {
       background: white;
       max-width: 90%;
-      margin: 20px auto;
-      padding: 20px;
+      xmargin: 20px auto;
+      padding: 24px;
       border-radius: 2px;
     }
     .container {
       display: flex;
+      background: white;
     }
-
+    h4 {
+      font-weight: bold;
+    }
     .column {
+      background: #efefef;
+      padding: 16px;
+      margin: 8px;
       flex: 1;
     }
 
@@ -54,39 +58,46 @@
 	  <div>
       <section id="introduction">
         <h1>About EPSchedule</h1>
-        <p>EPSchedule is an open-source schedule app designed by Gavin Uberti</p>
       </section>
       <section id="features">
         <div class="container">
           <div class="column column-one">
-            <iron-image class="featureimage" src="misc_photos/advisory.jpg"></iron-image>
-            <h2>Secure</h2>
-            <p>EPSchedule is built on state-of-the-art security. All traffic is sent of HTTPS and TLS, and passwords are hashed via Bcrypt.</p>
+            <h3>Schedules, the EPS way</h3>
+            <p>View your schedule anywhere - on your laptop, tablet, or phone.</p>
+            <p>Your schedule is always accurate - even when Assembly is after H period, or exams are the next day.</p>
           </div>
           <div class="column column-two">
-            <h2>Powerful</h2>
-            <p>EPSchedule allows for easy viewing of things such as which rooms are free during your study hall, or how to get to your chemistry class.</p>
+            <h3>All your info in one place</h3>
+            <p>See who's in your History class, or find out when you can meet with your Chemistry teacher.</p>
+            <p>Integrated campus maps let you find the best way to get to your Lit room.</p>
           </div>
           <div class="column column-three">
-            <h2>Open</h2>
-            <p>EPSchedule is fully open source. If you're curious about exactly how something works, view EPSchedule on
-              <a href="https://github.com/guberti/epschedule">Github</a>.
+            <h3>For students, by students</h3>
+            <p>EPSchedule is an open source project, led by Gavin Uberti.</p>
+            <p>If you're curious about exactly how something works, you can check out EPSchedule on
+              <a href="https://github.com/guberti/epschedule">GitHub</a>.
             </p>
           </div>
         </div>
       </section>
       <section id="inaction">
         <div>
-          <h2>Learn about your schedule beforehand</h2>
-          <p>Don't wait to learn who's in your class until the first day. Or see if it's possible for you to take History with your favorite teacher. Or find which rooms are open to practice your Spanish presentation in.</p>
+          <h3>FAQ</h3>
+          <h4>Q: Is it secure?</h4>
+          <p>A: Yes. EPSchedule uses industry-standard best practices, including:<ul>
+            <li>mandatory HTTPS encryption</li>
+            <li>Bcrypt password hashing/salting</li>
+            <li>eastsideprep.org email address verification</li>
+          </ul>
+          </p>
         </div>
         <div>
-          <h2>Day-by-day looks at what's coming</h2>
-          <p>See the day before whether Assembly is before or after H period. Or learn exactly what time your Lit final starts. Or discover what your schedule will be like on Field Day</p>
+          <h4>Q: Is it private?</h4>
+          <p>A: Yes. Only you can see your schedule info.</p>
         </div>
         <div>
-          <h2>Integrated campus maps</h2>
-          <p>
+          <h4>Q: Is it cool?</h4>
+          <p>A: Definitely.</p>
       </section>
     </div>
 
