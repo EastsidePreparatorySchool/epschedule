@@ -74,12 +74,8 @@
   }
   function submitChangePassword() {
     var data = new FormData();
-    var email = userSchedule['firstname'][0] + userSchedule['lastname'];
-    email = email + "@eastsideprep.org";
-    email = email.toLowerCase();
     var oldPassword = document.getElementById("oldpassword")
     var newPassword = document.getElementById("newpassword")
-    data.append('email', email)
     data.append('oldpassword', oldPassword.value)
     data.append('newpassword', newPassword.value)
     xhr = new XMLHttpRequest();
