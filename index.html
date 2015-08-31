@@ -74,7 +74,7 @@
   }
   function submitChangePassword() {
     var data = new FormData();
-    var email = schedule['firstname'][0] + schedule['lastname'];
+    var email = userSchedule['firstname'][0] + userSchedule['lastname'];
     email = email + "@eastsideprep.org";
     email = email.toLowerCase();
     var oldPassword = document.getElementById("oldpassword")
@@ -304,19 +304,19 @@
                 }
                 break;
             case "Lunch":
-                scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: 9, time: "" };
+                scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: "X", time: "" };
                 break;
             case "Assembly":
-                scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: 10, time: "" };
+                scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: "X", time: "" };
                 break;
             case "Advisory":
-                scheduleObj = { name: "Advisory", teacher: "", room: "", period: 11, time: "" }; //TODO - Make this box display the user's advisor and advisory location
+                scheduleObj = { name: "Advisory", teacher: "", room: "", period: "X", time: "" }; //TODO - Make this box display the user's advisor and advisory location
                 break;
             case "Class Meeting":
-                scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: 12, time: "" };
+                scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: "X", time: "" };
                 break;
             case "Clubs":
-                scheduleObj = { name: "Clubs", teacher: "", room: "Varies", period: 13, time: "" };
+                scheduleObj = { name: "Clubs", teacher: "", room: "", period: "X", time: "" };
                 break;
         }
         if (scheduleObj.teacher == "N/A") {
