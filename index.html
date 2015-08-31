@@ -283,8 +283,8 @@
                 for (var k = 0; k < schedule["classes"].length; k++) {
                     if (schedule["classes"][k]["period"] == days[0][day]["MS"][currentSlot]["period"]) {
                         if (schedule["classes"][k]["name"] != "Free Period") {
-                            teacherName = schedule["classes"][k]["teacher"]; //Teacher's fullname
-                            teacherLast = teacherName.split(" ")[1]; //Teacher's last name
+                            var teacherName = schedule["classes"][k]["teacher"]; //Teacher's fullname
+                            var teacherLast = teacherName.split(" ")[1]; //Teacher's last name
                             var scheduleObj = { name: schedule["classes"][k]["name"],
                                 teacher: teacherName,
                                 teacherLastName: teacherLast,
@@ -395,7 +395,6 @@
   function cleanString(text) {
     text = text.toLowerCase();
     text = text.replace(/ /g, "_"); //Remove spaces
-    text = text.replace(/-/g, ""); //Remove dashes
     text = text.replace(/\./g, ""); //Remove periods
     return text;
   }
