@@ -306,19 +306,19 @@
                 }
                 break;
             case "Lunch":
-                var scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: 9, time: "will be determined later" };
+                var scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: "X", time: "will be determined later" };
                 break;
             case "Assembly":
-                var scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: 10, time: "will be determined later" };
+                var scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: "X", time: "will be determined later" };
                 break;
             case "Advisory":
-                var scheduleObj = { name: "Advisory", teacher: "", room: "", period: 11, time: "will be determined later" }; //TODO - Make this box display the user's advisor and advisory location
+                var scheduleObj = { name: "Advisory", teacher: "", room: "", period: "X", time: "will be determined later" }; //TODO - Make this box display the user's advisor and advisory location
                 break;
             case "Class Meeting":
-                var scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: 12, time: "will be determined later" };
+                var scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: "X", time: "will be determined later" };
                 break;
             case "Clubs":
-                var scheduleObj = { name: "Clubs", teacher: "", room: "Varies", period: 13, time: "will be determined later" };
+                var scheduleObj = { name: "Clubs", teacher: "", room: "Varies", period: "X", time: "will be determined later" };
                 break;
         }
         if (scheduleObj.teacher == "N/A") {
@@ -361,16 +361,10 @@
           }
         }
 
-        try {
-          console.log("Im being tried!");
-          var times = days[0][day]["MS"][currentSlot]["time"].split('-');
-          scheduleObj.startTime = times[0].trim();
-          scheduleObj.endTime = times[1].trim();
-          todaySchedule.push(scheduleObj);
-        } catch (error) {
-          console.log("I failed! Here's the error:");
-          console.log(error);
-        }
+        var times = days[0][day]["MS"][currentSlot]["time"].split('-');
+        scheduleObj.startTime = times[0].trim();
+        scheduleObj.endTime = times[1].trim();
+        todaySchedule.push(scheduleObj);
     }
     if (type == "user") {
       var scheduleElement = document.querySelector('x-schedule');
