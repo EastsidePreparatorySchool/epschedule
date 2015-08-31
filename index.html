@@ -159,12 +159,7 @@
     map.appendChild(marker);
   }
   function letterToNum(letter) {
-    if (typeof letter == "string") {
-      var letterNum = letter.charCodeAt(0) - 64;
-    } else {
-      var letterNum = letter;
-    }
-    return letterNum;
+    return letterNum = letter.charCodeAt(0) - 64;
   }
   function getGpsFail(error) {
     switch(error.code) {
@@ -344,9 +339,7 @@
           scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
         //Add in photos if the teacher's schedule is being rendered
         } else if (type == "teacher") {
-          console.log("I know that type is teacher");
           if (letterToNum(scheduleObj.period) <= 8) { //If it's a class period
-            console.log("I know that the period is less than or equal to eight");
             var userOpenPeriod = false; //Find out if the user has a class that period
             for (var i = 0; i < userSchedule.classes.length; i++) {
               if (userSchedule.classes[i].period == scheduleObj.period && (userSchedule.classes[i].name == "Free Period" || userSchedule.classes[i].name == "MS Study Hall" || userSchedule.classes[i].name == "Guided Study Hall")) { //TODO find the name of GSH
