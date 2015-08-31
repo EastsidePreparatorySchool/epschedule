@@ -196,7 +196,6 @@ class RegisterHandler (BaseHandler):
 
 class ConfirmHandler(BaseHandler):
     def get(self, encoded_row_id):
-        logging.info("Trying to confirm!")
         row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
         logging.info(row_id)
         user_obj_query = User.get_by_id(int(row_id)) #FIX Instead of email, use row id
