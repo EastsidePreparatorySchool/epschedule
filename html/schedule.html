@@ -87,7 +87,7 @@
             <div class="card-mid" layout="" vertical="">
               <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
                 <template is="dom-if" if="{{item.teacher}}">
-                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacher}}</a>,
+                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
                   <a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
                 </template>
                 <template is="dom-if" if="{{!item.teacher}}">
