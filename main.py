@@ -252,7 +252,14 @@ class LoginHandler (BaseHandler):
 
 class ChangePasswordHandler(BaseHandler):
     def post(self):
-        email = self.request.get('email')
+        id = self.check_id() #TODO check to make sure that the account is associated with the proper id
+        if id is None:
+            self.error(403)
+            return
+        elif id == "9999": #If it is the demo account
+            self.response.write(json.dumps({"error":"You are a terrible person."}))
+            return
+        email = self.get_username(id) + "@eastsideprep.org"
         old_password = self.request.get('oldpassword')
         new_password = self.request.get('newpassword')
         logging.info(email + " would like to change their password")
@@ -267,6 +274,13 @@ class ChangePasswordHandler(BaseHandler):
                 db.put(query_result)
                 self.response.write(json.dumps({}))
                 break
+
+    def get_username(self, id):
+        for id_obj in ID_TABLE:
+            if str(id_obj[1]) == id:
+                return id_obj[0]
+        logging.info("Found no email for id!");
+        return None
 
 class LogoutHandler(BaseHandler):
     def post(self):
