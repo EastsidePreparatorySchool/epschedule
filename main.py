@@ -196,7 +196,6 @@ class RegisterHandler (BaseHandler):
 
 class ConfirmHandler(BaseHandler):
     def get(self, encoded_row_id):
-        logging.info("Trying to confirm!")
         row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
         logging.info(row_id)
         user_obj_query = User.get_by_id(int(row_id)) #FIX Instead of email, use row id
@@ -275,11 +274,11 @@ class LogoutHandler(BaseHandler):
 
 class ClassHandler(BaseHandler):
     def get_class_schedule(self, class_name, period):
-        schedules = load_schedule_data();
+        schedules = load_schedule_data()
         result = None
         for schedule in schedules:                                    #Load up each student's schedule
             for classobj in schedule['classes']:                      #For each one of their classes
-                if classobj['name'].lower().replace(" ", "_") == class_name.lower() and \
+                if classobj['name'].lower().replace(" ", "_").replace(".", "") == class_name.lower() and \
                    classobj['period'].lower() == period.lower():       #Check class name and period match
                     if classobj['teacher'] != "":                     #If they aren't a student (teacher names will be added later)
                         if not result:
