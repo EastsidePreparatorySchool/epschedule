@@ -328,7 +328,7 @@
             scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
           } else {
             scheduleObj.teacherLink = "";
-            scheduleObj.avatar = "/misc_photos/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
+            scheduleObj.avatar = "/images/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
           }
           scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
         /*} else if (type == "teacher") {
