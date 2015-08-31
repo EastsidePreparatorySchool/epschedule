@@ -87,7 +87,7 @@
             <div class="card-mid" layout="" vertical="">
               <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
                 <template is="dom-if" if="{{item.teacher}}">
-                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacher}}</a>,
+                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
                   <a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
                 </template>
                 <template is="dom-if" if="{{!item.teacher}}">
@@ -139,7 +139,8 @@
         var collapse = document.getElementById(this.computeCollapseId(item.name));
         if (el.classList.contains("selected")) {
           var xhr = new XMLHttpRequest();
-          var url = "class/" + item.name.replace(/ /g, '_') + "/" + item.period.toLowerCase();
+          var cleanedClass = item.name.replace(/ /g, '_').replace(/\./g, '');
+          var url = "class/" + cleanedClass + "/" + item.period.toLowerCase();
           xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
               var obj = JSON.parse(this.responseText);

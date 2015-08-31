@@ -23,6 +23,7 @@
   <link rel="import" href="bower_components/paper-input/paper-input.html">
   <link rel="import" href="bower_components/paper-toast/paper-toast.html">
   <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
+  <link rel="import" href="bower_components/iron-icons/social-icons.html">
   <link rel="import" href="html/schedule.html">
   <link rel="import" href="html/schedule_lite.html">
 
@@ -219,9 +220,6 @@
         renderToast("Your browser does not support Geolocation");
     }*/
   }
-  function renderClass(classObj) {
-    console.log(classObj);
-  }
   function renderTeacher(teacherObj) {
     var popupContainer = document.getElementById("popupContainer");
     var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
@@ -268,7 +266,7 @@
     var daySpan = document.getElementById("day");
     daySpan.removeChild(daySpan.firstChild);
     daySpan.appendChild(document.createTextNode(dateText));
-
+    var scheduleObj;
     todaySchedule = [];
     for (var exception = 0; exception < days[1].length; exception++) { //Handles exceptions, also handles special weekend schedules
         if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
@@ -290,35 +288,40 @@
                 for (var k = 0; k < schedule["classes"].length; k++) {
                     if (schedule["classes"][k]["period"] == days[0][day]["MS"][currentSlot]["period"]) {
                         if (schedule["classes"][k]["name"] != "Free Period") {
-                            var scheduleObj = { name: schedule["classes"][k]["name"],
-                                teacher: schedule["classes"][k]["teacher"],
+                            var teacherName = schedule["classes"][k]["teacher"]; //Teacher's fullname
+                            var teacherLast = teacherName.split(" ")[1]; //Teacher's last name
+                            scheduleObj = { name: schedule["classes"][k]["name"],
+                                teacher: teacherName,
+                                teacherLastName: teacherLast,
                                 room: schedule["classes"][k]["room"],
                                 period: days[0][day]["MS"][currentSlot]["period"],
-                                time: "will be determined later"}
+                                time: ""}
+
                         } else {
-                            var scheduleObj = {name: "Free Period",
-                                teacher: "N/A",
-                                room: "N/A",
+                            scheduleObj = {name: "Free Period",
+                                teacher: "",
+                                teacherLastName: "",
+                                room: "",
                                 period: days[0][day]["MS"][currentSlot]["period"],
-                                time: "will be determined later"};
+                                time: ""};
                         }
                     }
                 }
                 break;
             case "Lunch":
-                var scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: "X", time: "will be determined later" };
+                scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: 9, time: "" };
                 break;
             case "Assembly":
-                var scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: "X", time: "will be determined later" };
+                scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: 10, time: "" };
                 break;
             case "Advisory":
-                var scheduleObj = { name: "Advisory", teacher: "", room: "", period: "X", time: "will be determined later" }; //TODO - Make this box display the user's advisor and advisory location
+                scheduleObj = { name: "Advisory", teacher: "", room: "", period: 11, time: "" }; //TODO - Make this box display the user's advisor and advisory location
                 break;
             case "Class Meeting":
-                var scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: "X", time: "will be determined later" };
+                scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: 12, time: "" };
                 break;
             case "Clubs":
-                var scheduleObj = { name: "Clubs", teacher: "", room: "Varies", period: "X", time: "will be determined later" };
+                scheduleObj = { name: "Clubs", teacher: "", room: "Varies", period: 13, time: "" };
                 break;
         }
         if (scheduleObj.teacher == "N/A") {
@@ -405,7 +408,6 @@
   function cleanString(text) {
     text = text.toLowerCase();
     text = text.replace(/ /g, "_"); //Remove spaces
-    text = text.replace(/-/g, ""); //Remove dashes
     text = text.replace(/\./g, ""); //Remove periods
     return text;
   }
@@ -522,7 +524,6 @@
           <paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button>
           <paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
           <!-- example of showing avatar in toolbar. could also go in drawer -->
-          <paper-icon-button src="96x96_photos/steve_fassino.jpg" onclick="renderClass('geometry')"></paper-icon-button>
         </paper-toolbar>
         <div id="container" class="container" layout="" vertical="" center="">
           <x-schedule show="all"></x-schedule>
