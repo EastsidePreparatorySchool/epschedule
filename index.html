@@ -25,6 +25,7 @@
   <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
   <link rel="import" href="bower_components/iron-icons/social-icons.html">
   <link rel="import" href="html/schedule.html">
+  <link rel="import" href="html/schedule_lite.html">
 
   <script>
   var touchStartPos = [0, 0];
@@ -110,7 +111,7 @@
   document.addEventListener("touchend", handleTouchEnd, false);
   document.addEventListener("touchleave", handleTouchEnd, false);
 
-  var schedule = {{ schedule | safe }};
+  var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
   var globalDate = new Date();
 
@@ -119,14 +120,14 @@
         globalDate.setDate(globalDate.getDate()-2);
     }
     globalDate.setDate(globalDate.getDate()-1);
-    renderSchedule(globalDate, "user", "post-list");
+    renderSchedule(globalDate, userSchedule, "user");
   }
   function dateForward() {
     if (globalDate.getDay() == 5) {
         globalDate.setDate(globalDate.getDate()+2);
     }
     globalDate.setDate(globalDate.getDate()+1);
-    renderSchedule(globalDate, "user", "post-list");
+    renderSchedule(globalDate, userSchedule, "user");
   }
   function renderToast(text) {
     toast = document.getElementById("toast");
@@ -157,19 +158,22 @@
     marker.title = "Your face";
     map.appendChild(marker);
   }
+  function letterToNum(letter) {
+    return letter.charCodeAt(0) - 64;
+  }
   function getGpsFail(error) {
     switch(error.code) {
         case error.PERMISSION_DENIED:
-            console.log("User did not allow access to GPS")
+            console.log("User did not allow access to GPS");
             break;
         case error.POSITION_UNAVAILABLE:
-            console.log("EPSchedule was not able to get location information")
+            console.log("EPSchedule was not able to get location information");
             break;
         case error.TIMEOUT:
-            console.log("Request to enable GPS timed out")
+            console.log("Request to enable GPS timed out");
             break;
         case error.UNKNOWN_ERROR:
-            console.log("Geolocation failed, error unknown")
+            console.log("Geolocation failed, error unknown");
             break;
     }
   }
@@ -218,11 +222,10 @@
     imgSrc = imgSrc.toLowerCase();
     email = teacherObj.firstname[0] + teacherObj.lastname + "@eastsideprep.org";
     email = email.toLowerCase();
-    popupContainer.innerHTML = '<div>' + '<img src="' + imgSrc +
-    '" align="right" class="fullsizeimage"></img><h1>' + teacherObj.firstname +
-    ' ' + teacherObj.lastname + '</h1><h3><a href="mailto:' + email + '">' +
-    email + '</a></h3><p>' + teacherObj.bio + '</p></div>' +
-    '<div id="teacherschedulecontainer"></div>';
+    popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="' + imgSrc +
+        '" align="right" class="fullsizeimage"></img><p>' + teacherObj.bio + '</p></div>' +
+        '<schedule-lite></schedule-lite></div>';
+    renderSchedule(globalDate, teacherObj, "teacher")
   }
   function renderStudent(studentObj) {
     console.log(studentObj);
@@ -230,7 +233,7 @@
   function renderPeriod(periodObj) {
     console.log(periodObj);
   }
-  function renderSchedule(dateObj, type, location) {
+  function renderSchedule(dateObj, schedule, type) {
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
         case 6: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
           dateObj.setDate(dateObj.getDate() + 1);
@@ -322,6 +325,7 @@
         if (scheduleObj.room == "N/A") {
           scheduleObj.room = "";
         }
+        //Add in photos if the user's schedule is being rendered
         if (type == "user") {
           if (scheduleObj.teacher != "") {
             sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
@@ -333,47 +337,52 @@
             scheduleObj.avatar = "/images/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
           }
           scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
-        /*} else if (type == "teacher") {
-          if (scheduleObj.period <= 8) { //If it's a class period
+        //Add in photos if the teacher's schedule is being rendered
+        } else if (type == "teacher") {
+          if (letterToNum(scheduleObj.period) <= 8) { //If it's a class period
             var userOpenPeriod = false; //Find out if the user has a class that period
-            for (var i = 0; i < schedule.length; i++) {
-              if (schedule[i].period == scheduleObj.period && \
-                (schedule[i].name == "Free Period" || \
-                  schedule[i] == "MS Study Hall" || \
-                  schedule[i] == "Guided Study Hall")) { //TODO find the name of GSH
+            for (var i = 0; i < userSchedule.classes.length; i++) {
+              if (userSchedule.classes[i].period == scheduleObj.period && (userSchedule.classes[i].name == "Free Period" || userSchedule.classes[i].name == "MS Study Hall" || userSchedule.classes[i].name == "Guided Study Hall")) { //TODO find the name of GSH
                 userOpenPeriod = true;
                 break;
               }
             }
-
-            if (scheduleObj.name = "Free Period" && userOpenPeriod) {
-              scheduleObj.avatar =
+            if (scheduleObj.name == "Free Period" && userOpenPeriod) {
+              scheduleObj.avatar = "check";
             } else {
-
+              scheduleObj.avatar = "clear";
             }
-          }*/
+          } else {
+            continue; //Skip over lunch, advisory, assembly, etc.
+          }
         }
-        try {
-            var times = days[0][day]["MS"][currentSlot]["time"].split('-');
-            scheduleObj.startTime = times[0].trim();
-            scheduleObj.endTime = times[1].trim();
-            todaySchedule.push(scheduleObj);
-        } catch (error) {
-        }
+
+        var times = days[0][day]["MS"][currentSlot]["time"].split('-');
+        scheduleObj.startTime = times[0].trim();
+        scheduleObj.endTime = times[1].trim();
+        todaySchedule.push(scheduleObj);
     }
-    var scheduleElement = document.querySelector('x-schedule');
-    scheduleElement.entries = todaySchedule;
-    scheduleElement.onTeacherTap = function(e) {
-      var orig_name = e.model.item.teacher;
-      var name = orig_name.replace(" ", "_");
-      requestAdditionalData(name, "teacher", renderTeacher);
-      openPopup(orig_name);
-    }
-    scheduleElement.onRoomTap = function(e) {
-      var orig_name = e.model.item.room;
-      var name = orig_name.replace("-", "_")
-      requestAdditionalData(name, "room", renderRoom);
-      openPopup(orig_name);
+    if (type == "user") {
+      var scheduleElement = document.querySelector('x-schedule');
+      scheduleElement.entries = todaySchedule;
+      scheduleElement.onTeacherTap = function(e) {
+        var orig_name = e.model.item.teacher;
+        var name = orig_name.replace(" ", "_");
+        requestAdditionalData(name, "teacher", renderTeacher);
+        openPopup(orig_name);
+      }
+      scheduleElement.onRoomTap = function(e) {
+        var orig_name = e.model.item.room;
+        var name = orig_name.replace("-", "_")
+        requestAdditionalData(name, "room", renderRoom);
+        openPopup(orig_name);
+      }
+    } else if (type == "teacher") {
+      var scheduleElement = document.querySelector('schedule-lite');
+      scheduleElement.entries = todaySchedule;
+      /*scheduleElement.onRoomTap = function(e) {
+        console.log(e.model.item.room.replace("-", "_"));
+      }*/
     }
   }
   function openPopup(title) {
@@ -398,7 +407,7 @@
 
   document.addEventListener('WebComponentsReady', function() {
     var date = new Date();
-    renderSchedule(date, "user", "post-list");
+    renderSchedule(date, userSchedule, "user");
   });
 
   </script>
@@ -453,9 +462,6 @@
     width: 80%;
     margin: 24px auto;
   }
-  .fullsizeimage {
-    margin: 16px;
-  }
   @media (min-width: 720px) {
     .container {
       width: 540px;
@@ -465,6 +471,16 @@
     width: 100%;
     height: 100%;
     background: white;
+  }
+  .teacher {
+    margin: 16px;
+  }
+  .teacher p {
+    font-size: 0.9em;
+  }
+  .teacher img {
+    margin-left: 16px;
+    margin-bottom: 16px;
   }
   </style>
 </head>
