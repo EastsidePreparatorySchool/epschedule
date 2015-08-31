@@ -259,15 +259,10 @@ class ChangePasswordHandler(BaseHandler):
         elif id == "9999": #If it is the demo account
             self.response.write(json.dumps({"error":"You are a terrible person."}))
             return
-        email = self.get_email(id)
+        email = self.get_username(id) + "@eastsideprep.org"
         old_password = self.request.get('oldpassword')
         new_password = self.request.get('newpassword')
-        if email is None:
-            logging.info(email)
-            self.response.write(json.dumps({"error":"You are an even worse person."}))
-            return
         logging.info(email + " would like to change their password")
-        email += "@eastsideprep.org"
         err = self.check_password(email, str(old_password))
         if err:
             self.response.write(json.dumps({"error":"Your password is incorrect."}))
@@ -280,7 +275,7 @@ class ChangePasswordHandler(BaseHandler):
                 self.response.write(json.dumps({}))
                 break
 
-    def get_email(self, id):
+    def get_username(self, id):
         for id_obj in ID_TABLE:
             if str(id_obj[1]) == id:
                 return id_obj[0]
