@@ -229,12 +229,9 @@
     imgSrc = imgSrc.toLowerCase();
     email = teacherObj.firstname[0] + teacherObj.lastname + "@eastsideprep.org";
     email = email.toLowerCase();
-    popupContainer.innerHTML = '<div>' + '<img src="' + imgSrc +
-    '" align="right" class="fullsizeimage"></img><h1>' + teacherObj.firstname +
-    ' ' + teacherObj.lastname + '</h1><h3><a href="mailto:' + email + '">' +
-    email + '</a></h3><p>' + teacherObj.bio + '</p></div>' +
-    '<div id="container" class="container" layout="" vertical="" center="">' +
-    '<schedule-lite></schedule-lite></div>';
+    popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="' + imgSrc +
+        '" align="right" class="fullsizeimage"></img><p>' + teacherObj.bio + '</p></div>' +
+        '<schedule-lite></schedule-lite></div>';
     renderSchedule(globalDate, teacherObj, "teacher")
   }
   function renderStudent(studentObj) {
@@ -393,9 +390,9 @@
     } else if (type == "teacher") {
       var scheduleElement = document.querySelector('schedule-lite');
       scheduleElement.entries = todaySchedule;
-      scheduleElement.onRoomTap = function(e) {
+      /*scheduleElement.onRoomTap = function(e) {
         console.log(e.model.item.room.replace("-", "_"));
-      }
+      }*/
     }
   }
   function openPopup(title) {
@@ -476,9 +473,6 @@
     width: 80%;
     margin: 24px auto;
   }
-  .fullsizeimage {
-    margin: 16px;
-  }
   @media (min-width: 720px) {
     .container {
       width: 540px;
@@ -488,6 +482,16 @@
     width: 100%;
     height: 100%;
     background: white;
+  }
+  .teacher {
+    margin: 16px;
+  }
+  .teacher p {
+    font-size: 0.9em;
+  }
+  .teacher img {
+    margin-left: 16px;
+    margin-bottom: 16px;
   }
   </style>
 </head>
