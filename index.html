@@ -283,14 +283,19 @@
                 for (var k = 0; k < schedule["classes"].length; k++) {
                     if (schedule["classes"][k]["period"] == days[0][day]["MS"][currentSlot]["period"]) {
                         if (schedule["classes"][k]["name"] != "Free Period") {
+                            teacherName = schedule["classes"][k]["teacher"];
+                            teacherLast = teacherName.split(" ")[1];
                             var scheduleObj = { name: schedule["classes"][k]["name"],
-                                teacher: schedule["classes"][k]["teacher"],
+                                teacher: teacherLast,
+                                teacherFullname: teacherName,
                                 room: schedule["classes"][k]["room"],
                                 period: days[0][day]["MS"][currentSlot]["period"],
                                 time: "will be determined later"}
+
                         } else {
                             var scheduleObj = {name: "Free Period",
                                 teacher: "N/A",
+                                teacherFullname: "N/A",
                                 room: "N/A",
                                 period: days[0][day]["MS"][currentSlot]["period"],
                                 time: "will be determined later"};
@@ -322,7 +327,7 @@
         }
         if (type == "user") {
           if (scheduleObj.teacher != "") {
-            sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
+            sanitized_teacher_name = scheduleObj.teacherFullname.toLowerCase();
             sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
             scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
             scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
@@ -362,7 +367,7 @@
     var scheduleElement = document.querySelector('x-schedule');
     scheduleElement.entries = todaySchedule;
     scheduleElement.onTeacherTap = function(e) {
-      var orig_name = e.model.item.teacher;
+      var orig_name = e.model.item.teacherFullname;
       var name = orig_name.replace(" ", "_");
       requestAdditionalData(name, "teacher", renderTeacher);
       openPopup(orig_name);
