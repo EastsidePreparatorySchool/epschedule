@@ -35,6 +35,8 @@ from py_bcrypt import bcrypt
 CRYPTO_KEY = open('crypto.key', 'rb').read()
 id_table_file = open('id_table.json', 'rb')
 ID_TABLE = json.load(id_table_file)
+schedule_info_file = open('schedules.json', 'rb')
+SCHEDULE_INFO = json.load(schedule_info_file)
 lat_lon_coords_file = open('room_locations.json', 'rb')
 LAT_LON_COORDS = json.load(lat_lon_coords_file)
 bios_file = open('bios.json', 'rb')
@@ -62,9 +64,7 @@ def convert_email_to_id(email):
     return None
 
 def load_schedule_data():
-    file = open('schedules.json', 'rb')
-    schedules = json.load(file)
-    return schedules
+    return SCHEDULE_INFO
 
 def create_error_obj(error_message, action="", buttontext=""):
     error_obj = {"error":error_message}
@@ -317,6 +317,22 @@ class ClassHandler(BaseHandler):
         #schedule = self.get_schedule(self.request.get('id'))
         self.response.write(json.dumps(self.get_class_schedule(class_name, period)))
 
+class StudentHandler(BaseHandler):
+    def get(self, student_name):
+        id = self.check_id()
+        if id is None:
+            self.error(403)
+            return
+        student_names = student_name.split("_") #Replace spaces with underscores, to get from 'first_last' to 'first last'
+        firstname = student_names[0].lower()
+        lastname = student_names[1].lower()
+        schedules = load_schedule_data()
+        for schedule in schedules:
+            if schedule['firstname'].lower() == firstname and \
+            schedule['lastname'].lower() == lastname:
+                self.response.write(json.dumps(schedule))
+
+
 class PeriodHandler(BaseHandler):
     def get(self, period):
         id = self.check_id()
@@ -375,7 +391,7 @@ class PeriodHandler(BaseHandler):
                     if (dataobj['freerooms'].count(class_obj['room']) > 0):
                         dataobj['freerooms'].remove(class_obj['room'])
 
-        self.response.write(dataobj)
+        self.response.write(json.dumps(dataobj))
 
 class RoomHandler(BaseHandler):
     def get(self, room):
@@ -474,8 +490,9 @@ app = webapp2.WSGIApplication([
     ('/register', RegisterHandler),
     ('/changepassword', ChangePasswordHandler),
     ('/confirm/([\w\-]+)', ConfirmHandler),
-    ('/class/(\w+)/(\w+)', ClassHandler),
+    ('/class/([\w\-]+)/([\w\-]+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
-    ('/room/(\w+)', RoomHandler),
-    ('/teacher/(\w+)', TeacherHandler)
+    ('/room/([\w\-]+)', RoomHandler),
+    ('/teacher/([\w\-]+)', TeacherHandler),
+    ('/student/([\w\-]+)', StudentHandler)
 ], debug=True)
