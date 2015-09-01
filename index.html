@@ -224,7 +224,16 @@
     renderSchedule(globalDate, teacherObj, "teacher")
   }
   function renderStudent(studentObj) {
-    console.log(studentObj);
+    var name = studentObj.firstname + " " + studentObj.lastname;
+    var email = studentObj.firstname[0] + studentObj.lastname + "@eastsideprep.org";
+    email = email.toLowerCase();
+    var grade = studentObj.grade + "th Grade";
+
+    var popupContainer = document.getElementById("popupContainer");
+    popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="/images/material_face.svg"' +
+        ' width="32" height="32"><h2>' + name + '</h2><h3><a href="mailto:' + email + '">' +
+        email + '</a></h3><h3>' + grade + '</h3></div>' + '</div>';
+    //renderSchedule(globalDate, studentObj, "student")
   }
   function renderPeriod(periodObj) {
     console.log(periodObj);
@@ -365,6 +374,13 @@
         var orig_name = e.model.item.teacher;
         var name = orig_name.replace(" ", "_");
         requestAdditionalData(name, "teacher", renderTeacher);
+        openPopup(orig_name);
+      }
+      scheduleElement.onStudentTap = function(e) {
+        var orig_name = e.model.item.firstname + " " + e.model.item.lastname;
+        var name = e.model.item.firstname + "_" + e.model.item.lastname;
+        name = name.toLowerCase();
+        requestAdditionalData(name, "student", renderStudent);
         openPopup(orig_name);
       }
       scheduleElement.onRoomTap = function(e) {
