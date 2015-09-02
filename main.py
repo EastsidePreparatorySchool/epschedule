@@ -477,5 +477,5 @@ app = webapp2.WSGIApplication([
     ('/class/(\w+)/(\w+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
     ('/room/(\w+)', RoomHandler),
-    ('/teacher/(\w+)', TeacherHandler)
+    ('/teacher/([\w\-]+)', TeacherHandler)
 ], debug=True)
