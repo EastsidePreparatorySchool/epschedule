@@ -228,11 +228,12 @@
     var email = studentObj.firstname[0] + studentObj.lastname + "@eastsideprep.org";
     email = email.toLowerCase();
     var grade = studentObj.grade + "th Grade";
-
     var popupContainer = document.getElementById("popupContainer");
     popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="/images/material_face.svg"' +
         ' width="32" height="32"><h2>' + name + '</h2><h3><a href="mailto:' + email + '">' +
-        email + '</a></h3><h3>' + grade + '</h3></div>' + '</div>';
+        email + '</a></h3><h3>' + grade + '</h3></div><div id="container" class="container" layout="" vertical="" center="">' +
+        '<x-schedule id="studentschedule" show="all"></x-schedule></div></div>';
+    renderSchedule(globalDate, studentObj, "student");
     //renderSchedule(globalDate, studentObj, "student")
   }
   function renderPeriod(periodObj) {
@@ -331,7 +332,7 @@
           scheduleObj.room = "";
         }
         //Add in photos if the user's schedule is being rendered
-        if (type == "user") {
+        if (type == "user" || type == "student") {
           if (scheduleObj.teacher != "") {
             sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
             sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
@@ -367,8 +368,13 @@
         scheduleObj.endTime = times[1].trim();
         todaySchedule.push(scheduleObj);
     }
-    if (type == "user") {
-      var scheduleElement = document.querySelector('x-schedule');
+    if (type == "user" || type == "student") {
+      var scheduleElement;
+      if (type == "user") {
+        scheduleElement = document.getElementById('mainschedule');
+      } else { //Type == student
+        scheduleElement = document.getElementById('studentschedule');
+      }
       scheduleElement.entries = todaySchedule;
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
@@ -534,7 +540,7 @@
           <!-- example of showing avatar in toolbar. could also go in drawer -->
         </paper-toolbar>
         <div id="container" class="container" layout="" vertical="" center="">
-          <x-schedule show="all"></x-schedule>
+          <x-schedule id="mainschedule" show="all"></x-schedule>
         </div>
       </paper-header-panel>
     </paper-drawer-panel>
