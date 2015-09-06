@@ -117,8 +117,8 @@
   function submitForm() {
     locked = true;
     var data = new FormData();
-    data.append('email', email.value)
-    data.append('password', password.value)
+    data.append('email', email.value);
+    data.append('password', password.value);
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status==200) {
@@ -136,8 +136,23 @@
   }
 
   function resendConfirmationEmail() {
-    console.log("Called resendConfirmationEmail");
+    xhr = new XMLHttpRequest();
+    var data = new FormData();
+    data.append('email', email.value);
+    data.append('password', password.value);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        if (xhr.status==200) {
+          console.log(result);
+          result = JSON.parse(xhr.responseText);
+          processToast(result);
+        }
+      }
+    }
+    xhr.open("POST", "resend", true);
+    xhr.send(data);
   }
+
   function processToast(errorObj) {
     toast = document.getElementById("toast");
     toast.setAttribute("text", errorObj.error);
