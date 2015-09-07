@@ -278,7 +278,14 @@
     var scheduleObj;
     todaySchedule = [];
     for (var exception = 0; exception < days[1].length; exception++) { //Handles exceptions, also handles special weekend schedules
+        console.log(days[1][exception]["day"]);
+        console.log(dateObj.getDate());
+        console.log(days[1][exception]["month"]);
+        console.log(dateObj.getMonth());
+        console.log(days[1][exception]["year"]);
+        console.log(dateObj.getFullYear());
         if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
+            console.log("Found an exception");
             day = days[1][exception]["schedule"];
         }
     }
@@ -334,6 +341,9 @@
               break;
             case "Seminars / Office Hours":
               scheduleObj = { name: "Seminars / Office Hours", teacher: "", room: "", period: "X", time: "" };
+              break;
+            case "US Community":
+              scheduleObj = { name: "US Community", teacher: "", room: "LPC Commons", period: "X", time: "" };
               break;
         }
         if (scheduleObj.teacher == "N/A") {

@@ -21,7 +21,7 @@
   {"period": "E", "time": "11:35-12:15"},
   {"period": "F", "time": "12:20-1:00"},
   {"period": "G", "time": "1:05-1:45"},
-  {"period": "Assembly", "time": "1:50-2:30"},
+  {"period": "US Community", "time": "1:50-2:30"},
   {"period": "H", "time": "2:35-3:15"}
 ]},
 
@@ -143,4 +143,4 @@
   {"period": "Lunch", "time": "11:45-12:30"}
 ]}
 },
-[{"day": "C", "month": "F", "year": 2015, "schedule": "15SpringFinalsD1"},{"day": "D", "month": "F", "year": 2015, "schedule": "15SpringFinalsD2"},{"day": "E", "month": "F", "year": 2015, "schedule": "15SpringFinalsD3"},{"day": "H", "month": "F", "year": 2015, "schedule": "AllSchoolMonday"}]]
+[{"day": 9, "month": 9, "year": 2015, "schedule": "Monday"}]]
