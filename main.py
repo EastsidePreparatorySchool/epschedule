@@ -146,7 +146,6 @@ class RegisterHandler (BaseHandler):
             self.response.write(json.dumps(ERR_PASSWORD_INVALID_FORMAT))
             return
 
-        self.response.write(json.dumps(REGISTER_SUCCESS))
         hashed = bcrypt.hashpw(password, bcrypt.gensalt(1))
         user_obj = User(email = email, password = hashed, verified = False)
         user_obj.join_date = datetime.datetime.now()
@@ -154,6 +153,7 @@ class RegisterHandler (BaseHandler):
         row_id = str(user_obj.key().id())
         logging.info("row id = " + row_id)
         self.send_confirmation_email(email, row_id)
+        self.response.write(json.dumps(REGISTER_SUCCESS))
 
     def check_signed_up(self, email):           #Returns false if there is already a registered user signed up, returns true if there is not
         user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
