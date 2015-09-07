@@ -1,77 +1,145 @@
 [{
-"Monday":{"MS": [
-  {"period": "A", "time": "8:00-8:40"}, 
-  {"period": "B", "time": "8:45-9:25"}, 
-  {"period": "C", "time": "9:30-10:10"}, 
-  {"period": "D", "time": "10:15-10:55"}, 
-  {"period": "Lunch", "time": "11:00-11:30"}, 
-  {"period": "E", "time": "11:35-12:15"}, 
-  {"period": "F", "time": "12:20-1:00"}, 
-  {"period": "G", "time": "1:05-1:45"}, 
-  {"period": "Assembly", "time": "1:50-2:30"}, 
+"Monday":{
+  "MS": [
+  {"period": "A", "time": "8:00-8:40"},
+  {"period": "B", "time": "8:45-9:25"},
+  {"period": "C", "time": "9:30-10:10"},
+  {"period": "D", "time": "10:15-10:55"},
+  {"period": "Lunch", "time": "11:00-11:30"},
+  {"period": "E", "time": "11:35-12:15"},
+  {"period": "F", "time": "12:20-1:00"},
+  {"period": "G", "time": "1:05-1:45"},
+  {"period": "H", "time": "1:50-2:30"},
+  {"period": "Assembly", "time": "2:35-3:15"}],
+
+  "US": [
+  {"period": "A", "time": "8:00-8:40"},
+  {"period": "B", "time": "8:45-9:25"},
+  {"period": "C", "time": "9:30-10:10"},
+  {"period": "D", "time": "10:15-10:55"},
+  {"period": "Lunch", "time": "11:00-11:30"},
+  {"period": "E", "time": "11:35-12:15"},
+  {"period": "F", "time": "12:20-1:00"},
+  {"period": "G", "time": "1:05-1:45"},
+  {"period": "Assembly", "time": "1:50-2:30"},
   {"period": "H", "time": "2:35-3:15"}
-]}, 
-"Tuesday":{"MS": [
+]},
+
+"Tuesday":{
+  "MS": [
   {"period": "A", "time": "8:00-9:25"},
   {"period": "B", "time": "9:35-11:00"},
   {"period": "Lunch", "time": "11:05-11:35"},
   {"period": "Advisory", "time": "11:40-12:10"},
   {"period": "C", "time": "12:15-1:40"},
+  {"period": "D", "time": "1:50-3:15"}],
+
+  "US": [
+  {"period": "A", "time": "8:00-9:25"},
+  {"period": "B", "time": "9:35-11:00"},
+  {"period": "Advisory", "time": "11:05-11:35"},
+  {"period": "Lunch", "time": "11:40-12:10"},
+  {"period": "C", "time": "12:15-1:40"},
   {"period": "D", "time": "1:50-3:15"}
 ]},
-"Wednesday":{"MS": [
+
+"Wednesday":{
+  "MS": [
   {"period": "E", "time": "8:00-9:25"},
   {"period": "F", "time": "9:35-11:00"},
   {"period": "Lunch", "time": "11:05-11:35"},
   {"period": "Class Meeting", "time": "11:40-12:10"},
   {"period": "G", "time": "12:15-1:40"},
+  {"period": "H", "time": "1:50-3:15"}],
+
+  "US": [
+  {"period": "E", "time": "8:00-9:25"},
+  {"period": "F", "time": "9:35-11:00"},
+  {"period": "Seminars / Office Hours", "time": "11:05-11:35"},
+  {"period": "Lunch", "time": "11:40-12:10"},
+  {"period": "G", "time": "12:15-1:40"},
   {"period": "H", "time": "1:50-3:15"}
 ]},
-"Thursday":{"MS": [
+
+"Thursday":{
+  "MS": [
   {"period": "D", "time": "8:00-9:25"},
   {"period": "C", "time": "9:35-11:00"},
   {"period": "Lunch", "time": "11:05-11:35"},
   {"period": "Clubs", "time": "11:40-12:10"},
   {"period": "B", "time": "12:15-1:40"},
+  {"period": "A", "time": "1:50-3:15"}],
+
+  "US": [
+  {"period": "D", "time": "8:00-9:25"},
+  {"period": "C", "time": "9:35-11:00"},
+  {"period": "Clubs", "time": "11:05-11:35"},
+  {"period": "Lunch", "time": "11:40-12:10"},
+  {"period": "B", "time": "12:15-1:40"},
   {"period": "A", "time": "1:50-3:15"}
 ]},
-"Friday":{"MS": [
+
+"Friday":{
+  "MS": [
   {"period": "H", "time": "8:00-9:25"},
   {"period": "G", "time": "9:35-11:00"},
   {"period": "Lunch", "time": "11:05-11:35"},
   {"period": "Advisory", "time": "11:40-12:10"},
   {"period": "F", "time": "12:15-1:40"},
+  {"period": "E", "time": "1:50-3:15"}],
+
+  "US": [
+  {"period": "H", "time": "8:00-9:25"},
+  {"period": "G", "time": "9:35-11:00"},
+  {"period": "Advisory", "time": "11:05-11:35"},
+  {"period": "Lunch", "time": "11:40-12:10"},
+  {"period": "F", "time": "12:15-1:40"},
   {"period": "E", "time": "1:50-3:15"}
 ]},
-"AllSchoolMonday":{"MS": [
-  {"period": "A", "time": "8:00-8:40"}, 
-  {"period": "B", "time": "8:45-9:25"}, 
-  {"period": "C", "time": "9:30-10:10"}, 
-  {"period": "D", "time": "10:15-10:55"}, 
-  {"period": "Lunch", "time": "11:00-11:30"}, 
-  {"period": "E", "time": "11:35-12:15"}, 
-  {"period": "F", "time": "12:20-1:00"}, 
-  {"period": "G", "time": "1:05-1:45"}, 
-  {"period": "H", "time": "1:50-2:30"}, 
+
+"AllSchoolMonday":{
+  "MS": [
+  {"period": "A", "time": "8:00-8:40"},
+  {"period": "B", "time": "8:45-9:25"},
+  {"period": "C", "time": "9:30-10:10"},
+  {"period": "D", "time": "10:15-10:55"},
+  {"period": "Lunch", "time": "11:00-11:30"},
+  {"period": "E", "time": "11:35-12:15"},
+  {"period": "F", "time": "12:20-1:00"},
+  {"period": "G", "time": "1:05-1:45"},
+  {"period": "H", "time": "1:50-2:30"},
+  {"period": "Assembly", "time": "2:35-3:15"}],
+
+  "US": [
+  {"period": "A", "time": "8:00-8:40"},
+  {"period": "B", "time": "8:45-9:25"},
+  {"period": "C", "time": "9:30-10:10"},
+  {"period": "D", "time": "10:15-10:55"},
+  {"period": "Lunch", "time": "11:00-11:30"},
+  {"period": "E", "time": "11:35-12:15"},
+  {"period": "F", "time": "12:20-1:00"},
+  {"period": "G", "time": "1:05-1:45"},
+  {"period": "H", "time": "1:50-2:30"},
   {"period": "Assembly", "time": "2:35-3:15"}
 ]},
+
 "15SpringFinalsD1":{"MS": [
-  {"period": "E", "time": "8:00-9:30"}, 
-  {"period": "F", "time": "10:15-11:45"}, 
-  {"period": "Lunch", "time": "11:45-12:30"}, 
-  {"period": "Advisory", "time": "12:30-1:00"}, 
+  {"period": "E", "time": "8:00-9:30"},
+  {"period": "F", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"},
+  {"period": "Advisory", "time": "12:30-1:00"},
   {"period": "G", "time": "1:00-2:30"}
 ]},
 "15SpringFinalsD2":{"MS": [
-  {"period": "H", "time": "8:00-8:30"}, 
-  {"period": "A", "time": "10:15-11:45"}, 
-  {"period": "Lunch", "time": "11:45-12:30"}, 
-  {"period": "Advisory", "time": "12:30-1:00"}, 
+  {"period": "H", "time": "8:00-8:30"},
+  {"period": "A", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"},
+  {"period": "Advisory", "time": "12:30-1:00"},
   {"period": "B", "time": "1:00-2:30"}
 ]},
 "15SpringFinalsD3":{"MS": [
-  {"period": "C", "time": "8:00-8:40"}, 
-  {"period": "D", "time": "10:15-11:45"}, 
+  {"period": "C", "time": "8:00-8:40"},
+  {"period": "D", "time": "10:15-11:45"},
   {"period": "Lunch", "time": "11:45-12:30"}
 ]}
 },

@@ -230,6 +230,12 @@
     console.log(periodObj);
   }
   function renderSchedule(dateObj, schedule, type) {
+    var school;
+    if (schedule.grade <= 8) {
+      school = "MS";
+    } else {
+      school = "US";
+    }
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
         case 6: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
           dateObj.setDate(dateObj.getDate() + 1);
@@ -265,8 +271,8 @@
         }
     }
     var currentSlot;
-    for (currentSlot = 0; currentSlot < days[0][day]["MS"].length; currentSlot++) {
-        switch(days[0][day]["MS"][currentSlot]["period"]) { //Falling through is intended in switch statement
+    for (currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
+        switch(days[0][day][school][currentSlot]["period"]) { //Falling through is intended in switch statement
             case "0": //0 Period
             case "A": //A period
             case "B": //B period
@@ -277,7 +283,7 @@
             case "G": //G period
             case "H": //H period
                 for (var k = 0; k < schedule["classes"].length; k++) {
-                    if (schedule["classes"][k]["period"] == days[0][day]["MS"][currentSlot]["period"]) {
+                    if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
                         if (schedule["classes"][k]["name"] != "Free Period") {
                             var teacherName = schedule["classes"][k]["teacher"]; //Teacher's fullname
                             var teacherLast = teacherName.split(" ")[1]; //Teacher's last name
@@ -285,7 +291,7 @@
                                 teacher: teacherName,
                                 teacherLastName: teacherLast,
                                 room: schedule["classes"][k]["room"],
-                                period: days[0][day]["MS"][currentSlot]["period"],
+                                period: days[0][day][school][currentSlot]["period"],
                                 time: ""}
 
                         } else {
@@ -293,27 +299,30 @@
                                 teacher: "",
                                 teacherLastName: "",
                                 room: "",
-                                period: days[0][day]["MS"][currentSlot]["period"],
+                                period: days[0][day][school][currentSlot]["period"],
                                 time: ""};
                         }
                     }
                 }
                 break;
             case "Lunch":
-                scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: "X", time: "" };
-                break;
+              scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: "X", time: "" };
+              break;
             case "Assembly":
-                scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: "X", time: "" };
-                break;
+              scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: "X", time: "" };
+              break;
             case "Advisory":
-                scheduleObj = { name: "Advisory", teacher: "", room: "", period: "X", time: "" }; //TODO - Make this box display the user's advisor and advisory location
-                break;
+              scheduleObj = { name: "Advisory", teacher: "", room: "", period: "X", time: "" }; //TODO - Make this box display the user's advisor and advisory location
+              break;
             case "Class Meeting":
-                scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: "X", time: "" };
-                break;
+              scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: "X", time: "" };
+              break;
             case "Clubs":
-                scheduleObj = { name: "Clubs", teacher: "", room: "", period: "X", time: "" };
-                break;
+              scheduleObj = { name: "Clubs", teacher: "", room: "", period: "X", time: "" };
+              break;
+            case "Seminars / Office Hours":
+              scheduleObj = { name: "Seminars / Office Hours", teacher: "", room: "", period: "X", time: "" };
+              break;
         }
         if (scheduleObj.teacher == "N/A") {
           scheduleObj.teacher = "";
@@ -338,7 +347,7 @@
           if (letterToNum(scheduleObj.period) <= 8) { //If it's a class period
             var userOpenPeriod = false; //Find out if the user has a class that period
             for (var i = 0; i < userSchedule.classes.length; i++) {
-              if (userSchedule.classes[i].period == scheduleObj.period && (userSchedule.classes[i].name == "Free Period" || userSchedule.classes[i].name == "MS Study Hall" || userSchedule.classes[i].name == "Guided Study Hall")) { //TODO find the name of GSH
+              if (userSchedule.classes[i].period == scheduleObj.period && (userSchedule.classes[i].name == "Free Period" || userSchedule.classes[i].name == "school Study Hall" || userSchedule.classes[i].name == "Guided Study Hall")) { //TODO find the name of GSH
                 userOpenPeriod = true;
                 break;
               }
@@ -353,7 +362,7 @@
           }
         }
 
-        var times = days[0][day]["MS"][currentSlot]["time"].split('-');
+        var times = days[0][day][school][currentSlot]["time"].split('-');
         scheduleObj.startTime = times[0].trim();
         scheduleObj.endTime = times[1].trim();
         todaySchedule.push(scheduleObj);
