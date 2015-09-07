@@ -132,6 +132,36 @@ class BaseHandler(webapp2.RequestHandler): #All handlers inherit from this handl
             return False
         return True
 
+class RegisterHandler (BaseHandler):
+    def post(self):
+        email = self.request.get('email')
+        password = self.request.get('password')
+
+        if email[-17:] != "@eastsideprep.org":
+            self.response.write(json.dumps(ERR_SIGNUP_EMAIL_NOT_EPS))
+            return
+
+        if not self.check_signed_up(email):
+            self.response.write(json.dumps(ERR_EMAIL_ALREADY_REGISTERED))
+            return
+
+        self.response.write(json.dumps(REGISTER_SUCCESS))
+        hashed = bcrypt.hashpw(password, bcrypt.gensalt(1))
+        user_obj = User(email = email, password = hashed, verified = False)
+        user_obj.join_date = datetime.datetime.now()
+        db.put(user_obj)
+        row_id = str(user_obj.key().id())
+        logging.info("row id = " + row_id)
+        self.send_confirmation_email(email, row_id)
+
+ERR_NO_ACCOUNT_TO_SEND = {
+  "error": "There is no account with that username and password",
+  "action":"switchToRegister",
+  "buttonText":"SIGN UP",
+  "actionId":"button"
+}
+
+class RegisterBaseHandler(BaseHandler):
     def get_name(self, email):
         id = None
         for id_pair in ID_TABLE:
@@ -171,49 +201,10 @@ class BaseHandler(webapp2.RequestHandler): #All handlers inherit from this handl
         encoded_row_id = base64.urlsafe_b64encode(encrypted_row_id)
         url = "http://epscheduleapp.appspot.com/confirm/" + encoded_row_id
         return url
-
-class RegisterHandler (BaseHandler):
+class ResendHandler(RegisterBaseHandler):
     def post(self):
         email = self.request.get('email')
         password = self.request.get('password')
-
-        if email[-17:] != "@eastsideprep.org":
-            self.response.write(json.dumps(ERR_SIGNUP_EMAIL_NOT_EPS))
-            return
-
-        if not self.check_signed_up(email):
-            self.response.write(json.dumps(ERR_EMAIL_ALREADY_REGISTERED))
-            return
-
-        self.response.write(json.dumps(REGISTER_SUCCESS))
-        hashed = bcrypt.hashpw(password, bcrypt.gensalt(1))
-        user_obj = User(email = email, password = hashed, verified = False)
-        user_obj.join_date = datetime.datetime.now()
-        db.put(user_obj)
-        row_id = str(user_obj.key().id())
-        logging.info("row id = " + row_id)
-        self.send_confirmation_email(email, row_id)
-
-ERR_NO_ACCOUNT_TO_SEND = {
-  "error": "There is no account with that username and password",
-  "action":"switchToRegister",
-  "buttonText":"SIGN UP",
-  "actionId":"button"
-}
-
-class ResendHandler(BaseHandler):
-    def post(self):
-        email = self.request.get('email')
-        password = self.request.get('password')
-
-        if email[-17:] != "@eastsideprep.org":
-            self.response.write(json.dumps(ERR_SIGNUP_EMAIL_NOT_EPS))
-            return
-
-        if not self.check_signed_up(email):
-            self.response.write(json.dumps(ERR_EMAIL_ALREADY_REGISTERED))
-            return
-
         user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = FALSE", email)
         for user_obj in user_obj_query:
             if bcrypt.hashpw(password, user_obj.password) == user_obj.password:
@@ -224,7 +215,7 @@ class ResendHandler(BaseHandler):
         self.response.write(json.dumps(ERR_NO_ACCOUNT_TO_SEND))
 
 
-class ConfirmHandler(BaseHandler):
+class ConfirmHandler(RegisterBaseHandler):
     def get(self, encoded_row_id):
         row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
         logging.info(row_id)
