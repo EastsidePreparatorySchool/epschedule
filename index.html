@@ -278,14 +278,7 @@
     var scheduleObj;
     todaySchedule = [];
     for (var exception = 0; exception < days[1].length; exception++) { //Handles exceptions, also handles special weekend schedules
-        console.log(days[1][exception]["day"]);
-        console.log(dateObj.getDate());
-        console.log(days[1][exception]["month"]);
-        console.log(dateObj.getMonth());
-        console.log(days[1][exception]["year"]);
-        console.log(dateObj.getFullYear());
         if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
-            console.log("Found an exception");
             day = days[1][exception]["schedule"];
         }
     }
@@ -326,11 +319,13 @@
                 break;
 
             default:
-              scheduleObj = {name: days[0][day][school][currentSlot]["period"],
-                  teacher: "",
-                  room: "",
-                  period: "X",
-                  time: ""};
+              scheduleObj = {
+                name: days[0][day][school][currentSlot]["period"],
+                teacher: "",
+                room: "",
+                period: "X",
+                time: ""
+              };
               if (scheduleObj.name == "Lunch" || scheduleObj.name == "Assembly" || scheduleObj.name == "US Community") {
                 scheduleObj.room = "LPC Commons";
               }
@@ -361,7 +356,7 @@
           if (letterToNum(scheduleObj.period) <= 8) { //If it's a class period
             var userOpenPeriod = false; //Find out if the user has a class that period
             for (var i = 0; i < userSchedule.classes.length; i++) {
-              if (userSchedule.classes[i].period == scheduleObj.period && (userSchedule.classes[i].name == "Free Period" || userSchedule.classes[i].name == "school Study Hall" || userSchedule.classes[i].name == "Guided Study Hall")) { //TODO find the name of GSH
+              if (userSchedule.classes[i].period == scheduleObj.period && (userSchedule.classes[i].name == "Free Period" || userSchedule.classes[i].name == "MS Study Hall" || userSchedule.classes[i].name == "Guided Study Hall")) { //TODO find the name of GSH
                 userOpenPeriod = true;
                 break;
               }
