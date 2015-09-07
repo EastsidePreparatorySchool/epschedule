@@ -14,7 +14,7 @@ import string
 import sys
 import json
 
-exceptions = [["Ginger-Ellingson", "Virginia-Ellingson"], ["Marcela-Winspear", "Marcela-Stepanova-Winspea"]]
+exceptions = [["Ginger-Ellingson", "Virginia-Ellingson"], ["Marcela-Winspear", "Marcela-Stepanova-Winspea"], ["Nickie-Wallace", "Nicole-Wallace"]]
 bios = []
 def checkText(text, character, textblock):
     for i in range (0, len(text)):
