@@ -345,13 +345,16 @@
         //Add in photos if the user's schedule is being rendered
         if (type == "user") {
           if (scheduleObj.teacher != "") {
-            sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
+            var sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
             sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
             scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
             scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
           } else {
             scheduleObj.teacherLink = "";
-            scheduleObj.avatar = "/images/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
+            var image_url = scheduleObj.name.toLowerCase();
+            image_url = image_url.replace("/", "");
+            image_url = image_url.replace(/\s/g, '');
+            scheduleObj.avatar = "/images/" + image_url + ".jpg";
           }
           scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
         //Add in photos if the teacher's schedule is being rendered
