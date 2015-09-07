@@ -106,12 +106,12 @@ def explode_pdf(path):
                 #print class_obj["period_num"]
                 classes.append(class_obj['class'])  #Shove the information passed back from getClass() into it's appropriate space in the list
             elif len(info) == 4: #If the obj contains information on the user's name, advisor, grade, and locker num
-                graduating_year = info[1][-5:-1]
-                grade = graduating_year_to_grade(graduating_year)
-                advisor = info[2][9:-1]
-                advisor_names = string.split(advisor, ", ")
-                advisor_first = advisor_names[1][1:]
-                advisor_last = advisor_names[0]
+                 graduating_year = info[1][-5:-1]
+                 grade = graduating_year_to_grade(graduating_year)
++                advisor = info[2][10:-1]
+                 advisor_names = string.split(advisor, ", ")
++                advisor_first = advisor_names[1]
+                 advisor_last = advisor_names[0]
     device.close()
 
     if classes == []: #If the schedule is blank or not a schedule
