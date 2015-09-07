@@ -324,27 +324,16 @@
                     }
                 }
                 break;
-            case "Lunch":
-              scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: "X", time: "" };
-              break;
-            case "Assembly":
-              scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: "X", time: "" };
-              break;
-            case "Advisory":
-              scheduleObj = { name: "Advisory", teacher: "", room: "", period: "X", time: "" }; //TODO - Make this box display the user's advisor and advisory location
-              break;
-            case "Class Meeting":
-              scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: "X", time: "" };
-              break;
-            case "Clubs":
-              scheduleObj = { name: "Clubs", teacher: "", room: "", period: "X", time: "" };
-              break;
-            case "Seminars / Office Hours":
-              scheduleObj = { name: "Seminars / Office Hours", teacher: "", room: "", period: "X", time: "" };
-              break;
-            case "US Community":
-              scheduleObj = { name: "US Community", teacher: "", room: "LPC Commons", period: "X", time: "" };
-              break;
+
+            default:
+              scheduleObj = {name: days[0][day][school][currentSlot]["period"],
+                  teacher: "",
+                  room: "",
+                  period: "X",
+                  time: ""};
+              if (scheduleObj.name == "Lunch" || scheduleObj.name == "Assembly" || scheduleObj.name == "US Community") {
+                scheduleObj.room = "LPC Commons";
+              }
         }
         if (scheduleObj.teacher == "N/A") {
           scheduleObj.teacher = "";
