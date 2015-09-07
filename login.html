@@ -54,8 +54,11 @@
     #registerText {
       display: block;
     }
+    #toast {
+      text-align: left;
+    }
     #toastButton {
-      display: none;
+      margin-left: 48px;
       color: #2196f3;
     }
   </style>
@@ -143,10 +146,12 @@
 
   function processToast(errorObj) {
     toast = document.getElementById("toast");
-    toast.setAttribute("text", errorObj.error);
+    toastButton = document.getElementById("toastButton");
+    toast.text = errorObj.error;
     if (errorObj.hasOwnProperty('action')) {
-      toastButton = document.getElementById("toastButton");
       toastButton.innerHTML = errorObj.buttonText;
+      toastButton.style.display = "";
+
       if (errorObj.actionId == 'url') {
         toastButton.onclick = function() { self.location = action; }
       } else if (errorObj.actionId == 'button') {
@@ -159,9 +164,10 @@
             break;
         }
       }
-
+    } else {
+      toastButton.style.display = "none";
     }
-    toastButton.style.display = (errorObj.hasOwnProperty('action')) ? "block" : "none";
+
     toast.show();
   }
   function onSuccess(errorObj) {
