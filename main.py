@@ -76,6 +76,9 @@ def create_error_obj(error_message, action="", buttontext=""):
 ERR_SIGNUP_EMAIL_NOT_EPS = {
   "error": "Use your Eastside Prep email account"
 }
+ERR_PASSWORD_INVALID = {
+  "error": "Your password must be at least eight characters"
+}
 ERR_EMAIL_ALREADY_REGISTERED = {
   "error": "This email is already registered",
   "action":"/forgot",
@@ -137,6 +140,10 @@ class RegisterHandler (BaseHandler):
 
         if not self.check_signed_up(email):
             self.response.write(json.dumps(ERR_EMAIL_ALREADY_REGISTERED))
+            return
+
+        if len(password) < 8:
+            self.response.write(json.dumps(ERR_PASSWORD_INVALID))
             return
 
         self.response.write(json.dumps(REGISTER_SUCCESS))
