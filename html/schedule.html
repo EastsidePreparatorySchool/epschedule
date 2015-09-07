@@ -87,11 +87,14 @@
             <img src="{{item.avatar}}" width="48" height="48">
             <div class="card-mid" layout="" vertical="">
               <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
-                <template is="dom-if" if="{{item.teacher}}">
+                <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
                   (<a on-click="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
                   <a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
                 </template>
-                <template is="dom-if" if="{{!item.teacher}}">
+                <template is="dom-if" if="{{hasTeacherOnly(item)}}">
+                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>)
+                </template>
+                <template is="dom-if" if="{{hasRoomOnly(item)}}">
                   (<a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
                 </template>
               </p>
@@ -125,6 +128,15 @@
       is: 'x-schedule',
       properties: { entries: { notify: true } },
       listeners: {
+      },
+      hasTeacherAndRoom: function(item) {
+        return item.teacherLastName && item.room;
+      },
+      hasTeacherOnly: function(item) {
+        return item.teacherLastName && !item.room;
+      },
+      hasRoomOnly: function(item) {
+        return !item.teacherLastName && item.room;
       },
       computeCollapseId: function(name) {
         return "collapse-" + name;
