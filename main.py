@@ -202,7 +202,7 @@ class RegisterHandler (RegisterBaseHandler):
         logging.info("row id = " + row_id)
         self.send_confirmation_email(email, row_id)
 
-class ResendHandler(RegisterBaseHandler):
+class ResendEmailHandler(RegisterBaseHandler):
     def post(self):
         email = self.request.get('email')
         password = self.request.get('password')
@@ -494,7 +494,7 @@ app = webapp2.WSGIApplication([
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/register', RegisterHandler),
-    ('/resend', ResendHandler),
+    ('/resend', ResendEmailHandler),
     ('/changepassword', ChangePasswordHandler),
     ('/confirm/([\w\-]+)', ConfirmHandler),
     ('/class/(\w+)/(\w+)', ClassHandler),
