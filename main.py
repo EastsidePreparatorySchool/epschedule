@@ -141,7 +141,6 @@ ERR_NO_ACCOUNT_TO_SEND = {
   "buttonText":"SIGN UP",
   "actionId":"button"
 }
-
 class RegisterBaseHandler(BaseHandler):
     def get_name(self, email):
         id = None
@@ -208,6 +207,7 @@ class RegisterHandler (RegisterBaseHandler):
         logging.info("row id = " + row_id)
         self.send_confirmation_email(email, row_id)
         self.response.write(json.dumps(REGISTER_SUCCESS))
+
 
 class ResendEmailHandler(RegisterBaseHandler):
     def post(self):
