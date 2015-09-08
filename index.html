@@ -128,14 +128,16 @@
         globalDate.setDate(globalDate.getDate()-2);
     }
     globalDate.setDate(globalDate.getDate()-1);
-    renderSchedule(globalDate, userSchedule, "user");
+    var scheduleElement = document.getElementById('mainschedule');
+    renderSchedule(globalDate, userSchedule, "full", scheduleElement);
   }
   function dateForward() {
     if (globalDate.getDay() == 5) {
         globalDate.setDate(globalDate.getDate()+2);
     }
     globalDate.setDate(globalDate.getDate()+1);
-    renderSchedule(globalDate, userSchedule, "user");
+    var scheduleElement = document.getElementById('mainschedule');
+    renderSchedule(globalDate, userSchedule, "full", scheduleElement);
   }
   function renderToast(text) {
     toast = document.getElementById("toast");
@@ -232,19 +234,33 @@
     email = email.toLowerCase();
     popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="' + imgSrc +
         '" align="right" class="fullsizeimage"></img><p>' + teacherObj.bio + '</p></div>' +
-        '<schedule-lite></schedule-lite></div>';
+        '<schedule-lite id="teacherschedule"></schedule-lite></div>';
     // Wait for HTML to be parsed/applied before trying to show the schedule.
     // Without this, Firefox/Safari don't display the schedule.
     setTimeout(function() {
-      renderSchedule(globalDate, teacherObj, "teacher");
+      var scheduleElement = document.getElementById('teacherschedule');
+      renderSchedule(globalDate, teacherObj, "teacher", scheduleElement);
     }, 0);
+
   function renderStudent(studentObj) {
-    console.log(studentObj);
+    var name = studentObj.firstname + " " + studentObj.lastname;
+    var email = studentObj.firstname[0] + studentObj.lastname + "@eastsideprep.org";
+    email = email.toLowerCase();
+    var grade = studentObj.grade + "th Grade";
+    var popupContainer = document.getElementById("popupContainer");
+    popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="/images/material_face.svg"' +
+        ' width="32" height="32"><h3><a href="mailto:' + email + '">' +
+        email + '</a></h3><h3>' + grade + '</h3></div><div id="container" class="container" layout="" vertical="" center="">' +
+        '<schedule-lite id="studentschedule" show="all"></schedule-lite></div></div>';
+    setTimeout(function() {
+      var scheduleElement = document.getElementById('studentschedule');
+      renderSchedule(globalDate, studentObj, "lite", scheduleElement);
+    }, 0);
   }
   function renderPeriod(periodObj) {
     console.log(periodObj);
   }
-  function renderSchedule(dateObj, schedule, type) {
+  function renderSchedule(dateObj, schedule, type, scheduleElement) {
     var school;
     if (schedule.grade <= 8) {
       school = "MS";
@@ -340,7 +356,7 @@
           scheduleObj.room = "";
         }
         //Add in photos if the user's schedule is being rendered
-        if (type == "user") {
+        if (type == "full") {
           if (scheduleObj.teacher != "") {
             var sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
             sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
@@ -355,16 +371,16 @@
           }
           scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
         //Add in photos if the teacher's schedule is being rendered
-        } else if (type == "teacher") {
+        } else if (type == "lite") {
           if (letterToNum(scheduleObj.period) <= 8) { //If it's a class period
-            var userOpenPeriod = false; //Find out if the user has a class that period
+            var sharedClass = false; //Find out if the user has a class that period
             for (var i = 0; i < userSchedule.classes.length; i++) {
-              if (userSchedule.classes[i].period == scheduleObj.period && (userSchedule.classes[i].name == "Free Period" || userSchedule.classes[i].name == "MS Study Hall" || userSchedule.classes[i].name == "Guided Study Hall")) { //TODO find the name of GSH
-                userOpenPeriod = true;
+              if (userSchedule.classes[i].period == scheduleObj.period && userSchedule.classes[i].name == scheduleObj.name) { //TODO find the name of GSH
+                sharedClass = true;
                 break;
               }
             }
-            if (scheduleObj.name == "Free Period" && userOpenPeriod) {
+            if (sharedClass) {
               scheduleObj.avatar = "check";
             } else {
               scheduleObj.avatar = "clear";
@@ -379,13 +395,22 @@
         scheduleObj.endTime = times[1].trim();
         todaySchedule.push(scheduleObj);
     }
-    if (type == "user") {
-      var scheduleElement = document.querySelector('x-schedule');
+
+    scheduleElement.entries = todaySchedule;
+
+    if (type == "full") {
       scheduleElement.entries = todaySchedule;
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
         var name = orig_name.replace(" ", "_");
         requestAdditionalData(name, "teacher", renderTeacher);
+        openPopup(orig_name);
+      }
+      scheduleElement.onStudentTap = function(e) {
+        var orig_name = e.model.item.firstname + " " + e.model.item.lastname;
+        var name = e.model.item.firstname + "_" + e.model.item.lastname;
+        name = name.toLowerCase();
+        requestAdditionalData(name, "student", renderStudent);
         openPopup(orig_name);
       }
       scheduleElement.onRoomTap = function(e) {
@@ -394,12 +419,6 @@
         requestAdditionalData(name, "room", renderRoom);
         openPopup(orig_name);
       }
-    } else if (type == "teacher") {
-      var scheduleElement = document.querySelector('schedule-lite');
-      scheduleElement.entries = todaySchedule;
-      /*scheduleElement.onRoomTap = function(e) {
-        console.log(e.model.item.room.replace("-", "_"));
-      }*/
     }
   }
   function openPopup(title) {
@@ -424,7 +443,8 @@
 
   document.addEventListener('WebComponentsReady', function() {
     var date = new Date();
-    renderSchedule(date, userSchedule, "user");
+    var scheduleElement = document.getElementById('mainschedule');
+    renderSchedule(date, userSchedule, "full", scheduleElement);
   });
 
   </script>
@@ -539,7 +559,7 @@
           <!-- example of showing avatar in toolbar. could also go in drawer -->
         </paper-toolbar>
         <div id="container" class="container" layout="" vertical="" center="">
-          <x-schedule show="all"></x-schedule>
+          <x-schedule id="mainschedule" show="all"></x-schedule>
         </div>
       </paper-header-panel>
     </paper-drawer-panel>
