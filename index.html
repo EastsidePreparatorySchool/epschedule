@@ -128,14 +128,16 @@
         globalDate.setDate(globalDate.getDate()-2);
     }
     globalDate.setDate(globalDate.getDate()-1);
-    renderSchedule(globalDate, userSchedule, "user");
+    var scheduleElement = document.getElementById('mainschedule');
+    renderSchedule(globalDate, userSchedule, "user", scheduleElement);
   }
   function dateForward() {
     if (globalDate.getDay() == 5) {
         globalDate.setDate(globalDate.getDate()+2);
     }
     globalDate.setDate(globalDate.getDate()+1);
-    renderSchedule(globalDate, userSchedule, "user");
+    var scheduleElement = document.getElementById('mainschedule');
+    renderSchedule(globalDate, userSchedule, "user", scheduleElement);
   }
   function renderToast(text) {
     toast = document.getElementById("toast");
@@ -232,10 +234,12 @@
     email = email.toLowerCase();
     popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="' + imgSrc +
         '" align="right" class="fullsizeimage"></img><p>' + teacherObj.bio + '</p></div>' +
-        '<schedule-lite></schedule-lite></div>';
-    renderSchedule(globalDate, teacherObj, "teacher")
+        '<schedule-lite id="teacherschedule"></schedule-lite></div>';
+    var scheduleElement = document.getElementById('teacherschedule');
+    renderSchedule(globalDate, teacherObj, "teacher", scheduleElement)
   }
   function renderStudent(studentObj) {
+    console.log(studentObj);
     var name = studentObj.firstname + " " + studentObj.lastname;
     var email = studentObj.firstname[0] + studentObj.lastname + "@eastsideprep.org";
     email = email.toLowerCase();
@@ -245,13 +249,14 @@
         ' width="32" height="32"><h2>' + name + '</h2><h3><a href="mailto:' + email + '">' +
         email + '</a></h3><h3>' + grade + '</h3></div><div id="container" class="container" layout="" vertical="" center="">' +
         '<x-schedule id="studentschedule" show="all"></x-schedule></div></div>';
-    renderSchedule(globalDate, studentObj, "student");
+    var scheduleElement = document.getElementById('studentschedule');
+    renderSchedule(globalDate, studentObj, "student", scheduleElement);
     //renderSchedule(globalDate, studentObj, "student")
   }
   function renderPeriod(periodObj) {
     console.log(periodObj);
   }
-  function renderSchedule(dateObj, schedule, type) {
+  function renderSchedule(dateObj, schedule, type, scheduleElement) {
     var school;
     if (schedule.grade <= 8) {
       school = "MS";
@@ -387,12 +392,6 @@
         todaySchedule.push(scheduleObj);
     }
     if (type == "user" || type == "student") {
-      var scheduleElement;
-      if (type == "user") {
-        scheduleElement = document.getElementById('mainschedule');
-      } else { //Type == student
-        scheduleElement = document.getElementById('studentschedule');
-      }
       scheduleElement.entries = todaySchedule;
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
@@ -414,7 +413,6 @@
         openPopup(orig_name);
       }
     } else if (type == "teacher") {
-      var scheduleElement = document.querySelector('schedule-lite');
       scheduleElement.entries = todaySchedule;
       /*scheduleElement.onRoomTap = function(e) {
         console.log(e.model.item.room.replace("-", "_"));
@@ -443,7 +441,8 @@
 
   document.addEventListener('WebComponentsReady', function() {
     var date = new Date();
-    renderSchedule(date, userSchedule, "user");
+    var scheduleElement = document.getElementById('mainschedule');
+    renderSchedule(date, userSchedule, "user", scheduleElement);
   });
 
   </script>

@@ -63,7 +63,7 @@ def convert_email_to_id(email):
             return student[1]
     return None
 
-def load_schedule_data():
+def get_schedule_data():
     return SCHEDULE_INFO
 
 def create_error_obj(error_message, action="", buttontext=""):
@@ -149,7 +149,7 @@ class RegisterBaseHandler(BaseHandler):
                 id = id_pair[1]
                 break
 
-        schedules = load_schedule_data()
+        schedules = get_schedule_data()
         for schedule in schedules:
             if int(schedule['id']) == int(id):
                 return schedule['firstname']
@@ -316,7 +316,7 @@ class LogoutHandler(BaseHandler):
 
 class ClassHandler(BaseHandler):
     def get_class_schedule(self, class_name, period):
-        schedules = load_schedule_data()
+        schedules = get_schedule_data()
         result = None
         for schedule in schedules:                                    #Load up each student's schedule
             for classobj in schedule['classes']:                      #For each one of their classes
@@ -351,13 +351,13 @@ class StudentHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
-        student_names = student_name.split("_") #Replace spaces with underscores, to get from 'first_last' to 'first last'
+        student_names = student_name.split("_") #Split student_name into firstname and lastname
         firstname = student_names[0].lower()
         lastname = student_names[1].lower()
-        schedules = load_schedule_data()
+        schedules = get_schedule_data()
         for schedule in schedules:
             if schedule['firstname'].lower() == firstname and \
-            schedule['lastname'].lower() == lastname:
+               schedule['lastname'].lower() == lastname:
                 self.response.write(json.dumps(schedule))
 
 
@@ -371,7 +371,7 @@ class PeriodHandler(BaseHandler):
         dataobj = {'freeteachers':[], 'freerooms':[], 'currentclass':{}, 'potentialclassschedules':[]}
         if id == "9999": #If this is the demo accound
             id = "4093"
-        schedule_data = load_schedule_data()
+        schedule_data = get_schedule_data()
         user_schedule = None
 
         period = period.upper()
@@ -427,7 +427,7 @@ class RoomHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
-        schedules = load_schedule_data()
+        schedules = get_schedule_data()
         room = room.lower()
         room = room.replace('_', '-');
         room_schedule = {'name':room, 'classes':[]}
@@ -456,7 +456,7 @@ class TeacherHandler(BaseHandler):
             return
         teacher = teacher.lower()
         bio = self.getBio(teacher)
-        schedule_data = load_schedule_data()
+        schedule_data = get_schedule_data()
         teachernames = string.split(teacher, "_")
 
         for schedule in schedule_data:
@@ -471,7 +471,7 @@ class TeacherHandler(BaseHandler):
 class MainHandler(BaseHandler):
     #def __init__(self):
     def get_schedule(self, id):
-        schedules = load_schedule_data();
+        schedules = get_schedule_data();
         for schedule in schedules:
             if schedule['id'] == id:
                 return schedule
