@@ -250,16 +250,9 @@
         '<schedule-lite id="studentschedule" show="all"></schedule-lite></div></div>';
     var scheduleElement = document.getElementById('studentschedule');
     renderSchedule(globalDate, studentObj, "lite", scheduleElement);
-    //renderSchedule(globalDate, studentObj, "student")
   }
   function renderPeriod(periodObj) {
     console.log(periodObj);
-  }
-  function isStudyHall(className) {
-    if (className == "Free Period" || className == "MS Study Hall" || className == "Guided Study Hall") {
-      return true;
-    }
-    return false;
   }
   function renderSchedule(dateObj, schedule, type, scheduleElement) {
     var school;
