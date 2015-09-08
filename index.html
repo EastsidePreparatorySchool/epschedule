@@ -233,8 +233,11 @@
     popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="' + imgSrc +
         '" align="right" class="fullsizeimage"></img><p>' + teacherObj.bio + '</p></div>' +
         '<schedule-lite></schedule-lite></div>';
-    renderSchedule(globalDate, teacherObj, "teacher")
-  }
+    // Wait for HTML to be parsed/applied before trying to show the schedule.
+    // Without this, Firefox/Safari don't display the schedule.
+    setTimeout(function() {
+      renderSchedule(globalDate, teacherObj, "teacher");
+    }, 0);
   function renderStudent(studentObj) {
     console.log(studentObj);
   }
