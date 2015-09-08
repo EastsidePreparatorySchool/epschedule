@@ -75,6 +75,10 @@ def getClass(textbox):#Each textbox is passed in
 def explode_pdf(path):
     path_properties = string.split(path, "\\")  #Split the file name into a series of directories
     schedule_properties = string.split(path_properties[7], "-") #Extract the information from the name of the pdf
+    if len(schedule_properties) > 4: #If the person has a dash in their last name
+        schedule_properties[2] += "-" + schedule_properties[3]
+        schedule_properties[3] = schedule_properties[4]
+
     #Turns the pdf into a list of pages of text boxes
     fp = file(path, 'rb')
     parser = PDFParser(fp)
@@ -102,12 +106,12 @@ def explode_pdf(path):
                 #print class_obj["period_num"]
                 classes.append(class_obj['class'])  #Shove the information passed back from getClass() into it's appropriate space in the list
             elif len(info) == 4: #If the obj contains information on the user's name, advisor, grade, and locker num
-                graduating_year = info[1][-5:-1]
-                grade = graduating_year_to_grade(graduating_year)
-                advisor = info[2][9:-1]
-                advisor_names = string.split(advisor, ", ")
-                advisor_first = advisor_names[1][1:]
-                advisor_last = advisor_names[0]
+                 graduating_year = info[1][-5:-1]
+                 grade = graduating_year_to_grade(graduating_year)
++                advisor = info[2][10:-1]
+                 advisor_names = string.split(advisor, ", ")
++                advisor_first = advisor_names[1]
+                 advisor_last = advisor_names[0]
     device.close()
 
     if classes == []: #If the schedule is blank or not a schedule
@@ -156,6 +160,6 @@ for person_num in range (0, len(students)):
                         if students[person_num]['classes'][class_num]['period'] == taught_class['period'] and students[person_num]['classes'][class_num]['room'] == taught_class['room'] and students[person_num]['classes'][class_num]['name'] == taught_class['name']:
                             students[person_num]['classes'][class_num]['teacher'] = teacher['firstname'] + " " + teacher['lastname']
 
-file = open('schedules.json', 'wb')
+file = open('..\\schedules.json', 'w')
 file.write(json.dumps(students))
 #print students  #Print the list of schedules

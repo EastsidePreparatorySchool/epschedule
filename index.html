@@ -28,21 +28,6 @@
   <link rel="import" href="html/schedule_lite.html">
 
   <script>
-  var touchStartPos = [0, 0];
-  function handleTouchStart(evt) {
-    touchStartPos[0] = evt.changedTouches[0].pageX;
-    touchStartPos[1] = evt.changedTouches[0].pageY;
-  }
-  function handleTouchEnd(evt) {
-    if (Math.abs(touchStartPos[0] - evt.changedTouches[0].pageX) > Math.abs(touchStartPos[1] - evt.changedTouches[0].pageY)) { //If the swipe is horizontal
-        if (touchStartPos[0] > evt.changedTouches[0].pageX) {
-            dateForward();
-        } else if (touchStartPos[0] < evt.changedTouches[0].pageX) {
-            dateBack();
-        }
-    }
-  }
-
   function signOut() {
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -97,15 +82,42 @@
     xhr.send(data);
   }
   document.onkeydown = function(event) {
-    if (event.keyCode == 37) { //Left
-        dateBack();
-    } else if (event.keyCode == 39) { //Right
-        dateForward();
+    if (pages.selected == 0) {  // no popup
+      if (event.keyCode == 37) {  // left
+          dateBack();
+      } else if (event.keyCode == 39) {  // right
+          dateForward();
+      }
+    } else if (pages.selected == 1) {  // no popup
+      if (event.keyCode == 27) {  // escape
+        closePopup();
+      }
     }
   }
+
   document.addEventListener("touchstart", handleTouchStart, false);
   document.addEventListener("touchend", handleTouchEnd, false);
   document.addEventListener("touchleave", handleTouchEnd, false);
+  var touchStartPos = [0, 0];
+
+  function handleTouchStart(evt) {
+    touchStartPos[0] = evt.changedTouches[0].pageX;
+    touchStartPos[1] = evt.changedTouches[0].pageY;
+  }
+  function handleTouchEnd(evt) {
+    // If the swipe is horizontal
+    if (Math.abs(touchStartPos[0] - evt.changedTouches[0].pageX) >
+       Math.abs(touchStartPos[1] - evt.changedTouches[0].pageY)) {
+      // If we're on the schedule page
+      if (pages.selected == 0) {
+        if (touchStartPos[0] > evt.changedTouches[0].pageX) {
+          dateForward();
+        } else if (touchStartPos[0] < evt.changedTouches[0].pageX) {
+          dateBack();
+        }
+      }
+    }
+  }
 
   var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
@@ -240,6 +252,12 @@
     console.log(periodObj);
   }
   function renderSchedule(dateObj, schedule, type) {
+    var school;
+    if (schedule.grade <= 8) {
+      school = "MS";
+    } else {
+      school = "US";
+    }
     switch (dateObj.getDay()) { //Spits out the day of the week as a string
         case 6: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
           dateObj.setDate(dateObj.getDate() + 1);
@@ -275,8 +293,8 @@
         }
     }
     var currentSlot;
-    for (currentSlot = 0; currentSlot < days[0][day]["MS"].length; currentSlot++) {
-        switch(days[0][day]["MS"][currentSlot]["period"]) { //Falling through is intended in switch statement
+    for (currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
+        switch(days[0][day][school][currentSlot]["period"]) { //Falling through is intended in switch statement
             case "0": //0 Period
             case "A": //A period
             case "B": //B period
@@ -287,7 +305,7 @@
             case "G": //G period
             case "H": //H period
                 for (var k = 0; k < schedule["classes"].length; k++) {
-                    if (schedule["classes"][k]["period"] == days[0][day]["MS"][currentSlot]["period"]) {
+                    if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
                         if (schedule["classes"][k]["name"] != "Free Period") {
                             var teacherName = schedule["classes"][k]["teacher"]; //Teacher's fullname
                             var teacherLast = teacherName.split(" ")[1]; //Teacher's last name
@@ -295,7 +313,7 @@
                                 teacher: teacherName,
                                 teacherLastName: teacherLast,
                                 room: schedule["classes"][k]["room"],
-                                period: days[0][day]["MS"][currentSlot]["period"],
+                                period: days[0][day][school][currentSlot]["period"],
                                 time: ""}
 
                         } else {
@@ -303,27 +321,24 @@
                                 teacher: "",
                                 teacherLastName: "",
                                 room: "",
-                                period: days[0][day]["MS"][currentSlot]["period"],
+                                period: days[0][day][school][currentSlot]["period"],
                                 time: ""};
                         }
                     }
                 }
                 break;
-            case "Lunch":
-                scheduleObj = { name: "Lunch", teacher: "", room: "LPC Commons", period: "X", time: "" };
-                break;
-            case "Assembly":
-                scheduleObj = { name: "Assembly", teacher: "", room: "LPC Commons", period: "X", time: "" };
-                break;
-            case "Advisory":
-                scheduleObj = { name: "Advisory", teacher: "", room: "", period: "X", time: "" }; //TODO - Make this box display the user's advisor and advisory location
-                break;
-            case "Class Meeting":
-                scheduleObj = { name: "Class Meeting", teacher: "", room: "", period: "X", time: "" };
-                break;
-            case "Clubs":
-                scheduleObj = { name: "Clubs", teacher: "", room: "", period: "X", time: "" };
-                break;
+
+            default:
+              scheduleObj = {
+                name: days[0][day][school][currentSlot]["period"],
+                teacher: "",
+                room: "",
+                period: "X",
+                time: ""
+              };
+              if (scheduleObj.name == "Lunch" || scheduleObj.name == "Assembly" || scheduleObj.name == "US Community") {
+                scheduleObj.room = "LPC Commons";
+              }
         }
         if (scheduleObj.teacher == "N/A") {
           scheduleObj.teacher = "";
@@ -334,13 +349,16 @@
         //Add in photos if the user's schedule is being rendered
         if (type == "user" || type == "student") {
           if (scheduleObj.teacher != "") {
-            sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
+            var sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
             sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
             scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
             scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
           } else {
             scheduleObj.teacherLink = "";
-            scheduleObj.avatar = "/images/" + scheduleObj.name.toLowerCase().replace(/\s/g, '') + ".jpg";
+            var image_url = scheduleObj.name.toLowerCase();
+            image_url = image_url.replace("/", "");
+            image_url = image_url.replace(/\s/g, '');
+            scheduleObj.avatar = "/images/" + image_url + ".jpg";
           }
           scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
         //Add in photos if the teacher's schedule is being rendered
@@ -363,7 +381,7 @@
           }
         }
 
-        var times = days[0][day]["MS"][currentSlot]["time"].split('-');
+        var times = days[0][day][school][currentSlot]["time"].split('-');
         scheduleObj.startTime = times[0].trim();
         scheduleObj.endTime = times[1].trim();
         todaySchedule.push(scheduleObj);

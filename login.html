@@ -54,8 +54,11 @@
     #registerText {
       display: block;
     }
+    #toast {
+      text-align: left;
+    }
     #toastButton {
-      display: none;
+      margin-left: 48px;
       color: #2196f3;
     }
   </style>
@@ -72,8 +75,8 @@
   <paper-input label="Password" id="password" type="password" onkeypress="checkSubmit(event)">
   </paper-input>
 
-  <paper-button onclick="submitForm()" raised id="loginButton">SIGN IN</paper-button>
-  <paper-button onclick="submitForm()" raised id="registerButton">CREATE ACCOUNT</paper-button>
+  <paper-button onclick="submitMainForm('login')" raised id="loginButton">SIGN IN</paper-button>
+  <paper-button onclick="submitMainForm('register')" raised id="registerButton">CREATE ACCOUNT</paper-button>
   <p class="copy" id="registerText"><a href="#" id="toggle" class="link" onclick="switchToRegister()">Create account</a></p>
   <p class="copy" id="loginText"><a href="#" id="toggle" class="link" onclick="switchToLogin()">Sign in</a></p>
   </paper-material>
@@ -111,57 +114,63 @@
   }
   function checkSubmit(e) {
     if (e && e.keyCode === 13) {
-      submitForm();
+      submitMainForm(action);
      }
   }
-  function submitForm() {
+  function submitResendForm() {
+    submitForm("resend", processToast, processToast)
+  }
+  function submitMainForm(postAction) {
+    submitForm(postAction, onSuccess, onError);
+  }
+  function submitForm(postAction, successFunction, errorFunction) { //Takes either login, register, or resend
     locked = true;
     var data = new FormData();
-    data.append('email', email.value)
-    data.append('password', password.value)
+    data.append('email', email.value);
+    data.append('password', password.value);
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status==200) {
         result = JSON.parse(xhr.responseText);
         if (result.error == "") {
-          onSuccess();
+          successFunction(result);
         } else {
-          onError(result);
+          errorFunction(result);
         }
         locked = false;
       }
     }
-    xhr.open("POST", action, true);
+    xhr.open("POST", postAction, true);
     xhr.send(data);
   }
 
-  function resendConfirmationEmail() {
-    console.log("Called resendConfirmationEmail");
-  }
   function processToast(errorObj) {
     toast = document.getElementById("toast");
-    toast.setAttribute("text", errorObj.error);
+    toastButton = document.getElementById("toastButton");
+    toast.text = errorObj.error;
     if (errorObj.hasOwnProperty('action')) {
-      toastButton = document.getElementById("toastButton");
       toastButton.innerHTML = errorObj.buttonText;
+      toastButton.style.display = "";
+
       if (errorObj.actionId == 'url') {
         toastButton.onclick = function() { self.location = action; }
       } else if (errorObj.actionId == 'button') {
         switch (errorObj.action) {
           case "resendConfirmationEmail":
-            toastButton.onclick = resendConfirmationEmail;
+            toastButton.onclick = function() { submitResendForm(); };
             break;
           case "switchToRegister":
             toastButton.onclick = switchToRegister;
             break;
         }
       }
-
+    } else {
+      toastButton.style.display = "none";
     }
-    toastButton.style.display = (errorObj.hasOwnProperty('action')) ? "block" : "none";
+
     toast.show();
   }
-  function onSuccess() {
+  function onSuccess(errorObj) {
     if (action == "login") {
       location.reload();
     } else {
