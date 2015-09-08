@@ -391,6 +391,9 @@
         scheduleObj.endTime = times[1].trim();
         todaySchedule.push(scheduleObj);
     }
+
+    scheduleElement.entries = todaySchedule;
+
     if (type == "user" || type == "student") {
       scheduleElement.entries = todaySchedule;
       scheduleElement.onTeacherTap = function(e) {
@@ -412,11 +415,6 @@
         requestAdditionalData(name, "room", renderRoom);
         openPopup(orig_name);
       }
-    } else if (type == "teacher") {
-      scheduleElement.entries = todaySchedule;
-      /*scheduleElement.onRoomTap = function(e) {
-        console.log(e.model.item.room.replace("-", "_"));
-      }*/
     }
   }
   function openPopup(title) {
