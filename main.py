@@ -32,6 +32,8 @@ vendor.add('lib')
 from slowaes import aes
 from py_bcrypt import bcrypt
 
+DEMO_USER = "demo"
+DEMO_ID = 9999
 CRYPTO_KEY = open('crypto.key', 'rb').read()
 id_table_file = open('id_table.json', 'rb')
 ID_TABLE = json.load(id_table_file)
@@ -52,10 +54,10 @@ class User(db.Model):
 
 def convert_email_to_id(email):
     email = email.lower()
-    if email == "demo@eastsideprep.org":
-        return 9999
     pieces = string.split(email, "@")
     username = pieces[0]
+    if username == DEMO_USER:
+        return DEMO_ID
     for student in ID_TABLE:
         if (student[0] == username):
             return student[1]
@@ -284,7 +286,7 @@ class ChangePasswordHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
-        elif id == "9999": #If it is the demo account
+        elif id == str(DEMO_ID): #If it is the demo account
             self.response.write(json.dumps({"error":"You are a terrible person."}))
             return
         email = self.get_username(id) + "@eastsideprep.org"
@@ -353,7 +355,7 @@ class PeriodHandler(BaseHandler):
             return
         #Should return back which of your teachers are free, which rooms are free, what class you currently have then, and what classes you could take then
         dataobj = {'freeteachers':[], 'freerooms':[], 'currentclass':{}, 'potentialclassschedules':[]}
-        if id == "9999": #If this is the demo accound
+        if id == str(DEMO_ID): #If this is the demo accound
             id = "4093"
         schedule_data = load_schedule_data()
         user_schedule = None
@@ -477,7 +479,9 @@ class MainHandler(BaseHandler):
         if id is None:
             self.send_login_response()
             return
-        if id == "9999": #If this is the demo account
+
+        logging.info("New request for id: " + id)
+        if id == str(DEMO_ID): #If this is the demo account
             id = "4093"
         #schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
