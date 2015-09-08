@@ -248,13 +248,19 @@
     popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="/images/material_face.svg"' +
         ' width="32" height="32"><h2>' + name + '</h2><h3><a href="mailto:' + email + '">' +
         email + '</a></h3><h3>' + grade + '</h3></div><div id="container" class="container" layout="" vertical="" center="">' +
-        '<x-schedule id="studentschedule" show="all"></x-schedule></div></div>';
+        '<schedule-lite id="studentschedule" show="all"></schedule-lite></div></div>';
     var scheduleElement = document.getElementById('studentschedule');
     renderSchedule(globalDate, studentObj, "student", scheduleElement);
     //renderSchedule(globalDate, studentObj, "student")
   }
   function renderPeriod(periodObj) {
     console.log(periodObj);
+  }
+  function isStudyHall(className) {
+    if (className == "Free Period" || className == "MS Study Hall" || className == "Guided Study Hall") {
+      return true;
+    }
+    return false;
   }
   function renderSchedule(dateObj, schedule, type, scheduleElement) {
     var school;
@@ -352,7 +358,7 @@
           scheduleObj.room = "";
         }
         //Add in photos if the user's schedule is being rendered
-        if (type == "user" || type == "student") {
+        if (type == "user") {
           if (scheduleObj.teacher != "") {
             var sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
             sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
@@ -367,16 +373,16 @@
           }
           scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
         //Add in photos if the teacher's schedule is being rendered
-        } else if (type == "teacher") {
+        } else if (type == "teacher" || type == "student") {
           if (letterToNum(scheduleObj.period) <= 8) { //If it's a class period
-            var userOpenPeriod = false; //Find out if the user has a class that period
+            var sharedClass = false; //Find out if the user has a class that period
             for (var i = 0; i < userSchedule.classes.length; i++) {
-              if (userSchedule.classes[i].period == scheduleObj.period && (userSchedule.classes[i].name == "Free Period" || userSchedule.classes[i].name == "MS Study Hall" || userSchedule.classes[i].name == "Guided Study Hall")) { //TODO find the name of GSH
-                userOpenPeriod = true;
+              if (userSchedule.classes[i].period == scheduleObj.period && userSchedule.classes[i].name == scheduleObj.name) { //TODO find the name of GSH
+                sharedClass = true;
                 break;
               }
             }
-            if (scheduleObj.name == "Free Period" && userOpenPeriod) {
+            if (sharedClass) {
               scheduleObj.avatar = "check";
             } else {
               scheduleObj.avatar = "clear";
@@ -394,7 +400,7 @@
 
     scheduleElement.entries = todaySchedule;
 
-    if (type == "user" || type == "student") {
+    if (type == "user") {
       scheduleElement.entries = todaySchedule;
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
