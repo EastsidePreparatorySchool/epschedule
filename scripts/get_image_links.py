@@ -4,7 +4,7 @@ to generate a table of EPS staff members and their respective photos. This allow
 to show photos of teachers in their respective classes and cards. This script shouldn't need any
 updating, it will only need to be run from time to time as new teachers are added to EPS and other
 teachers leave. However, if the EPS website is ever updated, this parser may no longer work,
-meaning that it might need to be updated if that happens.
+meaning that it might need to be updatingated if that happens.
 """
 
 #import json

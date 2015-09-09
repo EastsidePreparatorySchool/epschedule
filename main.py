@@ -360,8 +360,37 @@ class StudentHandler(BaseHandler):
         for schedule in schedules:
             if schedule['firstname'].lower() == firstname and \
                schedule['lastname'].lower() == lastname:
-                self.response.write(json.dumps(schedule))
+                sanitized = self.sanitize_schedule(schedule)
+                self.response.write(json.dumps(sanitized))
 
+    def sanitize_schedule(self, schedule):
+        for i in range (0, len(schedule["classes"])):
+            sanitized = self.sanitize_class(schedule["classes"][i]["name"])
+            if sanitized != schedule["classes"][i]["name"]:
+                schedule["classes"][i]["name"] = sanitized
+                schedule["classes"][i]["teacher"] = ""
+                schedule["classes"][i]["room"] = ""
+        return schedule
+
+    def sanitize_class(self, class_name):
+        sensitive_classes = [
+            {
+            "names":["Math Thinking 1", "Math Thinking 2", "Math Thinking 2", "Algebra 1", "Geometry", "Algebra 2", "Pre-Calculus", "Calculus"],
+            "censor": "Math"
+            },
+            {
+            "names":["Spanish 1A", "Spanish 1B", "Spanish 2A", "Spanish 2B", "Spanish 1", "Spanish 2", "Spanish 3", "Spanish 4",
+            "Adv. Spanish Cinema", "Adv. Spanish Lang"],
+            "censor": "Spanish"
+            },
+            {"names":["Study Hall", "GSH"], "censor": "Study Hall"}
+        ]
+        for class_type in sensitive_classes: #For each type of sensitive class
+            for test_name in class_type["names"]: #For each it's the potential names
+                if class_name == test_name: #Test if the inputted name is the potential name
+                    return class_type["censor"] #If so, return the censored version of that name
+
+        return class_name #If it's not a sensitive class, just return the class name
 
 class PeriodHandler(BaseHandler):
     def get(self, period):
