@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 #
 # Copyright 2007 Google Inc.
 #
@@ -70,7 +70,7 @@ def get_schedule_data():
 
 def create_error_obj(error_message, action="", buttontext=""):
     error_obj = {"error":error_message}
-    if action: #If action is present (meaning the error has a button)
+    if action: # If action is present (meaning the error has a button)
         error_obj["action"] = action
         error_obj["buttontext"] = buttontext
     return json.dumps(error_obj)
@@ -91,16 +91,16 @@ REGISTER_SUCCESS = {
   "error": "Success! Check your email to complete registration"
 }
 
-class BaseHandler(webapp2.RequestHandler): #All handlers inherit from this handler
+class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this handler
     def check_id(self):
         encoded_id = self.request.cookies.get("SID")
         if encoded_id is None:
             return None
-        #TODO add code to check if id is valid
+        # TODO add code to check if id is valid
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         return id
 
-    def check_password(self, email, password):  #Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
+    def check_password(self, email, password):  # Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
         logging.info("Checking passwords")
         account_confirmed = False
         known_username = False
@@ -131,7 +131,7 @@ class BaseHandler(webapp2.RequestHandler): #All handlers inherit from this handl
 
         return {}  # success
 
-    def check_signed_up(self, email):           #Returns false if there is already a registered user signed up, returns true if there is not
+    def check_signed_up(self, email):           # Returns false if there is already a registered user signed up, returns true if there is not
         user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
         for query_result in user_obj_query:
             return False
@@ -171,7 +171,7 @@ class RegisterBaseHandler(BaseHandler):
         email_properties['email'] = email
         email_properties['url'] = self.get_confirmation_link(row_id)
         message = mail.EmailMessage()
-        message.sender = "The EPSchedule Team <gavin.uberti@gmail.com>"   #TODO make sender fooy@epscheduleapp.appspot.com
+        message.sender = "The EPSchedule Team <gavin.uberti@gmail.com>"   # TODO make sender fooy@epscheduleapp.appspot.com
         message.to = email
         message.subject = "Sign up for EPSchedule"
         message.html = self.format_html(email_text, email_properties)
@@ -228,16 +228,16 @@ class ConfirmHandler(BaseHandler):
     def get(self, encoded_row_id):
         row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
         logging.info(row_id)
-        user_obj_query = User.get_by_id(int(row_id)) #FIX Instead of email, use row id
+        user_obj_query = User.get_by_id(int(row_id)) # FIX Instead of email, use row id
         if not user_obj_query.verified:
             user_obj_query.verified = True
             user_obj_query.put()
             self.redirect("/")
             return
-            #TODO redirect user to main page
+            # TODO redirect user to main page
         else:
             self.response.write("This account has already been confirmed!")
-            #TODO redirect user to schedule page
+            # TODO redirect user to schedule page
             return
         self.response.write("Something went wrong! There is no object with row_id " + row_id + " in the database")
 
@@ -268,7 +268,7 @@ class LoginHandler (BaseHandler):
         email = self.request.get('email')
         password = self.request.get('password')
 
-        err = self.check_password(email, password) #Returns an object, so we don't have to call create_error_obj() on this
+        err = self.check_password(email, password) # Returns an object, so we don't have to call create_error_obj() on this
         if err:
             self.response.write(json.dumps(err))
         else:
@@ -282,11 +282,11 @@ class LoginHandler (BaseHandler):
 
 class ChangePasswordHandler(BaseHandler):
     def post(self):
-        id = self.check_id() #TODO check to make sure that the account is associated with the proper id
+        id = self.check_id() # TODO check to make sure that the account is associated with the proper id
         if id is None:
             self.error(403)
             return
-        elif id == str(DEMO_ID): #If it is the demo account
+        elif id == str(DEMO_ID): # If it is the demo account
             self.response.write(json.dumps({"error":"You are a terrible person."}))
             return
         email = self.get_username(id) + "@eastsideprep.org"
@@ -320,31 +320,31 @@ class ClassHandler(BaseHandler):
     def get_class_schedule(self, class_name, period):
         schedules = get_schedule_data()
         result = None
-        for schedule in schedules:                                    #Load up each student's schedule
-            for classobj in schedule['classes']:                      #For each one of their classes
+        for schedule in schedules:                                    # Load up each student's schedule
+            for classobj in schedule['classes']:                      # For each one of their classes
                 if classobj['name'].lower().replace(" ", "_").replace(".", "") == class_name.lower() and \
-                   classobj['period'].lower() == period.lower():       #Check class name and period match
-                    if classobj['teacher'] != "":                     #If they aren't a student (teacher names will be added later)
+                   classobj['period'].lower() == period.lower():       # Check class name and period match
+                    if classobj['teacher'] != "":                     # If they aren't a student (teacher names will be added later)
                         if not result:
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
                                       "students": []}
                         student = {"firstname": schedule['firstname'], \
                                    "lastname": schedule['lastname'], \
-                                   "email": "nobody@eastsideprep.org"}  #Append their name to a list of students in that period
+                                   "email": "nobody@eastsideprep.org"}  # Append their name to a list of students in that period
                         result['students'].append(student)
 
         result['students'].sort(key=lambda s: s['firstname'])
         return result
     def get(self, class_name, period):
         logging.info("get()")
-        #Get the cookie
+        # Get the cookie
         id = self.check_id()
         if id is None:
             self.error(403)
             return
 
-        #schedule = self.get_schedule(self.request.get('id'))
+        # schedule = self.get_schedule(self.request.get('id'))
         self.response.write(json.dumps(self.get_class_schedule(class_name, period)))
 
 class StudentHandler(BaseHandler):
@@ -353,7 +353,7 @@ class StudentHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
-        student_names = student_name.split("_") #Split student_name into firstname and lastname
+        student_names = student_name.split("_") # Split student_name into firstname and lastname
         firstname = student_names[0].lower()
         lastname = student_names[1].lower()
         schedules = get_schedule_data()
@@ -373,24 +373,23 @@ class StudentHandler(BaseHandler):
         return schedule
 
     def sanitize_class(self, class_name):
-        sensitive_classes = [
-            {
+        sensitive_classes = [{
             "names":["Math Thinking 1", "Math Thinking 2", "Math Thinking 2", "Algebra 1", "Geometry", "Algebra 2", "Pre-Calculus", "Calculus"],
-            "censor": "Math"
-            },
-            {
+            "sanitized": "Math"
+            }, {
             "names":["Spanish 1A", "Spanish 1B", "Spanish 2A", "Spanish 2B", "Spanish 1", "Spanish 2", "Spanish 3", "Spanish 4",
             "Adv. Spanish Cinema", "Adv. Spanish Lang"],
-            "censor": "Spanish"
-            },
-            {"names":["Study Hall", "GSH"], "censor": "Study Hall"}
-        ]
-        for class_type in sensitive_classes: #For each type of sensitive class
-            for test_name in class_type["names"]: #For each it's the potential names
-                if class_name == test_name: #Test if the inputted name is the potential name
-                    return class_type["censor"] #If so, return the censored version of that name
+            "sanitized": "Spanish"
+            },{
+            "names":["Study Hall", "GSH"],
+            "sanitized": "Study Hall"
+        }]
+        for class_type in sensitive_classes: # For each type of sensitive class
+            for test_name in class_type["names"]: # For each it's the potential names
+                if class_name == test_name: # Test if the inputted name is the potential name
+                    return class_type["sanitized"] # If so, return the censored version of that name
 
-        return class_name #If it's not a sensitive class, just return the class name
+        return class_name # If it's not a sensitive class, just return the class name
 
 class PeriodHandler(BaseHandler):
     def get(self, period):
@@ -398,9 +397,9 @@ class PeriodHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
-        #Should return back which of your teachers are free, which rooms are free, what class you currently have then, and what classes you could take then
+        # Should return back which of your teachers are free, which rooms are free, what class you currently have then, and what classes you could take then
         dataobj = {'freeteachers':[], 'freerooms':[], 'currentclass':{}, 'potentialclassschedules':[]}
-        if id == str(DEMO_ID): #If this is the demo accound
+        if id == str(DEMO_ID): # If this is the demo accound
             id = "4093"
         schedule_data = get_schedule_data()
         user_schedule = None
@@ -411,7 +410,7 @@ class PeriodHandler(BaseHandler):
                 user_schedule = schedule
                 break
         logging.info("Getting here!")
-        for class_obj in user_schedule['classes']: #Find out which class the user has then
+        for class_obj in user_schedule['classes']: # Find out which class the user has then
             logging.info("Is " + class_obj['period'] + " equal to " + period + "? I guess not!")
             if class_obj['period'] == period:
                 dataobj['currentclass'] = class_obj
@@ -419,9 +418,9 @@ class PeriodHandler(BaseHandler):
                 break
 
         for schedule in schedule_data:
-            if schedule['grade'] is None: #If the schedule is a teacher's schedule
-                for class_obj in user_schedule['classes']: #For each of your classes
-                    if class_obj['teacher'] == (schedule['firstname'] + " " + schedule['lastname']): #If the teacher is one of your teachers
+            if schedule['grade'] is None: # If the schedule is a teacher's schedule
+                for class_obj in user_schedule['classes']: # For each of your classes
+                    if class_obj['teacher'] == (schedule['firstname'] + " " + schedule['lastname']): # If the teacher is one of your teachers
                         is_free = True
                         for taught_class in schedule['classes']:
                             if taught_class['period'] == period:
@@ -430,9 +429,9 @@ class PeriodHandler(BaseHandler):
                         if is_free:
                             dataobj['freeteachers'].append(class_obj['teacher'])
 
-            if schedule['grade'] == user_schedule['grade']: #Get all classes the user could be taking at that point in time
+            if schedule['grade'] == user_schedule['grade']: # Get all classes the user could be taking at that point in time
                 for class_obj in schedule['classes']:
-                    unique = True #Whether the current class is also had by the user
+                    unique = True # Whether the current class is also had by the user
                     for user_class_obj in user_schedule['classes']:
                         if (class_obj == user_class_obj):
                             unique = False
@@ -440,11 +439,11 @@ class PeriodHandler(BaseHandler):
                     if unique:
                         dataobj['potentialclassschedules'].append(class_obj)
 
-            for class_obj in schedule['classes']: #Get list of periods
+            for class_obj in schedule['classes']: # Get list of periods
                 if dataobj['freerooms'].count(class_obj['room']) == 0:
                     dataobj['freerooms'].append(class_obj['room'])
 
-        for schedule in schedule_data: #Find out which periods are free
+        for schedule in schedule_data: # Find out which periods are free
             for class_obj in schedule['classes']:
                 if class_obj['period'] == period:
                     if (dataobj['freerooms'].count(class_obj['room']) > 0):
@@ -464,7 +463,7 @@ class RoomHandler(BaseHandler):
         room_schedule = {'name':room, 'classes':[]}
         for schedule in schedules:
             for class_obj in schedule['classes']:
-                if room == class_obj['room'].lower(): #If the class is in the room
+                if room == class_obj['room'].lower(): # If the class is in the room
                     already_there = False
                     for room_class_obj in room_schedule['classes']:
                         if class_obj == room_class_obj:
@@ -500,7 +499,7 @@ class TeacherHandler(BaseHandler):
             if bio['name'] == teacher:
                 return bio['bio']
 class MainHandler(BaseHandler):
-    #def __init__(self):
+    # def __init__(self):
     def get_schedule(self, id):
         schedules = get_schedule_data();
         for schedule in schedules:
@@ -519,16 +518,16 @@ class MainHandler(BaseHandler):
         self.response.write(template.render(template_values))
 
     def get(self):
-        #Get the cookie
+        # Get the cookie
         id = self.check_id()
         if id is None:
             self.send_login_response()
             return
 
         logging.info("New request for id: " + id)
-        if id == str(DEMO_ID): #If this is the demo account
+        if id == str(DEMO_ID): # If this is the demo account
             id = "4093"
-        #schedule = self.get_schedule(self.request.get('id'))
+        # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
         days = self.get_days()
         if schedule is not None:
