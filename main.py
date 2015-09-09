@@ -1,4 +1,4 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 #
 # Copyright 2007 Google Inc.
 #
@@ -376,11 +376,11 @@ class StudentHandler(BaseHandler):
         sensitive_classes = [{
             "names":["Math Thinking 1", "Math Thinking 2", "Math Thinking 2", "Algebra 1", "Geometry", "Algebra 2", "Pre-Calculus", "Calculus"],
             "sanitized": "Math"
-            }, {
+        }, {
             "names":["Spanish 1A", "Spanish 1B", "Spanish 2A", "Spanish 2B", "Spanish 1", "Spanish 2", "Spanish 3", "Spanish 4",
             "Adv. Spanish Cinema", "Adv. Spanish Lang"],
             "sanitized": "Spanish"
-            },{
+        }, {
             "names":["Study Hall", "GSH"],
             "sanitized": "Study Hall"
         }]
