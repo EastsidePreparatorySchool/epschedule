@@ -108,7 +108,9 @@
                   <img src="/images/material_face.svg" width="32" height="32">
                   <div class="flex">
                     <p>
-                      <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
+                      <a on-click="studentThunk" item="link" href="#">
+                        <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
+                      </a>
                     </p>
                   </div>
                   <a href="{{computeEmailLink(item.email)}}">
@@ -166,6 +168,12 @@
         } else {
           collapse.toggle();
           //e.model.set('item.students', []);
+        }
+      },
+      studentThunk: function(e) {
+        e.stopPropagation()
+        if (this.onStudentTap) {
+          this.onStudentTap(e);
         }
       },
       roomThunk: function(e) {
