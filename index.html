@@ -357,20 +357,27 @@
         }
         //Add in photos if the user's schedule is being rendered
         if (type == "full") {
-          if (scheduleObj.teacher != "") {
-            var sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
+          if (scheduleObj.teacher != "" && schedule.grade) {
+            var sanitized_teacher_name;
+            sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
             sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
             scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
             scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
-          } else {
+          } else if (scheduleObj.period == "X" || scheduleObj.name == "Free Period") {
             scheduleObj.teacherLink = "";
             var image_url = scheduleObj.name.toLowerCase();
             image_url = image_url.replace("/", "");
             image_url = image_url.replace(/\s/g, '');
             scheduleObj.avatar = "/images/" + image_url + ".jpg";
+          } else {
+            sanitized_teacher_name = schedule.firstname + "_" + schedule.lastname;
+            sanitized_teacher_name = sanitized_teacher_name.toLowerCase();
+            sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
+            scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
           }
           scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
-        //Add in photos if the teacher's schedule is being rendered
+
+
         } else if (type == "lite") {
           if (letterToNum(scheduleObj.period) <= 8) { //If it's a class period
             var sharedClass = false; //Find out if the user has a class that period
