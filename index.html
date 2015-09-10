@@ -96,7 +96,7 @@
   }
 
   function scheduleSwiped(evt) {
-    if (evt.direction == "left") {
+    if (evt.detail.direction == "left") {
       dateForward();
     } else {
       dateBack();
@@ -438,10 +438,9 @@
   }
 
   document.addEventListener('WebComponentsReady', function() {
-    var el = document.querySelector("x-schedule");
-    el.addEventListener("swiped", scheduleSwiped, false);
-    var date = new Date();
     var scheduleElement = document.getElementById('mainschedule');
+    scheduleElement.addEventListener("swiped", scheduleSwiped, false);
+    var date = new Date();
     renderSchedule(date, userSchedule, "full", scheduleElement);
   });
 
