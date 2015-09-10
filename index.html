@@ -131,7 +131,7 @@
     toast.show();
   }
   function getGpsSuccess(position, roomObj) {
-    var radius = 6371000; //Radius of the earth
+    var radius = 6371000; // Radius of the earth
     var phi1 = position.coords.latitude * (Math.PI / 180);
     var phi2 = roomObj.latitude * (Math.PI / 180);
     var deltaPhi = (roomObj.latitude-position.coords.latitude) * (Math.PI / 180);
@@ -172,8 +172,8 @@
     }
   }
   function requestAdditionalData(name, type, funct) {
-    //Type is the type of data being requested - [class, teacher, student, room, period]
-    //Name is the name of the class, teacher, student, etc.
+    // Type is the type of data being requested - [class, teacher, student, room, period]
+    // Name is the name of the class, teacher, student, etc.
     var url = type + "/" + name;
     console.log("Requesting " + url);
     xhr = new XMLHttpRequest();
@@ -187,15 +187,15 @@
     xhr.send();
   }
   function renderRoom(roomObj) {
-    /*renderToast("Please allow EPSchedule to use your current location"); //TODO check to see if browser allows geolocation by default*/
-    //Bug here that causes latitude and longitude of google map tag to not exist
+    /*renderToast("Please allow EPSchedule to use your current location"); // TODO check to see if browser allows geolocation by default*/
+    // Bug here that causes latitude and longitude of google map tag to not exist
     var popup = document.getElementById("popup");
     var container = document.getElementById("popupContainer");
     console.log("Latitude = " + roomObj.latitude);
     console.log("Longitude = " + roomObj.longitude);
     container.innerHTML = '<google-map latitude="47.643455" longitude="-122.198935" id="map" zoom="18" disable-default-ui fit-to-markers>' +
-      //'<google-map-marker latitude="' + roomObj.latitude + '" longitude="' + roomObj.longitude + '"' +
-      //'draggable="false" title="' + roomObj.room + '"></google-map-marker>
+      // '<google-map-marker latitude="' + roomObj.latitude + '" longitude="' + roomObj.longitude + '"' +
+      // 'draggable="false" title="' + roomObj.room + '"></google-map-marker>
       '</google-map>';
     /*if (navigator.geolocation) {
         var success = function(gpsObj) {
@@ -251,8 +251,8 @@
     } else {
       school = "US";
     }
-    switch (dateObj.getDay()) { //Spits out the day of the week as a string
-        case 6: //Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
+    switch (dateObj.getDay()) { // Spits out the day of the week as a string
+        case 6: // Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
           dateObj.setDate(dateObj.getDate() + 1);
         case 0:
           dateObj.setDate(dateObj.getDate() + 1);
@@ -280,28 +280,28 @@
     daySpan.appendChild(document.createTextNode(dateText));
     var scheduleObj;
     todaySchedule = [];
-    for (var exception = 0; exception < days[1].length; exception++) { //Handles exceptions, also handles special weekend schedules
+    for (var exception = 0; exception < days[1].length; exception++) { // Handles exceptions, also handles special weekend schedules
         if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
             day = days[1][exception]["schedule"];
         }
     }
     var currentSlot;
     for (currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
-        switch(days[0][day][school][currentSlot]["period"]) { //Falling through is intended in switch statement
-            case "0": //0 Period
-            case "A": //A period
-            case "B": //B period
-            case "C": //C period
-            case "D": //D period
-            case "E": //E period
-            case "F": //F period
-            case "G": //G period
-            case "H": //H period
+        switch(days[0][day][school][currentSlot]["period"]) { // Falling through is intended in switch statement
+            case "0": // 0 Period
+            case "A": // A period
+            case "B": // B period
+            case "C": // C period
+            case "D": // D period
+            case "E": // E period
+            case "F": // F period
+            case "G": // G period
+            case "H": // H period
                 for (var k = 0; k < schedule["classes"].length; k++) {
                     if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
                         if (schedule["classes"][k]["name"] != "Free Period") {
-                            var teacherName = schedule["classes"][k]["teacher"]; //Teacher's fullname
-                            var teacherLast = teacherName.split(" ")[1]; //Teacher's last name
+                            var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
+                            var teacherLast = teacherName.split(" ")[1]; // Teacher's last name
                             scheduleObj = { name: schedule["classes"][k]["name"],
                                 teacher: teacherName,
                                 teacherLastName: teacherLast,
@@ -339,27 +339,39 @@
         if (scheduleObj.room == "N/A") {
           scheduleObj.room = "";
         }
-        //Add in photos if the user's schedule is being rendered
+        // Add in photos if the user's schedule is being rendered
         if (type == "full") {
-          if (scheduleObj.teacher != "") {
-            var sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
+
+          // If the user is a normal user and the class is a normal class
+          if (scheduleObj.teacher != "" && schedule.grade) {
+            var sanitized_teacher_name;
+            sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
             sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
             scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
             scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
-          } else {
+
+          // If class is a special class or free period
+          } else if (scheduleObj.period == "X" || scheduleObj.name == "Free Period") {
             scheduleObj.teacherLink = "";
             var image_url = scheduleObj.name.toLowerCase();
             image_url = image_url.replace("/", "");
             image_url = image_url.replace(/\s/g, '');
             scheduleObj.avatar = "/images/" + image_url + ".jpg";
+
+          // If the class is a normal class but the user is a teacher
+          } else {
+            sanitized_teacher_name = schedule.firstname + "_" + schedule.lastname;
+            sanitized_teacher_name = sanitized_teacher_name.toLowerCase();
+            scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
           }
           scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
-        //Add in photos if the teacher's schedule is being rendered
+
+
         } else if (type == "lite") {
-          if (letterToNum(scheduleObj.period) <= 8) { //If it's a class period
-            var sharedClass = false; //Find out if the user has a class that period
+          if (letterToNum(scheduleObj.period) <= 8) { // If it's a class period
+            var sharedClass = false; // Find out if the user has a class that period
             for (var i = 0; i < userSchedule.classes.length; i++) {
-              if (userSchedule.classes[i].period == scheduleObj.period && userSchedule.classes[i].name == scheduleObj.name) { //TODO find the name of GSH
+              if (userSchedule.classes[i].period == scheduleObj.period && userSchedule.classes[i].name == scheduleObj.name) { // TODO find the name of GSH
                 sharedClass = true;
                 break;
               }
@@ -370,7 +382,7 @@
               scheduleObj.avatar = "clear";
             }
           } else {
-            continue; //Skip over lunch, advisory, assembly, etc.
+            continue; // Skip over lunch, advisory, assembly, etc.
           }
         }
 
@@ -420,8 +432,8 @@
 
   function cleanString(text) {
     text = text.toLowerCase();
-    text = text.replace(/ /g, "_"); //Remove spaces
-    text = text.replace(/\./g, ""); //Remove periods
+    text = text.replace(/ /g, "_"); // Remove spaces
+    text = text.replace(/\./g, ""); // Remove periods
     return text;
   }
 
