@@ -29,6 +29,10 @@
       font-weight: 300;
       margin-bottom: 1px;
       border-radius: 2px;
+      transition: 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+    :host-context(.no-transition) {
+      transition: none;
     }
     .card {
       margin-bottom: 1px;
@@ -79,10 +83,10 @@
     }
   </style>
   <template>
-    <paper-material class="card" elevation="2">
+    <paper-material class="xcard" elevation="2" on-track="handleTrack">
     <div layout="" vertical="">
       <template is="dom-repeat" id="entryList" items="{{entries}}">
-        <div class="card" layout="" vertical="" xcenter="" on-click="toggleExpand">
+        <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
           <div class="card-header" layout="" horizontal="" center="">
             <img src="{{item.avatar}}" width="48" height="48">
             <div class="card-mid" layout="" vertical="">
@@ -130,7 +134,66 @@
       is: 'x-schedule',
       properties: { entries: { notify: true } },
       listeners: {
+        "transitionend": "transitionEnd"
       },
+      swiped: false,
+      widthRatio: 3,
+      dest: null,
+      handleTrack: function(e) {
+        switch (e.detail.state) {
+          case 'start':
+            this.enableTransition(false);
+            break;
+          case 'track':
+            this.translateX(e.detail.dx);
+            break;
+          case 'end':
+            this.enableTransition(true);
+            this.maybeSwipe(e.detail.dx);
+            break;
+        }
+      },
+      enableTransition: function(enable) {
+        if (enable) {
+          this.classList.remove('no-transition');
+        } else {
+          this.classList.add('no-transition');
+        }
+      },
+      translateX: function(x) {
+        var s = this.style;
+        var translate = 'translate3d(' + x + 'px,0,0)';
+        s.transform = s.webkitTransform = translate;
+      },
+      maybeSwipe: function(dx) {
+        // If we've moved more than 1/4 of our width, swipe away
+        this.swiped = Math.abs(dx) > this.offsetWidth / 4;
+        if (this.swiped) {
+          this.dest = this.offsetWidth * this.widthRatio * (dx / Math.abs(dx));
+          this.translateX(this.dest);
+        } else {
+          this.translateX(0);
+        }
+      },
+      transitionEnd: function(e) {
+        // When we swipe offscreen, fire an event, silently switch to the
+        // other side of the screen, and then transition back to the center.
+        if (this.swiped) {
+          var dir = (this.dest < 0) ? 'left' : 'right';
+          this.fire('swiped', {direction: dir});
+          this.swiped = false;
+          this.enableTransition(false);
+          this.translateX(-this.dest);
+          this.dest = null;
+
+          var that = this;
+          setTimeout(function() {
+            that.enableTransition(true);
+            that.translateX(0);
+          }, 0);
+        }
+      },
+
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
       },

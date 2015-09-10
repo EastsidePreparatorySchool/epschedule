@@ -95,27 +95,11 @@
     }
   }
 
-  document.addEventListener("touchstart", handleTouchStart, false);
-  document.addEventListener("touchend", handleTouchEnd, false);
-  document.addEventListener("touchleave", handleTouchEnd, false);
-  var touchStartPos = [0, 0];
-
-  function handleTouchStart(evt) {
-    touchStartPos[0] = evt.changedTouches[0].pageX;
-    touchStartPos[1] = evt.changedTouches[0].pageY;
-  }
-  function handleTouchEnd(evt) {
-    // If the swipe is horizontal
-    if (Math.abs(touchStartPos[0] - evt.changedTouches[0].pageX) >
-       Math.abs(touchStartPos[1] - evt.changedTouches[0].pageY)) {
-      // If we're on the schedule page
-      if (pages.selected == 0) {
-        if (touchStartPos[0] > evt.changedTouches[0].pageX) {
-          dateForward();
-        } else if (touchStartPos[0] < evt.changedTouches[0].pageX) {
-          dateBack();
-        }
-      }
+  function scheduleSwiped(evt) {
+    if (evt.direction == "left") {
+      dateForward();
+    } else {
+      dateBack();
     }
   }
 
@@ -442,6 +426,8 @@
   }
 
   document.addEventListener('WebComponentsReady', function() {
+    var el = document.querySelector("x-schedule");
+    el.addEventListener("swiped", scheduleSwiped, false);
     var date = new Date();
     var scheduleElement = document.getElementById('mainschedule');
     renderSchedule(date, userSchedule, "full", scheduleElement);
