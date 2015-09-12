@@ -353,24 +353,48 @@ class StudentHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
+
+        if id == 9999:
+            id = 4093
+
         student_names = student_name.split("_") # Split student_name into firstname and lastname
         firstname = student_names[0].lower()
         lastname = student_names[1].lower()
         schedules = get_schedule_data()
+        student_schedule = None
+        user_schedule = None
+
         for schedule in schedules:
             if schedule['firstname'].lower() == firstname and \
-               schedule['lastname'].lower() == lastname:
-                sanitized = self.sanitize_schedule(schedule)
-                self.response.write(json.dumps(sanitized))
+               schedule['lastname'].lower() == lastname: # If the schedule is the requested schedule
+                student_schedule = schedule
 
-    def sanitize_schedule(self, schedule):
+            if schedule["id"] == str(id): # If the schedule is the user's schedule
+                user_schedule = schedule
+
+        sanitized = self.sanitize_schedule(student_schedule, user_schedule)
+        self.response.write(json.dumps(sanitized))
+
+    def sanitize_schedule(self, schedule, user_schedule):
         for i in range (0, len(schedule["classes"])):
-            sanitized = self.sanitize_class(schedule["classes"][i]["name"])
-            if sanitized != schedule["classes"][i]["name"]:
-                schedule["classes"][i]["name"] = sanitized
-                schedule["classes"][i]["teacher"] = ""
-                schedule["classes"][i]["room"] = ""
+            if not self.has_class(user_schedule, schedule["classes"][i]): #If the class is not shared among the user and student
+
+                sanitized = self.sanitize_class(schedule["classes"][i]["name"])
+
+                if sanitized != schedule["classes"][i]["name"]: # If the class was sanitized
+                    schedule["classes"][i]["name"] = sanitized
+                    schedule["classes"][i]["teacher"] = ""
+                    schedule["classes"][i]["room"] = ""
+
         return schedule
+
+    def has_class(self, schedule, class_obj):
+        for i in range (0, len(schedule["classes"])):
+            if schedule["classes"][i]["name"] == class_obj["name"] and \
+               schedule["classes"][i]["period"] == class_obj["period"] and \
+               schedule["classes"][i]["room"] == class_obj["room"]:
+                return True
+        return False
 
     def sanitize_class(self, class_name):
         sensitive_classes = [{
