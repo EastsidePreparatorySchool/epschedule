@@ -215,7 +215,6 @@
     imgSrc = imgSrc + teacherObj.lastname + ".jpg";
     imgSrc = imgSrc.toLowerCase();
     email = teacherObj.firstname[0] + teacherObj.lastname + "@eastsideprep.org";
-    email = email.toLowerCase();
     popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="' + imgSrc +
         '" align="right" class="fullsizeimage"></img><p>' + teacherObj.bio + '</p></div>' +
         '<schedule-lite id="teacherschedule"></schedule-lite></div>';

@@ -137,6 +137,19 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
             return False
         return True
 
+    def get_schedule_for_name(self, firstname, lastname):
+        schedule_data = get_schedule_data()
+        for schedule in schedule_data:
+            if schedule['firstname'].lower() == firstname.lower() and \
+               schedule['lastname'].lower() == lastname.lower(): # If the schedule is the requested schedule
+                return schedule
+
+    def get_schedule_for_id(self, id):
+        schedule_data = get_schedule_data()
+        for schedule in schedule_data:
+            if schedule["id"] == str(id): # If the schedule is the user's schedule
+                return schedule
+
 ERR_NO_ACCOUNT_TO_SEND = {
   "error": "There is no account with that username and password",
   "action":"switchToRegister",
@@ -353,26 +366,33 @@ class StudentHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
+
+        if id == DEMO_ID:
+            id = 4093
+
         student_names = student_name.split("_") # Split student_name into firstname and lastname
         firstname = student_names[0].lower()
         lastname = student_names[1].lower()
-        schedules = get_schedule_data()
-        for schedule in schedules:
-            if schedule['firstname'].lower() == firstname and \
-               schedule['lastname'].lower() == lastname:
-                sanitized = self.sanitize_schedule(schedule)
-                self.response.write(json.dumps(sanitized))
+        student_schedule = self.get_schedule_for_name(firstname, lastname)
+        user_schedule = self.get_schedule_for_id(id)
 
-    def sanitize_schedule(self, schedule):
+        sanitized = self.sanitize_schedule(student_schedule, user_schedule)
+        self.response.write(json.dumps(sanitized))
+
+    def sanitize_schedule(self, orig_schedule, user_schedule):
+        schedule = orig_schedule.copy()
         for i in range (0, len(schedule["classes"])):
-            sanitized = self.sanitize_class(schedule["classes"][i]["name"])
-            if sanitized != schedule["classes"][i]["name"]:
-                schedule["classes"][i]["name"] = sanitized
-                schedule["classes"][i]["teacher"] = ""
-                schedule["classes"][i]["room"] = ""
+            if not self.has_class(user_schedule, schedule["classes"][i]): # If the class is not shared among the user and student
+
+                schedule["classes"][i] = self.sanitize_class(schedule["classes"][i]) # Sanitize the class
+
         return schedule
 
-    def sanitize_class(self, class_name):
+    def has_class(self, schedule, input_obj):
+        return input_obj in schedule["classes"]
+
+    def sanitize_class(self, orig_class_obj):
+        class_obj = orig_class_obj.copy()
         sensitive_classes = [{
             "names":["Math Thinking 1", "Math Thinking 2", "Math Thinking 2", "Algebra 1", "Geometry", "Algebra 2", "Pre-Calculus", "Calculus"],
             "sanitized": "Math"
@@ -386,10 +406,14 @@ class StudentHandler(BaseHandler):
         }]
         for class_type in sensitive_classes: # For each type of sensitive class
             for test_name in class_type["names"]: # For each it's the potential names
-                if class_name == test_name: # Test if the inputted name is the potential name
-                    return class_type["sanitized"] # If so, return the censored version of that name
+                if class_obj["name"] == test_name: # Test if the inputted name is the potential name
 
-        return class_name # If it's not a sensitive class, just return the class name
+                    class_obj["name"] = class_type["sanitized"]
+                    class_obj["teacher"] = ""
+                    class_obj["room"] = ""
+                    break
+
+        return class_obj # Return the class object
 
 class PeriodHandler(BaseHandler):
     def get(self, period):
