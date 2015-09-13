@@ -389,10 +389,7 @@ class StudentHandler(BaseHandler):
         return schedule
 
     def has_class(self, schedule, input_obj):
-        for class_obj in schedule["classes"]:
-            if class_obj == input_obj:
-                return True
-        return False
+        return input_obj in schedule["classes"]
 
     def sanitize_class(self, orig_class_obj):
         class_obj = orig_class_obj.copy()
