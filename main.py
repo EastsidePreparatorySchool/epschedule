@@ -142,13 +142,13 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         for schedule in schedule_data:
             if schedule['firstname'].lower() == firstname.lower() and \
                schedule['lastname'].lower() == lastname.lower(): # If the schedule is the requested schedule
-                return schedule.copy()
+                return schedule
 
     def get_schedule_for_id(self, id):
         schedule_data = get_schedule_data()
         for schedule in schedule_data:
             if schedule["id"] == str(id): # If the schedule is the user's schedule
-                return schedule.copy()
+                return schedule
 
 ERR_NO_ACCOUNT_TO_SEND = {
   "error": "There is no account with that username and password",
@@ -379,7 +379,8 @@ class StudentHandler(BaseHandler):
         sanitized = self.sanitize_schedule(student_schedule, user_schedule)
         self.response.write(json.dumps(sanitized))
 
-    def sanitize_schedule(self, schedule, user_schedule):
+    def sanitize_schedule(self, orig_schedule, user_schedule):
+        schedule = orig_schedule.copy()
         for i in range (0, len(schedule["classes"])):
             if not self.has_class(user_schedule, schedule["classes"][i]): # If the class is not shared among the user and student
 
@@ -393,7 +394,8 @@ class StudentHandler(BaseHandler):
                 return True
         return False
 
-    def sanitize_class(self, class_obj):
+    def sanitize_class(self, orig_class_obj):
+        class_obj = orig_class_obj.copy()
         sensitive_classes = [{
             "names":["Math Thinking 1", "Math Thinking 2", "Math Thinking 2", "Algebra 1", "Geometry", "Algebra 2", "Pre-Calculus", "Calculus"],
             "sanitized": "Math"
