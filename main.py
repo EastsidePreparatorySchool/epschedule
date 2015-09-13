@@ -141,12 +141,12 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         for schedule in SCHEDULE_INFO:
             if schedule['firstname'].lower() == firstname.lower() and \
                schedule['lastname'].lower() == lastname.lower(): # If the schedule is the requested schedule
-                return schedule.copy
+                return schedule.copy()
 
     def get_schedule_for_id(self, id):
         for schedule in SCHEDULE_INFO:
             if schedule["id"] == str(id): # If the schedule is the user's schedule
-                return schedule.copy
+                return schedule.copy()
 
 ERR_NO_ACCOUNT_TO_SEND = {
   "error": "There is no account with that username and password",
