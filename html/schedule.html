@@ -75,7 +75,7 @@
       margin-right: 24px;
     }
     .student p {
-      font-size: 0.9rem;
+      font-size: 16px; #0.9rem;
     }
     .student iron-icon {
       color: gray;
@@ -108,13 +108,11 @@
           <iron-collapse id="{{computeCollapseId(item.name)}}">
             <div layout vertical>
               <template is="dom-repeat" items="{{item.students}}">
-                <div class="student" layout="" horizontal="" center="">
+                <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
                   <img src="/images/material_face.svg" width="32" height="32">
                   <div class="flex">
                     <p>
-                      <a on-click="studentThunk" item="link" href="#">
-                        <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
-                      </a>
+                      <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
                     </p>
                   </div>
                   <a href="{{computeEmailLink(item.email)}}">
