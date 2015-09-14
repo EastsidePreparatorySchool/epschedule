@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
 
 <dom-module id="schedule-lite">
   <style>
@@ -18,7 +19,7 @@
   </style>
   <style>
     :host {
-      width: 100%;
+      xwidth: 100%;
       display: block;
       position: relative;
       background-color: #efefef;
@@ -28,11 +29,28 @@
       margin-bottom: 1px;
       background: white;
     }
-    iron-icon {
-      margin-right: 32px;
-    }
     p {
       margin: 0px;
+    }
+    .check {
+      width: 70px;
+      margin-left: 16px;
+      margin-right: 32px;
+      font-weight: bold;
+      color: #2196f3;
+    }
+    .check:after {
+      content: "SHARED";
+    }
+    .clear {
+      width: 70px;
+      margin-left: 16px;
+      margin-right: 32px;
+      #font-weight: bold;
+      color: lightgray;
+    }
+    .clear:after {
+      content: "------------";
     }
     .time {
       margin-top: 10px;
@@ -45,36 +63,45 @@
       margin-bottom: 10px;
       font-size: 16px;
     }
-    [icon=check] {
-      color: #2196f3;
-    }
-    [icon=clear] {
-      color: gray;
-    }
   </style>
   <template>
-    <div layout="" vertical="">
+    <paper-material elevation="2" on-track="handleTrack">
       <template is="dom-repeat" id="entryList" items="{{entries}}">
         <div class="card" layout="" horizontal="" center>
-          <iron-icon icon="{{item.avatar}}" width="24" height="24"></iron-icon>
+          <div class$="{{item.avatar}}"></div>
           <div layout vertical>
             <p class="time">
               <span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
-
-              <template is="dom-if" if="{{item.room}}">
-                <span>(</span><span>{{item.room}}</span><span>)</span>
-              </template>
+                <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
+                  (<span>{{item.teacherLastName}}</span>,
+                  <span>{{item.room}}</span>)
+                </template>
+                <template is="dom-if" if="{{hasTeacherOnly(item)}}">
+                  (<span>{{item.teacherLastName}}</span>)
+                </template>
+                <template is="dom-if" if="{{hasRoomOnly(item)}}">
+                  (<span>{{item.room}}</span>)
+                </template>
             </p>
             <p class="name"><span>{{item.name}}</span></p>
           </div>
         </div>
       </template>
-    </div>
+    </paper-material>
   </template>
   <script>
     Polymer({
       is: 'schedule-lite',
       properties: { entries: { notify: true } },
+      hasTeacherAndRoom: function(item) {
+        return item.teacherLastName && item.room;
+      },
+      hasTeacherOnly: function(item) {
+        return item.teacherLastName && !item.room;
+      },
+      hasRoomOnly: function(item) {
+        return !item.teacherLastName && item.room;
+      },
     });
   </script>
 </dom-module>
