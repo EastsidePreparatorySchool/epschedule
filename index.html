@@ -231,10 +231,15 @@
     email = email.toLowerCase();
     var grade = studentObj.grade + "th Grade";
     var popupContainer = document.getElementById("popupContainer");
-    popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="/images/material_face.svg"' +
-        ' width="32" height="32"><h3><a href="mailto:' + email + '">' +
-        email + '</a></h3><h3>' + grade + '</h3></div><div id="container" class="container" layout="" vertical="" center="">' +
-        '<schedule-lite id="studentschedule" show="all"></schedule-lite></div></div>';
+    popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
+        '<paper-material class="header" elevation="2">' +
+        '<div layout horizontal center>' +
+        '<img src="/images/material_face.svg" width="96px" height="96px">' +
+        '<div layout vertical><h3><span class="grade">' + grade + '</span></h3>' +
+        '<p><a href="mailto:"' + email + '><iron-icon icon="communication:email"></iron-icon>' +
+        '<span class="email">Email ' + studentObj.firstname + '</span></a></p></div></div></paper-material>' +
+        '<schedule-lite id="studentschedule"></schedule-lite>' +
+        '</div>';
     setTimeout(function() {
       var scheduleElement = document.getElementById('studentschedule');
       renderSchedule(globalDate, studentObj, "lite", scheduleElement);
@@ -504,7 +509,22 @@
   #popup {
     width: 100%;
     height: 100%;
+    background: #efefef;
+  }
+  #popup .header {
+    padding: 16px;
     background: white;
+    margin-bottom: 16px;
+  }
+  #popup a {
+    color: gray;
+    text-decoration: none;
+  }
+  #popup a:hover {
+    color: #2196f3;
+  }
+  #popup iron-icon {
+    padding-right: 16px;
   }
   .teacher {
     margin: 16px;
@@ -516,8 +536,7 @@
     font-size: 0.9em;
   }
   .teacher img {
-    margin-left: 16px;
-    margin-bottom: 16px;
+    #margin-left: 16px;
   }
   </style>
 </head>
