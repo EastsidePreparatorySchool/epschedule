@@ -65,6 +65,16 @@ def convert_email_to_id(email):
             return student[1]
     return None
 
+def normalize_name(name):
+    name = name.lower()
+    name = name.replace(" ", "")
+    return name
+
+def generate_email(firstname, lastname):
+    firstname = normalize_name(firstname)
+    lastname = normalize_name(lastname)
+    return firstname[0] + lastname + "@eastsideprep.org"
+
 def get_schedule_data():
     return SCHEDULE_INFO
 
@@ -140,8 +150,8 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
     def get_schedule_for_name(self, firstname, lastname):
         schedule_data = get_schedule_data()
         for schedule in schedule_data:
-            if schedule['firstname'].lower() == firstname.lower() and \
-               schedule['lastname'].lower() == lastname.lower(): # If the schedule is the requested schedule
+            if normalize_name(schedule['firstname']) == firstname.lower() and \
+               normalize_name(schedule['lastname']) == lastname.lower(): # If the schedule is the requested schedule
                 return schedule
 
     def get_schedule_for_id(self, id):
@@ -344,7 +354,8 @@ class ClassHandler(BaseHandler):
                                       "students": []}
                         student = {"firstname": schedule['firstname'], \
                                    "lastname": schedule['lastname'], \
-                                   "email": "nobody@eastsideprep.org"}  # Append their name to a list of students in that period
+                                   "email": generate_email(schedule['firstname'], schedule['lastname'])}
+
                         result['students'].append(student)
 
         result['students'].sort(key=lambda s: s['firstname'])
@@ -374,10 +385,14 @@ class StudentHandler(BaseHandler):
         firstname = student_names[0].lower()
         lastname = student_names[1].lower()
         student_schedule = self.get_schedule_for_name(firstname, lastname)
+
         user_schedule = self.get_schedule_for_id(id)
 
         sanitized = self.sanitize_schedule(student_schedule, user_schedule)
+        # TODO(gavin.uberti@gmail.com): Remove this hack once .grade is correct
         sanitized["grade"] += 1
+        # Generate email address
+        sanitized["email"] = generate_email(firstname, lastname)
         self.response.write(json.dumps(sanitized))
 
     def sanitize_schedule(self, orig_schedule, user_schedule):
@@ -516,6 +531,7 @@ class TeacherHandler(BaseHandler):
 
         for schedule in schedule_data:
             if schedule['firstname'].lower() == teachernames[0] and schedule['lastname'].lower() == teachernames[1]:
+                schedule['email'] = generate_email(schedule['firstname'], schedule['lastname'])
                 schedule['bio'] = bio
                 self.response.write(json.dumps(schedule))
 

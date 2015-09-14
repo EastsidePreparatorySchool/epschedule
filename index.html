@@ -214,8 +214,7 @@
     var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
     imgSrc = imgSrc + teacherObj.lastname + ".jpg";
     imgSrc = imgSrc.toLowerCase();
-    email = teacherObj.firstname[0] + teacherObj.lastname + "@eastsideprep.org";
-    email = email.toLowerCase();
+    email = teacherObj.email;
     popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
@@ -226,6 +225,7 @@
         '<p>' + teacherObj.bio + '</p></div></div></paper-material>' +
         '<schedule-lite id="teacherschedule"></schedule-lite>' +
         '</div>';
+
     // Wait for HTML to be parsed/applied before trying to show the schedule.
     // Without this, Firefox/Safari don't display the schedule.
     setTimeout(function() {
@@ -235,7 +235,7 @@
   }
   function renderStudent(studentObj) {
     var name = studentObj.firstname + " " + studentObj.lastname;
-    var email = studentObj.firstname[0] + studentObj.lastname + "@eastsideprep.org";
+    var email = studentObj.email;
     email = email.toLowerCase();
     var grade = studentObj.grade + "th Grade";
     var popupContainer = document.getElementById("popupContainer");
@@ -417,6 +417,7 @@
       scheduleElement.onStudentTap = function(e) {
         var orig_name = e.model.item.firstname + " " + e.model.item.lastname;
         var name = e.model.item.firstname + "_" + e.model.item.lastname;
+        name = name.replace(/ /g, '');
         name = name.toLowerCase();
         requestAdditionalData(name, "student", renderStudent);
         openPopup(orig_name);
