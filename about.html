@@ -2,7 +2,7 @@
   <title>About EPSchedule</title>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-  </head><body>
+  </head><body onload="onload()">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
   <link rel="import" href="bower_components/polymer/polymer.html">
   <link rel="import" href="bower_components/paper-material/paper-material.html">
@@ -80,28 +80,43 @@
           </div>
         </div>
       </section>
-      <section id="inaction">
+      <section>
         <div>
-          <h3>FAQ</h3>
-          <h4>Q: Is it secure?</h4>
-          <p>A: Yes. EPSchedule uses industry-standard best practices, including:<ul>
-            <li>mandatory HTTPS encryption</li>
+          <h3>Goals</h3>
+          <p>EPSchedule was designed to:<ul>
+            <li>Help students visualize their schedules</li>
+            <li>Bring together separate sources of information</li>
+            <li>Allow students to easily meet with friends and teachers</li>
+          </ul></p>
+        </div>
+      </section>
+      <section>
+        <div>
+          <h3>Data Security</h3>
+          <p>EPSchedule uses industry-standard best practices, including:<ul>
+            <li>Mandatory HTTPS encryption</li>
             <li>Bcrypt password hashing/salting</li>
-            <li>eastsideprep.org email address verification</li>
+            <li>Eastsideprep.org email address verification</li>
           </ul>
           </p>
         </div>
+      </section>
+      <section>
         <div>
-          <h4>Q: Is it private?</h4>
-          <p>A: Yes. Only EPS students can access EPSchedule.</p>
+          <h3>Privacy Information</h3>
+          <p>EPSchedule collects statistical data in order to help users receive the best experience. This data will never be shared with third parties.</p>
+          <p>If you feel that someone is using the data provided by EPSchedule in a way that makes you uncomfortable, you can contact me at <span id="eml"></span></p>
         </div>
-        <div>
-          <h4>Q: Is it cool?</h4>
-          <p>A: Definitely.</p>
       </section>
     </div>
-
-    </div>
   </paper-material>
-
+  <script>
+    function onload() {
+      var element = document.getElementById("eml");
+      var item = "guberti";
+      item += "@";
+      item += "eastsideprep.org";
+      element.innerHTML = '<a href="mailto:' + item + '">' + item + '</a>';
+    }
+  </script>
 </body></html>
