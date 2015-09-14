@@ -374,9 +374,14 @@ class StudentHandler(BaseHandler):
         firstname = student_names[0].lower()
         lastname = student_names[1].lower()
         student_schedule = self.get_schedule_for_name(firstname, lastname)
+
         user_schedule = self.get_schedule_for_id(id)
 
         sanitized = self.sanitize_schedule(student_schedule, user_schedule)
+
+        # Generate email address
+        sanitized["email"] = firstname[0] + lastname.replace(" ", "") + "@eastsideprep.org"
+
         self.response.write(json.dumps(sanitized))
 
     def sanitize_schedule(self, orig_schedule, user_schedule):

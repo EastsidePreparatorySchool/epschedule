@@ -227,7 +227,7 @@
   }
   function renderStudent(studentObj) {
     var name = studentObj.firstname + " " + studentObj.lastname;
-    var email = studentObj.firstname[0] + studentObj.lastname + "@eastsideprep.org";
+    var email = studentObj.email;
     email = email.toLowerCase();
     var grade = studentObj.grade + "th Grade";
     var popupContainer = document.getElementById("popupContainer");
