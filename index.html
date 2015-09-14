@@ -214,7 +214,7 @@
     var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
     imgSrc = imgSrc + teacherObj.lastname + ".jpg";
     imgSrc = imgSrc.toLowerCase();
-    email = teacherObj.firstname[0] + teacherObj.lastname + "@eastsideprep.org";
+    email = teacherObj.email;
     popupContainer.innerHTML = '<div class="teacher"><div>' + '<img src="' + imgSrc +
         '" align="right" class="fullsizeimage"></img><p>' + teacherObj.bio + '</p></div>' +
         '<schedule-lite id="teacherschedule"></schedule-lite></div>';
@@ -397,12 +397,11 @@
       scheduleElement.entries = todaySchedule;
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
-        var name = orig_name.replace(/ /g, '');
+        var name = orig_name.replace(" ", "_");
         requestAdditionalData(name, "teacher", renderTeacher);
         openPopup(orig_name);
       }
       scheduleElement.onStudentTap = function(e) {
-        console.log(e.model.item);
         var orig_name = e.model.item.firstname + " " + e.model.item.lastname;
         var name = e.model.item.firstname + "_" + e.model.item.lastname;
         name = name.replace(/ /g, '');
