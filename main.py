@@ -390,6 +390,8 @@ class StudentHandler(BaseHandler):
 
         sanitized = self.sanitize_schedule(student_schedule, user_schedule)
 
+        # TODO(gavin.uberti@gmail.com): Remove this hack once .grade is correct
+        sanitized["grade"] += 1
         # Generate email address
         sanitized["email"] = generate_email(firstname, lastname)
 
