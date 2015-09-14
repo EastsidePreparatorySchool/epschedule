@@ -377,6 +377,7 @@ class StudentHandler(BaseHandler):
         user_schedule = self.get_schedule_for_id(id)
 
         sanitized = self.sanitize_schedule(student_schedule, user_schedule)
+        sanitized["grade"] = sanitized["grade"] + 1
         self.response.write(json.dumps(sanitized))
 
     def sanitize_schedule(self, orig_schedule, user_schedule):
