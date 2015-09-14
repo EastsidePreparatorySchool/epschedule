@@ -395,14 +395,12 @@ class StudentHandler(BaseHandler):
     def sanitize_class(self, orig_class_obj):
         class_obj = orig_class_obj.copy()
         sensitive_classes = [{
-            "names":["Math Thinking 1", "Math Thinking 2", "Math Thinking 2", "Algebra 1", "Geometry", "Algebra 2", "Pre-Calculus", "Calculus"],
-            "sanitized": "Math"
-        }, {
-            "names":["Spanish 1A", "Spanish 1B", "Spanish 2A", "Spanish 2B", "Spanish 1", "Spanish 2", "Spanish 3", "Spanish 4",
+            "names":["Math Thinking 1", "Math Thinking 2", "Math Thinking 2", "Algebra 1", "Geometry", "Algebra 2", "Pre-Calculus", "Calculus", \
+            "Spanish 1A", "Spanish 1B", "Spanish 2A", "Spanish 2B", "Spanish 1", "Spanish 2", "Spanish 3", "Spanish 4", \
             "Adv. Spanish Cinema", "Adv. Spanish Lang"],
-            "sanitized": "Spanish"
+            "sanitized": "Hidden"
         }, {
-            "names":["Study Hall", "GSH"],
+            "names":["Study Hall", "GSH", "Free Period"],
             "sanitized": "Study Hall"
         }]
         for class_type in sensitive_classes: # For each type of sensitive class
