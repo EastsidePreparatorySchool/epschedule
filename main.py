@@ -140,8 +140,8 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
     def get_schedule_for_name(self, firstname, lastname):
         schedule_data = get_schedule_data()
         for schedule in schedule_data:
-            if schedule['firstname'].lower() == firstname.lower() and \
-               schedule['lastname'].lower() == lastname.lower(): # If the schedule is the requested schedule
+            if schedule['firstname'].lower().replace(" ", "") == firstname.lower() and \
+               schedule['lastname'].lower().replace(" ", "") == lastname.lower(): # If the schedule is the requested schedule
                 return schedule
 
     def get_schedule_for_id(self, id):

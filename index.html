@@ -397,13 +397,15 @@
       scheduleElement.entries = todaySchedule;
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
-        var name = orig_name.replace(" ", "_");
+        var name = orig_name.replace(/ /g, '');
         requestAdditionalData(name, "teacher", renderTeacher);
         openPopup(orig_name);
       }
       scheduleElement.onStudentTap = function(e) {
+        console.log(e.model.item);
         var orig_name = e.model.item.firstname + " " + e.model.item.lastname;
         var name = e.model.item.firstname + "_" + e.model.item.lastname;
+        name = name.replace(/ /g, '');
         name = name.toLowerCase();
         requestAdditionalData(name, "student", renderStudent);
         openPopup(orig_name);
