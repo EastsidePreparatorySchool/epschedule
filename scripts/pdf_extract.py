@@ -141,7 +141,7 @@ def add_free_periods(schedule_obj):
 students = []
 files = [f for f in os.listdir('..' + os.sep + 'schedules')]#Create a list of all files in the directory
 for f in files:    #For each file in the directory
-    if DO_NOT_PARSE.count(f) > 0: # If the schedule shouldn't be parsed
+    if f in DO_NOT_PARSE: # If the schedule shouldn't be parsed
         print "Error"
         continue
     if f[len(f) - 4:len(f)] == ".pdf":  #If the last 4 characters of the file name are .pdf (meaning the file is a schedule)
