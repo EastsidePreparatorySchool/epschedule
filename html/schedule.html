@@ -137,6 +137,10 @@
       swiped: false,
       widthRatio: 3,
       dest: null,
+      ready: function() {
+        // disable vertical gestures on the card
+        document.querySelector('paper-material').setScrollDirection('y');
+      },
       handleTrack: function(e) {
         switch (e.detail.state) {
           case 'start':
