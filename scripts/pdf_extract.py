@@ -17,6 +17,8 @@ import os, sys
 import json
 from datetime import date
 
+DO_NOT_PARSE = ["4491-1-Mein-Angelika.pdf"]
+
 def convert_pdf_to_txt(path):
     rsrcmgr = PDFResourceManager()
     retstr = StringIO()
@@ -139,6 +141,9 @@ def add_free_periods(schedule_obj):
 students = []
 files = [f for f in os.listdir('..' + os.sep + 'schedules')]#Create a list of all files in the directory
 for f in files:    #For each file in the directory
+    if DO_NOT_PARSE.count(f) > 0: # If the schedule shouldn't be parsed
+        print "Error"
+        continue
     if f[len(f) - 4:len(f)] == ".pdf":  #If the last 4 characters of the file name are .pdf (meaning the file is a schedule)
         filepath = "c:\\users\\guberti\\Documents\\Github\\EPSchedule\\schedules\\" + f   #Create the full filepath for the schedule
         #print filepath
