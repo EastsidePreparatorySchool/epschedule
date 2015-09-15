@@ -378,8 +378,8 @@ class StudentHandler(BaseHandler):
             self.error(403)
             return
 
-        if id == DEMO_ID:
-            id = 4093
+        if id == str(DEMO_ID):
+            id = "4093"
 
         student_names = student_name.split("_") # Split student_name into firstname and lastname
         firstname = student_names[0].lower()
