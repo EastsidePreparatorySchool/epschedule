@@ -52,6 +52,9 @@
     .clear:after {
       content: "------------";
     }
+    .hidden {
+      opacity: 0.5;
+    }
     .time {
       margin-top: 10px;
       margin-bottom: 2px;
@@ -67,8 +70,8 @@
   <template>
     <paper-material elevation="2" on-track="handleTrack">
       <template is="dom-repeat" id="entryList" items="{{entries}}">
-        <div class="card" layout="" horizontal="" center>
-          <div class$="{{item.avatar}}"></div>
+        <div class$="{{computeHidden(item)}}" layout="" horizontal="" center>
+          <div class$="{{computeShared(item)}}"></div>
           <div layout vertical>
             <p class="time">
               <span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
@@ -93,6 +96,21 @@
     Polymer({
       is: 'schedule-lite',
       properties: { entries: { notify: true } },
+      computeShared: function(item) {
+        if (item.shared) {
+          return "check";
+        } else {
+          return "clear";
+        }
+      },
+      computeHidden: function(item) {
+        var classes = "card"
+
+        if (item.name == "Hidden") {
+          classes += " hidden"
+        }
+        return classes
+      },
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
       },

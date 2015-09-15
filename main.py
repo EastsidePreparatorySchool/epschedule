@@ -33,7 +33,7 @@ from slowaes import aes
 from py_bcrypt import bcrypt
 
 DEMO_USER = "demo"
-DEMO_ID = 9999
+DEMO_ID = "9999"
 CRYPTO_KEY = open('crypto.key', 'rb').read()
 id_table_file = open('id_table.json', 'rb')
 ID_TABLE = json.load(id_table_file)
@@ -77,6 +77,9 @@ def generate_email(firstname, lastname):
 
 def get_schedule_data():
     return SCHEDULE_INFO
+
+def is_teacher_schedule(schedule):
+    return not schedule["grade"]
 
 def create_error_obj(error_message, action="", buttontext=""):
     error_obj = {"error":error_message}
@@ -309,7 +312,7 @@ class ChangePasswordHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
-        elif id == str(DEMO_ID): # If it is the demo account
+        elif id == DEMO_ID: # If it is the demo account
             self.response.write(json.dumps({"error":"You are a terrible person."}))
             return
         email = self.get_username(id) + "@eastsideprep.org"
@@ -388,10 +391,14 @@ class StudentHandler(BaseHandler):
 
         user_schedule = self.get_schedule_for_id(id)
 
-        sanitized = self.sanitize_schedule(student_schedule, user_schedule)
+        if is_teacher_schedule(user_schedule): # If the user is a teacher
+            sanitized = student_schedule.copy()
+        else:
+            sanitized = self.sanitize_schedule(student_schedule, user_schedule)
 
         # TODO(gavin.uberti@gmail.com): Remove this hack once .grade is correct
         sanitized["grade"] += 1
+
         # Generate email address
         sanitized["email"] = generate_email(firstname, lastname)
 
@@ -411,25 +418,15 @@ class StudentHandler(BaseHandler):
 
     def sanitize_class(self, orig_class_obj):
         class_obj = orig_class_obj.copy()
-        sensitive_classes = [{
-            "names":["Math Thinking 1", "Math Thinking 2", "Math Thinking 2", "Algebra 1", "Geometry", "Algebra 2", "Pre-Calculus", "Calculus"],
-            "sanitized": "Math"
-        }, {
-            "names":["Spanish 1A", "Spanish 1B", "Spanish 2A", "Spanish 2B", "Spanish 1", "Spanish 2", "Spanish 3", "Spanish 4",
-            "Adv. Spanish Cinema", "Adv. Spanish Lang"],
-            "sanitized": "Spanish"
-        }, {
-            "names":["Study Hall", "GSH"],
-            "sanitized": "Study Hall"
-        }]
-        for class_type in sensitive_classes: # For each type of sensitive class
-            for test_name in class_type["names"]: # For each it's the potential names
-                if class_obj["name"] == test_name: # Test if the inputted name is the potential name
+        study_halls = ["Study Hall", "GSH", "Free Period"]
 
-                    class_obj["name"] = class_type["sanitized"]
-                    class_obj["teacher"] = ""
-                    class_obj["room"] = ""
-                    break
+        if class_obj["name"] in study_halls:
+            class_obj["name"] = "Free Period"
+        else:
+            class_obj["name"] = "Hidden"
+
+        class_obj["teacher"] = ""
+        class_obj["room"] = ""
 
         return class_obj # Return the class object
 
@@ -441,7 +438,7 @@ class PeriodHandler(BaseHandler):
             return
         # Should return back which of your teachers are free, which rooms are free, what class you currently have then, and what classes you could take then
         dataobj = {'freeteachers':[], 'freerooms':[], 'currentclass':{}, 'potentialclassschedules':[]}
-        if id == str(DEMO_ID): # If this is the demo accound
+        if id == DEMO_ID: # If this is the demo accound
             id = "4093"
         schedule_data = get_schedule_data()
         user_schedule = None
@@ -568,7 +565,7 @@ class MainHandler(BaseHandler):
             return
 
         logging.info("New request for id: " + id)
-        if id == str(DEMO_ID): # If this is the demo account
+        if id == DEMO_ID: # If this is the demo account
             id = "4093"
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
