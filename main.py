@@ -78,6 +78,9 @@ def generate_email(firstname, lastname):
 def get_schedule_data():
     return SCHEDULE_INFO
 
+def is_teacher_schedule(schedule):
+    return not schedule["grade"]
+
 def create_error_obj(error_message, action="", buttontext=""):
     error_obj = {"error":error_message}
     if action: # If action is present (meaning the error has a button)
@@ -388,8 +391,8 @@ class StudentHandler(BaseHandler):
 
         user_schedule = self.get_schedule_for_id(id)
 
-        if not user_schedule["grade"]: # If the user is a teacher
-            sanitized = student_schedule
+        if is_teacher_schedule(user_schedule): # If the user is a teacher
+            sanitized = student_schedule.copy()
         else:
             sanitized = self.sanitize_schedule(student_schedule, user_schedule)
 
