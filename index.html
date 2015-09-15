@@ -381,17 +381,12 @@
 
         } else if (type == "lite") {
           if (letterToNum(scheduleObj.period) <= 8) { // If it's a class period
-            var sharedClass = false; // Find out if the user has a class that period
+            scheduleObj.shared = false; // Find out if the user has a class that period
             for (var i = 0; i < userSchedule.classes.length; i++) {
               if (userSchedule.classes[i].period == scheduleObj.period && userSchedule.classes[i].name == scheduleObj.name) { // TODO find the name of GSH
-                sharedClass = true;
+                scheduleObj.shared = true;
                 break;
               }
-            }
-            if (sharedClass) {
-              scheduleObj.avatar = "check";
-            } else {
-              scheduleObj.avatar = "clear";
             }
           } else {
             continue; // Skip over lunch, advisory, assembly, etc.
