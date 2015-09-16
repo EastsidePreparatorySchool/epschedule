@@ -6,25 +6,23 @@ exceptions_file = open('photo_exceptions.json', 'rb')
 exceptions = json.load(exceptions_file)
 print exceptions
 
-def find_shift(name, axis):
-	for exception in exceptions:
-		if exception[0][:-4] == name[:-4]:
-			if axis == "x":
-				return exception[1]
-			elif axis == "y":
-				return exception[2]
-	return 0
+def get_shift(name, axis):
+    for exception in exceptions:
+        if exception[0][:-4] == name[:-4]:
+            if axis == "x":
+                return exception[1]
+            elif axis == "y":
+                return exception[2]
+    return 0
 
 def apply_exception(name, number, axis, axisvalue): # Takes in the name, current left or top value, "x" or "y", and the length of the x or y of the image
-	shift = find_shift(name, axis)
-	if shift == 0:
-		return number
+    shift = get_shift(name, axis)
 
-	shift = (shift * axisvalue) / 96
-	shift = int(round(shift)) # Round shift to the nearest int
-	number += shift
+    shift = (shift * axisvalue) / 96
+    shift = int(round(shift)) # Round shift to the nearest int
+    number += shift
 
-	return number
+    return number
 
 
 
