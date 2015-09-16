@@ -145,11 +145,16 @@
         switch (e.detail.state) {
           case 'start':
             this.enableTransition(false);
+            this.axis = (Math.abs(e.detail.dx) >
+                         Math.abs(e.detail.dy)) ? 'x' : 'y';
             break;
           case 'track':
-            this.translateX(e.detail.dx);
+            if (this.axis == 'x') {
+              this.translateX(e.detail.dx);
+            }
             break;
           case 'end':
+            this.axis = undefined;
             this.enableTransition(true);
             this.maybeSwipe(e.detail.dx);
             break;
