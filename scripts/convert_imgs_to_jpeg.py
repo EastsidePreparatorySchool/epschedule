@@ -20,7 +20,7 @@ def apply_exception(name, number, axis, axisvalue): # Takes in the name, current
 	if shift == 0:
 		return number
 
-	shift *= (axisvalue / 96)
+	shift = (shift * axisvalue) / 96
 	shift = int(round(shift)) # Round shift to the nearest int
 	number += shift
 
