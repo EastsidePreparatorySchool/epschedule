@@ -1,7 +1,10 @@
 from wand.image import Image
 import os
+import json
 
-exceptions = [["hayes.jpg", 17, 0], ["hollingshead.jpg", 20, 0], ["pedersen.jpg", -20, 0], ["sweet.jpg", 24 , 0]]
+exceptions_file = open('photo_exceptions.json', 'rb')
+exceptions = json.load(exceptions_file)
+
 for image in os.listdir("../teacher_photos"):
     print "Cropping " + str(image)
     with Image(filename=('..\\teacher_photos\\' + str(image))) as img:
@@ -20,7 +23,6 @@ for image in os.listdir("../teacher_photos"):
             if str(image) == exception[0]:
                 x_except += exception[1]
                 y_except += exception[2]
-        print "Getting here!"
         print "Calling: img.crop(" + str(cropparams[0] + x_except) + ", " + str(cropparams[1] + y_except) + ", " + str(img.width - cropparams[0] + x_except) + ", " + str(img.height - cropparams[1] + y_except) + ")"
         img.crop(cropparams[0] + x_except, cropparams[1] + y_except, img.width - cropparams[0] + x_except, img.height - cropparams[1] + y_except)
         img.convert('jpeg')
