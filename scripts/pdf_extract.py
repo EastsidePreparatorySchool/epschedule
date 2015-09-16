@@ -44,13 +44,13 @@ def letterToNum(letter):#Converts a period into a list index
     return letters.index(letter)
 
 def graduating_year_to_grade(gy):
-    date_obj = date.today()
-    grade = 13 - (int(gy) - int(date_obj.year))
-    if date_obj.month == 6:
-        if date_obj.day >= 12:  #This could change
-            grade -= 1
-    elif date_obj.month > 6:
-        grade -= 1
+    date_obj = date.today() # Get today's date
+    grade = 13 - (int(gy) - date_obj.year) # 13 - (graduating year - current year)
+    if date_obj.month == 6: # If it is june
+        if date_obj.day <= 12:  # If it is before or the last day of school
+            grade -= 1 # Subtract one from the grade
+    elif date_obj.month < 6: # If it is before june
+        grade -= 1 # Subtract one from the grade
     return grade
 
 def getClass(textbox):#Each textbox is passed in
