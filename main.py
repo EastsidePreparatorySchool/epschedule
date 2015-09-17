@@ -92,7 +92,10 @@ ERR_SIGNUP_EMAIL_NOT_EPS = {
   "error": "Use your Eastside Prep email account"
 }
 ERR_UNKNOWN_EMAIL = {
-    "error": "There is no student or teacher at EPS with that email"
+    "error": "Unknown email address"
+}
+ERR_NOT_ALLOWED_EMAIL = {
+    "error": "Invalid email address"
 }
 ERR_PASSWORD_INVALID_FORMAT = {
   "error": "Your password must be at least eight characters"
@@ -176,11 +179,7 @@ ERR_NO_ACCOUNT_TO_SEND = {
 }
 class RegisterBaseHandler(BaseHandler):
     def get_name(self, email):
-        id = None
-        for id_pair in ID_TABLE:
-            if id_pair[0] + "@eastsideprep.org" == email:
-                id = id_pair[1]
-                break
+        id = convert_email_to_id(email)
 
         schedules = get_schedule_data()
         for schedule in schedules:
@@ -232,6 +231,12 @@ class RegisterHandler (RegisterBaseHandler):
 
         if not convert_email_to_id: # If id is None
             self.response.write(json.dumps(ERR_UNKNOWN_EMAIL))
+            return
+
+        schedule = self.get_schedule_for_id(id)
+
+        if not schedule:
+            self.response.write(json.dumps(ERR_NOT_ALLOWED_EMAIL))
             return
 
         if len(password) < 8:
