@@ -116,8 +116,6 @@ def explode_pdf(path):
                 advisor_last = advisor_names[0]
     device.close()
 
-    if classes == []: #If the schedule is blank or not a schedule
-        return None
     cleaned_classes = [] #Remove duplicates from classes
     for l in classes:
         if l not in cleaned_classes:
@@ -144,16 +142,18 @@ for f in files:    #For each file in the directory
     if f in DO_NOT_PARSE: # If the schedule shouldn't be parsed
         print "Skipping"
         continue
+    filepath = "c:\\users\\guberti\\Documents\\Github\\EPSchedule\\schedules\\" + f   #Create the full filepath for the schedule
+    print f
+
+    if os.path.getsize(filepath) <  5000: # If schedule is blank (e.g. is less than 5000 bytes)
+        print "Schedule is blank!"
+        continue
+
     if f[len(f) - 4:len(f)] == ".pdf":  #If the last 4 characters of the file name are .pdf (meaning the file is a schedule)
-        filepath = "c:\\users\\guberti\\Documents\\Github\\EPSchedule\\schedules\\" + f   #Create the full filepath for the schedule
         #print filepath
-        print f
         exploded_schedule = explode_pdf(filepath)
-        if exploded_schedule is not None: #If exploded_schedule is not none
-            exploded_schedule = add_free_periods(exploded_schedule)
-            students.append(exploded_schedule)  #Add to the list of schedules the object returned by explode_pdf()
-        else:
-            print "Schedule is empty!"
+        exploded_schedule = add_free_periods(exploded_schedule)
+        students.append(exploded_schedule)  #Add to the list of schedules the object returned by explode_pdf()
 
 print "Entering full names!"
 for person_num in range (0, len(students)):
