@@ -212,7 +212,7 @@ class RegisterBaseHandler(BaseHandler):
 
 class RegisterHandler (RegisterBaseHandler):
     def post(self):
-        email = self.request.get('email')
+        email = self.request.get('email').lower()
         password = self.request.get('password')
 
         if email[-17:] != "@eastsideprep.org":
@@ -239,7 +239,7 @@ class RegisterHandler (RegisterBaseHandler):
 
 class ResendEmailHandler(RegisterBaseHandler):
     def post(self):
-        email = self.request.get('email')
+        email = self.request.get('email').lower()
         password = self.request.get('password')
         user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = FALSE", email)
         for user_obj in user_obj_query:
@@ -291,7 +291,7 @@ ERR_NOT_EPS_EMAIL = {
 
 class LoginHandler (BaseHandler):
     def post(self):
-        email = self.request.get('email')
+        email = self.request.get('email').lower()
         password = self.request.get('password')
 
         err = self.check_password(email, password) # Returns an object, so we don't have to call create_error_obj() on this
