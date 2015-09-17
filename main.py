@@ -68,6 +68,7 @@ def convert_email_to_id(email):
 def normalize_name(name):
     name = name.lower()
     name = name.replace(" ", "")
+    name = name.replace(".", "")
     return name
 
 def generate_email(firstname, lastname):
