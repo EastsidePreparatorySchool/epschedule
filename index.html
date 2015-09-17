@@ -210,6 +210,13 @@
         renderToast("Your browser does not support Geolocation");
     }*/
   }
+  function renderBio(teacherBio) {
+    var html = "";
+    for (var i = 0; i < teacherBio.length; ++i) {
+      html += '<p>' + teacherBio[i] + '</p>';
+    }
+    return html;
+  }
   function renderTeacher(teacherObj) {
     var popupContainer = document.getElementById("popupContainer");
     var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
@@ -223,7 +230,7 @@
         '<div layout vertical>' +
         '<p><a href="mailto:' + email + '""><iron-icon icon="communication:email"></iron-icon>' +
         '<span class="email">Email teacher</span></a></p>' +
-        '<p>' + teacherObj.bio + '</p></div></div></paper-material>' +
+        renderBio(teacherObj.bio) + '</div></div></paper-material>' +
         '<schedule-lite id="teacherschedule"></schedule-lite>' +
         '</div>';
 
