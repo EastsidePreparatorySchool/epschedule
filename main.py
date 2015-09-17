@@ -318,7 +318,9 @@ class LoginHandler (BaseHandler):
             id = convert_email_to_id(email)
             if id is not None:
                 encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
-                self.response.set_cookie('SID', encoded_id)
+                expiration_date = datetime.datetime.now()
+                expiration_date += datetime.timedelta(3650) # Set expiration date 10 years in the future
+                self.response.set_cookie('SID', encoded_id, expires=expiration_date)
                 self.response.write(create_error_obj(""))
             else:
                 self.response.write(create_error_obj("Something went wrong! " + email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
