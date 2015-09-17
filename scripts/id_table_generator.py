@@ -4,11 +4,11 @@ from os import listdir
 import string
 import json
 
-exceptions = {"estmary":"lstmary"}
+EXCEPTIONS = {"estmary":"lstmary"}
 
 def make_username(firstname, lastname):
     name = firstname[0] + lastname
-    if name in exceptions:
+    if name in EXCEPTIONS:
         return exception[name]
     return name
 
