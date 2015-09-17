@@ -4,13 +4,13 @@ from os import listdir
 import string
 import json
 
-exceptions = [{"original":"estmary", "replacement":"lstmary"}]
+exceptions = {"estmary":"lstmary"}
 
-def apply_exception(name):
-	for exception in exceptions:
-		if exception["original"] == name:
-			return exception["replacement"]
-	return name
+def make_username(firstname, lastname):
+    name = firstname[0] + lastname
+    if name in exceptions:
+        return exception[name]
+    return name
 
 files = listdir("C:/Users/guberti/Documents/Github/EPSchedule/schedules")
 output = []
@@ -21,11 +21,9 @@ for filename in files:
     filename = filename.replace(" ", "")  # Remove spaces
     filenamelist = string.split(filename, "-")  # 9999-1-Lastname-Firstname becomes ["9999", "1", "Lastname", "Firstname"]
     studentid = int(filenamelist[0])
-    firstinitial = filenamelist[3][0]
+    firstname = filenamelist[3]
     lastname = filenamelist[2]
-    studentusername = firstinitial + lastname
-    studentusername = apply_exception(studentusername)
-    output.append([studentusername, studentid])
+    output.append([make_username(firstname, lastname), studentid])
 
 file = open('..\\id_table.json', 'wb')
 file.write(json.dumps(output))
