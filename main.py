@@ -92,6 +92,12 @@ def create_error_obj(error_message, action="", buttontext=""):
 ERR_SIGNUP_EMAIL_NOT_EPS = {
   "error": "Use your Eastside Prep email account"
 }
+ERR_UNKNOWN_EMAIL = {
+    "error": "Unknown email address"
+}
+ERR_NOT_ALLOWED_EMAIL = {
+    "error": "Invalid email address"
+}
 ERR_PASSWORD_INVALID_FORMAT = {
   "error": "Your password must be at least eight characters"
 }
@@ -157,12 +163,14 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
             if normalize_name(schedule['firstname']) == firstname.lower() and \
                normalize_name(schedule['lastname']) == lastname.lower(): # If the schedule is the requested schedule
                 return schedule
+        return None
 
     def get_schedule_for_id(self, id):
         schedule_data = get_schedule_data()
         for schedule in schedule_data:
             if schedule["id"] == str(id): # If the schedule is the user's schedule
                 return schedule
+        return None
 
 ERR_NO_ACCOUNT_TO_SEND = {
   "error": "There is no account with that username and password",
@@ -172,11 +180,7 @@ ERR_NO_ACCOUNT_TO_SEND = {
 }
 class RegisterBaseHandler(BaseHandler):
     def get_name(self, email):
-        id = None
-        for id_pair in ID_TABLE:
-            if id_pair[0] + "@eastsideprep.org" == email:
-                id = id_pair[1]
-                break
+        id = convert_email_to_id(email)
 
         schedules = get_schedule_data()
         for schedule in schedules:
@@ -208,7 +212,7 @@ class RegisterBaseHandler(BaseHandler):
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
         encoded_row_id = base64.urlsafe_b64encode(encrypted_row_id)
-        url = "http://epscheduleapp.appspot.com/confirm/" + encoded_row_id
+        url = "https://www.epschedule.com/confirm/" + encoded_row_id
         return url
 
 class RegisterHandler (RegisterBaseHandler):
@@ -222,6 +226,18 @@ class RegisterHandler (RegisterBaseHandler):
 
         if not self.check_signed_up(email):
             self.response.write(json.dumps(ERR_EMAIL_ALREADY_REGISTERED))
+            return
+
+        id = convert_email_to_id(email)
+
+        if not convert_email_to_id: # If id is None
+            self.response.write(json.dumps(ERR_UNKNOWN_EMAIL))
+            return
+
+        schedule = self.get_schedule_for_id(id)
+
+        if not schedule:
+            self.response.write(json.dumps(ERR_NOT_ALLOWED_EMAIL))
             return
 
         if len(password) < 8:
