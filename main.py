@@ -92,7 +92,7 @@ ERR_SIGNUP_EMAIL_NOT_EPS = {
   "error": "Use your Eastside Prep email account"
 }
 ERR_UNKNOWN_EMAIL = {
-    "error": "There is not student or teacher at EPS with that email"
+    "error": "There is no student or teacher at EPS with that email"
 }
 ERR_PASSWORD_INVALID_FORMAT = {
   "error": "Your password must be at least eight characters"
