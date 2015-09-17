@@ -94,9 +94,6 @@ ERR_SIGNUP_EMAIL_NOT_EPS = {
 ERR_UNKNOWN_EMAIL = {
     "error": "There is not student or teacher at EPS with that email"
 }
-ERR_NO_SCHEDULE = {
-    "error": "Your email has no schedule associated with it"
-}
 ERR_PASSWORD_INVALID_FORMAT = {
   "error": "Your password must be at least eight characters"
 }
@@ -235,12 +232,6 @@ class RegisterHandler (RegisterBaseHandler):
 
         if not convert_email_to_id: # If id is None
             self.response.write(json.dumps(ERR_UNKNOWN_EMAIL))
-            return
-
-        schedule = self.get_schedule_for_id(id)
-
-        if not schedule: # If schedule is None
-            self.response.write(json.dumps(ERR_NO_SCHEDULE))
             return
 
         if len(password) < 8:
