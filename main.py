@@ -207,7 +207,7 @@ class RegisterBaseHandler(BaseHandler):
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
         encoded_row_id = base64.urlsafe_b64encode(encrypted_row_id)
-        url = "http://epscheduleapp.appspot.com/confirm/" + encoded_row_id
+        url = "http://epschedule.com/confirm/" + encoded_row_id
         return url
 
 class RegisterHandler (RegisterBaseHandler):
