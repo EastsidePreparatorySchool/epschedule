@@ -142,7 +142,6 @@ for f in files:    #For each file in the directory
     if f in DO_NOT_PARSE: # If the schedule shouldn't be parsed
         print "Skipping"
         continue
-
     filepath = "../schedules/" + f   #Create the full filepath for the schedule
     print f
 
