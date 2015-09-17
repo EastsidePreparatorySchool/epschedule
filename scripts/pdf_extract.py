@@ -75,8 +75,8 @@ def getClass(textbox):#Each textbox is passed in
 
 
 def explode_pdf(path):
-    path_properties = string.split(path, "\\")  #Split the file name into a series of directories
-    schedule_properties = string.split(path_properties[7], "-") #Extract the information from the name of the pdf
+    path_properties = string.split(path, "/")  #Split the file name into a series of directories
+    schedule_properties = string.split(path_properties[2], "-") #Extract the information from the name of the pdf
     if len(schedule_properties) > 4: #If the person has a dash in their last name
         schedule_properties[2] += "-" + schedule_properties[3]
         schedule_properties[3] = schedule_properties[4]
@@ -142,15 +142,15 @@ for f in files:    #For each file in the directory
     if f in DO_NOT_PARSE: # If the schedule shouldn't be parsed
         print "Skipping"
         continue
-    filepath = "c:\\users\\guberti\\Documents\\Github\\EPSchedule\\schedules\\" + f   #Create the full filepath for the schedule
+
+    filepath = "../schedules/" + f   #Create the full filepath for the schedule
     print f
 
-    if os.path.getsize(filepath) <  5000: # If schedule is blank (e.g. is less than 5000 bytes)
+    if os.path.getsize(filepath) < 5000: # If schedule is blank (e.g. is less than 5000 bytes)
         print "Schedule is blank!"
         continue
 
-    if f[len(f) - 4:len(f)] == ".pdf":  #If the last 4 characters of the file name are .pdf (meaning the file is a schedule)
-        #print filepath
+    if f[-4:] == ".pdf":  #If the last 4 characters of the file name are .pdf (meaning the file is a schedule)
         exploded_schedule = explode_pdf(filepath)
         exploded_schedule = add_free_periods(exploded_schedule)
         students.append(exploded_schedule)  #Add to the list of schedules the object returned by explode_pdf()
