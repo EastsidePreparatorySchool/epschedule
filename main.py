@@ -235,11 +235,13 @@ class RegisterHandler (RegisterBaseHandler):
 
         if not convert_email_to_id: # If id is None
             self.response.write(json.dumps(ERR_UNKNOWN_EMAIL))
+            return
 
         schedule = self.get_schedule_for_id(id)
 
         if not schedule: # If schedule is None
             self.response.write(json.dumps(ERR_NO_SCHEDULE))
+            return
 
         if len(password) < 8:
             self.response.write(json.dumps(ERR_PASSWORD_INVALID_FORMAT))
