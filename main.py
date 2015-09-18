@@ -595,12 +595,40 @@ class MainHandler(BaseHandler):
 
 class AboutHandler(BaseHandler):
     def get(self):
-            template = JINJA_ENVIRONMENT.get_template('about.html')
-            self.response.write(template.render({}))
+        template = JINJA_ENVIRONMENT.get_template('about.html')
+        self.response.write(template.render({}))
+
+class StatsHandler(BaseHandler):
+    def get(self):
+        id = self.check_id()
+        if id != "4093":
+            self.error(403)
+            return
+
+        verified = set()
+        unverified = set()
+        query = db.GqlQuery("SELECT * FROM User")
+        for query_result in query:
+            if query_result.verified:
+                verified.add(query_result.email)
+            else:
+                unverified.add(query_result.email)
+
+        html = "<h1>Stats</h1>"
+        html += "<h2>" + str(len(verified))
+        html += " verified accounts</h2>"
+        for email in verified:
+            html += email + "<br>"
+        html += "<h2>"  + str(len(unverified))
+        html += " unverified accounts</h2>"
+        for email in unverified:
+            html += email + "<br>"
+        self.response.write(html)
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/about', AboutHandler),
+    ('/stats', StatsHandler),
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/register', RegisterHandler),
