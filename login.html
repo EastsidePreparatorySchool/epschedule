@@ -125,6 +125,9 @@
     submitForm(postAction, onSuccess, onError);
   }
   function submitForm(postAction, successFunction, errorFunction) { //Takes either login, register, or resend
+    if (locked) {
+      return;
+    }
     locked = true;
     var data = new FormData();
     data.append('email', email.value);
@@ -141,6 +144,8 @@
           }
           locked = false;
         } else {
+          email.value = "";
+          password.value = "";
           errorFunction(UNKNOWN_ERROR);
         }
       }
