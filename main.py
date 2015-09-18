@@ -598,7 +598,7 @@ class AboutHandler(BaseHandler):
         template = JINJA_ENVIRONMENT.get_template('about.html')
         self.response.write(template.render({}))
 
-class StatsHandler(BaseHandler):
+class StatsHandler(RegisterBaseHandler):
     def get(self):
         id = self.check_id()
         if id != "4093":
@@ -607,11 +607,15 @@ class StatsHandler(BaseHandler):
 
         verified = set()
         unverified = set()
+        unverified_row_ids = {}
+
         query = db.GqlQuery("SELECT * FROM User")
         for query_result in query:
             if query_result.verified:
                 verified.add(query_result.email)
             else:
+                if not query_result.email in unverified_row_ids:
+                    unverified_row_ids[query_result.email] = str(query_result.key().id())
                 unverified.add(query_result.email)
 
         html = "<h1>Stats</h1>"
@@ -623,7 +627,36 @@ class StatsHandler(BaseHandler):
         html += " unverified accounts</h2>"
         for email in unverified:
             html += email + "<br>"
+        html += "<h2>Row ids</h2><p>"
+        html += str(unverified_row_ids) + "</p>"
+        html += """
+        <script>
+          function sendEmails() {
+            xhr = new XMLHttpRequest();
+            xhr.open('POST', 'stats', true);
+            xhr.send();
+          }
+        </script>"""
+        html += "<button type='button' onclick='sendEmails()'>Send verification emails to unregistered users</button>"
         self.response.write(html)
+
+    def post(self):
+        id = self.check_id()
+        if id != "4093":
+            self.error(403)
+            return
+        unverified_row_ids = {}
+        query = db.GqlQuery("SELECT * FROM User")
+        for query_result in query:
+            if not query_result.verified:
+                if not query_result.email in unverified_row_ids:
+                    id_key = str(query_result.key().id())
+                    unverified_row_ids[query_result.email] = id_key
+                    logging.info("Sending " + query_result.email + " a verification email")
+                    try:
+                        error = self.send_confirmation_email(query_result.email, id_key)
+                    except: # If email is ficticious or something else went wrong
+                        logging.error("Attempted to send an email to " + query_result.email + ", was unsuccessful")
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
