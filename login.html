@@ -144,6 +144,8 @@
           }
           locked = false;
         } else {
+            email.value = "";
+            password.value = "";
           errorFunction(UNKNOWN_ERROR);
         }
       }
@@ -187,8 +189,6 @@
     }
   }
   function onError(errorObj) {
-    email.value = "";
-    password.value = "";
     processToast(errorObj);
   }
 
