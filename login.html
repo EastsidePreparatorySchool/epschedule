@@ -86,7 +86,7 @@
   </paper-toast>
 
   <script>
-  UNKNOWN_ERROR = {'error':"Something didn't quite work. We're looking into it; try again later."};
+  var UNKNOWN_ERROR = {'error':"Something didn't quite work. We're looking into it; try again later."};
   var action = "login";
   var locked = false;
   function switchToRegister() {
@@ -141,7 +141,7 @@
           }
           locked = false;
         } else {
-          processToast(UNKNOWN_ERROR);
+          errorFunction(UNKNOWN_ERROR);
         }
       }
     }
