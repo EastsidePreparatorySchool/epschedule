@@ -129,6 +129,8 @@
     var data = new FormData();
     data.append('email', email.value);
     data.append('password', password.value);
+    email.value = "";
+    password.value = "";
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
