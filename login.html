@@ -122,11 +122,12 @@
     submitForm("resend", processToast, processToast)
   }
   function submitMainForm(postAction) {
-    if (!locked) {
-      submitForm(postAction, onSuccess, onError);
-    }
+    submitForm(postAction, onSuccess, onError);
   }
   function submitForm(postAction, successFunction, errorFunction) { //Takes either login, register, or resend
+    if (locked) {
+      return;
+    }
     locked = true;
     var data = new FormData();
     data.append('email', email.value);
