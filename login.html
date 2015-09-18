@@ -86,6 +86,7 @@
   </paper-toast>
 
   <script>
+  var UNKNOWN_ERROR = {'error':"Something didn't quite work. We're looking into it; try again later."};
   var action = "login";
   var locked = false;
   function switchToRegister() {
@@ -130,14 +131,18 @@
     data.append('password', password.value);
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4 && xhr.status==200) {
-        result = JSON.parse(xhr.responseText);
-        if (result.error == "") {
-          successFunction(result);
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+          result = JSON.parse(xhr.responseText);
+          if (result.error == "") {
+            successFunction(result);
+          } else {
+            errorFunction(result);
+          }
+          locked = false;
         } else {
-          errorFunction(result);
+          errorFunction(UNKNOWN_ERROR);
         }
-        locked = false;
       }
     }
     xhr.open("POST", postAction, true);
@@ -179,7 +184,6 @@
     }
   }
   function onError(errorObj) {
-
     processToast(errorObj);
   }
 
