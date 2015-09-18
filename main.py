@@ -110,6 +110,9 @@ ERR_EMAIL_ALREADY_REGISTERED = {
 REGISTER_SUCCESS = {
   "error": "Success! Check your email to complete registration"
 }
+ERR_OVER_EMAIL_QUOTA = {
+    "error": "We're unable to send emails right now, try again tomorrow."
+}
 
 class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this handler
     def check_id(self):
@@ -250,9 +253,14 @@ class RegisterHandler (RegisterBaseHandler):
         db.put(user_obj)
         row_id = str(user_obj.key().id())
         logging.info("row id = " + row_id)
-        self.send_confirmation_email(email, row_id)
-        self.response.write(json.dumps(REGISTER_SUCCESS))
 
+        try:
+            self.send_confirmation_email(email, row_id)
+        except OverQuotaError:
+            self.response.write(json.dumps(ERR_OVER_EMAIL_QUOTA))
+            return
+
+        self.response.write(json.dumps(REGISTER_SUCCESS))
 
 class ResendEmailHandler(RegisterBaseHandler):
     def post(self):
