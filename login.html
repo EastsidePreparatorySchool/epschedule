@@ -130,14 +130,18 @@
     data.append('password', password.value);
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4 && xhr.status==200) {
-        result = JSON.parse(xhr.responseText);
-        if (result.error == "") {
-          successFunction(result);
+      if (xhr.readyState == 4) {
+        if (xhr.status==200) {
+          result = JSON.parse(xhr.responseText);
+          if (result.error == "") {
+            successFunction(result);
+          } else {
+            errorFunction(result);
+          }
+          locked = false;
         } else {
-          errorFunction(result);
+          processToast({'error':"Something didn't quite work. We're looking into it; try again later."});
         }
-        locked = false;
       }
     }
     xhr.open("POST", postAction, true);
@@ -179,7 +183,6 @@
     }
   }
   function onError(errorObj) {
-
     processToast(errorObj);
   }
 
