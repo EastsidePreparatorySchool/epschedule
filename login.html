@@ -122,7 +122,9 @@
     submitForm("resend", processToast, processToast)
   }
   function submitMainForm(postAction) {
-    submitForm(postAction, onSuccess, onError);
+    if (!locked) {
+      submitForm(postAction, onSuccess, onError);
+    }
   }
   function submitForm(postAction, successFunction, errorFunction) { //Takes either login, register, or resend
     locked = true;
