@@ -25,24 +25,24 @@ import datetime
 from google.appengine.ext import db
 from google.appengine.ext import vendor
 from google.appengine.api import mail
+
 # Add any libraries installed in the "lib" folder.
 vendor.add('lib')
 
 # External libraries.
-from slowaes import aes
 from py_bcrypt import bcrypt
+from slowaes import aes
+from sendgrid import SendGridClient
+from sendgrid import Mail
 
 DEMO_USER = "demo"
 DEMO_ID = "9999"
 CRYPTO_KEY = open('crypto.key', 'rb').read()
-id_table_file = open('id_table.json', 'rb')
-ID_TABLE = json.load(id_table_file)
-schedule_info_file = open('schedules.json', 'rb')
-SCHEDULE_INFO = json.load(schedule_info_file)
-lat_lon_coords_file = open('room_locations.json', 'rb')
-LAT_LON_COORDS = json.load(lat_lon_coords_file)
-bios_file = open('bios.json', 'rb')
-BIOS = json.load(bios_file)
+API_KEYS = json.load(open('api_keys.json', 'rb'))
+ID_TABLE = json.load(open('id_table.json', 'rb'))
+SCHEDULE_INFO = json.load(open('schedules.json', 'rb'))
+LAT_LON_COORDS = json.load(open('room_locations.json', 'rb'))
+BIOS = json.load(open('bios.json', 'rb'))
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -197,17 +197,23 @@ class RegisterBaseHandler(BaseHandler):
     def send_confirmation_email(self, email, row_id):
         email_file = open('confirm_email.html', 'rb')
         email_text = email_file.read()
-        email_properties = {}
-        email_properties['name'] = self.get_name(email)
-        email_properties['email'] = email
-        email_properties['url'] = self.get_confirmation_link(row_id)
-        message = mail.EmailMessage()
-        message.sender = "The EPSchedule Team <gavin.uberti@gmail.com>"   # TODO make sender fooy@epscheduleapp.appspot.com
-        message.to = email
-        message.subject = "Sign up for EPSchedule"
-        message.html = self.format_html(email_text, email_properties)
+        email_properties = {
+            'name': self.get_name(email),
+            'email': email,
+            'url': self.get_confirmation_link(row_id)
+        }
+
+        creds = API_KEYS['sendgrid']
+        client = SendGridClient(creds['username'], creds['password'], secure=True)
+        message = Mail()
+        message.set_subject("Sign up for EPSchedule")
+        message.set_html(self.format_html(email_text, email_properties))
+        # message.set_text('plaintext message body')
+        # TODO make sender fooy@epscheduleapp.appspot.com
+        message.set_from("The EPSchedule Team <gavin.uberti@gmail.com>")
+        message.add_to(email)
         logging.info("Sending " + email + " a link to " + email_properties['url'])
-        message.send()
+        client.send(message)
 
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
