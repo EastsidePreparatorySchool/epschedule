@@ -712,7 +712,7 @@ class AdminHandler(RegisterBaseHandler):
                 try:
                     error = self.send_confirmation_email(email, numerical_id)
                 except: # If email is ficticious or something else went wrong
-                    logging.error("Attempted to send an email to " + email + ", was unsuccessful")
+                    logging.error("Attempt to send an email to " + email + " was unsuccessful")
 
     def clean_up_db(self):
         verification = self.read_db()
