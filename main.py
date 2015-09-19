@@ -701,7 +701,7 @@ class StatsHandler(RegisterBaseHandler):
 
         for email in verification:
             if len(verification[email]['verified']) == 0:
-                numerical_id = max(verification[email]['unverified']).id()
+                numerical_id = verification[email]['unverified'][0].id()
                 logging.info("Sending " + email + " a verification email")
                 try:
                     error = self.send_confirmation_email(email, numerical_id)
