@@ -51,6 +51,7 @@ crawler.bat
 schedules
 schedules.json
 id_table.json
+api_keys.json
 teacher_photos
 96x96_photos
 lib
