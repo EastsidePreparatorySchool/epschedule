@@ -669,7 +669,7 @@ class StatsHandler(RegisterBaseHandler):
             self.error(403)
             return
 
-        if self.request.get('action') == "emailblast":
+        if 0: # self.request.get('action') == "emailblast":
             unverified_row_ids = {}
             query = db.GqlQuery("SELECT * FROM User")
             # Example of unverified_row_id:
