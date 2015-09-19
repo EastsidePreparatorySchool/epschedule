@@ -604,7 +604,7 @@ class AboutHandler(BaseHandler):
         template = JINJA_ENVIRONMENT.get_template('about.html')
         self.response.write(template.render({}))
 
-class StatsHandler(RegisterBaseHandler):
+class AdminHandler(RegisterBaseHandler):
     def get(self):
         id = self.check_id()
         if id != "4093":
@@ -631,7 +631,13 @@ class StatsHandler(RegisterBaseHandler):
         only_unverified = sorted([ k for k,v in verification.iteritems() if len(v['verified']) == 0 and len(v['unverified']) >= 1 ])
         html += "<h3>" + str(len(only_unverified)) + " emails with only unverified records</h3>"
         for email in only_unverified:
-            html += email + " [" + str(len(verification[email]['unverified'])) + "]<br>"
+            email_schedule = self.get_schedule_for_id(convert_email_to_id(email))
+            is_valid = "invalid" # Will either be "valid" or "invalid"
+
+            if email_schedule:
+                is_valid = "valid"
+
+            html += email + " [" + str(len(verification[email]['unverified'])) + ", " + is_valid + "]<br>"
 
         multiple_verified = sorted([ k for k,v in verification.iteritems() if len(v['verified']) > 1 ])
         # If there are ever any entries in multiple_verified, the DB is in a very bad state
@@ -728,6 +734,6 @@ app = webapp2.WSGIApplication([
     ('/room/([\w\-]+)', RoomHandler),
     ('/teacher/([\w\-]+)', TeacherHandler),
     ('/student/([\w\-]+)', StudentHandler),
-    ('/admin', StatsHandler),
-    ('/admin/(\w+)', StatsHandler)
+    ('/admin', AdminHandler),
+    ('/admin/(\w+)', AdminHandler)
 ], debug=True)
