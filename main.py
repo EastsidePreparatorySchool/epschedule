@@ -643,7 +643,7 @@ class StatsHandler(RegisterBaseHandler):
         html += """
         <script>
           function sendEmails(action) {
-            window.alert("Preforming " + action + ", press OK to continue");
+            window.alert("Performing " + action + ", press OK to continue");
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
               if (xhr.readyState == 4 && xhr.status == 200) {
