@@ -611,7 +611,7 @@ class StatsHandler(RegisterBaseHandler):
             self.error(403)
             return
 
-        verification = self.get_db()
+        verification = self.read_db()
 
         html = "<h1>Stats</h1>"
 
@@ -644,16 +644,17 @@ class StatsHandler(RegisterBaseHandler):
         <script>
           function sendEmails(action) {
             window.alert("Preforming " + action + ", press OK to continue");
-            var data = new FormData();
-            data.append('action', action);
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
               if (xhr.readyState == 4 && xhr.status == 200) {
-                location.reload();
+                setTimeout(reloadPage, 3000);
               }
             }
-            xhr.open('POST', 'stats', true);
-            xhr.send(data);
+            xhr.open('POST', 'admin/' + action, true);
+            xhr.send();
+          }
+          function reloadPage() {
+            location.reload();
           }
         </script>"""
         html += "<button type='button' onclick='sendEmails("
@@ -664,7 +665,7 @@ class StatsHandler(RegisterBaseHandler):
         html += ")'>Clean up duplicates of confirmed users</button>"
         self.response.write(html)
 
-    def get_db(self): # Returns the entire database as an dictionary
+    def read_db(self): # Returns the entire database as an dictionary
 
         verification = {}
         query = db.GqlQuery("SELECT * FROM User")
@@ -681,19 +682,23 @@ class StatsHandler(RegisterBaseHandler):
             return "verified"
         return "unverified"
 
-    def post(self):
+    def post(self, url):
         id = self.check_id()
         if id != "4093":
             self.error(403)
             return
 
-        if self.request.get('action') == "emailblast":
+        logging.info(url)
+
+        if url == "emailblast":
+            logging.info("Email blasting")
             self.send_email_blast()
-        elif self.request.get('action') == "cleanup":
+        elif url == "cleanup":
+            logging.info("Cleaning up db")
             self.clean_up_db()
 
     def send_email_blast(self):
-        verification = self.get_db()
+        verification = self.read_db()
         # Generate unverified_row_ids
 
         for email in verification:
@@ -706,7 +711,7 @@ class StatsHandler(RegisterBaseHandler):
                     logging.error("Attempted to send an email to " + email + ", was unsuccessful")
 
     def clean_up_db(self):
-        verification = self.get_db()
+        verification = self.read_db()
         for email in verification:
             if len(verification[email]['verified']) == 1 and len(verification[email]['unverified']) >= 1:
                 db.delete(verification[email]['unverified'])
@@ -714,7 +719,6 @@ class StatsHandler(RegisterBaseHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/about', AboutHandler),
-    ('/stats', StatsHandler),
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/register', RegisterHandler),
@@ -725,5 +729,7 @@ app = webapp2.WSGIApplication([
     ('/period/(\w+)', PeriodHandler),
     ('/room/([\w\-]+)', RoomHandler),
     ('/teacher/([\w\-]+)', TeacherHandler),
-    ('/student/([\w\-]+)', StudentHandler)
+    ('/student/([\w\-]+)', StudentHandler),
+    ('/admin', StatsHandler),
+    ('/admin/(\w+)', StatsHandler)
 ], debug=True)
