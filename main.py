@@ -643,7 +643,7 @@ class StatsHandler(RegisterBaseHandler):
         html += """
         <script>
           function sendEmails(action) {
-            window.alert("Cleaning up DB, press OK to continue");
+            window.alert("Preforming " + action + ", press OK to continue");
             var data = new FormData();
             data.append('action', action);
             xhr = new XMLHttpRequest();
@@ -693,28 +693,17 @@ class StatsHandler(RegisterBaseHandler):
             self.clean_up_db()
 
     def send_email_blast(self):
-        unverified_row_ids = {}
-        # Example of what unverified_row_ids will be:
-        # {'unconfirmed_account@eastsideprep.org': '5170986005561344',
-        # 'email_with_some_confirmed_and_some_not@eastsideprep.org': None}
-
+        verification = self.get_db()
         # Generate unverified_row_ids
-        for query_result in query:
-            if not query_result.verified:
-                if not query_result.email in unverified_row_ids:
-                    id_key = str(query_result.key().id())
-                    unverified_row_ids[query_result.email] = id_key
-            else: # query_result.verified
-                unverified_row_ids[query_result.email] = "verified"
 
-        # For each email with no verified properties, send them the verification email
-        for attribute in unverified_row_ids:
-            if unverified_row_ids[attribute] != "verified":
-                logging.info("Sending " + query_result.email + " a verification email")
+        for email in verification:
+            if len(verification[email]['verified']) == 0:
+                numerical_id = max(verification[email]['unverified']).id()
+                logging.info("Sending " + email + " a verification email")
                 try:
-                    error = self.send_confirmation_email(query_result.email, id_key)
+                    error = self.send_confirmation_email(email, numerical_id)
                 except: # If email is ficticious or something else went wrong
-                    logging.error("Attempted to send an email to " + query_result.email + ", was unsuccessful")
+                    logging.error("Attempted to send an email to " + email + ", was unsuccessful")
 
     def clean_up_db(self):
         verification = self.get_db()
