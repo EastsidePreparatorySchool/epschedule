@@ -682,18 +682,16 @@ class StatsHandler(RegisterBaseHandler):
             return "verified"
         return "unverified"
 
-    def post(self, url):
+    def post(self, action):
         id = self.check_id()
         if id != "4093":
             self.error(403)
             return
 
-        logging.info(url)
-
-        if url == "emailblast":
+        if action == "emailblast":
             logging.info("Email blasting")
             self.send_email_blast()
-        elif url == "cleanup":
+        elif action == "cleanup":
             logging.info("Cleaning up db")
             self.clean_up_db()
 
