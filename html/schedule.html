@@ -36,6 +36,7 @@
     }
     .card {
       margin-bottom: 1px;
+      cursor: pointer;
     }
     .card-header {
       background: white;
@@ -67,8 +68,13 @@
     }
     .selected {
     }
+    iron-collapse {
+      background: #efefef;
+    }
     .student {
-      background-color: white;
+      background: white;
+      /* uncomment to enable gray lines between students
+      #margin-bottom: 1px;*/
     }
     .student img {
       margin-left: 24px;
@@ -78,8 +84,13 @@
       font-size: 16px; #0.9rem;
     }
     .student iron-icon {
-      color: gray;
       margin-right: 24px;
+    }
+    .student a {
+      color: gray;
+    }
+    .student a:hover {
+      color: #2196f3;
     }
   </style>
   <template>
