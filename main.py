@@ -604,56 +604,63 @@ class AboutHandler(BaseHandler):
         template = JINJA_ENVIRONMENT.get_template('about.html')
         self.response.write(template.render({}))
 
-class StatsHandler(RegisterBaseHandler):
+class AdminHandler(RegisterBaseHandler):
     def get(self):
         id = self.check_id()
         if id != "4093":
             self.error(403)
             return
 
-        verification = {}
-
-        query = db.GqlQuery("SELECT * FROM User")
-        for query_result in query:
-            if not query_result.email in verification:
-                verification[query_result.email] = {'verified': 0, 'unverified': 0}
-            verification[query_result.email][self.get_key(query_result.verified)] += 1
+        verification = self.read_db()
 
         html = "<h1>Stats</h1>"
 
         html += "<h2>" + str(len(verification))
         html += " unique emails entered</h2>"
 
-        only_verified = sorted([ k for k,v in verification.iteritems() if v['verified'] == 1 and v['unverified'] == 0 ])
+        only_verified = sorted([ k for k,v in verification.iteritems() if len(v['verified']) == 1 and len(v['unverified']) == 0 ])
         html += "<h3>" + str(len(only_verified)) + " emails in good condition</h3>"
         for email in only_verified:
             html += email + "<br>"
 
-        verified_and_unverified = sorted([ k for k,v in verification.iteritems() if v['verified'] >= 1 and v['unverified'] >= 1 ])
+        verified_and_unverified = sorted([ k for k,v in verification.iteritems() if len(v['verified']) >= 1 and len(v['unverified']) >= 1 ])
         html += "<h3>" + str(len(verified_and_unverified)) + " emails with verified and unverified records</h3>"
         for email in verified_and_unverified:
-            html += email + " [" + str(verification[email]['unverified']) + "]<br>"
+            html += email + " [" + str(len(verification[email]['unverified'])) + "]<br>"
 
-        only_unverified = sorted([ k for k,v in verification.iteritems() if v['verified'] == 0 and v['unverified'] >= 1 ])
+        only_unverified = sorted([ k for k,v in verification.iteritems() if len(v['verified']) == 0 and len(v['unverified']) >= 1 ])
         html += "<h3>" + str(len(only_unverified)) + " emails with only unverified records</h3>"
         for email in only_unverified:
-            html += email + " [" + str(verification[email]['unverified']) + "]<br>"
+            email_schedule = self.get_schedule_for_id(convert_email_to_id(email))
+            is_valid = "invalid" # Will either be "valid" or "invalid"
 
-        multiple_verified = sorted([ k for k,v in verification.iteritems() if v['verified'] > 1])
+            if email_schedule:
+                is_valid = "valid"
+
+            html += email + " [" + str(len(verification[email]['unverified'])) + ", " + is_valid + "]<br>"
+
+        multiple_verified = sorted([ k for k,v in verification.iteritems() if len(v['verified']) > 1 ])
         # If there are ever any entries in multiple_verified, the DB is in a very bad state
         if multiple_verified:
-            html += "<h3>Attention! There are " + str(len(only_unverified)) + " emails with more than one verified record. The DB is REALLY messed up!</h3>"
+            html += "<h3>Attention! There are " + str(len(multiple_verified)) + " emails with more than one verified record. The DB is REALLY messed up!</h3>"
             for email in multiple_verified:
-                html += email + " [" + str(verification[email]['verified']) + ", " + str(verification[email]['unverified']) + "]<br>"
+                html += email + " [" + str(len(verification[email]['verified'])) + ", " + str(len(verification[email]['unverified'])) + "]<br>"
 
         html += """
         <script>
           function sendEmails(action) {
-            var data = new FormData();
-            data.append('action', action);
+            window.alert("Performing " + action + ", press OK to continue");
             xhr = new XMLHttpRequest();
-            xhr.open('POST', 'stats', true);
-            xhr.send(data);
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState == 4 && xhr.status == 200) {
+                setTimeout(reloadPage, 3000);
+              }
+            }
+            xhr.open('POST', 'admin/' + action, true);
+            xhr.send();
+          }
+          function reloadPage() {
+            location.reload();
           }
         </script>"""
         html += "<button type='button' onclick='sendEmails("
@@ -664,47 +671,58 @@ class StatsHandler(RegisterBaseHandler):
         html += ")'>Clean up duplicates of confirmed users</button>"
         self.response.write(html)
 
+    def read_db(self): # Returns the entire database as an dictionary
+
+        verification = {}
+        query = db.GqlQuery("SELECT * FROM User")
+        for query_result in query:
+            if not query_result.email in verification:
+                verification[query_result.email] = {'verified': [], 'unverified': []}
+            # Append the entity's key to the appropriate list
+            verification[query_result.email][self.get_key(query_result.verified)].append(query_result.key())
+
+        return verification
+
     def get_key(self, verified): # A function that takes either True or False and returns either "verified" or "unverified"
         if verified:
             return "verified"
         return "unverified"
 
-    def post(self):
+    def post(self, action):
         id = self.check_id()
         if id != "4093":
             self.error(403)
             return
 
-        if 0: # self.request.get('action') == "emailblast":
-            unverified_row_ids = {}
-            query = db.GqlQuery("SELECT * FROM User")
-            # Example of unverified_row_id:
-            # {'unconfirmed_account@eastsideprep.org': '5170986005561344',
-            # 'email_with_some_confirmed_and_some_not@eastsideprep.org': None}
+        if action == "emailblast":
+            logging.info("Email blasting")
+            self.send_email_blast()
+        elif action == "cleanup":
+            logging.info("Cleaning up db")
+            self.clean_up_db()
 
-            for query_result in query:
-                if not query_result.verified:
-                    if not query_result.email in unverified_row_ids:
-                        id_key = str(query_result.key().id())
-                        unverified_row_ids[query_result.email] = id_key
-                else: # query_result.verified
-                    unverified_row_ids[query_result.email] = "verified"
+    def send_email_blast(self):
+        verification = self.read_db()
+        # Generate unverified_row_ids
 
-            for attribute in unverified_row_ids:
-                if unverified_row_ids[attribute] != "verified":
-                    logging.info("Sending " + query_result.email + " a verification email")
-                    try:
-                        error = self.send_confirmation_email(query_result.email, id_key)
-                    except: # If email is ficticious or something else went wrong
-                        logging.error("Attempted to send an email to " + query_result.email + ", was unsuccessful")
+        for email in verification:
+            if len(verification[email]['verified']) == 0:
+                numerical_id = verification[email]['unverified'][0].id()
+                logging.info("Sending " + email + " a verification email")
+                try:
+                    error = self.send_confirmation_email(email, numerical_id)
+                except: # If email is ficticious or something else went wrong
+                    logging.error("Attempt to send an email to " + email + " was unsuccessful")
 
-        #elif self.request.get('action') == "cleanup":
-            #query = db.GqlQuery("SELECT * FROM User")
+    def clean_up_db(self):
+        verification = self.read_db()
+        for email in verification:
+            if len(verification[email]['verified']) == 1 and len(verification[email]['unverified']) >= 1:
+                db.delete(verification[email]['unverified'])
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/about', AboutHandler),
-    ('/stats', StatsHandler),
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/register', RegisterHandler),
@@ -715,5 +733,7 @@ app = webapp2.WSGIApplication([
     ('/period/(\w+)', PeriodHandler),
     ('/room/([\w\-]+)', RoomHandler),
     ('/teacher/([\w\-]+)', TeacherHandler),
-    ('/student/([\w\-]+)', StudentHandler)
+    ('/student/([\w\-]+)', StudentHandler),
+    ('/admin', AdminHandler),
+    ('/admin/(\w+)', AdminHandler)
 ], debug=True)
