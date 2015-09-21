@@ -277,8 +277,17 @@ class ConfirmHandler(BaseHandler):
     def get(self, encoded_row_id):
         row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
         logging.info(row_id)
-        user_obj_query = User.get_by_id(int(row_id)) # FIX Instead of email, use row id
-        if not user_obj_query.verified:
+        obj_to_confirm = User.get_by_id(int(row_id)) # FIX Instead of email, use row id
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1",obj_to_confirm.email)
+
+        verified = False # Whether the email has a verified entry in the DB
+
+        for user_obj in user_obj_query:
+            if user_obj.verified:
+                verified = True
+                break
+
+        if not verified:
             user_obj_query.verified = True
             user_obj_query.put()
             self.redirect("/")
