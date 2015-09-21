@@ -16,6 +16,7 @@
 #
 import webapp2
 import base64
+import copy
 import json
 import jinja2
 import os
@@ -409,29 +410,31 @@ class StudentHandler(BaseHandler):
         if id == str(DEMO_ID):
             id = "4093"
 
-        student_names = student_name.split("_") # Split student_name into firstname and lastname
+        # Split student_name into firstname and lastname
+        student_names = student_name.split("_")
         firstname = student_names[0].lower()
         lastname = student_names[1].lower()
         student_schedule = self.get_schedule_for_name(firstname, lastname)
-
         user_schedule = self.get_schedule_for_id(id)
 
-        if is_teacher_schedule(user_schedule): # If the user is a teacher
-            sanitized = student_schedule.copy()
+        if is_teacher_schedule(user_schedule):
+            # If the user is a teacher
+            response_schedule = copy.deepcopy(student_schedule)
         else:
-            sanitized = self.sanitize_schedule(student_schedule, user_schedule)
+            response_schedule = self.sanitize_schedule(student_schedule, user_schedule)
 
         # Generate email address
-        sanitized["email"] = generate_email(firstname, lastname)
+        response_schedule["email"] = generate_email(firstname, lastname)
 
-        self.response.write(json.dumps(sanitized))
+        self.response.write(json.dumps(response_schedule))
 
     def sanitize_schedule(self, orig_schedule, user_schedule):
-        schedule = orig_schedule.copy()
+        schedule = copy.deepcopy(orig_schedule)
         for i in range (0, len(schedule["classes"])):
-            if not self.has_class(user_schedule, schedule["classes"][i]): # If the class is not shared among the user and student
-
-                schedule["classes"][i] = self.sanitize_class(schedule["classes"][i]) # Sanitize the class
+            # If the class is not shared among the user and student
+            if not self.has_class(user_schedule, schedule["classes"][i]):
+                # Sanitize the class
+                schedule["classes"][i] = self.sanitize_class(schedule["classes"][i])
 
         return schedule
 
