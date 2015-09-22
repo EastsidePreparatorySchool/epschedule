@@ -292,7 +292,7 @@ class ConfirmHandler(BaseHandler):
         self.response.write("Something went wrong! There is no object with row_id " + row_id + " in the database")
 
 ERR_UNCONFIRMED_ACCOUNT = {
-  "error": "Your need to confirm your account. Didn't recieve a confirmation email? ",
+  "error": "Your need to confirm your account. Didn't receive a confirmation email? ",
   "action":"resendConfirmationEmail",
   "buttonText":"RESEND",
   "actionId":"button"
