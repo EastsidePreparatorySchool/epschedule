@@ -39,7 +39,14 @@
       cursor: pointer;
     }
     .card-header {
-      background: white;
+      background-color: white;
+      transition: background-color ease-in 300ms;
+    }
+    .card-header.current {
+      background-color: rgba(33, 150, 243, 0.25);
+    }
+    .card-header.no-transition {
+      transition: none;
     }
     .card-header ::content img {
       width: 48px;
@@ -146,15 +153,84 @@
   <script>
     Polymer({
       is: 'x-schedule',
-      properties: { entries: { notify: true } },
       listeners: {
         "transitionend": "transitionEnd"
       },
-      swiped: false,
-      dest: null,
+      date: null,     // a Date corresponding to the schedule date
+      entries: [],    // the actual class objects
+      timer: null,    // background timer for adjusting the 'current' item
+      offset: 0,      // for debugging; allows adjustment of current time
+      swiped: false,  // whether a complete swipe was done
+      dest: null,     // the destination of a swipe translation
       ready: function() {
         // disable vertical gestures on the card
-        document.querySelector('paper-material').setScrollDirection('y');
+        this.querySelector('paper-material').setScrollDirection('y');
+      },
+      // Update the data model with the specified date and class entries.
+      render: function(date, entries) {
+        this.date = date;
+        this.entries = entries;
+        var that = this;
+        setTimeout(function() { that.updateCurrentEntry(false); }, 0);
+      },
+      // Create a complete date from a partial date and a time string.
+      makeDate: function(date, timeStr) {
+        var ret = new Date(date.getTime());
+        var split = timeStr.split(':');
+        ret.setHours(split[0]);
+        ret.setMinutes(split[1]);
+        ret.setSeconds(0);  // TODO(juberti): shouldn't have to do this.
+        if (ret.getHours() < 7) {
+          ret.setHours(ret.getHours() + 12);
+        }
+        return ret;
+      },
+      // Returns a date object corresponding to what we think 'now' is.
+      getNow: function() {
+        var now = new Date();
+        now.setTime(now.getTime() + this.offset);
+        return now;
+      },
+      // Computes the current class and applies the 'current' style to it.
+      // Sets a timer for when the class ends to do this again.
+      updateCurrentEntry: function(enableTransition) {
+        var now = this.getNow();
+        var elements = this.querySelectorAll('.card-header');
+        var oldCurrent;
+        var newCurrent;
+        for (var i = 0; i < elements.length; ++i) {
+          if (!newCurrent && now.getDate() == this.date.getDate()) {
+            var item = this.$.entryList.itemForElement(elements[i]);
+            var startDate = this.makeDate(this.date, item.startTime);
+            var endDate = this.makeDate(this.date, item.endTime);
+            if (now < endDate) {
+              console.log('New current element: end time ' + endDate + ' now=' + now);
+              newCurrent = elements[i];
+            }
+          }
+          if (elements[i].classList.contains('current')) {
+            oldCurrent = elements[i];
+          }
+        }
+
+        if (oldCurrent) {
+          oldCurrent.classList.toggle('no-transition', !enableTransition);
+          oldCurrent.classList.remove('current');
+        }
+        if (newCurrent) {
+          newCurrent.classList.toggle('no-transition', !enableTransition);
+          newCurrent.classList.add('current');
+        } else {
+          endDate = this.makeDate(this.date, '00:00');
+        }
+
+        clearTimeout(this.timer);
+        if (now < endDate) {
+          console.log('Setting updateCurrentEntry timer for ' + endDate);
+          var that = this;
+          this.timer = setTimeout(
+              function() { that.updateSelectedEntry(true); }, endDate - now);
+        }
       },
       handleTrack: function(e) {
         switch (e.detail.state) {
@@ -176,11 +252,7 @@
         }
       },
       enableTransition: function(enable) {
-        if (enable) {
-          this.classList.remove('no-transition');
-        } else {
-          this.classList.add('no-transition');
-        }
+        this.classList.toggle('no-transition', !enable);
       },
       translateX: function(x) {
         var s = this.style;

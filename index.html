@@ -407,10 +407,9 @@
         todaySchedule.push(scheduleObj);
     }
 
-    scheduleElement.entries = todaySchedule;
+    scheduleElement.render(new Date(dateObj.getTime()), todaySchedule);
 
     if (type == "full") {
-      scheduleElement.entries = todaySchedule;
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
         var name = orig_name.replace(" ", "_");
