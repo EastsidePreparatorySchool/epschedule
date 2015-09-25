@@ -78,6 +78,7 @@ class HandlerTestBase(unittest.TestCase):
 
     def getSentEmails(self):
         return get_sent_emails()
+
     def getPathFromEmail(self, email):
         body = email.html
         href = body.find('href="https://')
@@ -88,6 +89,7 @@ class HandlerTestBase(unittest.TestCase):
         return url[slash:]
 
 class RegisterHandlerTest(HandlerTestBase):
+    # Tests normal account creation and confirmation.
     def testCreateAndConfirm(self):
         response = self.sendPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
@@ -106,6 +108,7 @@ class RegisterHandlerTest(HandlerTestBase):
         self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
 
+    # Tests creating two account entries and verifying the second.
     def testCreateTwiceAndConfirm(self):
         response = self.sendPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
@@ -127,9 +130,11 @@ class RegisterHandlerTest(HandlerTestBase):
         response = self.sendGetRequest(path)
         self.assertEqual(response.status_int, 302)
         users = self.queryUsersByEmail(TEST_EMAIL)
-        self.assertEqual(len(users), 1) # TODO(juberti): ensure this bug got fixed
+        self.assertEqual(len(users), 1) # TODO(juberti): figure out how this is possible
         self.assertTrue(users[0].verified)
 
+    # Tests creating an account and trying to confirm it twice.
+    # The second confirm should fail.
     def testCreateAndConfirmTwice(self):
         response = self.sendPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
@@ -150,6 +155,8 @@ class RegisterHandlerTest(HandlerTestBase):
         self.assertEqual(len(users), 1) # BUG: writing records on resend
         self.assertTrue(users[0].verified)
 
+    # Tests creating an account, resending the confirm email, and then
+    # successfully confirming with the second email.
     def testCreateAndResend(self):
         response = self.sendPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
