@@ -390,11 +390,11 @@ class ClassHandler(BaseHandler):
     def get_class_schedule(self, class_name, period):
         schedules = get_schedule_data()
         result = None
-        for schedule in schedules:                                    # Load up each student's schedule
-            for classobj in schedule['classes']:                      # For each one of their classes
-                if classobj['name'].lower().replace(" ", "_").replace(".", "") == class_name.lower() and \
-                   classobj['period'].lower() == period.lower():       # Check class name and period match
-                    if classobj['teacher'] != "":                     # If they aren't a student (teacher names will be added later)
+        for schedule in schedules: # Load up each student's schedule
+            for classobj in schedule['classes']: # For each one of their classes
+                if self.strip_punctuation(classobj['name'].lower()) == class_name.lower() and \
+                   classobj['period'].lower() == period.lower(): # Check class name and period match
+                    if classobj['teacher'] != "": # If they aren't a student (teacher names will be added later)
                         if not result:
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
@@ -417,6 +417,15 @@ class ClassHandler(BaseHandler):
 
         # schedule = self.get_schedule(self.request.get('id'))
         self.response.write(json.dumps(self.get_class_schedule(class_name, period)))
+    def strip_punctuation(self, text):
+        punctuation = set(string.punctuation + " ")
+        clean_text = "";
+        for character in text:
+            if character not in punctuation:
+                clean_text += character
+            else:
+                clean_text += "_"
+        return clean_text
 
 class StudentHandler(BaseHandler):
     def get(self, student_name):
