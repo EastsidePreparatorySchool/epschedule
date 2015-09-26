@@ -25,7 +25,6 @@ import logging
 import datetime
 from google.appengine.ext import db
 from google.appengine.ext import vendor
-from google.appengine.api import mail
 
 # Add any libraries installed in the "lib" folder.
 vendor.add('lib')
@@ -54,6 +53,17 @@ class User(db.Model):
     password = db.StringProperty(required=True)
     join_date = db.DateTimeProperty()
     verified = db.BooleanProperty(required=True)
+
+email_test = False
+sent_emails = []
+def set_email_test(enabled):
+    global email_test
+    global sent_emails
+    email_test = enabled
+    sent_emails = []
+
+def get_sent_emails():
+    return sent_emails
 
 def convert_email_to_id(email):
     email = email.lower()
@@ -214,12 +224,20 @@ class RegisterBaseHandler(BaseHandler):
         message.set_from("The EPSchedule Team <gavin.uberti@gmail.com>")
         message.add_to(email)
         logging.info("Sending " + email + " a link to " + email_properties['url'])
-        client.send(message)
+        if not email_test:
+            client.send(message)
+        else:
+            sent_emails.append(message)
 
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
         encoded_row_id = base64.urlsafe_b64encode(encrypted_row_id)
-        url = "https://www.epschedule.com/confirm/" + encoded_row_id
+        # Use the correct URL depending on where the app is running.
+        scheme = 'https'
+        host = os.getenv('HTTP_HOST')
+        if host.find('localhost') == 0:
+            scheme = 'http'
+        url = "{0}://{1}/confirm/{2}".format(scheme, host, encoded_row_id)
         return url
 
 class RegisterHandler (RegisterBaseHandler):
@@ -731,7 +749,7 @@ app = webapp2.WSGIApplication([
     ('/register', RegisterHandler),
     ('/resend', ResendEmailHandler),
     ('/changepassword', ChangePasswordHandler),
-    ('/confirm/([\w\-]+)', ConfirmHandler),
+    ('/confirm/([\w\-=]+)', ConfirmHandler),
     ('/class/([\w\-]+)/([\w\-]+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
     ('/room/([\w\-]+)', RoomHandler),
