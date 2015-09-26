@@ -28,6 +28,7 @@
   <link rel="import" href="html/schedule_lite.html">
 
   <script>
+
   function signOut() {
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -80,6 +81,13 @@
     }
     xhr.open("POST", "changepassword", true);
     xhr.send(data);
+  }
+  window.onhashchange = function() {
+    console.log("|" + window.location.hash + "|");
+    console.log(!(window.location.hash));
+    if (!(window.location.hash)) {
+      closePopup();
+    }
   }
   document.onkeydown = function(event) {
     if (pages.selected == 0) {  // no popup
@@ -187,9 +195,18 @@
     xhr.open("GET", url, true);
     xhr.send();
   }
+  function updateHash(type, name) {
+    if (typeof type === 'undefined') {
+      window.location.hash = '';
+    } else {
+      name = name.toLowerCase();
+      window.location.hash = '' + type + '/' + name;
+    }
+  }
   function renderRoom(roomObj) {
     /*renderToast("Please allow EPSchedule to use your current location"); // TODO check to see if browser allows geolocation by default*/
     // Bug here that causes latitude and longitude of google map tag to not exist
+    updateHash("room", roomObj.name);
     var popup = document.getElementById("popup");
     var container = document.getElementById("popupContainer");
     console.log("Latitude = " + roomObj.latitude);
@@ -218,6 +235,7 @@
     return html;
   }
   function renderTeacher(teacherObj) {
+    updateHash("teacher", teacherObj.firstname + "_" + teacherObj.lastname)
     var popupContainer = document.getElementById("popupContainer");
     var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
     imgSrc = imgSrc + teacherObj.lastname + ".jpg";
@@ -242,6 +260,7 @@
     }, 0);
   }
   function renderStudent(studentObj) {
+    updateHash("student", studentObj.firstname + "_" + studentObj.lastname);
     var name = studentObj.firstname + " " + studentObj.lastname;
     var email = studentObj.email;
     email = email.toLowerCase();
@@ -265,6 +284,7 @@
     console.log(periodObj);
   }
   function renderSchedule(dateObj, schedule, type, scheduleElement) {
+    updateHash();
     var school;
     if (schedule.grade <= 8) {
       school = "MS";
