@@ -133,7 +133,7 @@ class RegisterHandlerTest(HandlerTestBase):
         response = self.sendGetRequest(path)
         self.assertEqual(response.status_int, 302)
         users = self.queryUsersByEmail(TEST_EMAIL)
-        self.assertEqual(len(users), 1) # TODO(juberti): figure out how this is possible
+        self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
 
     # Tests creating an account and trying to confirm it twice.
