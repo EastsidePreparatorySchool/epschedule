@@ -153,9 +153,9 @@ class RegisterHandlerTest(HandlerTestBase):
         self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
         response = self.sendGetRequest(path)
-        self.assertEqual(response.status_int, 400)  # BUG: returning 200 but already confirmed...
+        self.assertEqual(response.status_int, 400)
         users = self.queryUsersByEmail(TEST_EMAIL)
-        self.assertEqual(len(users), 1) # BUG: writing records on resend
+        self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
 
     # Tests creating an account, resending the confirm email, and then
