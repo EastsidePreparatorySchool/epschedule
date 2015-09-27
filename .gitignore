@@ -47,6 +47,7 @@ Temporary Items
 *.key
 bower_components
 node_modules
+test_modules
 crawler.bat
 schedules
 schedules.json
