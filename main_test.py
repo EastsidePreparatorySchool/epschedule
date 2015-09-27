@@ -4,13 +4,13 @@ import unittest
 import webtest
 
 # Hook the builtin open method to load test files instead of real ones.
-import __builtin__ as builtins
-real_open = builtins.open
+import __builtin__
+real_open = __builtin__.open
 def test_open(filename, mode):
     if filename in [ 'crypto.key', 'api_keys.json', 'id_table.json', 'schedule.json' ]:
         filename = 'test_' + filename
     return real_open(filename, mode)
-builtins.open = test_open
+__builtin__.open = test_open
 
 import main  # module being tested
 from main import User
