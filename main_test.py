@@ -3,11 +3,17 @@ import json
 import unittest
 import webtest
 
+# Hook the builtin open method to load test files instead of real ones.
+import __builtin__ as builtins
+real_open = builtins.open
+def test_open(filename, mode):
+    if filename in [ 'crypto.key', 'api_keys.json', 'id_table.json', 'schedule.json' ]:
+        filename = 'test_' + filename
+    return real_open(filename, mode)
+builtins.open = test_open
+
 import main  # module being tested
 from main import User
-from main import set_email_test
-from main import get_sent_emails
-# TODO(juberti): better way to hook sendgrid?
 
 from google.appengine.api import datastore
 from google.appengine.ext import db
@@ -25,6 +31,12 @@ INVALID_EPS_EMAIL = 'invalid@eastsideprep.org'
 TEST_PASSWORD = 'testtest'
 BAD_PASSWORD = 'badbadbad'
 
+class FakeSendGridClient():
+    def __init__(self):
+        self.emails = []
+    def send(self, email):
+        self.emails.append(email)
+
 class HandlerTestBase(unittest.TestCase):
     def setUp(self):
         # Test setup boilerplate.
@@ -32,10 +44,10 @@ class HandlerTestBase(unittest.TestCase):
         self.testbed.activate()
         self.testbed.init_datastore_v3_stub()
         self.test_app = webtest.TestApp(main.app)
-        set_email_test(True) # hmmm
+        self.fake_sendgrid = FakeSendGridClient()
+        main.SendGridClient.send = self.fake_sendgrid.send
 
     def tearDown(self):
-        set_email_test(False) # hmmm
         self.testbed.deactivate()
 
     def sendGetRequest(self, path, expect_errors = False):
@@ -77,7 +89,7 @@ class HandlerTestBase(unittest.TestCase):
         return users
 
     def getSentEmails(self):
-        return get_sent_emails()
+        return self.fake_sendgrid.emails
 
     def getPathFromEmail(self, email):
         body = email.html

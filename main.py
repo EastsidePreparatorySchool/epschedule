@@ -40,7 +40,7 @@ def open_data_file(filename):
 def load_data_file(filename):
     return open_data_file(filename).read()
 def load_json_file(filename):
-    return json.load(open_data_file(filename)
+    return json.load(open_data_file(filename))
 
 DEMO_USER = "demo"
 DEMO_ID = "9999"
@@ -61,17 +61,6 @@ class User(db.Model):
     password = db.StringProperty(required=True)
     join_date = db.DateTimeProperty()
     verified = db.BooleanProperty(required=True)
-
-email_test = False
-sent_emails = []
-def set_email_test(enabled):
-    global email_test
-    global sent_emails
-    email_test = enabled
-    sent_emails = []
-
-def get_sent_emails():
-    return sent_emails
 
 def convert_email_to_id(email):
     email = email.lower()
@@ -243,10 +232,7 @@ class RegisterBaseHandler(BaseHandler):
         message.set_from("The EPSchedule Team <gavin.uberti@gmail.com>")
         message.add_to(email)
         logging.info("Sending " + email + " a link to " + email_properties['url'])
-        if not email_test:
-            client.send(message)
-        else:
-            sent_emails.append(message)
+        client.send(message)
 
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
