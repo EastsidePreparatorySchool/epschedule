@@ -1,0 +1,76 @@
+[{
+	"term": "1",
+	"classes": [
+		{"teacher": "Steve Fassino", "period": "A", "name": "Greasy Burger Eating 7/8", "room": "HB-103"},
+		{"room": "", "period": "B", "name": "Free Period", "teacher": ""},
+		{"room": "", "period": "C", "name": "Free Period", "teacher": ""},
+		{"room": "", "period": "D", "name": "Free Period", "teacher": ""},
+		{"room": "", "period": "E", "name": "Free Period", "teacher": ""},
+		{"room": "", "period": "F", "name": "Free Period", "teacher": ""},
+		{"room": "", "period": "G", "name": "Free Period", "teacher": ""},
+		{"room": "", "period": "H", "name": "Free Period", "teacher": ""}
+	],
+	"firstname": "Todd",
+	"grade": 5,
+	"lastname": "Tu.rtle",
+	"id": "9998",
+	"advisorlastname": "Fassino",
+	"advisorfirstname": "Steve"
+},
+
+{"term": "1", "classes": [
+{"teacher": "Steve Fassino", "period": "A", "name": "Greasy Burger Eating 7/8", "room": "HB-103"},
+{"room": "", "period": "B", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "C", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "D", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "E", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "F", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "G", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "H", "name": "Free Period", "teacher": ""}],
+"firstname": "Chirpy", "grade": 5, "lastname": "Cricket Creeper", "id": "9997", "advisorlastname": "Fassino", "advisorfirstname": "Steve"},
+
+{"term": "1", "classes": [
+{"teacher": "", "period": "A", "name": "Greasy Burger Eating 7/8", "room": "HB-103"},
+{"room": "", "period": "B", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "C", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "D", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "E", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "F", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "G", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "H", "name": "Free Period", "teacher": ""}],
+"firstname": "Steve", "grade": null, "lastname": "Fassino", "id": "9996", "advisorlastname": null, "advisorfirstname": null},
+
+{"term": "1", "classes": [
+{"teacher": "Sam Uzwack", "period": "A", "name": "Fast French Fry Frying 7&8", "room": "HB-104"},
+{"room": "", "period": "B", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "C", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "D", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "E", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "F", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "G", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "H", "name": "Free Period", "teacher": ""}],
+"firstname": "Bulky", "grade": 5, "lastname": "Bison", "id": "9995", "advisorlastname": "Dodd", "advisorfirstname": "Katie"},
+
+{"term": "1", "classes": [
+{"teacher": "Sam Uzwack", "period": "A", "name": "Fast French Fry Frying 7&8", "room": "HB-104"},
+{"room": "", "period": "B", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "C", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "D", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "E", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "F", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "G", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "H", "name": "Free Period", "teacher": ""}],
+"firstname": "Gassy", "grade": 5, "lastname": "Grasshopper", "id": "9994", "advisorlastname": "Dodd", "advisorfirstname": "Katie"},
+
+{"term": "1", "classes": [
+{"teacher": "", "period": "A", "name": "Fast French Fry Frying 7&8", "room": "HB-104"},
+{"room": "", "period": "B", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "C", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "D", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "E", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "F", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "G", "name": "Free Period", "teacher": ""},
+{"room": "", "period": "H", "name": "Free Period", "teacher": ""}],
+"firstname": "Sam", "grade": null, "lastname": "Uzwack", "id": "9993", "advisorlastname": null, "advisorfirstname": null},
+
+]

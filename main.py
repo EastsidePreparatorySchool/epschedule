@@ -90,6 +90,17 @@ def normalize_name(name):
     name = name.replace(".", "")
     return name
 
+def normalize_classname(text):
+    text = text.lower()
+    punctuation = set(string.punctuation + " ")
+    clean_text = ""
+    for character in text:
+        if character not in punctuation:
+            clean_text += character
+        else:
+            clean_text += "_"
+    return clean_text
+
 def generate_email(firstname, lastname):
     firstname = normalize_name(firstname)
     lastname = normalize_name(lastname)
@@ -398,11 +409,11 @@ class ClassHandler(BaseHandler):
     def get_class_schedule(self, class_name, period):
         schedules = get_schedule_data()
         result = None
-        for schedule in schedules:                                    # Load up each student's schedule
-            for classobj in schedule['classes']:                      # For each one of their classes
-                if classobj['name'].lower().replace(" ", "_").replace(".", "") == class_name.lower() and \
-                   classobj['period'].lower() == period.lower():       # Check class name and period match
-                    if classobj['teacher'] != "":                     # If they aren't a student (teacher names will be added later)
+        for schedule in schedules: # Load up each student's schedule
+            for classobj in schedule['classes']: # For each one of their classes
+                if normalize_classname(classobj['name']) == class_name.lower() and \
+                   classobj['period'].lower() == period.lower(): # Check class name and period match
+                    if classobj['teacher'] != "": # If they aren't a student (teacher names will be added later)
                         if not result:
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
@@ -598,9 +609,6 @@ class MainHandler(BaseHandler):
                 return schedule
         return None
 
-    def get_days(self):
-        return DAYS
-
     def send_login_response(self):
         template_values = {}
         template = JINJA_ENVIRONMENT.get_template('login.html')
@@ -618,9 +626,8 @@ class MainHandler(BaseHandler):
             id = "4093"
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
-        days = self.get_days()
         if schedule is not None:
-            template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(days)}
+            template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(DAYS)}
             template = JINJA_ENVIRONMENT.get_template('index.html')
             self.response.write(template.render(template_values))
         else:

@@ -36,4 +36,4 @@ for image in os.listdir("../teacher_photos"):
             top = (img.height - img.width) / 2
             top = apply_exception(str(image), top, "y", img.height)
             img.crop(0, top, width=img.width, height=img.width)
-        img.save(filename='..\\teacher_photos_fullsize\\' + os.path.splitext(image)[0] + '.jpg')
+        img.save(filename='../teacher_photos_fullsize/' + os.path.splitext(image)[0] + '.jpg')
