@@ -25,6 +25,11 @@
       background-color: #efefef;
       margin-bottom: 1px;
     }
+    .date {
+      padding: 16px;
+      font-size: 14px;
+      color: gray;
+    }
     .card {
       margin-bottom: 1px;
       background: white;
@@ -70,6 +75,7 @@
   </style>
   <template>
     <paper-material elevation="2" on-track="handleTrack">
+      <div class="date">{{dateString}}</div>
       <template is="dom-repeat" id="entryList" items="{{entries}}">
         <div class$="{{computeHidden(item)}}" layout="" horizontal="" center>
           <div class$="{{computeShared(item)}}"></div>
@@ -96,7 +102,10 @@
   <script>
     Polymer({
       is: 'schedule-lite',
-      properties: { entries: { notify: true } },
+      properties: {
+        entries: { notify: true },
+        dateString: String
+      },
       computeShared: function(item) {
         if (item.shared) {
           return "check";
@@ -105,12 +114,12 @@
         }
       },
       computeHidden: function(item) {
-        var classes = "card"
+        var classes = "card";
 
         if (item.name == "Hidden") {
-          classes += " hidden"
+          classes += " hidden";
         }
-        return classes
+        return classes;
       },
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
