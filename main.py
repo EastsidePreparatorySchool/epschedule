@@ -25,7 +25,6 @@ import logging
 import datetime
 from google.appengine.ext import db
 from google.appengine.ext import vendor
-from google.appengine.api import mail
 
 # Add any libraries installed in the "lib" folder.
 vendor.add('lib')
@@ -38,12 +37,13 @@ from sendgrid import Mail
 
 DEMO_USER = "demo"
 DEMO_ID = "9999"
-CRYPTO_KEY = open('crypto.key', 'rb').read()
-API_KEYS = json.load(open('api_keys.json', 'rb'))
-ID_TABLE = json.load(open('id_table.json', 'rb'))
-SCHEDULE_INFO = json.load(open('schedules.json', 'rb'))
-LAT_LON_COORDS = json.load(open('room_locations.json', 'rb'))
-BIOS = json.load(open('bios.json', 'rb'))
+CRYPTO_KEY = open('data/crypto.key', 'rb').read()
+API_KEYS = json.load(open('data/api_keys.json', 'rb'))
+ID_TABLE = json.load(open('data/id_table.json', 'rb'))
+SCHEDULE_INFO = json.load(open('data/schedules.json', 'rb'))
+LAT_LON_COORDS = json.load(open('data/room_locations.json', 'rb'))
+BIOS = json.load(open('data/bios.json', 'rb'))
+DAYS = json.load(open('data/exceptions.json'))
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -71,6 +71,17 @@ def normalize_name(name):
     name = name.replace(" ", "")
     name = name.replace(".", "")
     return name
+
+def normalize_classname(text):
+    text = text.lower()
+    punctuation = set(string.punctuation + " ")
+    clean_text = ""
+    for character in text:
+        if character not in punctuation:
+            clean_text += character
+        else:
+            clean_text += "_"
+    return clean_text
 
 def generate_email(firstname, lastname):
     firstname = normalize_name(firstname)
@@ -173,6 +184,13 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
                 return schedule
         return None
 
+    def get_components_filename(self):
+        if self.request.get('vulcanize', '1') == '0':
+            filename = 'components.html'
+        else:
+            filename = 'vulcanized.html'
+        return filename
+
 ERR_NO_ACCOUNT_TO_SEND = {
   "error": "There is no account with that username and password",
   "action":"switchToRegister",
@@ -214,12 +232,20 @@ class RegisterBaseHandler(BaseHandler):
         message.set_from("The EPSchedule Team <gavin.uberti@gmail.com>")
         message.add_to(email)
         logging.info("Sending " + email + " a link to " + email_properties['url'])
-        client.send(message)
+        if not email_test:
+            client.send(message)
+        else:
+            sent_emails.append(message)
 
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
         encoded_row_id = base64.urlsafe_b64encode(encrypted_row_id)
-        url = "https://www.epschedule.com/confirm/" + encoded_row_id
+        # Use the correct URL depending on where the app is running.
+        scheme = 'https'
+        host = os.getenv('HTTP_HOST')
+        if host.find('localhost') == 0:
+            scheme = 'http'
+        url = "{0}://{1}/confirm/{2}".format(scheme, host, encoded_row_id)
         return url
 
 class RegisterHandler (RegisterBaseHandler):
@@ -277,19 +303,32 @@ class ResendEmailHandler(RegisterBaseHandler):
 class ConfirmHandler(BaseHandler):
     def get(self, encoded_row_id):
         row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
-        logging.info(row_id)
-        user_obj_query = User.get_by_id(int(row_id)) # FIX Instead of email, use row id
-        if not user_obj_query.verified:
-            user_obj_query.verified = True
-            user_obj_query.put()
-            self.redirect("/")
-            return
-            # TODO redirect user to main page
-        else:
+
+        obj_to_confirm = User.get_by_id(int(row_id)) # Note: Instead of email, use row id
+
+        if not obj_to_confirm: # If entity referenced in the email was deleted
             self.response.write("This account has already been confirmed!")
-            # TODO redirect user to schedule page
+            self.error(400)
             return
-        self.response.write("Something went wrong! There is no object with row_id " + row_id + " in the database")
+        elif obj_to_confirm.verified:
+            self.response.write("This row id has already been confirmed!")
+            self.error(400)
+            return
+
+        obj_to_confirm.verified = True
+        obj_to_confirm.put()
+
+        self.redirect("/")
+
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", obj_to_confirm.email)
+        for user_obj in user_obj_query:
+            if user_obj.key() != obj_to_confirm.key():
+                if not user_obj.verified:
+                    logging.info("Found extra unverified account under " + obj_to_confirm.email)
+                    user_obj.delete()
+                else:
+                    logging.error("Found multiple verified accounts under " + obj_to_confirm.email)
+                    logging.error("You should fix that, or add some code to prevent it in the future")
 
 ERR_UNCONFIRMED_ACCOUNT = {
   "error": "Your need to confirm your account. Didn't receive a confirmation email? ",
@@ -372,11 +411,11 @@ class ClassHandler(BaseHandler):
     def get_class_schedule(self, class_name, period):
         schedules = get_schedule_data()
         result = None
-        for schedule in schedules:                                    # Load up each student's schedule
-            for classobj in schedule['classes']:                      # For each one of their classes
-                if classobj['name'].lower().replace(" ", "_").replace(".", "") == class_name.lower() and \
-                   classobj['period'].lower() == period.lower():       # Check class name and period match
-                    if classobj['teacher'] != "":                     # If they aren't a student (teacher names will be added later)
+        for schedule in schedules: # Load up each student's schedule
+            for classobj in schedule['classes']: # For each one of their classes
+                if normalize_classname(classobj['name']) == class_name.lower() and \
+                   classobj['period'].lower() == period.lower(): # Check class name and period match
+                    if classobj['teacher'] != "": # If they aren't a student (teacher names will be added later)
                         if not result:
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
@@ -572,13 +611,8 @@ class MainHandler(BaseHandler):
                 return schedule
         return None
 
-    def get_days(self):
-        file = open('exceptions.json', 'rb')
-        days = json.load(file)
-        return days
-
     def send_login_response(self):
-        template_values = {}
+        template_values = { 'components': self.get_components_filename() }
         template = JINJA_ENVIRONMENT.get_template('login.html')
         self.response.write(template.render(template_values))
 
@@ -594,9 +628,12 @@ class MainHandler(BaseHandler):
             id = "4093"
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
-        days = self.get_days()
         if schedule is not None:
-            template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(days)}
+            template_values = { \
+              'schedule': json.dumps(schedule), \
+              'days': json.dumps(DAYS), \
+              'components': self.get_components_filename() \
+            }
             template = JINJA_ENVIRONMENT.get_template('index.html')
             self.response.write(template.render(template_values))
         else:
@@ -604,8 +641,9 @@ class MainHandler(BaseHandler):
 
 class AboutHandler(BaseHandler):
     def get(self):
+        template_values = { 'components': self.get_components_filename() }
         template = JINJA_ENVIRONMENT.get_template('about.html')
-        self.response.write(template.render({}))
+        self.response.write(template.render(template_values))
 
 class AdminHandler(RegisterBaseHandler):
     def get(self):
@@ -731,7 +769,7 @@ app = webapp2.WSGIApplication([
     ('/register', RegisterHandler),
     ('/resend', ResendEmailHandler),
     ('/changepassword', ChangePasswordHandler),
-    ('/confirm/([\w\-]+)', ConfirmHandler),
+    ('/confirm/([\w\-=]+)', ConfirmHandler),
     ('/class/([\w\-]+)/([\w\-]+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
     ('/room/([\w\-]+)', RoomHandler),

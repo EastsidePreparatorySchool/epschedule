@@ -7,7 +7,7 @@ exceptions = json.load(exceptions_file)
 
 for image in os.listdir("../teacher_photos"):
     print "Cropping " + str(image)
-    with Image(filename=('..\\teacher_photos\\' + str(image))) as img:
+    with Image(filename=('../teacher_photos/' + str(image))) as img:
         if (img.width > img.height):
             img.resize((96 * img.width) / img.height, 96)
             border = (img.width - 96) / 2
@@ -27,4 +27,4 @@ for image in os.listdir("../teacher_photos"):
         img.crop(cropparams[0] + x_except, cropparams[1] + y_except, img.width - cropparams[0] + x_except, img.height - cropparams[1] + y_except)
         img.convert('jpeg')
 
-        img.save(filename='..\\96x96_photos\\' + os.path.splitext(image)[0] + '.jpg')
+        img.save(filename='../96x96_photos/' + os.path.splitext(image)[0] + '.jpg')

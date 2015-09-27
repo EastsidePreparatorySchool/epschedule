@@ -164,6 +164,6 @@ for person_num in range (0, len(students)):
                         if students[person_num]['classes'][class_num]['period'] == taught_class['period'] and students[person_num]['classes'][class_num]['room'] == taught_class['room'] and students[person_num]['classes'][class_num]['name'] == taught_class['name']:
                             students[person_num]['classes'][class_num]['teacher'] = teacher['firstname'] + " " + teacher['lastname']
 
-file = open('..\\schedules.json', 'w')
+file = open('../data/schedules.json', 'w')
 file.write(json.dumps(students))
 #print students  #Print the list of schedules
