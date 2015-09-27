@@ -48,7 +48,7 @@ def load_json_file(filename):
 
 DEMO_USER = "demo"
 DEMO_ID = "9999"
-CRYPTO_KEY = load_data_file('crypto.key')
+CRYPTO_KEY = load_data_file('crypto.key').strip()
 API_KEYS = load_json_file('api_keys.json')
 ID_TABLE = load_json_file('id_table.json')
 SCHEDULE_INFO = load_json_file('schedules.json')

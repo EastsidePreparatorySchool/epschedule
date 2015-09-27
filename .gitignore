@@ -44,7 +44,6 @@ Temporary Items
 
 *.pyc
 *.csr
-*.key
 bower_components
 node_modules
 test_modules
@@ -53,6 +52,7 @@ schedules
 schedules.json
 id_table.json
 api_keys.json
+crypto.key
 teacher_photos
 96x96_photos
 lib
