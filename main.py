@@ -39,7 +39,6 @@ def open_data_file(filename):
     fullname = 'data/' + filename
     if not os.path.exists(fullname):
         fullname = 'data/test_' + filename
-        print fullname
     return open(fullname, 'rb')
 def load_data_file(filename):
     return open_data_file(filename).read()
