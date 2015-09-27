@@ -128,10 +128,14 @@
       date.setDate(date.getDate() - 2);
     }
   }
-  function dateToString(date) {
+  function dayOfWeekToString(day) {
+    // No Sunday or Saturday, since no school...
     var DAYS = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", ""];
-    day = DAYS[date.getDay()];
-    return (day + ', ' + (date.getMonth() + 1) + "/" + date.getDate());
+    return DAYS[day];
+  }
+  function dateToString(date) {
+    return (dayOfWeekToString(date.getDay()) + ', ' +
+        (date.getMonth() + 1) + "/" + date.getDate());
   }
 
   function updateMainSchedule() {
@@ -306,10 +310,13 @@
       school = "US";
     }
 
-    var scheduleObj;
     var todaySchedule = [];
+    var scheduleObj;
+    var day = dayOfWeekToString(dateObj.getDay());
     for (var exception = 0; exception < days[1].length; exception++) { // Handles exceptions, also handles special weekend schedules
-        if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
+        if (days[1][exception]["day"] == dateObj.getDate() &&
+            days[1][exception]["month"] == (dateObj.getMonth() + 1) &&
+            days[1][exception]["year"] == dateObj.getFullYear()) {
             day = days[1][exception]["schedule"];
         }
     }
