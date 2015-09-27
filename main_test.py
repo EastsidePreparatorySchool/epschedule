@@ -3,15 +3,6 @@ import json
 import unittest
 import webtest
 
-# Hook the builtin open method to load test files instead of real ones.
-import __builtin__
-real_open = __builtin__.open
-def test_open(filename, mode):
-    if filename in [ 'crypto.key', 'api_keys.json', 'id_table.json', 'schedule.json' ]:
-        filename = 'test_' + filename
-    return real_open(filename, mode)
-__builtin__.open = test_open
-
 import main  # module being tested
 from main import User
 
@@ -24,7 +15,7 @@ vendor.add('lib')
 
 from py_bcrypt import bcrypt
 
-TEST_EMAIL = 'guberti@eastsideprep.org'
+TEST_EMAIL = 'tturtle@eastsideprep.org'
 NON_EPS_EMAIL = 'test@example.org'
 UNKNOWN_EPS_EMAIL = 'unknown@eastsideprep.org'
 INVALID_EPS_EMAIL = 'invalid@eastsideprep.org'
