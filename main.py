@@ -303,19 +303,32 @@ class ResendEmailHandler(RegisterBaseHandler):
 class ConfirmHandler(BaseHandler):
     def get(self, encoded_row_id):
         row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
-        logging.info(row_id)
-        user_obj_query = User.get_by_id(int(row_id)) # FIX Instead of email, use row id
-        if not user_obj_query.verified:
-            user_obj_query.verified = True
-            user_obj_query.put()
-            self.redirect("/")
-            return
-            # TODO redirect user to main page
-        else:
+
+        obj_to_confirm = User.get_by_id(int(row_id)) # Note: Instead of email, use row id
+
+        if not obj_to_confirm: # If entity referenced in the email was deleted
             self.response.write("This account has already been confirmed!")
-            # TODO redirect user to schedule page
+            self.error(400)
             return
-        self.response.write("Something went wrong! There is no object with row_id " + row_id + " in the database")
+        elif obj_to_confirm.verified:
+            self.response.write("This row id has already been confirmed!")
+            self.error(400)
+            return
+
+        obj_to_confirm.verified = True
+        obj_to_confirm.put()
+
+        self.redirect("/")
+
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", obj_to_confirm.email)
+        for user_obj in user_obj_query:
+            if user_obj.key() != obj_to_confirm.key():
+                if not user_obj.verified:
+                    logging.info("Found extra unverified account under " + obj_to_confirm.email)
+                    user_obj.delete()
+                else:
+                    logging.error("Found multiple verified accounts under " + obj_to_confirm.email)
+                    logging.error("You should fix that, or add some code to prevent it in the future")
 
 ERR_UNCONFIRMED_ACCOUNT = {
   "error": "Your need to confirm your account. Didn't receive a confirmation email? ",

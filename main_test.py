@@ -152,7 +152,7 @@ class RegisterHandlerTest(HandlerTestBase):
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
-        response = self.sendGetRequest(path)
+        response = self.sendGetRequest(path, True)
         self.assertEqual(response.status_int, 400)
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 1)
