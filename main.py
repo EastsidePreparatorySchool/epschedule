@@ -55,6 +55,17 @@ class User(db.Model):
     join_date = db.DateTimeProperty()
     verified = db.BooleanProperty(required=True)
 
+email_test = False
+sent_emails = []
+def set_email_test(enabled):
+    global email_test
+    global sent_emails
+    email_test = enabled
+    sent_emails = []
+
+def get_sent_emails():
+    return sent_emails
+
 def convert_email_to_id(email):
     email = email.lower()
     pieces = string.split(email, "@")
