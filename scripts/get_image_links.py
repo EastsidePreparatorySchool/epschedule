@@ -118,6 +118,6 @@ for mainchar in range (0, len(mainhtml)):
         #    except:
         #        print "Open connection was forcibly closed by a remote host, trying to download again"
 print "Images downloaded, now cropping them"
-writefile = open('../bios.json', 'wb')
+writefile = open('../data/bios.json', 'wb')
 writefile.write(json.dumps(bios))
 #import create_teacher_icons #Runs create teacher icons
