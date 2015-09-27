@@ -1,8 +1,11 @@
 import datetime
 import json
+import os
 import unittest
 import webtest
 
+# Hack to force the app to load test data.
+os.environ['EPSCHEDULE_USE_TEST_DATA'] = '1'
 import main  # module being tested
 from main import User
 

@@ -35,22 +35,23 @@ from slowaes import aes
 from sendgrid import SendGridClient
 from sendgrid import Mail
 
-def open_data_file(filename):
-    fullname = 'data/' + filename
-    if not os.path.exists(fullname):
+def open_data_file(filename, has_test_data = False):
+    if has_test_data and 'EPSCHEDULE_USE_TEST_DATA' in os.environ:
         fullname = 'data/test_' + filename
+    else:
+        fullname = 'data/' + filename
     return open(fullname, 'rb')
-def load_data_file(filename):
-    return open_data_file(filename).read()
-def load_json_file(filename):
-    return json.load(open_data_file(filename))
+def load_data_file(filename, has_test_data = False):
+    return open_data_file(filename, has_test_data).read()
+def load_json_file(filename, has_test_data = False):
+    return json.load(open_data_file(filename, has_test_data))
 
 DEMO_USER = "demo"
 DEMO_ID = "9999"
-CRYPTO_KEY = load_data_file('crypto.key').strip()
-API_KEYS = load_json_file('api_keys.json')
-ID_TABLE = load_json_file('id_table.json')
-SCHEDULE_INFO = load_json_file('schedules.json')
+CRYPTO_KEY = load_data_file('crypto.key', True).strip()
+API_KEYS = load_json_file('api_keys.json', True)
+ID_TABLE = load_json_file('id_table.json', True)
+SCHEDULE_INFO = load_json_file('schedules.json', True)
 LAT_LON_COORDS = load_json_file('room_locations.json')
 BIOS = load_json_file('bios.json')
 DAYS = load_json_file('exceptions.json')
