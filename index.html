@@ -456,8 +456,7 @@
   document.addEventListener('WebComponentsReady', function() {
     var scheduleElement = document.getElementById('mainschedule');
     scheduleElement.addEventListener("swiped", scheduleSwiped, false);
-    var date = new Date();
-    renderSchedule(date, userSchedule, "full", scheduleElement);
+    renderSchedule(globalDate, userSchedule, "full", scheduleElement);
   });
 
   </script>
