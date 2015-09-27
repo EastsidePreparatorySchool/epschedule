@@ -37,12 +37,13 @@ from sendgrid import Mail
 
 DEMO_USER = "demo"
 DEMO_ID = "9999"
-CRYPTO_KEY = open('crypto.key', 'rb').read()
-API_KEYS = json.load(open('api_keys.json', 'rb'))
-ID_TABLE = json.load(open('id_table.json', 'rb'))
-SCHEDULE_INFO = json.load(open('schedules.json', 'rb'))
-LAT_LON_COORDS = json.load(open('room_locations.json', 'rb'))
-BIOS = json.load(open('bios.json', 'rb'))
+CRYPTO_KEY = open('data/crypto.key', 'rb').read()
+API_KEYS = json.load(open('data/api_keys.json', 'rb'))
+ID_TABLE = json.load(open('data/id_table.json', 'rb'))
+SCHEDULE_INFO = json.load(open('data/schedules.json', 'rb'))
+LAT_LON_COORDS = json.load(open('data/room_locations.json', 'rb'))
+BIOS = json.load(open('data/bios.json', 'rb'))
+DAYS = json.load(open('data/exceptions.json'))
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -590,11 +591,6 @@ class MainHandler(BaseHandler):
                 return schedule
         return None
 
-    def get_days(self):
-        file = open('exceptions.json', 'rb')
-        days = json.load(file)
-        return days
-
     def send_login_response(self):
         template_values = {}
         template = JINJA_ENVIRONMENT.get_template('login.html')
@@ -612,9 +608,8 @@ class MainHandler(BaseHandler):
             id = "4093"
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
-        days = self.get_days()
         if schedule is not None:
-            template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(days)}
+            template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(DAYS)}
             template = JINJA_ENVIRONMENT.get_template('index.html')
             self.response.write(template.render(template_values))
         else:
