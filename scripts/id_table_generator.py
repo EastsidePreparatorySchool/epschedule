@@ -25,5 +25,5 @@ for filename in files:
     lastname = filenamelist[2]
     output.append([make_username(firstname, lastname), studentid])
 
-file = open('..\\id_table.json', 'wb')
+file = open('../data/id_table.json', 'wb')
 file.write(json.dumps(output))
