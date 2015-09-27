@@ -35,14 +35,22 @@ from slowaes import aes
 from sendgrid import SendGridClient
 from sendgrid import Mail
 
+def open_data_file(filename):
+    return open('data/' + filename, 'rb')
+def load_data_file(filename):
+    return open_data_file(filename).read()
+def load_json_file(filename):
+    return json.load(open_data_file(filename)
+
 DEMO_USER = "demo"
 DEMO_ID = "9999"
-CRYPTO_KEY = open('crypto.key', 'rb').read()
-API_KEYS = json.load(open('api_keys.json', 'rb'))
-ID_TABLE = json.load(open('id_table.json', 'rb'))
-SCHEDULE_INFO = json.load(open('schedules.json', 'rb'))
-LAT_LON_COORDS = json.load(open('room_locations.json', 'rb'))
-BIOS = json.load(open('bios.json', 'rb'))
+CRYPTO_KEY = load_data_file('crypto.key')
+API_KEYS = load_json_file('api_keys.json')
+ID_TABLE = load_json_file('id_table.json')
+SCHEDULE_INFO = load_json_file('schedules.json')
+LAT_LON_COORDS = load_json_file('room_locations.json')
+BIOS = load_json_file('bios.json')
+DAYS = load_json_file('exceptions.json')
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -591,9 +599,7 @@ class MainHandler(BaseHandler):
         return None
 
     def get_days(self):
-        file = open('exceptions.json', 'rb')
-        days = json.load(file)
-        return days
+        return DAYS
 
     def send_login_response(self):
         template_values = {}
