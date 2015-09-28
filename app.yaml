@@ -43,7 +43,7 @@ libraries:
 skip_files:
 - ^(.*/)?.*\.pdf$
 - ^(.*/)?.*\.py[co]$
-- ^bower_components$
+#- ^bower_components$
 - ^node_modules$
 - \.git$
 - ^(.*/)?.*\.gitignore$
