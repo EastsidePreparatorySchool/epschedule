@@ -1,13 +1,13 @@
 import datetime
 import json
+import os
 import unittest
 import webtest
 
+# Hack to force the app to load test data.
+os.environ['EPSCHEDULE_USE_TEST_DATA'] = '1'
 import main  # module being tested
 from main import User
-from main import set_email_test
-from main import get_sent_emails
-# TODO(juberti): better way to hook sendgrid?
 
 from google.appengine.api import datastore
 from google.appengine.ext import db
@@ -18,12 +18,18 @@ vendor.add('lib')
 
 from py_bcrypt import bcrypt
 
-TEST_EMAIL = 'guberti@eastsideprep.org'
+TEST_EMAIL = 'tturtle@eastsideprep.org'
 NON_EPS_EMAIL = 'test@example.org'
 UNKNOWN_EPS_EMAIL = 'unknown@eastsideprep.org'
 INVALID_EPS_EMAIL = 'invalid@eastsideprep.org'
 TEST_PASSWORD = 'testtest'
 BAD_PASSWORD = 'badbadbad'
+
+class FakeSendGridClient():
+    def __init__(self):
+        self.emails = []
+    def send(self, email):
+        self.emails.append(email)
 
 class HandlerTestBase(unittest.TestCase):
     def setUp(self):
@@ -32,10 +38,10 @@ class HandlerTestBase(unittest.TestCase):
         self.testbed.activate()
         self.testbed.init_datastore_v3_stub()
         self.test_app = webtest.TestApp(main.app)
-        set_email_test(True) # hmmm
+        self.fake_sendgrid = FakeSendGridClient()
+        main.SendGridClient.send = self.fake_sendgrid.send
 
     def tearDown(self):
-        set_email_test(False) # hmmm
         self.testbed.deactivate()
 
     def sendGetRequest(self, path, expect_errors = False):
@@ -77,7 +83,7 @@ class HandlerTestBase(unittest.TestCase):
         return users
 
     def getSentEmails(self):
-        return get_sent_emails()
+        return self.fake_sendgrid.emails
 
     def getPathFromEmail(self, email):
         body = email.html
@@ -130,7 +136,7 @@ class RegisterHandlerTest(HandlerTestBase):
         response = self.sendGetRequest(path)
         self.assertEqual(response.status_int, 302)
         users = self.queryUsersByEmail(TEST_EMAIL)
-        self.assertEqual(len(users), 1) # TODO(juberti): figure out how this is possible
+        self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
 
     # Tests creating an account and trying to confirm it twice.
@@ -150,9 +156,9 @@ class RegisterHandlerTest(HandlerTestBase):
         self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
         response = self.sendGetRequest(path, True)
-        self.assertEqual(response.status_int, 400)  # BUG: returning 200 but already confirmed...
+        self.assertEqual(response.status_int, 400)
         users = self.queryUsersByEmail(TEST_EMAIL)
-        self.assertEqual(len(users), 1) # BUG: writing records on resend
+        self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
 
     # Tests creating an account, resending the confirm email, and then

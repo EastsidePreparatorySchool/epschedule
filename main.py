@@ -35,15 +35,26 @@ from slowaes import aes
 from sendgrid import SendGridClient
 from sendgrid import Mail
 
+def open_data_file(filename, has_test_data = False):
+    if has_test_data and 'EPSCHEDULE_USE_TEST_DATA' in os.environ:
+        fullname = 'data/test_' + filename
+    else:
+        fullname = 'data/' + filename
+    return open(fullname, 'rb')
+def load_data_file(filename, has_test_data = False):
+    return open_data_file(filename, has_test_data).read()
+def load_json_file(filename, has_test_data = False):
+    return json.load(open_data_file(filename, has_test_data))
+
 DEMO_USER = "demo"
 DEMO_ID = "9999"
-CRYPTO_KEY = open('data/crypto.key', 'rb').read()
-API_KEYS = json.load(open('data/api_keys.json', 'rb'))
-ID_TABLE = json.load(open('data/id_table.json', 'rb'))
-SCHEDULE_INFO = json.load(open('data/schedules.json', 'rb'))
-LAT_LON_COORDS = json.load(open('data/room_locations.json', 'rb'))
-BIOS = json.load(open('data/bios.json', 'rb'))
-DAYS = json.load(open('data/exceptions.json'))
+CRYPTO_KEY = load_data_file('crypto.key', True).strip()
+API_KEYS = load_json_file('api_keys.json', True)
+ID_TABLE = load_json_file('id_table.json', True)
+SCHEDULE_INFO = load_json_file('schedules.json', True)
+LAT_LON_COORDS = load_json_file('room_locations.json')
+BIOS = load_json_file('bios.json')
+DAYS = load_json_file('exceptions.json')
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -54,17 +65,6 @@ class User(db.Model):
     password = db.StringProperty(required=True)
     join_date = db.DateTimeProperty()
     verified = db.BooleanProperty(required=True)
-
-email_test = False
-sent_emails = []
-def set_email_test(enabled):
-    global email_test
-    global sent_emails
-    email_test = enabled
-    sent_emails = []
-
-def get_sent_emails():
-    return sent_emails
 
 def convert_email_to_id(email):
     email = email.lower()
@@ -236,10 +236,7 @@ class RegisterBaseHandler(BaseHandler):
         message.set_from("The EPSchedule Team <gavin.uberti@gmail.com>")
         message.add_to(email)
         logging.info("Sending " + email + " a link to " + email_properties['url'])
-        if not email_test:
-            client.send(message)
-        else:
-            sent_emails.append(message)
+        client.send(message)
 
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
