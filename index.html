@@ -85,8 +85,18 @@
 
   var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
-  var globalDate = new Date();
+  var globalDate = getInitialDate();
 
+  function getInitialDate() {
+    date = new Date();
+    switch(date.getDay()) { // Falling through is intentional here
+      case 6: // If Saturday, move the date forward twice
+        date.setDate(date.getDate() + 1);
+      case 0: // If Sunday, move the date forward once
+        date.setDate(date.getDate() + 1);
+    }
+    return date;
+  }
   function dateBack() {
     adjustDate(globalDate, -1);
     updateMainSchedule();
