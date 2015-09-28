@@ -195,6 +195,13 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
                 return schedule
         return None
 
+    def get_components_filename(self):
+        if self.request.get('vulcanize', '1') == '0':
+            filename = 'components.html'
+        else:
+            filename = 'vulcanized.html'
+        return filename
+
 ERR_NO_ACCOUNT_TO_SEND = {
   "error": "There is no account with that username and password",
   "action":"switchToRegister",
@@ -613,7 +620,7 @@ class MainHandler(BaseHandler):
         return None
 
     def send_login_response(self):
-        template_values = {}
+        template_values = { 'components': self.get_components_filename() }
         template = JINJA_ENVIRONMENT.get_template('login.html')
         self.response.write(template.render(template_values))
 
@@ -630,7 +637,11 @@ class MainHandler(BaseHandler):
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
         if schedule is not None:
-            template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(DAYS)}
+            template_values = { \
+              'schedule': json.dumps(schedule), \
+              'days': json.dumps(DAYS), \
+              'components': self.get_components_filename() \
+            }
             template = JINJA_ENVIRONMENT.get_template('index.html')
             self.response.write(template.render(template_values))
         else:
@@ -638,8 +649,9 @@ class MainHandler(BaseHandler):
 
 class AboutHandler(BaseHandler):
     def get(self):
+        template_values = { 'components': self.get_components_filename() }
         template = JINJA_ENVIRONMENT.get_template('about.html')
-        self.response.write(template.render({}))
+        self.response.write(template.render(template_values))
 
 class AdminHandler(RegisterBaseHandler):
     def get(self):
