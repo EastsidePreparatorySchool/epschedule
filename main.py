@@ -35,15 +35,26 @@ from slowaes import aes
 from sendgrid import SendGridClient
 from sendgrid import Mail
 
+def open_data_file(filename, has_test_data = False):
+    if has_test_data and 'EPSCHEDULE_USE_TEST_DATA' in os.environ:
+        fullname = 'data/test_' + filename
+    else:
+        fullname = 'data/' + filename
+    return open(fullname, 'rb')
+def load_data_file(filename, has_test_data = False):
+    return open_data_file(filename, has_test_data).read()
+def load_json_file(filename, has_test_data = False):
+    return json.load(open_data_file(filename, has_test_data))
+
 DEMO_USER = "demo"
 DEMO_ID = "9999"
-CRYPTO_KEY = open('data/crypto.key', 'rb').read()
-API_KEYS = json.load(open('data/api_keys.json', 'rb'))
-ID_TABLE = json.load(open('data/id_table.json', 'rb'))
-SCHEDULE_INFO = json.load(open('data/schedules.json', 'rb'))
-LAT_LON_COORDS = json.load(open('data/room_locations.json', 'rb'))
-BIOS = json.load(open('data/bios.json', 'rb'))
-DAYS = json.load(open('data/exceptions.json'))
+CRYPTO_KEY = load_data_file('crypto.key', True).strip()
+API_KEYS = load_json_file('api_keys.json', True)
+ID_TABLE = load_json_file('id_table.json', True)
+SCHEDULE_INFO = load_json_file('schedules.json', True)
+LAT_LON_COORDS = load_json_file('room_locations.json')
+BIOS = load_json_file('bios.json')
+DAYS = load_json_file('exceptions.json')
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
@@ -54,17 +65,6 @@ class User(db.Model):
     password = db.StringProperty(required=True)
     join_date = db.DateTimeProperty()
     verified = db.BooleanProperty(required=True)
-
-email_test = False
-sent_emails = []
-def set_email_test(enabled):
-    global email_test
-    global sent_emails
-    email_test = enabled
-    sent_emails = []
-
-def get_sent_emails():
-    return sent_emails
 
 def convert_email_to_id(email):
     email = email.lower()
@@ -195,6 +195,13 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
                 return schedule
         return None
 
+    def get_components_filename(self):
+        if self.request.get('vulcanize', '1') == '0':
+            filename = 'components.html'
+        else:
+            filename = 'vulcanized.html'
+        return filename
+
 ERR_NO_ACCOUNT_TO_SEND = {
   "error": "There is no account with that username and password",
   "action":"switchToRegister",
@@ -236,10 +243,7 @@ class RegisterBaseHandler(BaseHandler):
         message.set_from("The EPSchedule Team <gavin.uberti@gmail.com>")
         message.add_to(email)
         logging.info("Sending " + email + " a link to " + email_properties['url'])
-        if not email_test:
-            client.send(message)
-        else:
-            sent_emails.append(message)
+        client.send(message)
 
     def get_confirmation_link(self, row_id):
         encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
@@ -307,19 +311,32 @@ class ResendEmailHandler(RegisterBaseHandler):
 class ConfirmHandler(BaseHandler):
     def get(self, encoded_row_id):
         row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
-        logging.info(row_id)
-        user_obj_query = User.get_by_id(int(row_id)) # FIX Instead of email, use row id
-        if not user_obj_query.verified:
-            user_obj_query.verified = True
-            user_obj_query.put()
-            self.redirect("/")
-            return
-            # TODO redirect user to main page
-        else:
+
+        obj_to_confirm = User.get_by_id(int(row_id)) # Note: Instead of email, use row id
+
+        if not obj_to_confirm: # If entity referenced in the email was deleted
             self.response.write("This account has already been confirmed!")
-            # TODO redirect user to schedule page
+            self.error(400)
             return
-        self.response.write("Something went wrong! There is no object with row_id " + row_id + " in the database")
+        elif obj_to_confirm.verified:
+            self.response.write("This row id has already been confirmed!")
+            self.error(400)
+            return
+
+        obj_to_confirm.verified = True
+        obj_to_confirm.put()
+
+        self.redirect("/")
+
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", obj_to_confirm.email)
+        for user_obj in user_obj_query:
+            if user_obj.key() != obj_to_confirm.key():
+                if not user_obj.verified:
+                    logging.info("Found extra unverified account under " + obj_to_confirm.email)
+                    user_obj.delete()
+                else:
+                    logging.error("Found multiple verified accounts under " + obj_to_confirm.email)
+                    logging.error("You should fix that, or add some code to prevent it in the future")
 
 ERR_UNCONFIRMED_ACCOUNT = {
   "error": "Your need to confirm your account. Didn't receive a confirmation email? ",
@@ -603,7 +620,7 @@ class MainHandler(BaseHandler):
         return None
 
     def send_login_response(self):
-        template_values = {}
+        template_values = { 'components': self.get_components_filename() }
         template = JINJA_ENVIRONMENT.get_template('login.html')
         self.response.write(template.render(template_values))
 
@@ -620,7 +637,11 @@ class MainHandler(BaseHandler):
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
         if schedule is not None:
-            template_values = {'schedule':json.dumps(schedule), 'days':json.dumps(DAYS)}
+            template_values = { \
+              'schedule': json.dumps(schedule), \
+              'days': json.dumps(DAYS), \
+              'components': self.get_components_filename() \
+            }
             template = JINJA_ENVIRONMENT.get_template('index.html')
             self.response.write(template.render(template_values))
         else:
@@ -628,8 +649,9 @@ class MainHandler(BaseHandler):
 
 class AboutHandler(BaseHandler):
     def get(self):
+        template_values = { 'components': self.get_components_filename() }
         template = JINJA_ENVIRONMENT.get_template('about.html')
-        self.response.write(template.render({}))
+        self.response.write(template.render(template_values))
 
 class AdminHandler(RegisterBaseHandler):
     def get(self):

@@ -10,13 +10,17 @@ module.exports = function(grunt) {
       runPythonTests: {
         command: 'python ./build/run_python_tests.py .'
       },
+      vulcanize: {
+        command: 'vulcanize --inline-scripts --inline-css --strip-comments components.html > vulcanized.html'
+      },
     },
   });
 
   grunt.loadNpmTasks('grunt-shell');
 
   // set default tasks to run when grunt is called without parameters
-  grunt.registerTask('default', ['runPythonTests']);
+  grunt.registerTask('default', ['vulcanize'], ['runPythonTests']);
 
+  grunt.registerTask('vulcanize', ['shell:vulcanize']);
   grunt.registerTask('runPythonTests', ['shell:runPythonTests']);
 };
