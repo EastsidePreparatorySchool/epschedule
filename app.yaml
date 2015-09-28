@@ -9,24 +9,24 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
-- url: /schedule\.html
-  static_files: schedule.html
-  upload: schedule\.html
+- url: /components\.html
+  static_files: components.html
+  upload: components\.html
+
+- url: /vulcanized\.html
+  static_files: vulcanized.html
+  upload: vulcanized\.html
 
 - url: /images
   static_dir: images
-
 - url: /bower_components
   static_dir: bower_components
-
 - url: /html
   static_dir: html
 - url: /96x96_photos
   static_dir: 96x96_photos
-
 - url: /misc_photos
   static_dir: misc_photos
-
 - url: /teacher_photos_fullsize
   static_dir: teacher_photos_fullsize
 
@@ -43,6 +43,7 @@ libraries:
 skip_files:
 - ^(.*/)?.*\.pdf$
 - ^(.*/)?.*\.py[co]$
+- ^bower_components$
 - ^node_modules$
 - \.git$
 - ^(.*/)?.*\.gitignore$
