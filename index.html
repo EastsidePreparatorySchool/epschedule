@@ -65,9 +65,9 @@
   document.onkeydown = function(event) {
     if (pages.selected == 0) {  // no popup
       if (event.keyCode == 37) {  // left
-          dateBack();
+        dateBack();
       } else if (event.keyCode == 39) {  // right
-          dateForward();
+        dateForward();
       }
     } else if (pages.selected == 1) {  // no popup
       if (event.keyCode == 27) {  // escape
@@ -86,22 +86,52 @@
 
   var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
-  var globalDate = new Date();
+  var globalDate = getInitialDate();
 
-  function dateBack() {
-    if (globalDate.getDay() == 1) {
-        globalDate.setDate(globalDate.getDate()-2);
+  function getInitialDate() {
+    date = new Date();
+    switch(date.getDay()) { // Falling through is intentional here
+      case 6: // If Saturday, move the date forward twice
+        date.setDate(date.getDate() + 1);
+      case 0: // If Sunday, move the date forward once
+        date.setDate(date.getDate() + 1);
     }
-    globalDate.setDate(globalDate.getDate()-1);
-    var scheduleElement = document.getElementById('mainschedule');
-    renderSchedule(globalDate, userSchedule, "full", scheduleElement);
+    return date;
+  }
+  function dateBack() {
+    adjustDate(globalDate, -1);
+    updateMainSchedule();
   }
   function dateForward() {
-    if (globalDate.getDay() == 5) {
-        globalDate.setDate(globalDate.getDate()+2);
+    adjustDate(globalDate, 1);
+    updateMainSchedule();
+  }
+  function copyDate(date) {
+    return new Date(date.getTime());
+  }
+  function adjustDate(date, delta) {
+    date.setDate(date.getDate() + delta);
+    if (date.getDay() == 6 && delta == 1) {
+      // jump from Saturday to Monday
+      date.setDate(date.getDate() + 2);
+    } else if (date.getDay() == 0 && delta == -1) {
+      // jump from Sunday back to Friday
+      date.setDate(date.getDate() - 2);
     }
-    globalDate.setDate(globalDate.getDate()+1);
+  }
+  function dayOfWeekToString(day) {
+    // No Sunday or Saturday, since no school...
+    var DAYS = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", ""];
+    return DAYS[day];
+  }
+  function dateToString(date) {
+    return dayOfWeekToString(date.getDay()) + ', ' +
+        (date.getMonth() + 1) + "/" + date.getDate();
+  }
+
+  function updateMainSchedule() {
     var scheduleElement = document.getElementById('mainschedule');
+    renderDate(globalDate);
     renderSchedule(globalDate, userSchedule, "full", scheduleElement);
   }
   function renderToast(text) {
@@ -214,12 +244,10 @@
         renderBio(teacherObj.bio) + '</div></div></paper-material>' +
         '<schedule-lite id="teacherschedule"></schedule-lite>' +
         '</div>';
-
     // Wait for HTML to be parsed/applied before trying to show the schedule.
     // Without this, Firefox/Safari don't display the schedule.
     setTimeout(function() {
-      var scheduleElement = document.getElementById('teacherschedule');
-      renderSchedule(globalDate, teacherObj, "lite", scheduleElement);
+      finishLiteSchedule(document.getElementById('teacherschedule'), teacherObj);
     }, 0);
   }
   function renderStudent(studentObj) {
@@ -237,13 +265,33 @@
         '<span class="email">Email ' + studentObj.firstname + '</span></a></p></div></div></paper-material>' +
         '<schedule-lite id="studentschedule"></schedule-lite>' +
         '</div>';
+    // Wait for HTML to be parsed/applied before trying to show the schedule.
+    // Without this, Firefox/Safari don't display the schedule.
     setTimeout(function() {
-      var scheduleElement = document.getElementById('studentschedule');
-      renderSchedule(globalDate, studentObj, "lite", scheduleElement);
+      finishLiteSchedule(document.getElementById('studentschedule'), studentObj);
     }, 0);
   }
+
+  function finishLiteSchedule(scheduleElement, otherUserObj) {
+    scheduleElement.date = copyDate(globalDate);
+    scheduleElement.addEventListener("swiped", function(e) {
+      adjustDate(scheduleElement.date,
+          (e.detail.direction == 'left') ? 1 : -1);
+      updateLiteSchedule(scheduleElement, otherUserObj);
+    });
+    updateLiteSchedule(scheduleElement, otherUserObj);
+  }
+  function updateLiteSchedule(scheduleElement, otherUserObj) {
+    scheduleElement.dateString = dateToString(scheduleElement.date);
+    renderSchedule(scheduleElement.date, otherUserObj, "lite", scheduleElement);
+  }
+
   function renderPeriod(periodObj) {
     console.log(periodObj);
+  }
+  function renderDate(dateObj) {
+    var daySpan = document.getElementById("day");
+    daySpan.firstChild.textContent = dateToString(dateObj);
   }
   function renderSchedule(dateObj, schedule, type, scheduleElement) {
     var school;
@@ -252,35 +300,10 @@
     } else {
       school = "US";
     }
-    switch (dateObj.getDay()) { // Spits out the day of the week as a string
-        case 6: // Intentionall fallthrough - requesting a Sunday or Saturday schedule should spit out a Monday schedule
-          dateObj.setDate(dateObj.getDate() + 1);
-        case 0:
-          dateObj.setDate(dateObj.getDate() + 1);
-        case 1:
-            var day = "Monday";
-            break;
-        case 2:
-            var day = "Tuesday";
-            break;
-        case 3:
-            var day = "Wednesday";
-            break;
-        case 4:
-            var day = "Thursday";
-            break;
-        case 5:
-            var day = "Friday";
-            break;
-    }
 
-    // TODO: replace this gross HTML munging with data binding
-    var dateText = (day + ', ' + (dateObj.getMonth() + 1) + "/" + dateObj.getDate());
-    var daySpan = document.getElementById("day");
-    daySpan.removeChild(daySpan.firstChild);
-    daySpan.appendChild(document.createTextNode(dateText));
+    var todaySchedule = [];
     var scheduleObj;
-    todaySchedule = [];
+    var day = dayOfWeekToString(dateObj.getDay());
     for (var exception = 0; exception < days[1].length; exception++) { // Handles exceptions, also handles special weekend schedules
         if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
             day = days[1][exception]["schedule"];
@@ -437,8 +460,7 @@
   document.addEventListener('WebComponentsReady', function() {
     var scheduleElement = document.getElementById('mainschedule');
     scheduleElement.addEventListener("swiped", scheduleSwiped, false);
-    var date = new Date();
-    renderSchedule(date, userSchedule, "full", scheduleElement);
+    updateMainSchedule();
   });
 
   </script>
