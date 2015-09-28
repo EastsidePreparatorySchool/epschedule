@@ -45,6 +45,7 @@ skip_files:
 - ^(.*/)?.*\.py[co]$
 #- ^bower_components$
 - ^node_modules$
+- ^test_modules$
 - \.git$
 - ^(.*/)?.*\.gitignore$
 - ^(.*/)?.*\.md$
