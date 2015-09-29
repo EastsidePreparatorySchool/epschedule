@@ -144,7 +144,6 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         return id
 
     def check_password(self, email, password):  # Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
-        logging.info("Checking passwords")
         account_confirmed = False
         known_username = False
 
@@ -159,7 +158,6 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         for query_result in user_obj_query:
             known_username = True
             test_hashed_password = bcrypt.hashpw(password, query_result.password)
-            logging.info("original: " + query_result.password + " test: " + test_hashed_password)
             password_match = test_hashed_password == query_result.password
             if not password_match:
                 return ERR_FORGOT_PASSWORD
@@ -246,7 +244,7 @@ class RegisterBaseHandler(BaseHandler):
         client.send(message)
 
     def get_confirmation_link(self, row_id):
-        encrypted_row_id = aes.encryptData(CRYPTO_KEY, row_id)
+        encrypted_row_id = aes.encryptData(CRYPTO_KEY, str(row_id))
         encoded_row_id = base64.urlsafe_b64encode(encrypted_row_id)
         # Use the correct URL depending on where the app is running.
         scheme = 'https'
@@ -290,7 +288,6 @@ class RegisterHandler (RegisterBaseHandler):
         user_obj.join_date = datetime.datetime.now()
         db.put(user_obj)
         row_id = str(user_obj.key().id())
-        logging.info("row id = " + row_id)
         self.send_confirmation_email(email, row_id)
         self.response.write(json.dumps(REGISTER_SUCCESS))
 
@@ -408,7 +405,6 @@ class ChangePasswordHandler(BaseHandler):
         for id_obj in ID_TABLE:
             if str(id_obj[1]) == id:
                 return id_obj[0]
-        logging.info("Found no email for id!");
         return None
 
 class LogoutHandler(BaseHandler):
@@ -437,7 +433,6 @@ class ClassHandler(BaseHandler):
         result['students'].sort(key=lambda s: s['firstname'])
         return result
     def get(self, class_name, period):
-        logging.info("get()")
         # Get the cookie
         id = self.check_id()
         if id is None:
@@ -520,12 +515,9 @@ class PeriodHandler(BaseHandler):
             if schedule['id'] == id:
                 user_schedule = schedule
                 break
-        logging.info("Getting here!")
         for class_obj in user_schedule['classes']: # Find out which class the user has then
-            logging.info("Is " + class_obj['period'] + " equal to " + period + "? I guess not!")
             if class_obj['period'] == period:
                 dataobj['currentclass'] = class_obj
-                logging.info("Writing to currentclass")
                 break
 
         for schedule in schedule_data:
@@ -744,10 +736,8 @@ class AdminHandler(RegisterBaseHandler):
             return
 
         if action == "emailblast":
-            logging.info("Email blasting")
             self.send_email_blast()
         elif action == "cleanup":
-            logging.info("Cleaning up db")
             self.clean_up_db()
 
     def send_email_blast(self):
@@ -757,11 +747,15 @@ class AdminHandler(RegisterBaseHandler):
         for email in verification:
             if len(verification[email]['verified']) == 0:
                 numerical_id = verification[email]['unverified'][0].id()
-                logging.info("Sending " + email + " a verification email")
                 try:
-                    error = self.send_confirmation_email(email, numerical_id)
-                except: # If email is ficticious or something else went wrong
-                    logging.error("Attempt to send an email to " + email + " was unsuccessful")
+                    email_schedule = self.get_schedule_for_id(convert_email_to_id(email))
+                    if email_schedule:
+                        error = self.send_confirmation_email(email, numerical_id)
+                        logging.info("Successfully sent an email to " + email)
+                    else:
+                        logging.info("There is no valid schedule associated with " + email + ", no email was sent")
+                except Exception as e: # If email is ficticious or something else went wrong
+                    logging.error("Attempt to send an email to " + email + " was unsuccessful, ", e)
 
     def clean_up_db(self):
         verification = self.read_db()
