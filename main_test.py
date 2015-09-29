@@ -246,7 +246,7 @@ class AdminHandlerTest(HandlerTestBase):
 
         self.sendEmailPasswordPostRequest('/login', ADMIN_EMAIL, ADMIN_PASSWORD)
         response = self.sendPostRequest('/admin/emailblast')
-        self.assertNoError(response)
+        self.assertEqual(response.status_int, 200)
 
         emails = self.getSentEmails()
         emails.sort(key=lambda mail: mail.to[0])
