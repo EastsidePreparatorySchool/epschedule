@@ -19,10 +19,12 @@ vendor.add('lib')
 from py_bcrypt import bcrypt
 
 TEST_EMAIL = 'tturtle@eastsideprep.org'
+ADMIN_EMAIL = 'suzwack@eastsideprep.org'
 NON_EPS_EMAIL = 'test@example.org'
 UNKNOWN_EPS_EMAIL = 'unknown@eastsideprep.org'
 INVALID_EPS_EMAIL = 'invalid@eastsideprep.org'
 TEST_PASSWORD = 'testtest'
+ADMIN_PASSWORD = 'adminpass'
 BAD_PASSWORD = 'badbadbad'
 
 class FakeSendGridClient():
@@ -49,9 +51,12 @@ class HandlerTestBase(unittest.TestCase):
         return self.test_app.get(path, headers = {'User-Agent': 'Safari'},
                                  expect_errors = expect_errors)
 
-    def sendPostRequest(self, path, email, password):
+    def sendEmailPasswordPostRequest(self, path, email, password):
         body = 'email={0}&password={1}'.format(email, password)
         return self.test_app.post(path, body, headers = {'User-Agent': 'Safari'})
+
+    def sendPostRequest(self, path):
+        return self.test_app.post(path)
 
     def assertNoError(self, response):
         obj = json.loads(response.body)
@@ -97,7 +102,7 @@ class HandlerTestBase(unittest.TestCase):
 class RegisterHandlerTest(HandlerTestBase):
     # Tests normal account creation and confirmation.
     def testCreateAndConfirm(self):
-        response = self.sendPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         users = self.queryUsersByEmail(TEST_EMAIL)
@@ -116,7 +121,7 @@ class RegisterHandlerTest(HandlerTestBase):
 
     # Tests creating two account entries and verifying the second.
     def testCreateTwiceAndConfirm(self):
-        response = self.sendPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         users = self.queryUsersByEmail(TEST_EMAIL)
@@ -124,7 +129,7 @@ class RegisterHandlerTest(HandlerTestBase):
         self.assertFalse(users[0].verified)
         self.assertEqual(len(self.getSentEmails()), 1)
         path = self.getPathFromEmail(self.getSentEmails()[0])
-        response = self.sendPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         users = self.queryUsersByEmail(TEST_EMAIL)
@@ -142,7 +147,7 @@ class RegisterHandlerTest(HandlerTestBase):
     # Tests creating an account and trying to confirm it twice.
     # The second confirm should fail.
     def testCreateAndConfirmTwice(self):
-        response = self.sendPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         users = self.queryUsersByEmail(TEST_EMAIL)
@@ -164,12 +169,12 @@ class RegisterHandlerTest(HandlerTestBase):
     # Tests creating an account, resending the confirm email, and then
     # successfully confirming with the second email.
     def testCreateAndResend(self):
-        response = self.sendPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         self.assertEqual(len(self.getSentEmails()), 1)
         self.assertEqual(self.getSentEmails()[0].to[0], TEST_EMAIL)
-        response = self.sendPostRequest('/resend', TEST_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/resend', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         self.assertEqual(len(self.getSentEmails()), 2)
@@ -182,55 +187,72 @@ class RegisterHandlerTest(HandlerTestBase):
         self.assertTrue(users[0].verified)
 
     def testCreateWithNonEpsEmail(self):
-        response = self.sendPostRequest('/register', NON_EPS_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/register', NON_EPS_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
     def testCreateWithNonexistentEpsEmail(self):
-        response = self.sendPostRequest('/register', UNKNOWN_EPS_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/register', UNKNOWN_EPS_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
     def testCreateWithInvalidEpsEmail(self):
-        response = self.sendPostRequest('/register', INVALID_EPS_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/register', INVALID_EPS_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
 class LoginHandlerTest(HandlerTestBase):
     def testLogin(self):
         self.addVerifiedUser()
-        response = self.sendPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         self.assertNoError(response)
         self.assertNotEqual(response.headers['Set-Cookie'], None)
 
     def testLoginWithNoAccount(self):
-        response = self.sendPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
     def testLoginWithUnconfirmedAccount(self):
         self.addUnverifiedUser()
-        response = self.sendPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
     def testLoginWithConfirmedAndUnconfirmedAccount(self):
         self.addVerifiedUser()
         self.addUnverifiedUser()
-        response = self.sendPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
         self.assertEqual(response.status_int, 200)
         self.assertNoError(response)
 
     def testLoginWithBadPassword(self):
         self.addVerifiedUser()
-        response = self.sendPostRequest('/login', TEST_EMAIL, BAD_PASSWORD)
+        response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, BAD_PASSWORD)
         self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
 class AdminHandlerTest(HandlerTestBase):
     def testLoadAdminPage(self):
         pass
+
+    def testResendVerificationEmails(self):
+        now = datetime.datetime.now()
+        self.addUser(ADMIN_EMAIL, ADMIN_PASSWORD, now, True)
+        self.addUser("bbison@eastsideprep.org", "bison4ever", now, False)
+        self.addUser("ggrasshopper@eastsideprep.org", "hophophop", now, False)
+        self.addUser("doesnotexist@eastsideprep.org", "doesnotexist", now, False)
+
+        self.sendEmailPasswordPostRequest('/login', ADMIN_EMAIL, ADMIN_PASSWORD)
+        response = self.sendPostRequest('/admin/emailblast')
+        self.assertNoError(response)
+
+        emails = self.getSentEmails()
+        emails.sort(key=lambda mail: mail.to[0])
+        self.assertEqual(self.getSentEmails()[0].to[0], "bbison@eastsideprep.org")
+        self.assertEqual(self.getSentEmails()[1].to[0], "ggrasshopper@eastsideprep.org")
+        self.assertEqual(len(self.getSentEmails()), 2)
 
 class ClassHandlerTest(HandlerTestBase):
     def testLoadClassData(self):
