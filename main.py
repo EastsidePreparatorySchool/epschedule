@@ -750,7 +750,7 @@ class AdminHandler(RegisterBaseHandler):
                 try:
                     email_schedule = self.get_schedule_for_id(convert_email_to_id(email))
                     if email_schedule:
-                        error = self.send_confirmation_email(email, numerical_id)
+                        self.send_confirmation_email(email, numerical_id)
                         logging.info("Successfully sent an email to " + email)
                     else:
                         logging.info("There is no valid schedule associated with " + email + ", no email was sent")
