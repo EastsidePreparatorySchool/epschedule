@@ -108,14 +108,14 @@
             <div class="card-mid" layout="" vertical="">
               <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
                 <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
-                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
-                  <a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
+                  (<a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
+                  <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
                 </template>
                 <template is="dom-if" if="{{hasTeacherOnly(item)}}">
-                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>)
+                  (<a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>)
                 </template>
                 <template is="dom-if" if="{{hasRoomOnly(item)}}">
-                  (<a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
+                  (<a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
                 </template>
               </p>
               <h2>{{item.name}}</h2>
