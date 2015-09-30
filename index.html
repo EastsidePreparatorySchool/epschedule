@@ -233,7 +233,7 @@
     var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
     imgSrc = imgSrc + teacherObj.lastname + ".jpg";
     imgSrc = imgSrc.toLowerCase();
-    email = teacherObj.email;
+    var email = teacherObj.email;
     popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
@@ -251,11 +251,10 @@
     }, 0);
   }
   function renderStudent(studentObj) {
-    var name = studentObj.firstname + " " + studentObj.lastname;
+    var popupContainer = document.getElementById("popupContainer");
     var email = studentObj.email;
     email = email.toLowerCase();
     var grade = studentObj.grade + "th Grade";
-    var popupContainer = document.getElementById("popupContainer");
     popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
@@ -470,7 +469,7 @@
     height: 100%;
     margin: 0;
     #background-color: #e6eef4;
-    font-family: 'RobotoDraft', sans-serif;
+    font-family: 'Roboto', sans-serif;
   }
   neon-animated-pages {
     height: 100%;
