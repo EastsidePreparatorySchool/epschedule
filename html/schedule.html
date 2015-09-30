@@ -241,7 +241,7 @@
         if (el.classList.contains("selected")) {
           var xhr = new XMLHttpRequest();
           // Squash all punctuation to underscores
-          var cleanedClass = item.name.replace(/\W+/g, "_");
+          var cleanedClass = item.name.replace(/[\W]/g, "_");
           var url = "class/" + cleanedClass + "/" + item.period.toLowerCase();
           xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
