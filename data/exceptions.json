@@ -145,4 +145,11 @@
   {"period": "Lunch", "time": "11:45-12:30"}
 ]}
 },
-[{"day": 9, "month": 9, "year": 2015, "schedule": "FirstDay"}]]
+[
+{"day": 9, "month": 9, "year": 2015, "schedule": "FirstDay"},
+{"day": 10, "month": 5, "year": 2015, "schedule": "Tuesday"},
+{"day": 11, "month": 5, "year": 2015, "schedule": "Wednesday"},
+{"day": 12, "month": 5, "year": 2015, "schedule": "Thursday"},
+{"day": 13, "month": 5, "year": 2015, "schedule": "Friday"}
+]
+]
