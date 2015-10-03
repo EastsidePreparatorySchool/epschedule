@@ -147,9 +147,9 @@
 },
 [
 {"day": 9, "month": 9, "year": 2015, "schedule": "FirstDay"},
-{"day": 10, "month": 9, "year": 2015, "schedule": "Tuesday"},
-{"day": 11, "month": 9, "year": 2015, "schedule": "Wednesday"},
-{"day": 12, "month": 9, "year": 2015, "schedule": "Thursday"},
-{"day": 13, "month": 9, "year": 2015, "schedule": "Friday"}
+{"day": 5, "month": 10, "year": 2015, "schedule": "Tuesday"},
+{"day": 6, "month": 10, "year": 2015, "schedule": "Wednesday"},
+{"day": 7, "month": 10, "year": 2015, "schedule": "Thursday"},
+{"day": 8, "month": 10, "year": 2015, "schedule": "Friday"}
 ]
 ]
