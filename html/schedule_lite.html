@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="schedule-lite">
   <style>
@@ -106,76 +107,15 @@
   <script>
     Polymer({
       is: 'schedule-lite',
+      behaviors: [ SwipeableBehavior ],
       properties: {
         entries: { notify: true },
         dateString: String
       },
-      listeners: {
-        "transitionend": "transitionEnd"
+      ready: function() {
+      // disable vertical gestures on the card
+        this.querySelector('paper-material').setScrollDirection('y');
       },
-
-      handleTrack: function(e) {
-        switch (e.detail.state) {
-          case 'start':
-            this.enableTransition(false);
-            this.axis = (Math.abs(e.detail.dx) >
-                         Math.abs(e.detail.dy)) ? 'x' : 'y';
-            break;
-          case 'track':
-            if (this.axis == 'x') {
-              this.translateX(e.detail.dx);
-            }
-            break;
-          case 'end':
-            this.axis = undefined;
-            this.enableTransition(true);
-            this.maybeSwipe(e.detail.dx);
-            break;
-        }
-      },
-      enableTransition: function(enable) {
-        if (enable) {
-          this.classList.remove('no-transition');
-        } else {
-          this.classList.add('no-transition');
-        }
-      },
-      translateX: function(x) {
-        var s = this.style;
-        var translate = 'translate3d(' + x + 'px,0,0)';
-        s.transform = s.webkitTransform = translate;
-      },
-      maybeSwipe: function(dx) {
-        // If we've moved more than 1/4 of our width, swipe away
-        this.swiped = Math.abs(dx) > this.offsetWidth / 4;
-        if (this.swiped) {
-          this.dest = (window.innerWidth + this.offsetWidth + 1) / 2 *
-                      (dx / Math.abs(dx));
-          this.translateX(this.dest);
-        } else {
-          this.translateX(0);
-        }
-      },
-      transitionEnd: function(e) {
-        // When we swipe offscreen, fire an event, silently switch to the
-        // other side of the screen, and then transition back to the center.
-        if (this.swiped) {
-          var dir = (this.dest < 0) ? 'left' : 'right';
-          this.fire('swiped', {direction: dir});
-          this.swiped = false;
-          this.enableTransition(false);
-          this.translateX(-this.dest);
-          this.dest = null;
-
-          var that = this;
-          setTimeout(function() {
-            that.enableTransition(true);
-            that.translateX(0);
-          }, 0);
-        }
-      },
-
-
       computeShared: function(item) {
         if (item.shared) {
           return "check";
@@ -191,7 +131,6 @@
         }
         return classes;
       },
-
 
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
