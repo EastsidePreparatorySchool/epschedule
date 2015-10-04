@@ -1,7 +1,7 @@
 import json
 import os
 
-readfile = open('../schedules.json', 'rb')
+readfile = open('../data/schedules.json', 'rb')
 schedules = json.load(readfile)
 coords = [
 {'name':'MS', 'latitude':47.643288, 'longitude':-122.198141},
@@ -28,5 +28,5 @@ for schedule in schedules:
 					rooms.append({'name':classObj['room'].lower(), 'latitude':building['latitude'], 'longitude':building['longitude']})
 					break
 
-writefile = open('../room_locations.json', 'wb')
+writefile = open('../data/room_locations.json', 'wb')
 writefile.write(json.dumps(rooms))

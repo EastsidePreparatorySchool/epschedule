@@ -46,7 +46,7 @@
       padding: 1px;
       border-radius: 50%;
       margin: 16px;
-      background: #efefef url() center center no-repeat;
+      background: #efefef center no-repeat;
     }
     .card-header ::content h2 {
       margin: 0;
@@ -83,7 +83,7 @@
       border-radius: 50%;
       margin-left: 24px;
       margin-right: 24px;
-      background: #efefef; /*url() center center no-repeat;*/
+      background: #efefef; /*center no-repeat;*/
     }
     .student p {
       font-size: 16px; #0.9rem;
@@ -240,7 +240,8 @@
         var collapse = document.getElementById(this.computeCollapseId(item.name));
         if (el.classList.contains("selected")) {
           var xhr = new XMLHttpRequest();
-          var cleanedClass = item.name.replace(/ /g, '_').replace(/\./g, '');
+          // Squash all punctuation to underscores
+          var cleanedClass = item.name.replace(/[\W]/g, "_");
           var url = "class/" + cleanedClass + "/" + item.period.toLowerCase();
           xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
@@ -257,19 +258,19 @@
         }
       },
       studentThunk: function(e) {
-        e.stopPropagation()
+        e.stopPropagation();
         if (this.onStudentTap) {
           this.onStudentTap(e);
         }
       },
       roomThunk: function(e) {
-        e.stopPropagation()
+        e.stopPropagation();
         if (this.onRoomTap) {
           this.onRoomTap(e);
         }
       },
       teacherThunk: function(e) {
-        e.stopPropagation()
+        e.stopPropagation();
         if (this.onTeacherTap) {
           this.onTeacherTap(e);
         }

@@ -6,26 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="bower_components/polymer/polymer.html">
-  <link rel="import" href="bower_components/font-roboto/roboto.html">
-  <link rel="import" href="bower_components/google-map/google-map-marker.html">
-  <link rel="import" href="bower_components/google-map/google-map.html">
-  <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
-  <link rel="import" href="bower_components/iron-icons/iron-icons.html">
-  <link rel="import" href="bower_components/iron-image/iron-image.html">
-  <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
-  <link rel="import" href="bower_components/neon-animation/neon-animations.html">
-  <link rel="import" href="bower_components/paper-button/paper-button.html">
-  <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
-  <link rel="import" href="bower_components/paper-drawer-panel/paper-drawer-panel.html">
-  <link rel="import" href="bower_components/paper-header-panel/paper-header-panel.html">
-  <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="bower_components/paper-input/paper-input.html">
-  <link rel="import" href="bower_components/paper-toast/paper-toast.html">
-  <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
-  <link rel="import" href="bower_components/iron-icons/social-icons.html">
-  <link rel="import" href="html/schedule.html">
-  <link rel="import" href="html/schedule_lite.html">
+  <link rel="import" href="{{components}}">
 
   <script>
   function signOut() {
@@ -105,8 +86,18 @@
 
   var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
-  var globalDate = new Date();
+  var globalDate = getInitialDate();
 
+  function getInitialDate() {
+    date = new Date();
+    switch(date.getDay()) { // Falling through is intentional here
+      case 6: // If Saturday, move the date forward twice
+        date.setDate(date.getDate() + 1);
+      case 0: // If Sunday, move the date forward once
+        date.setDate(date.getDate() + 1);
+    }
+    return date;
+  }
   function dateBack() {
     adjustDate(globalDate, -1);
     updateMainSchedule();
@@ -128,10 +119,14 @@
       date.setDate(date.getDate() - 2);
     }
   }
-  function dateToString(date) {
+  function dayOfWeekToString(day) {
+    // No Sunday or Saturday, since no school...
     var DAYS = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", ""];
-    day = DAYS[date.getDay()];
-    return (day + ', ' + (date.getMonth() + 1) + "/" + date.getDate());
+    return DAYS[day];
+  }
+  function dateToString(date) {
+    return dayOfWeekToString(date.getDay()) + ', ' +
+        (date.getMonth() + 1) + "/" + date.getDate();
   }
 
   function updateMainSchedule() {
@@ -238,7 +233,7 @@
     var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
     imgSrc = imgSrc + teacherObj.lastname + ".jpg";
     imgSrc = imgSrc.toLowerCase();
-    email = teacherObj.email;
+    var email = teacherObj.email;
     popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
@@ -256,11 +251,10 @@
     }, 0);
   }
   function renderStudent(studentObj) {
-    var name = studentObj.firstname + " " + studentObj.lastname;
+    var popupContainer = document.getElementById("popupContainer");
     var email = studentObj.email;
     email = email.toLowerCase();
     var grade = studentObj.grade + "th Grade";
-    var popupContainer = document.getElementById("popupContainer");
     popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
@@ -306,8 +300,9 @@
       school = "US";
     }
 
-    var scheduleObj;
     var todaySchedule = [];
+    var scheduleObj;
+    var day = dayOfWeekToString(dateObj.getDay());
     for (var exception = 0; exception < days[1].length; exception++) { // Handles exceptions, also handles special weekend schedules
         if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
             day = days[1][exception]["schedule"];
@@ -474,7 +469,7 @@
     height: 100%;
     margin: 0;
     #background-color: #e6eef4;
-    font-family: 'RobotoDraft', sans-serif;
+    font-family: 'Roboto', sans-serif;
   }
   neon-animated-pages {
     height: 100%;

@@ -44,16 +44,19 @@ Temporary Items
 
 *.pyc
 *.csr
-*.key
 bower_components
 node_modules
+test_modules
 crawler.bat
 schedules
 schedules.json
 id_table.json
 api_keys.json
+crypto.key
 teacher_photos
 96x96_photos
 lib
 teacher_icons
 teacher_photos_fullsize
+vulcanized.html
+

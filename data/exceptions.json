@@ -17,8 +17,8 @@
   {"period": "B", "time": "8:45-9:25"},
   {"period": "C", "time": "9:30-10:10"},
   {"period": "D", "time": "10:15-10:55"},
-  {"period": "Lunch", "time": "11:00-11:30"},
-  {"period": "E", "time": "11:35-12:15"},
+  {"period": "E", "time": "11:00-11:30"},
+  {"period": "Lunch", "time": "11:35-12:15"},
   {"period": "F", "time": "12:20-1:00"},
   {"period": "G", "time": "1:05-1:45"},
   {"period": "US Community", "time": "1:50-2:30"},
@@ -145,4 +145,11 @@
   {"period": "Lunch", "time": "11:45-12:30"}
 ]}
 },
-[{"day": 9, "month": 9, "year": 2015, "schedule": "FirstDay"}]]
+[
+{"day": 9, "month": 9, "year": 2015, "schedule": "FirstDay"},
+{"day": 5, "month": 10, "year": 2015, "schedule": "Tuesday"},
+{"day": 6, "month": 10, "year": 2015, "schedule": "Wednesday"},
+{"day": 7, "month": 10, "year": 2015, "schedule": "Thursday"},
+{"day": 8, "month": 10, "year": 2015, "schedule": "Friday"}
+]
+]
