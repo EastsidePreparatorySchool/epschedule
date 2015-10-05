@@ -111,7 +111,7 @@
   {"period": "G", "time": "2:00-2:35"},
   {"period": "H", "time": "2:40-3:15"}],
 
-  "MS": [
+  "US": [
   {"period": "Advisory", "time": "8:00-8:10"},
   {"period": "Assembly", "time": "8:15-9:05"},
   {"period": "A", "time": "9:10-9:45"},
@@ -143,13 +143,19 @@
   {"period": "C", "time": "8:00-8:40"},
   {"period": "D", "time": "10:15-11:45"},
   {"period": "Lunch", "time": "11:45-12:30"}
-]}
+]},
+"NoSchool":{
+  "MS": [],
+
+  "US": []
+}
 },
 [
 {"day": 9, "month": 9, "year": 2015, "schedule": "FirstDay"},
 {"day": 5, "month": 10, "year": 2015, "schedule": "Tuesday"},
 {"day": 6, "month": 10, "year": 2015, "schedule": "Wednesday"},
 {"day": 7, "month": 10, "year": 2015, "schedule": "Thursday"},
-{"day": 8, "month": 10, "year": 2015, "schedule": "Friday"}
+{"day": 8, "month": 10, "year": 2015, "schedule": "Friday"},
+{"day": 9, "month": 10, "year": 2015, "schedule": "NoSchool"}
 ]
 ]

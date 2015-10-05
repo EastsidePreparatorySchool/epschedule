@@ -9,6 +9,10 @@
   <link rel="import" href="{{components}}">
 
   <script>
+
+  // Global vars
+  var NUM_NOSCHOOL_IMAGES = 6;
+
   function signOut() {
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -303,14 +307,19 @@
     var todaySchedule = [];
     var scheduleObj;
     var day = dayOfWeekToString(dateObj.getDay());
-    for (var exception = 0; exception < days[1].length; exception++) { // Handles exceptions, also handles special weekend schedules
-        if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
+    // Handles exceptions, also handles special weekend schedules
+    for (var exception = 0; exception < days[1].length; exception++) {
+        if (days[1][exception]["day"] == dateObj.getDate() &&
+            days[1][exception]["month"] == (dateObj.getMonth() + 1) &&
+            days[1][exception]["year"] == dateObj.getFullYear()) {
             day = days[1][exception]["schedule"];
         }
     }
     var currentSlot;
+
+    // Will not get called if there is no school
     for (currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
-        switch(days[0][day][school][currentSlot]["period"]) { // Falling through is intended in switch statement
+        switch(days[0][day][school][currentSlot]["period"]) { // Falling through intended
             case "0": // 0 Period
             case "A": // A period
             case "B": // B period
@@ -352,7 +361,9 @@
                 period: "X",
                 time: ""
               };
-              if (scheduleObj.name == "Lunch" || scheduleObj.name == "Assembly" || scheduleObj.name == "US Community") {
+              if (scheduleObj.name == "Lunch" ||
+                  scheduleObj.name == "Assembly" ||
+                  scheduleObj.name == "US Community") {
                 scheduleObj.room = "LPC Commons";
               }
         }
@@ -394,7 +405,8 @@
           if (letterToNum(scheduleObj.period) <= 8) { // If it's a class period
             scheduleObj.shared = false; // Find out if the user has a class that period
             for (var i = 0; i < userSchedule.classes.length; i++) {
-              if (userSchedule.classes[i].period == scheduleObj.period && userSchedule.classes[i].name == scheduleObj.name) { // TODO find the name of GSH
+              if (userSchedule.classes[i].period == scheduleObj.period &&
+                  userSchedule.classes[i].name == scheduleObj.name) {
                 scheduleObj.shared = true;
                 break;
               }
@@ -411,9 +423,15 @@
     }
 
     scheduleElement.entries = todaySchedule;
-
+    if (todaySchedule.length == 0) { // If there are no classes
+      var imageNum = Math.floor((Math.random() * NUM_NOSCHOOL_IMAGES) + 1);
+      var imageUrl = "/images/noschool" + imageNum.toString() + ".jpg";
+      var imageText = "No School";
+      scheduleElement.imageProperties = {url: imageUrl, text: imageText};
+    } else {
+      scheduleElement.imageProperties = null;
+    }
     if (type == "full") {
-      scheduleElement.entries = todaySchedule;
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
         var name = orig_name.replace(" ", "_");
@@ -443,6 +461,7 @@
     pages.exitAnimation = "";
     pages.selected = 1;
   }
+
   function closePopup() {
     pages.entryAnimation = "";
     pages.exitAnimation = "slide-right-animation";
