@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/communication-icons.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="x-schedule">
   <style>
@@ -132,14 +133,14 @@
             <div class="card-mid" layout="" vertical="">
               <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
                 <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
-                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
-                  <a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
+                  (<a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
+                  <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
                 </template>
                 <template is="dom-if" if="{{hasTeacherOnly(item)}}">
-                  (<a on-click="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>)
+                  (<a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>)
                 </template>
                 <template is="dom-if" if="{{hasRoomOnly(item)}}">
-                  (<a on-click="roomThunk" item="link" href="#">{{item.room}}</a>)
+                  (<a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
                 </template>
               </p>
               <h2>{{item.name}}</h2>
@@ -170,47 +171,13 @@
   <script>
     Polymer({
       is: 'x-schedule',
+      behaviors: [ SwipeableBehavior ],
       properties: { entries: { notify: true } },
-      listeners: {
-        "transitionend": "transitionEnd"
-      },
-      swiped: false,
-      dest: null,
       ready: function() {
-        // disable vertical gestures on the card
-        document.querySelector('paper-material').setScrollDirection('y');
+      // disable vertical gestures on the card
+        this.querySelector('paper-material').setScrollDirection('y');
       },
-      handleTrack: function(e) {
-        switch (e.detail.state) {
-          case 'start':
-            this.enableTransition(false);
-            this.axis = (Math.abs(e.detail.dx) >
-                         Math.abs(e.detail.dy)) ? 'x' : 'y';
-            break;
-          case 'track':
-            if (this.axis == 'x') {
-              this.translateX(e.detail.dx);
-            }
-            break;
-          case 'end':
-            this.axis = undefined;
-            this.enableTransition(true);
-            this.maybeSwipe(e.detail.dx);
-            break;
-        }
-      },
-      enableTransition: function(enable) {
-        if (enable) {
-          this.classList.remove('no-transition');
-        } else {
-          this.classList.add('no-transition');
-        }
-      },
-      translateX: function(x) {
-        var s = this.style;
-        var translate = 'translate3d(' + x + 'px,0,0)';
-        s.transform = s.webkitTransform = translate;
-      },
+<<<<<<< HEAD
       maybeSwipe: function(dx) {
         // If we've moved more than 1/4 of our width, swipe away
         this.swiped = Math.abs(dx) > this.offsetWidth / 4;
@@ -244,6 +211,8 @@
       isEmpty: function(item) {
         return item.length == 0;
       },
+=======
+>>>>>>> master
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
       },
