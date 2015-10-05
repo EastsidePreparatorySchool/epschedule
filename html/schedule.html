@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
 
 <dom-module id="x-schedule">
   <style>
@@ -33,6 +34,23 @@
     }
     :host-context(.no-transition) {
       transition: none;
+    }
+    .status {
+      width: 100%;
+    }
+    .status img {
+      width: 100%;
+      position: absolute;
+      top: 0px;
+    }
+    .status p {
+      position: relative;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 16px;
+      margin: 0;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 500;
     }
     .card {
       margin-bottom: 1px;
@@ -101,10 +119,16 @@
   <template>
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
     <div layout="" vertical="">
+      <template is="dom-if" if="{{imageProperties}}">
+        <div class="status">
+          <img src="{{imageProperties.url}}" xwidth="100%"></img>
+          <p>{{imageProperties.text}}</p>
+        </div>
+      </template>
       <template is="dom-repeat" id="entryList" items="{{entries}}">
         <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
           <div class="card-header" layout="" horizontal="" center="">
-            <img src="{{item.avatar}}" width="48" height="48">
+            <img src="{{item.avatar}}">
             <div class="card-mid" layout="" vertical="">
               <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
                 <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
@@ -217,6 +241,9 @@
         }
       },
 
+      isEmpty: function(item) {
+        return item.length == 0;
+      },
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
       },

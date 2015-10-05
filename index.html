@@ -309,7 +309,7 @@
         }
     }
     var currentSlot;
-    for (currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
+    for (currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) { // Will not get called if there is no school
         switch(days[0][day][school][currentSlot]["period"]) { // Falling through is intended in switch statement
             case "0": // 0 Period
             case "A": // A period
@@ -411,9 +411,15 @@
     }
 
     scheduleElement.entries = todaySchedule;
-
+    if (todaySchedule.length == 0) { // If there are no classes
+      var imageNum = Math.floor((Math.random() * 6) + 1);
+      var imageUrl = "/images/noschool" + imageNum.toString() + ".jpg";
+      var imageText = "No School";
+      scheduleElement.imageProperties = {url: imageUrl, text: imageText};
+    } else {
+      scheduleElement.imageProperties = null;
+    }
     if (type == "full") {
-      scheduleElement.entries = todaySchedule;
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
         var name = orig_name.replace(" ", "_");
@@ -443,6 +449,7 @@
     pages.exitAnimation = "";
     pages.selected = 1;
   }
+
   function closePopup() {
     pages.entryAnimation = "";
     pages.exitAnimation = "slide-right-animation";
@@ -455,6 +462,7 @@
     text = text.replace(/\./g, ""); // Remove periods
     return text;
   }
+
 
   document.addEventListener('WebComponentsReady', function() {
     var scheduleElement = document.getElementById('mainschedule');
