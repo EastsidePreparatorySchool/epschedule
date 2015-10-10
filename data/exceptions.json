@@ -148,6 +148,11 @@
   "MS": [],
 
   "US": []
+},
+"ServiceLearning":{
+  "MS": [{"period": "Service", "time": "8:00-3:15"}],
+
+  "US": [{"period": "Service", "time": "8:00-3:15"}]
 }
 },
 [
@@ -156,6 +161,7 @@
 {"day": 6, "month": 10, "year": 2015, "schedule": "Wednesday"},
 {"day": 7, "month": 10, "year": 2015, "schedule": "Thursday"},
 {"day": 8, "month": 10, "year": 2015, "schedule": "Friday"},
-{"day": 9, "month": 10, "year": 2015, "schedule": "NoSchool"}
+{"day": 9, "month": 10, "year": 2015, "schedule": "NoSchool"},
+{"day": 14, "month": 10, "year": 2015, "schedule": "ServiceLearning"}
 ]
 ]

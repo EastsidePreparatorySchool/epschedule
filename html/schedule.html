@@ -126,6 +126,12 @@
           <p>{{imageProperties.text}}</p>
         </div>
       </template>
+      <template is="dom-if" if="{{isServiceLearning(entries)}}">
+        <div class="status">
+          <img src="{{imageProperties.url}}"></img>
+          <p>{{imageProperties.text}}</p>
+        </div>
+      </template>
       <template is="dom-repeat" id="entryList" items="{{entries}}">
         <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
           <div class="card-header" layout="" horizontal="" center="">
@@ -177,8 +183,8 @@
       // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
       },
-      isEmpty: function(classList) {
-        return classList.length == 0;
+      isType: function(type1, type2) {
+        return type1 == type2;
       },
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;

@@ -12,6 +12,7 @@
 
   // Global vars
   var NUM_NOSCHOOL_IMAGES = 6;
+  var NUM_SERVICE_IMAGES = 2;
 
   function signOut() {
     xhr = new XMLHttpRequest();
@@ -288,13 +289,18 @@
     scheduleElement.dateString = dateToString(scheduleElement.date);
     renderSchedule(scheduleElement.date, otherUserObj, "lite", scheduleElement);
   }
-
   function renderPeriod(periodObj) {
     console.log(periodObj);
   }
   function renderDate(dateObj) {
     var daySpan = document.getElementById("day");
     daySpan.firstChild.textContent = dateToString(dateObj);
+  }
+  function getFunnyImage(number_of_images, url, caption) {
+    var imageNum = Math.floor((Math.random() * number_of_images) + 1);
+    var imageUrl = "/images/" + url + imageNum.toString() + ".jpg";
+    var imageText = caption;
+    return {url: imageUrl, text: imageText};
   }
   function renderSchedule(dateObj, schedule, type, scheduleElement) {
     var school;
@@ -424,12 +430,16 @@
 
     scheduleElement.entries = todaySchedule;
     if (todaySchedule.length == 0) { // If there are no classes
-      var imageNum = Math.floor((Math.random() * NUM_NOSCHOOL_IMAGES) + 1);
-      var imageUrl = "/images/noschool" + imageNum.toString() + ".jpg";
-      var imageText = "No School";
-      scheduleElement.imageProperties = {url: imageUrl, text: imageText};
+      scheduleElement.imageProperties = getFunnyImage(NUM_NOSCHOOL_IMAGES,
+        "noschool", "No School");
+      scheduleElement.type = 1; // 0 = regular, 1 = no school, 2 = service day
+    } else if (todaySchedule[0].name == "Service") {
+      scheduleElement.imageProperties = getFunnyImage(NUM_SERVICE_IMAGES,
+        "service", "Service Learning Day");
+      scheduleElement.type = 2; // 0 = regular, 1 = no school, 2 = service day
     } else {
       scheduleElement.imageProperties = null;
+      scheduleElement.type = 0;
     }
     if (type == "full") {
       scheduleElement.onTeacherTap = function(e) {
