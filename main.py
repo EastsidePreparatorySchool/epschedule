@@ -66,6 +66,22 @@ class User(db.Model):
     join_date = db.DateTimeProperty()
     verified = db.BooleanProperty(required=True)
 
+# The social object that is used for storing who a user is friends with
+# and any additional data they've entered in, such as phone number,
+# Skype account, or Steam account
+
+# Using one DB for this instead of two because the student pages that
+# will be visited most often will be the pages of friends, so we
+# want that page load time to be as quick as possible (db queries
+# take time!)
+
+class Social(db.Model):
+    # Using student ids here because when we query the
+    # friends database, we'll do it by the SID that
+    # was send down in a cookie from the client
+    student_id = db.IntegerProperty(required=True)
+    friends = db.StringListProperty()
+
 def convert_email_to_id(email):
     email = email.lower()
     pieces = string.split(email, "@")
@@ -710,6 +726,9 @@ class AdminHandler(RegisterBaseHandler):
         html += "<button type='button' onclick='sendEmails("
         html += '"cleanup"'
         html += ")'>Clean up duplicates of confirmed users</button>"
+        html += "<button type='button' onclick='sendEmails("
+        html += '"addfriends"'
+        html += ")'>Create friend db objects for all verified users</button>"
         self.response.write(html)
 
     def read_db(self): # Returns the entire database as an dictionary
@@ -739,6 +758,8 @@ class AdminHandler(RegisterBaseHandler):
             self.send_email_blast()
         elif action == "cleanup":
             self.clean_up_db()
+        elif action == "addfriends":
+            self.add_friends()
 
     def send_email_blast(self):
         verification = self.read_db()
@@ -762,6 +783,27 @@ class AdminHandler(RegisterBaseHandler):
         for email in verification:
             if len(verification[email]['verified']) == 1 and len(verification[email]['unverified']) >= 1:
                 db.delete(verification[email]['unverified'])
+
+    def add_friends(self):
+        verified_accounts = db.GqlQuery("SELECT * FROM User WHERE verified = TRUE")
+        for account in verified_accounts:
+            logging.info("Iterating verified_accounts!")
+            sid = convert_email_to_id(account.email)
+            friend_entities = db.GqlQuery("SELECT * FROM Social WHERE student_id = :1", sid)
+            logging.info("Getting here!")
+            has_friend_obj = False
+            for i in friend_entities:
+                has_friend_obj = True
+                break
+
+            logging.info(has_friend_obj)
+
+            if not has_friend_obj:
+                logging.info("Did not find a friend entity for email")
+                social_obj = Social(student_id = sid)
+                db.put(social_obj)
+
+
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
