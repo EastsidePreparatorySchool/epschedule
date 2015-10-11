@@ -296,10 +296,10 @@
     var daySpan = document.getElementById("day");
     daySpan.firstChild.textContent = dateToString(dateObj);
   }
-  function getFunnyImage(number_of_images, url, caption) {
-    var imageNum = Math.floor((Math.random() * number_of_images) + 1);
-    var imageUrl = "/images/" + url + imageNum.toString() + ".jpg";
-    var imageText = caption;
+  function getFunnyImage(json_obj) {
+    var imageNum = Math.floor((Math.random() * json_obj.imagenum) + 1);
+    var imageUrl = "/images/" + json_obj.prefix + imageNum.toString() + ".jpg";
+    var imageText = json_obj.caption;
     return {url: imageUrl, text: imageText};
   }
   function renderSchedule(dateObj, schedule, type, scheduleElement) {
@@ -321,57 +321,57 @@
             day = days[1][exception]["schedule"];
         }
     }
-    var currentSlot;
 
-    // Will not get called if there is no school
-    for (currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
+    if (!days[0][day].ImageProperties) {
+      for (var currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
         switch(days[0][day][school][currentSlot]["period"]) { // Falling through intended
-            case "0": // 0 Period
-            case "A": // A period
-            case "B": // B period
-            case "C": // C period
-            case "D": // D period
-            case "E": // E period
-            case "F": // F period
-            case "G": // G period
-            case "H": // H period
-                for (var k = 0; k < schedule["classes"].length; k++) {
-                    if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
-                        if (schedule["classes"][k]["name"] != "Free Period") {
-                            var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
-                            var teacherLast = teacherName.split(" ")[1]; // Teacher's last name
-                            scheduleObj = { name: schedule["classes"][k]["name"],
-                                teacher: teacherName,
-                                teacherLastName: teacherLast,
-                                room: schedule["classes"][k]["room"],
-                                period: days[0][day][school][currentSlot]["period"],
-                                time: ""}
+          case "0": // 0 Period
+          case "A": // A period
+          case "B": // B period
+          case "C": // C period
+          case "D": // D period
+          case "E": // E period
+          case "F": // F period
+          case "G": // G period
+          case "H": // H period
+            for (var k = 0; k < schedule["classes"].length; k++) {
+              if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
+                if (schedule["classes"][k]["name"] != "Free Period") {
+                  var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
+                  var teacherLast = teacherName.split(" ")[1]; // Teacher's last name
+                  scheduleObj = { name: schedule["classes"][k]["name"],
+                    teacher: teacherName,
+                    teacherLastName: teacherLast,
+                    room: schedule["classes"][k]["room"],
+                    period: days[0][day][school][currentSlot]["period"],
+                    time: ""};
 
-                        } else {
-                            scheduleObj = {name: "Free Period",
-                                teacher: "",
-                                teacherLastName: "",
-                                room: "",
-                                period: days[0][day][school][currentSlot]["period"],
-                                time: ""};
-                        }
-                    }
+                } else {
+                  scheduleObj = {name: "Free Period",
+                    teacher: "",
+                    teacherLastName: "",
+                    room: "",
+                    period: days[0][day][school][currentSlot]["period"],
+                    time: ""};
                 }
-                break;
-
-            default:
-              scheduleObj = {
-                name: days[0][day][school][currentSlot]["period"],
-                teacher: "",
-                room: "",
-                period: "X",
-                time: ""
-              };
-              if (scheduleObj.name == "Lunch" ||
-                  scheduleObj.name == "Assembly" ||
-                  scheduleObj.name == "US Community") {
-                scheduleObj.room = "LPC Commons";
               }
+            }
+            break;
+
+          default:
+            scheduleObj = {
+              name: days[0][day][school][currentSlot]["period"],
+              teacher: "",
+              room: "",
+              period: "X",
+              time: ""
+            };
+            if (scheduleObj.name == "Lunch" ||
+              scheduleObj.name == "Assembly" ||
+              scheduleObj.name == "US Community") {
+
+              scheduleObj.room = "LPC Commons";
+            }
         }
         if (scheduleObj.teacher == "N/A") {
           scheduleObj.teacher = "";
@@ -426,21 +426,14 @@
         scheduleObj.startTime = times[0].trim();
         scheduleObj.endTime = times[1].trim();
         todaySchedule.push(scheduleObj);
-    }
-
-    scheduleElement.entries = todaySchedule;
-    if (todaySchedule.length == 0) { // If there are no classes
-      scheduleElement.imageProperties = getFunnyImage(NUM_NOSCHOOL_IMAGES,
-        "noschool", "No School");
-      scheduleElement.type = 1; // 0 = regular, 1 = no school, 2 = service day
-    } else if (todaySchedule[0].name == "Service") {
-      scheduleElement.imageProperties = getFunnyImage(NUM_SERVICE_IMAGES,
-        "service", "Service Learning Day");
-      scheduleElement.type = 2; // 0 = regular, 1 = no school, 2 = service day
-    } else {
+      }
+      scheduleElement.entries = todaySchedule;
       scheduleElement.imageProperties = null;
-      scheduleElement.type = 0;
+    } else {
+      var imageData = getFunnyImage(days[0][day].ImageProperties);
+      scheduleElement.imageProperties = imageData;
     }
+    console.log(todaySchedule);
     if (type == "full") {
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
