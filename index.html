@@ -10,10 +10,6 @@
 
   <script>
 
-  // Global vars
-  var NUM_NOSCHOOL_IMAGES = 6;
-  var NUM_SERVICE_IMAGES = 2;
-
   function signOut() {
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -297,8 +293,8 @@
     daySpan.firstChild.textContent = dateToString(dateObj);
   }
   function getFunnyImage(json_obj) {
-    var imageNum = Math.floor((Math.random() * json_obj.imagenum) + 1);
-    var imageUrl = "/images/" + json_obj.prefix + imageNum.toString() + ".jpg";
+    var numImages = Math.floor((Math.random() * json_obj.num_images) + 1);
+    var imageUrl = "/images/" + json_obj.prefix + numImages.toString() + ".jpg";
     var imageText = json_obj.caption;
     return {url: imageUrl, text: imageText};
   }
@@ -322,7 +318,7 @@
         }
     }
 
-    if (!days[0][day].ImageProperties) {
+    if (!days[0][day].imageProperties) {
       for (var currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
         switch(days[0][day][school][currentSlot]["period"]) { // Falling through intended
           case "0": // 0 Period
@@ -430,7 +426,7 @@
       scheduleElement.entries = todaySchedule;
       scheduleElement.imageProperties = null;
     } else {
-      var imageData = getFunnyImage(days[0][day].ImageProperties);
+      var imageData = getFunnyImage(days[0][day].imageProperties);
       scheduleElement.imageProperties = imageData;
     }
     console.log(todaySchedule);
