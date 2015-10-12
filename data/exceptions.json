@@ -166,6 +166,10 @@
 {"day": 7, "month": 10, "year": 2015, "schedule": "Thursday"},
 {"day": 8, "month": 10, "year": 2015, "schedule": "Friday"},
 {"day": 9, "month": 10, "year": 2015, "schedule": "NoSchool"},
-{"day": 14, "month": 10, "year": 2015, "schedule": "ServiceLearning"}
+{"day": 12, "month": 10, "year": 2015, "schedule": "Tuesday"},
+{"day": 13, "month": 10, "year": 2015, "schedule": "Wednesday"},
+{"day": 14, "month": 10, "year": 2015, "schedule": "ServiceLearning"},
+{"day": 15, "month": 10, "year": 2015, "schedule": "Thursday"},
+{"day": 16, "month": 10, "year": 2015, "schedule": "Friday"}
 ]
 ]
