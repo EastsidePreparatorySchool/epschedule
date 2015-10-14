@@ -126,46 +126,44 @@
           <p>{{imageProperties.text}}</p>
         </div>
       </template>
-      <template is="dom-if" if="{{not(imageProperties)}}">
-        <template is="dom-repeat" id="entryList" items="{{entries}}">
-          <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
-            <div class="card-header" layout="" horizontal="" center="">
-              <img src="{{item.avatar}}">
-              <div class="card-mid" layout="" vertical="">
-                <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
-                  <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
-                    (<a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
-                    <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
-                  </template>
-                  <template is="dom-if" if="{{hasTeacherOnly(item)}}">
-                    (<a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>)
-                  </template>
-                  <template is="dom-if" if="{{hasRoomOnly(item)}}">
-                    (<a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
-                  </template>
-                </p>
-                <h2>{{item.name}}</h2>
-              </div>
-            </div>
-            <iron-collapse id="{{computeCollapseId(item.name)}}">
-              <div layout vertical>
-                <template is="dom-repeat" items="{{item.students}}">
-                  <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                    <img src="/images/material_face.svg" width="32" height="32">
-                    <div class="flex">
-                      <p>
-                        <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
-                      </p>
-                    </div>
-                    <a href="{{computeEmailLink(item.email)}}">
-                      <iron-icon icon="communication:email"></iron-icon>
-                    </a>
-                  </div>
+      <template is="dom-repeat" id="entryList" items="{{entries}}">
+        <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
+          <div class="card-header" layout="" horizontal="" center="">
+            <img src="{{item.avatar}}">
+            <div class="card-mid" layout="" vertical="">
+              <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
+                <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
+                  (<a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
+                  <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
                 </template>
-              </div>
-            </iron-collapse>
+                <template is="dom-if" if="{{hasTeacherOnly(item)}}">
+                  (<a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>)
+                </template>
+                <template is="dom-if" if="{{hasRoomOnly(item)}}">
+                  (<a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
+                </template>
+              </p>
+              <h2>{{item.name}}</h2>
+            </div>
           </div>
-        </template>
+          <iron-collapse id="{{computeCollapseId(item.name)}}">
+            <div layout vertical>
+              <template is="dom-repeat" items="{{item.students}}">
+                <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
+                  <img src="/images/material_face.svg" width="32" height="32">
+                  <div class="flex">
+                    <p>
+                      <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
+                    </p>
+                  </div>
+                  <a href="{{computeEmailLink(item.email)}}">
+                    <iron-icon icon="communication:email"></iron-icon>
+                  </a>
+                </div>
+              </template>
+            </div>
+          </iron-collapse>
+        </div>
       </template>
     </div>
     </paper-material>
