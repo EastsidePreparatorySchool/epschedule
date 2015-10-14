@@ -145,17 +145,17 @@
   {"period": "Lunch", "time": "11:45-12:30"}
 ]},
 "NoSchool":{
-  "imageProperties": {
-    "prefix": "noschool",
-    "caption": "No School",
-    "num_images": 6
+  "allDayEvent": {
+    "name": "noschool",
+    "imagePrefix": "No School",
+    "imageNum": 6
   }
 },
 "ServiceLearning":{
-  "imageProperties": {
-    "prefix": "service",
-    "caption": "Service Learning Day",
-    "num_images": 2
+  "allDayEvent": {
+    "name": "service",
+    "imagePrefix": "Service Learning Day",
+    "imageNum": 2
   }
 }
 },

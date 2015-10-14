@@ -292,10 +292,10 @@
     var daySpan = document.getElementById("day");
     daySpan.firstChild.textContent = dateToString(dateObj);
   }
-  function getFunnyImage(json_obj) {
-    var numImages = Math.floor((Math.random() * json_obj.num_images) + 1);
-    var imageUrl = "/images/" + json_obj.prefix + numImages.toString() + ".jpg";
-    var imageText = json_obj.caption;
+  function getFunnyImageObj(dayEventObj) {
+    var numImages = Math.floor((Math.random() * dayEventObj.numImages) + 1);
+    var imageUrl = "/images/" + dayEventObj.name + numImages.toString() + ".jpg";
+    var imageText = dayEventObj.imagePrefix;
     return {url: imageUrl, text: imageText};
   }
   function renderSchedule(dateObj, schedule, type, scheduleElement) {
@@ -318,7 +318,7 @@
         }
     }
 
-    if (!days[0][day].imageProperties) {
+    if (!days[0][day].allDayEvent) {
       for (var currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
         switch(days[0][day][school][currentSlot]["period"]) { // Falling through intended
           case "0": // 0 Period
@@ -424,10 +424,10 @@
         todaySchedule.push(scheduleObj);
       }
       scheduleElement.entries = todaySchedule;
-      scheduleElement.imageProperties = null;
+      scheduleElement.allDayEvent = null;
     } else {
-      var imageData = getFunnyImage(days[0][day].imageProperties);
-      scheduleElement.imageProperties = imageData;
+      var imageData = getFunnyImageObj(days[0][day].allDayEvent);
+      scheduleElement.allDayEvent = imageData;
       scheduleElement.entries = null; // Clear the classes
     }
     console.log(todaySchedule);
