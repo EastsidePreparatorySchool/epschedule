@@ -428,6 +428,7 @@
     } else {
       var imageData = getFunnyImage(days[0][day].imageProperties);
       scheduleElement.imageProperties = imageData;
+      scheduleElement.entries = null; // Clear the classes
     }
     console.log(todaySchedule);
     if (type == "full") {
