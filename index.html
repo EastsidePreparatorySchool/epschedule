@@ -293,7 +293,7 @@
     daySpan.firstChild.textContent = dateToString(dateObj);
   }
   function getFunnyImageObj(dayEventObj) {
-    var numImages = Math.floor((Math.random() * dayEventObj.numImages) + 1);
+    var numImages = Math.floor((Math.random() * dayEventObj.imageNum) + 1);
     var imageUrl = "/images/" + dayEventObj.name + numImages.toString() + ".jpg";
     var imageText = dayEventObj.imagePrefix;
     return {url: imageUrl, text: imageText};
@@ -430,7 +430,6 @@
       scheduleElement.allDayEvent = imageData;
       scheduleElement.entries = null; // Clear the classes
     }
-    console.log(todaySchedule);
     if (type == "full") {
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
