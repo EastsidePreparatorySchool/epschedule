@@ -146,16 +146,16 @@
 ]},
 "NoSchool":{
   "allDayEvent": {
-    "name": "noschool",
-    "imagePrefix": "No School",
-    "imageNum": 6
+    "imagePrefix": "noschool",
+    "name": "No School",
+    "numImages": 6
   }
 },
 "ServiceLearning":{
   "allDayEvent": {
-    "name": "service",
-    "imagePrefix": "Service Learning Day",
-    "imageNum": 2
+    "imagePrefix": "service",
+    "name": "Service Learning Day",
+    "numImages": 2
   }
 }
 },

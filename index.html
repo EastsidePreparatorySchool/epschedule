@@ -293,9 +293,9 @@
     daySpan.firstChild.textContent = dateToString(dateObj);
   }
   function getFunnyImageObj(dayEventObj) {
-    var numImages = Math.floor((Math.random() * dayEventObj.imageNum) + 1);
-    var imageUrl = "/images/" + dayEventObj.name + numImages.toString() + ".jpg";
-    var imageText = dayEventObj.imagePrefix;
+    var numImages = Math.floor((Math.random() * dayEventObj.numImages) + 1);
+    var imageUrl = "/images/" + dayEventObj.imagePrefix + numImages.toString() + ".jpg";
+    var imageText = dayEventObj.name;
     return {url: imageUrl, text: imageText};
   }
 
@@ -309,7 +309,7 @@
   }
 
   // Handles exceptions, also handles special weekend schedules
-  function getDaySchedule(dateObj, exceptions) {
+  function getScheduleTypeForDate(dateObj, exceptions) {
     var day = dayOfWeekToString(dateObj.getDay());
     for (var exception = 0; exception < exceptions[1].length; exception++) {
         if (exceptions[1][exception]["day"] == dateObj.getDate() &&
@@ -318,12 +318,12 @@
             day = exceptions[1][exception]["schedule"];
         }
     }
-    return day
+    return day;
   }
 
   // Generate basic name, teacher, room, time, and period info for a class
-  function renderClassBase(schedule, school, day, currentSlot) {
-    switch(days[0][day][school][currentSlot]["period"]) { // Falling through intended
+  function createClassEntry(schedule, school, day, currentSlot, type) {
+    switch (days[0][day][school][currentSlot]["period"]) { // Falling through intended
       case "0": // 0 Period
       case "A": // A period
       case "B": // B period
@@ -335,30 +335,21 @@
       case "H": // H period
         for (var k = 0; k < schedule["classes"].length; k++) {
           if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
-            if (schedule["classes"][k]["name"] != "Free Period") {
-              var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
-              var teacherLast = teacherName.split(" ")[1]; // Teacher's last name
-              scheduleObj = { name: schedule["classes"][k]["name"],
-                teacher: teacherName,
-                teacherLastName: teacherLast,
-                room: schedule["classes"][k]["room"],
-                period: days[0][day][school][currentSlot]["period"],
-                time: ""};
-
-            } else {
-              scheduleObj = {name: "Free Period",
-                teacher: "",
-                teacherLastName: "",
-                room: "",
-                period: days[0][day][school][currentSlot]["period"],
-                time: ""};
-            }
+            var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
+            var teacherLast = teacherName.split(" ")[1]; // Teacher's last name
+            scheduleObj = { name: schedule["classes"][k]["name"],
+              teacher: teacherName,
+              teacherLastName: teacherLast,
+              room: schedule["classes"][k]["room"],
+              period: days[0][day][school][currentSlot]["period"],
+              time: ""};
             break;
           }
         }
         break;
 
-      default:
+      default: // If it is a special class, such as Lunch, Assembly, or Class Meeting
+      // Note that 0 Period Instrumental Music does not fall in this category
         scheduleObj = {
           name: days[0][day][school][currentSlot]["period"],
           teacher: "",
@@ -379,7 +370,23 @@
     if (scheduleObj.room == "N/A") {
       scheduleObj.room = "";
     }
-    return scheduleObj;
+    // Add in photos if the user's schedule is being rendered
+    if (type == "full") {
+      // Add the left-hand images to the schedule
+      scheduleObj = addScheduleImages(scheduleObj, schedule);
+    } else if (type == "lite") {
+      if (letterToNum(scheduleObj.period) <= 8) { // If it's a class period
+        // Determine if the class is shared
+        scheduleObj.shared = isSharedClass(scheduleObj);
+      } else {
+        return null; // Skip over lunch, advisory, assembly, etc.
+      }
+    }
+    // Split the time into the start and end times
+    var times = days[0][day][school][currentSlot]["time"].split('-');
+    scheduleObj.startTime = times[0].trim();
+    scheduleObj.endTime = times[1].trim();
+    return scheduleObj
   }
 
   // Add the images on the left side to full schedules
@@ -395,10 +402,10 @@
     // If class is a special class or free period
     } else if (scheduleObj.period == "X" || scheduleObj.name == "Free Period") {
       scheduleObj.teacherLink = "";
-      var image_url = scheduleObj.name.toLowerCase();
-      image_url = image_url.replace("/", "");
-      image_url = image_url.replace(/\s/g, '');
-      scheduleObj.avatar = "/images/" + image_url + ".jpg";
+      var image_name = scheduleObj.name.toLowerCase();
+      image_name = image_name.replace("/", "");
+      image_name = image_name.replace(/\s/g, '');
+      scheduleObj.avatar = "/images/" + image_name + ".jpg";
 
     // If the class is a normal class but the user is a teacher
     } else {
@@ -425,31 +432,18 @@
     var school = getSchool(schedule.grade);
     var todaySchedule = [];
     // The current schedule for that day
-    var day = getDaySchedule(dateObj, days);
+    var day = getScheduleTypeForDate(dateObj, days);
     // If it is a normal day (no all day event)
     if (!days[0][day].allDayEvent) {
       // For each class
       for (var currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
         // Render the base of the class
-        var scheduleObj = renderClassBase(schedule, school, day, currentSlot);
-        // Add in photos if the user's schedule is being rendered
-        if (type == "full") {
-          // Add the left-hand images to the schedule
-          scheduleObj = addScheduleImages(scheduleObj, schedule);
-        } else if (type == "lite") {
-          if (letterToNum(scheduleObj.period) <= 8) { // If it's a class period
-            // Determine if the class is shared
-            scheduleObj.shared = isSharedClass(scheduleObj);
-          } else {
-            continue; // Skip over lunch, advisory, assembly, etc.
-          }
+        var scheduleObj = createClassEntry(schedule, school, day, currentSlot, type);
+        if (scheduleObj) { // If scheduleObj is not null
+          // To see when scheduleObj might be null, look at createClassEntry()
+          // Push scheduleObj to a list of class objs
+          todaySchedule.push(scheduleObj);
         }
-        // Split the time into the start and end times
-        var times = days[0][day][school][currentSlot]["time"].split('-');
-        scheduleObj.startTime = times[0].trim();
-        scheduleObj.endTime = times[1].trim();
-        // Push scheduleObj to a list of class objs
-        todaySchedule.push(scheduleObj);
       }
       // Add the list of schedules to scheduleElement's entries array
       scheduleElement.entries = todaySchedule;
