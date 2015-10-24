@@ -177,10 +177,6 @@
       // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
       },
-      not: function(bool) {
-        //Ugly function, but necessary for running the
-        return !bool;
-      },
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
       },
