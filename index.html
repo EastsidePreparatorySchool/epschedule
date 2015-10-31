@@ -164,8 +164,9 @@
     marker.title = "Your face";
     map.appendChild(marker);
   }
-  function letterToNum(letter) {
-    return letter.charCodeAt(0) - 64;
+  function isStandardClass(letter) {
+    var standardPeriods = ["0", "A", "B", "C", "D", "E", "F", "G", "H"];
+    return standardPeriods.indexOf(letter) >= 0;
   }
   function getGpsFail(error) {
     switch(error.code) {
@@ -293,10 +294,9 @@
     daySpan.firstChild.textContent = dateToString(dateObj);
   }
   function getRandomImage(dayEventObj) {
-    var numImages = Math.floor((Math.random() * dayEventObj.numImages) + 1);
-    var imageUrl = "/images/" + dayEventObj.imagePrefix + numImages.toString() + ".jpg";
-    console.log(imageUrl);
-    return imageUrl
+    var index = Math.floor((Math.random() * dayEventObj.numImages) + 1);
+    var imageUrl = "/images/" + dayEventObj.imagePrefix + index.toString() + ".jpg";
+    return imageUrl;
   }
 
   // Determine whether the user is in middle or upper school
@@ -324,9 +324,8 @@
   // Generate basic name, teacher, room, time, and period info for a class
   function createClassEntry(schedule, school, day, currentSlot, type) {
     var scheduleObj;
-    var standardPeriods = ["0", "A", "B", "C", "D", "E", "F", "G", "H"];
     // If it is a normal period
-    if (standardPeriods.indexOf(days[0][day][school][currentSlot]["period"]) >= 0) {
+    if (isStandardPeriod(days[0][day][school][currentSlot]["period"])) {
       for (var k = 0; k < schedule["classes"].length; k++) {
         if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
           var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
@@ -367,7 +366,7 @@
       // Add the left-hand images to the schedule
       addScheduleImages(scheduleObj, schedule);
     } else if (type == "lite") {
-      if (letterToNum(scheduleObj.period) <= 8) { // If it's a class period
+      if (isStandardClass(scheduleObj.period)) { // If it's a class period
         // Determine if the class is shared
         scheduleObj.shared = isSharedClass(scheduleObj);
       } else {
