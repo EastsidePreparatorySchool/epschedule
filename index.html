@@ -325,7 +325,7 @@
   function createClassEntry(schedule, school, day, currentSlot, type) {
     var scheduleObj;
     // If it is a normal period
-    if (isStandardPeriod(days[0][day][school][currentSlot]["period"])) {
+    if (isStandardClass(days[0][day][school][currentSlot]["period"])) {
       for (var k = 0; k < schedule["classes"].length; k++) {
         if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
           var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
