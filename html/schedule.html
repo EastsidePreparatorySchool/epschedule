@@ -119,10 +119,10 @@
   <template>
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
     <div layout="" vertical="">
-      <template is="dom-if" if="{{imageProperties}}">
+      <template is="dom-if" if="{{allDayEvent}}">
         <div class="status">
-          <img src="{{imageProperties.url}}"></img>
-          <p>{{imageProperties.text}}</p>
+          <img src="{{allDayEvent.url}}"></img>
+          <p>{{allDayEvent.text}}</p>
         </div>
       </template>
       <template is="dom-repeat" id="entryList" items="{{entries}}">
@@ -175,9 +175,6 @@
       ready: function() {
       // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
-      },
-      isEmpty: function(classList) {
-        return classList.length == 0;
       },
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;

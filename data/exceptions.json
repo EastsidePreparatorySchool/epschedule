@@ -125,30 +125,87 @@
   {"period": "H", "time": "2:40-3:15"}
 ]},
 
-"15SpringFinalsD1":{"MS": [
-  {"period": "E", "time": "8:00-9:30"},
-  {"period": "F", "time": "10:15-11:45"},
+"FallFinalsD1":{
+  "MS": [
+  {"period": "A", "time": "8:00-9:30"},
+  {"period": "B", "time": "10:15-11:45"},
   {"period": "Lunch", "time": "11:45-12:30"},
   {"period": "Advisory", "time": "12:30-1:00"},
-  {"period": "G", "time": "1:00-2:30"}
+  {"period": "C", "time": "1:00-2:30"}],
+  "US": [
+  {"period": "A", "time": "8:00-9:30"},
+  {"period": "B", "time": "10:15-11:45"},
+  {"period": "Advisory", "time": "11:45-12:30"},
+  {"period": "Lunch", "time": "12:30-1:00"},
+  {"period": "C", "time": "1:00-2:30"}
 ]},
-"15SpringFinalsD2":{"MS": [
-  {"period": "H", "time": "8:00-8:30"},
-  {"period": "A", "time": "10:15-11:45"},
+
+"FallFinalsD2":{
+  "MS": [
+  {"period": "D", "time": "8:00-9:30"},
+  {"period": "E", "time": "10:15-11:45"},
   {"period": "Lunch", "time": "11:45-12:30"},
   {"period": "Advisory", "time": "12:30-1:00"},
-  {"period": "B", "time": "1:00-2:30"}
+  {"period": "F", "time": "1:00-2:30"}],
+  "US": [
+  {"period": "D", "time": "8:00-9:30"},
+  {"period": "E", "time": "10:15-11:45"},
+  {"period": "Advisory", "time": "11:45-12:30"},
+  {"period": "Lunch", "time": "12:30-1:00"},
+  {"period": "F", "time": "1:00-2:30"}
 ]},
-"15SpringFinalsD3":{"MS": [
-  {"period": "C", "time": "8:00-8:40"},
-  {"period": "D", "time": "10:15-11:45"},
+
+"FallFinalsD3":{
+  "MS": [
+  {"period": "G", "time": "8:00-9:30"},
+  {"period": "H", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"}],
+  "US": [
+  {"period": "G", "time": "8:00-9:30"},
+  {"period": "H", "time": "10:15-11:45"},
   {"period": "Lunch", "time": "11:45-12:30"}
 ]},
-"NoSchool":{
-  "MS": [],
 
-  "US": []
+"FullMonday":{
+  "MS": [
+  {"period": "A", "time": "8:00-8:45"},
+  {"period": "B", "time": "8:50-9:35"},
+  {"period": "C", "time": "9:40-10:25"},
+  {"period": "D", "time": "10:30-11:15"},
+  {"period": "Lunch", "time": "11:20-11:55"},
+  {"period": "E", "time": "12:00-12:45"},
+  {"period": "F", "time": "12:50-1:35"},
+  {"period": "G", "time": "1:40-2:25"},
+  {"period": "H", "time": "2:30-3:15"}],
+
+  "US": [
+  {"period": "A", "time": "8:00-8:45"},
+  {"period": "B", "time": "8:50-9:35"},
+  {"period": "C", "time": "9:40-10:25"},
+  {"period": "D", "time": "10:30-11:15"},
+  {"period": "E", "time": "11:20-11:55"},
+  {"period": "Lunch", "time": "12:00-12:45"},
+  {"period": "F", "time": "12:50-1:35"},
+  {"period": "G", "time": "1:40-2:25"},
+  {"period": "H", "time": "2:30-3:15"}
+]},
+
+"NoSchool":{
+  "allDayEvent": {
+    "imagePrefix": "noschool",
+    "name": "No School",
+    "numImages": 6
+  }
+},
+
+"ServiceLearning":{
+  "allDayEvent": {
+    "imagePrefix": "service",
+    "name": "Service Learning Day",
+    "numImages": 2
+  }
 }
+
 },
 [
 {"day": 9, "month": 9, "year": 2015, "schedule": "FirstDay"},
@@ -156,6 +213,16 @@
 {"day": 6, "month": 10, "year": 2015, "schedule": "Wednesday"},
 {"day": 7, "month": 10, "year": 2015, "schedule": "Thursday"},
 {"day": 8, "month": 10, "year": 2015, "schedule": "Friday"},
-{"day": 9, "month": 10, "year": 2015, "schedule": "NoSchool"}
+{"day": 9, "month": 10, "year": 2015, "schedule": "NoSchool"},
+{"day": 12, "month": 10, "year": 2015, "schedule": "Tuesday"},
+{"day": 13, "month": 10, "year": 2015, "schedule": "Wednesday"},
+{"day": 14, "month": 10, "year": 2015, "schedule": "ServiceLearning"},
+{"day": 15, "month": 10, "year": 2015, "schedule": "Thursday"},
+{"day": 16, "month": 10, "year": 2015, "schedule": "Friday"},
+{"day": 16, "month": 11, "year": 2015, "schedule": "FullMonday"},
+{"day": 17, "month": 11, "year": 2015, "schedule": "FallFinalsD1"},
+{"day": 18, "month": 11, "year": 2015, "schedule": "FallFinalsD2"},
+{"day": 19, "month": 11, "year": 2015, "schedule": "FallFinalsD3"},
+{"day": 20, "month": 11, "year": 2015, "schedule": "NoSchool"}
 ]
 ]
