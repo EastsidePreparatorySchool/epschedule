@@ -183,8 +183,8 @@
   {"period": "B", "time": "8:50-9:35"},
   {"period": "C", "time": "9:40-10:25"},
   {"period": "D", "time": "10:30-11:15"},
-  {"period": "E", "time": "11:20-11:55"},
-  {"period": "Lunch", "time": "12:00-12:45"},
+  {"period": "E", "time": "11:20-12:05"},
+  {"period": "Lunch", "time": "12:10-12:45"},
   {"period": "F", "time": "12:50-1:35"},
   {"period": "G", "time": "1:40-2:25"},
   {"period": "H", "time": "2:30-3:15"}
