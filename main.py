@@ -23,6 +23,8 @@ import os
 import string
 import logging
 import datetime
+import update_lunch
+
 from google.appengine.ext import db
 from google.appengine.ext import vendor
 
@@ -763,6 +765,12 @@ class AdminHandler(RegisterBaseHandler):
             if len(verification[email]['verified']) == 1 and len(verification[email]['unverified']) >= 1:
                 db.delete(verification[email]['unverified'])
 
+class CronHandler(BaseHandler):
+    def get(self, job): # On url invoke
+        if job == "lunch":
+            lunches = update_lunch.load_lunches()
+            logging.info(lunches)
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/about', AboutHandler),
@@ -778,5 +786,6 @@ app = webapp2.WSGIApplication([
     ('/teacher/([\w\-]+)', TeacherHandler),
     ('/student/([\w\-]+)', StudentHandler),
     ('/admin', AdminHandler),
-    ('/admin/(\w+)', AdminHandler)
+    ('/admin/(\w+)', AdminHandler),
+    ('/cron/(\w+)', CronHandler)
 ], debug=True)
