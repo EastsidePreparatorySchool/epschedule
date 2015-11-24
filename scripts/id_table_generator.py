@@ -8,8 +8,9 @@ EXCEPTIONS = {"estmary":"lstmary"}
 
 def make_username(firstname, lastname):
     name = firstname[0] + lastname
+    print name
     if name in EXCEPTIONS:
-        return exception[name]
+        return EXCEPTIONS[name]
     return name
 
 files = listdir("C:/Users/guberti/Documents/Github/EPSchedule/schedules")
