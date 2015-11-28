@@ -630,11 +630,14 @@ class MainHandler(BaseHandler):
             id = "4093"
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
+        lunch_objs = update_lunch.getLunchForDate()
         if schedule is not None:
+            # Handler for how to serialize date objs into json
             template_values = { \
               'schedule': json.dumps(schedule), \
               'days': json.dumps(DAYS), \
-              'components': self.get_components_filename() \
+              'components': self.get_components_filename(), \
+              'lunches': json.dumps(lunch_objs) \
             }
             template = JINJA_ENVIRONMENT.get_template('index.html')
             self.response.write(template.render(template_values))
@@ -768,8 +771,8 @@ class AdminHandler(RegisterBaseHandler):
 class CronHandler(BaseHandler):
     def get(self, job): # On url invoke
         if job == "lunch":
-            lunches = update_lunch.load_lunches()
-            logging.info(lunches)
+            update_lunch.updateDB()
+            self.response.write("Success")
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),

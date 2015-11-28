@@ -87,6 +87,7 @@
 
   var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
+  var lunches = {{lunches | safe}};
   var globalDate = getInitialDate();
 
   function getInitialDate() {
@@ -133,7 +134,7 @@
   function updateMainSchedule() {
     var scheduleElement = document.getElementById('mainschedule');
     renderDate(globalDate);
-    renderSchedule(globalDate, userSchedule, "full", scheduleElement);
+    renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches);
   }
   function renderToast(text) {
     toast = document.getElementById("toast");
@@ -417,7 +418,29 @@
     return false;
   }
 
-  function renderSchedule(dateObj, schedule, type, scheduleElement) {
+  function getLunchForDate(lunch_list, date) {
+    // Returns the lunch for the given date
+    // If there is no lunch, returns null
+    for (var i = 0; i < lunch_list.length; i++) {
+      var lunch = lunch_list[i];
+      console.log(date.getDate());
+      console.log(date.getMonth());
+      console.log(date.getYear());
+      console.log(lunch["day"]);
+      console.log(lunch["month"]);
+      console.log(lunch["year"]);
+      if (
+        date.getDate() == lunch["day"] &&
+        date.getMonth() == lunch["month"] &&
+        date.getYear() == lunch["year"]
+        ) {
+        window.alert("Found a lunch match!");
+        return lunch;
+      }
+    }
+  }
+
+  function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list) {
     // Either MS or US
     var school = getSchool(schedule.grade);
     var todaySchedule = [];
@@ -448,6 +471,8 @@
     }
     // Add in the expansion functions to the full schedule
     if (type == "full") {
+      scheduleElement.lunchInfo = getLunchForDate(lunch_list, dateObj);
+      console.log(scheduleElement.lunchInfo);
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
         var name = orig_name.replace(" ", "_");
