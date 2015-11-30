@@ -143,6 +143,9 @@
                 </template>
               </p>
               <h2>{{item.name}}</h2>
+              <template is="dom-if" if="{{isLunchWithData(item.name, lunchInfo)}}">
+                <p>{{lunchInfo.summary}}</p>
+              </template>
             </div>
           </div>
           <iron-collapse id="{{computeCollapseId(item.name)}}">
@@ -176,7 +179,14 @@
       // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
       },
+      isLunchWithData: function(name, lunchData) {
+        return name == "Lunch" && lunchData.summary;
+      },
+      isNotLunch: function(name) {
+        return name != "Lunch";
+      },
       hasTeacherAndRoom: function(item) {
+        console.log(item.lunchInfo);
         return item.teacherLastName && item.room;
       },
       hasTeacherOnly: function(item) {

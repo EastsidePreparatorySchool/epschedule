@@ -423,18 +423,13 @@
     // If there is no lunch, returns null
     for (var i = 0; i < lunch_list.length; i++) {
       var lunch = lunch_list[i];
-      console.log(date.getDate());
-      console.log(date.getMonth());
-      console.log(date.getYear());
-      console.log(lunch["day"]);
-      console.log(lunch["month"]);
-      console.log(lunch["year"]);
+      // Note that date.getMonth is from 0-11 but
+      // all lunch date months are stored 1-12
       if (
         date.getDate() == lunch["day"] &&
-        date.getMonth() == lunch["month"] &&
-        date.getYear() == lunch["year"]
+        date.getMonth() + 1 == lunch["month"] &&
+        date.getFullYear() == lunch["year"]
         ) {
-        window.alert("Found a lunch match!");
         return lunch;
       }
     }
@@ -471,8 +466,10 @@
     }
     // Add in the expansion functions to the full schedule
     if (type == "full") {
+      if (scheduleElement.lunchInfo) {
+        window.alert("STUFF IS GETTING CLOBBERATTED!");
+      }
       scheduleElement.lunchInfo = getLunchForDate(lunch_list, dateObj);
-      console.log(scheduleElement.lunchInfo);
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
         var name = orig_name.replace(" ", "_");
