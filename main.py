@@ -139,7 +139,7 @@ REGISTER_SUCCESS = {
 class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this handler
     def check_id(self):
         encoded_id = self.request.cookies.get("SID")
-        if encoded_id is None:
+        if not encoded_id:
             return None
         # TODO add code to check if id is valid
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
