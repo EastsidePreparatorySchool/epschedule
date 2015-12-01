@@ -67,8 +67,12 @@ def writeToDB(events): # Takes the raw events, sanitizes them, and plops them in
 
         lunches_for_date = Lunch.query(Lunch.day == date)
         logging.info(lunches_for_date)
-        # TODO The three lines below do not work. Fix them.
-        if lunches_for_date: # If there is already a lunch for that date
+        has_lunch_for_date = False
+
+        for lunch in lunches_for_date: # If any results were returned
+            has_lunch_for_date = True
+
+        if (has_lunch_for_date):
             logging.info(str(date) + " is already in the DB")
             continue
 
@@ -77,7 +81,9 @@ def writeToDB(events): # Takes the raw events, sanitizes them, and plops them in
         summary = summary.replace("\\", "") # Remove back slashes
 
         # Remove html from the description, and break it up into lines
-        desc = event["DESCRIPTION"].replace("\,", ",")
+        desc = event["DESCRIPTION"]
+        desc = desc.replace("\,", ",")
+        desc = desc.replace("\;", ",")
         no_html_desc = re.sub("<.*?>", '', desc)
         description = string.split(no_html_desc, '\\n')
 
@@ -89,9 +95,9 @@ def writeToDB(events): # Takes the raw events, sanitizes them, and plops them in
         entry.put()
 
 def updateDB():
-    #url = "http://www.eastsideprep.org/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&ai1ec_cat_ids=57?"
-    #mainresponse = urllib2.urlopen(url)
-    mainresponse = open("download.ics") # Opens downloaded ics file
+    url = "http://www.eastsideprep.org/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&ai1ec_cat_ids=57?"
+    mainresponse = urllib2.urlopen(url)
+    #mainresponse = open("download.ics") # Opens downloaded ics file
 
     text = mainresponse.read()
     lines = text.splitlines()
@@ -100,8 +106,8 @@ def updateDB():
 
 def getLunchForDate(days_into_past=7): # date is a date object
     # days_into_past is the number of days into the past to go
-    #current_date = datetime.date.today()
-    current_date = datetime.date(2015, 10, 27)
+    current_date = datetime.date.today()
+    #current_date = datetime.date(2015, 10, 27)
     earliest_lunch = current_date - datetime.timedelta(days_into_past)
     query = Lunch.query(Lunch.day >= earliest_lunch)
     lunch_objs = []

@@ -204,6 +204,14 @@
     "name": "Service Learning Day",
     "numImages": 2
   }
+},
+
+"FallTriSchedules":{
+  "allDayEvent": {
+    "imagePrefix": "noschool",
+    "name": "Fall Trimester Schedules",
+    "numImages": 1
+  }
 }
 
 },
@@ -223,6 +231,6 @@
 {"day": 17, "month": 11, "year": 2015, "schedule": "FallFinalsD1"},
 {"day": 18, "month": 11, "year": 2015, "schedule": "FallFinalsD2"},
 {"day": 19, "month": 11, "year": 2015, "schedule": "FallFinalsD3"},
-{"day": 20, "month": 11, "year": 2015, "schedule": "NoSchool"}
+{"day": 20, "month": 11, "year": 2015, "schedule": "NoSchool"},
 ]
 ]

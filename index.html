@@ -323,7 +323,7 @@
   }
 
   // Generate basic name, teacher, room, time, and period info for a class
-  function createClassEntry(schedule, school, day, currentSlot, type) {
+  function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
     var scheduleObj;
     // If it is a normal period
     if (isStandardClass(days[0][day][school][currentSlot]["period"])) {
@@ -354,6 +354,9 @@
         scheduleObj.name == "US Community") {
 
         scheduleObj.room = "LPC Commons";
+      }
+      if (scheduleObj.name == "Lunch") {
+        scheduleObj.lunchInfo = lunchInfo;
       }
     }
     if (scheduleObj.teacher == "N/A") {
@@ -439,6 +442,7 @@
     // Either MS or US
     var school = getSchool(schedule.grade);
     var todaySchedule = [];
+    var lunchInfo = getLunchForDate(lunch_list, dateObj);
     // The current schedule for that day
     var day = getScheduleTypeForDate(dateObj, days);
     // If it is a normal day (no all day event)
@@ -446,7 +450,7 @@
       // For each class
       for (var currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
         // Render the base of the class
-        var scheduleObj = createClassEntry(schedule, school, day, currentSlot, type);
+        var scheduleObj = createClassEntry(schedule, school, day, currentSlot, type, lunchInfo);
         if (scheduleObj) { // If scheduleObj is not null
           // To see when scheduleObj might be null, look at createClassEntry()
           // Push scheduleObj to a list of class objs
@@ -466,10 +470,6 @@
     }
     // Add in the expansion functions to the full schedule
     if (type == "full") {
-      if (scheduleElement.lunchInfo) {
-        window.alert("STUFF IS GETTING CLOBBERATTED!");
-      }
-      scheduleElement.lunchInfo = getLunchForDate(lunch_list, dateObj);
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
         var name = orig_name.replace(" ", "_");
