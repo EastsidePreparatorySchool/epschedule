@@ -23,6 +23,8 @@ import os
 import string
 import logging
 import datetime
+import update_lunch
+
 from google.appengine.ext import db
 from google.appengine.ext import vendor
 
@@ -153,13 +155,16 @@ REGISTER_SUCCESS = {
 class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this handler
     def check_id(self):
         encoded_id = self.request.cookies.get("SID")
-        if encoded_id is None:
+        if not encoded_id:
             return None
         # TODO add code to check if id is valid
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         return id
 
-    def check_password(self, email, password):  # Returns 0 for all good, returns 1 for correct password but you need to verify the account, returns 2 for incorrect password
+    def check_password(self, email, password):
+        # Returns 0 for all good,
+        # returns 1 for correct password but you need to verify the account,
+        # returns 2 for incorrect password
         account_confirmed = False
         known_username = False
 
@@ -188,7 +193,8 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
 
         return {}  # success
 
-    def check_signed_up(self, email):           # Returns false if there is already a registered user signed up, returns true if there is not
+    def check_signed_up(self, email):
+        # Returns false if there is already a registered user signed up, returns true if there is not
         user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
         for query_result in user_obj_query:
             return False
@@ -390,7 +396,8 @@ class LoginHandler (BaseHandler):
                 self.response.set_cookie('SID', encoded_id, expires=expiration_date)
                 self.response.write(create_error_obj(""))
             else:
-                self.response.write(create_error_obj("Something went wrong! " + email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
+                self.response.write(create_error_obj("Something went wrong! " + \
+                    email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
 
 class ChangePasswordHandler(BaseHandler):
     def post(self):
@@ -519,7 +526,9 @@ class PeriodHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
-        # Should return back which of your teachers are free, which rooms are free, what class you currently have then, and what classes you could take then
+        # Should return back which of your teachers are free,
+        # which rooms are free, what class you currently have then,
+        # and what classes you could take then
         dataobj = {'freeteachers':[], 'freerooms':[], 'currentclass':{}, 'potentialclassschedules':[]}
         if id == DEMO_ID: # If this is the demo accound
             id = "4093"
@@ -644,11 +653,14 @@ class MainHandler(BaseHandler):
             id = "4093"
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
+        lunch_objs = update_lunch.getLunchForDate()
         if schedule is not None:
+            # Handler for how to serialize date objs into json
             template_values = { \
               'schedule': json.dumps(schedule), \
               'days': json.dumps(DAYS), \
-              'components': self.get_components_filename() \
+              'components': self.get_components_filename(), \
+              'lunches': json.dumps(lunch_objs) \
             }
             template = JINJA_ENVIRONMENT.get_template('index.html')
             self.response.write(template.render(template_values))
@@ -803,7 +815,11 @@ class AdminHandler(RegisterBaseHandler):
                 social_obj = Social(student_id = sid)
                 db.put(social_obj)
 
-
+class CronHandler(BaseHandler):
+    def get(self, job): # On url invoke
+        if job == "lunch":
+            update_lunch.updateDB()
+            self.response.write("Success")
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
@@ -820,5 +836,6 @@ app = webapp2.WSGIApplication([
     ('/teacher/([\w\-]+)', TeacherHandler),
     ('/student/([\w\-]+)', StudentHandler),
     ('/admin', AdminHandler),
-    ('/admin/(\w+)', AdminHandler)
+    ('/admin/(\w+)', AdminHandler),
+    ('/cron/(\w+)', CronHandler)
 ], debug=True)

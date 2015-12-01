@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="x-schedule">
@@ -34,6 +35,22 @@
     }
     :host-context(.no-transition) {
       transition: none;
+    }
+    .status {
+      width: 100%;
+    }
+    .status img {
+      width: 100%;
+      position: absolute;
+      top: 0px;
+    }
+    .status p {
+      position: relative;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 16px;
+      margin: 0px;
+      color: white;
+      font-size: 1.5rem;
     }
     .card {
       margin-bottom: 1px;
@@ -98,14 +115,26 @@
     .student a:hover {
       color: #2196f3;
     }
+    .lunch {
+      background: white;
+      padding-left: 64px;
+      padding-right: 16px;
+      font-size: 0.9rem;
+    }
   </style>
   <template>
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
     <div layout="" vertical="">
+      <template is="dom-if" if="{{allDayEvent}}">
+        <div class="status">
+          <img src="{{allDayEvent.url}}"></img>
+          <p>{{allDayEvent.text}}</p>
+        </div>
+      </template>
       <template is="dom-repeat" id="entryList" items="{{entries}}">
         <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
           <div class="card-header" layout="" horizontal="" center="">
-            <img src="{{item.avatar}}" width="48" height="48">
+            <img src="{{item.avatar}}">
             <div class="card-mid" layout="" vertical="">
               <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
                 <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
@@ -120,9 +149,19 @@
                 </template>
               </p>
               <h2>{{item.name}}</h2>
+              <p>{{item.lunchInfo.summary}}</p>
             </div>
           </div>
           <iron-collapse id="{{computeCollapseId(item.name)}}">
+            <template is="dom-if" if="{{isLunchWithDesc(item)}}">
+              <div layout vertical class="lunch">
+                <ul>
+                  <li>{{getLineInDesc(item, "0")}}</li>
+                  <li>{{getLineInDesc(item, "1")}}</li>
+                  <li>{{getLineInDesc(item, "2")}}</li>
+                </ul>
+              </div>
+            </template>
             <div layout vertical>
               <template is="dom-repeat" items="{{item.students}}">
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
@@ -153,6 +192,18 @@
       // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
       },
+      isLunchWithDesc: function(item) {
+        if (item.lunchInfo) {
+          return true;
+        }
+        return false;
+      },
+      getLineInDesc: function(item, linenum) {
+        if (item.lunchInfo) {
+          var num = parseInt(linenum);
+          return item.lunchInfo.description[num];
+        }
+      },
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
       },
@@ -173,8 +224,11 @@
         var el = e.currentTarget;
         el.classList.toggle("selected");
         var item = this.$.entryList.itemForElement(el);
+        console.log(item.lunchInfo);
         var collapse = document.getElementById(this.computeCollapseId(item.name));
-        if (el.classList.contains("selected")) {
+        // We need the item.name != "Lunch" because we just
+        // want the lunch cards to toggle every time
+        if (el.classList.contains("selected") && item.name != "Lunch") {
           var xhr = new XMLHttpRequest();
           // Squash all punctuation to underscores
           var cleanedClass = item.name.replace(/[\W]/g, "_");

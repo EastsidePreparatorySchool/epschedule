@@ -9,6 +9,7 @@
   <link rel="import" href="{{components}}">
 
   <script>
+
   function signOut() {
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -86,6 +87,7 @@
 
   var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
+  var lunches = {{lunches | safe}};
   var globalDate = getInitialDate();
 
   function getInitialDate() {
@@ -132,7 +134,7 @@
   function updateMainSchedule() {
     var scheduleElement = document.getElementById('mainschedule');
     renderDate(globalDate);
-    renderSchedule(globalDate, userSchedule, "full", scheduleElement);
+    renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches);
   }
   function renderToast(text) {
     toast = document.getElementById("toast");
@@ -163,8 +165,9 @@
     marker.title = "Your face";
     map.appendChild(marker);
   }
-  function letterToNum(letter) {
-    return letter.charCodeAt(0) - 64;
+  function isStandardClass(letter) {
+    var standardPeriods = ["0", "A", "B", "C", "D", "E", "F", "G", "H"];
+    return standardPeriods.indexOf(letter) >= 0;
   }
   function getGpsFail(error) {
     switch(error.code) {
@@ -284,7 +287,6 @@
     scheduleElement.dateString = dateToString(scheduleElement.date);
     renderSchedule(scheduleElement.date, otherUserObj, "lite", scheduleElement);
   }
-
   function renderPeriod(periodObj) {
     console.log(periodObj);
   }
@@ -292,128 +294,182 @@
     var daySpan = document.getElementById("day");
     daySpan.firstChild.textContent = dateToString(dateObj);
   }
-  function renderSchedule(dateObj, schedule, type, scheduleElement) {
-    var school;
-    if (schedule.grade <= 8) {
-      school = "MS";
+  function getRandomImage(dayEventObj) {
+    var index = Math.floor((Math.random() * dayEventObj.numImages) + 1);
+    var imageUrl = "/images/" + dayEventObj.imagePrefix + index.toString() + ".jpg";
+    return imageUrl;
+  }
+
+  // Determine whether the user is in middle or upper school
+  function getSchool(grade) {
+    if (grade <= 8) {
+      return "MS";
     } else {
-      school = "US";
+      return "US";
     }
+  }
 
-    var todaySchedule = [];
-    var scheduleObj;
+  // Handles exceptions, also handles special weekend schedules
+  function getScheduleTypeForDate(dateObj, exceptions) {
     var day = dayOfWeekToString(dateObj.getDay());
-    for (var exception = 0; exception < days[1].length; exception++) { // Handles exceptions, also handles special weekend schedules
-        if (days[1][exception]["day"] == dateObj.getDate() && days[1][exception]["month"] == (dateObj.getMonth() + 1) && days[1][exception]["year"] == dateObj.getFullYear()) {
-            day = days[1][exception]["schedule"];
+    for (var exception = 0; exception < exceptions[1].length; exception++) {
+        if (exceptions[1][exception]["day"] == dateObj.getDate() &&
+            exceptions[1][exception]["month"] == (dateObj.getMonth() + 1) &&
+            exceptions[1][exception]["year"] == dateObj.getFullYear()) {
+            day = exceptions[1][exception]["schedule"];
         }
     }
-    var currentSlot;
-    for (currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
-        switch(days[0][day][school][currentSlot]["period"]) { // Falling through is intended in switch statement
-            case "0": // 0 Period
-            case "A": // A period
-            case "B": // B period
-            case "C": // C period
-            case "D": // D period
-            case "E": // E period
-            case "F": // F period
-            case "G": // G period
-            case "H": // H period
-                for (var k = 0; k < schedule["classes"].length; k++) {
-                    if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
-                        if (schedule["classes"][k]["name"] != "Free Period") {
-                            var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
-                            var teacherLast = teacherName.split(" ")[1]; // Teacher's last name
-                            scheduleObj = { name: schedule["classes"][k]["name"],
-                                teacher: teacherName,
-                                teacherLastName: teacherLast,
-                                room: schedule["classes"][k]["room"],
-                                period: days[0][day][school][currentSlot]["period"],
-                                time: ""}
+    return day;
+  }
 
-                        } else {
-                            scheduleObj = {name: "Free Period",
-                                teacher: "",
-                                teacherLastName: "",
-                                room: "",
-                                period: days[0][day][school][currentSlot]["period"],
-                                time: ""};
-                        }
-                    }
-                }
-                break;
-
-            default:
-              scheduleObj = {
-                name: days[0][day][school][currentSlot]["period"],
-                teacher: "",
-                room: "",
-                period: "X",
-                time: ""
-              };
-              if (scheduleObj.name == "Lunch" || scheduleObj.name == "Assembly" || scheduleObj.name == "US Community") {
-                scheduleObj.room = "LPC Commons";
-              }
+  // Generate basic name, teacher, room, time, and period info for a class
+  function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
+    var scheduleObj;
+    // If it is a normal period
+    if (isStandardClass(days[0][day][school][currentSlot]["period"])) {
+      for (var k = 0; k < schedule["classes"].length; k++) {
+        if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
+          var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
+          var teacherLast = teacherName.split(" ")[1]; // Teacher's last name
+          scheduleObj = { name: schedule["classes"][k]["name"],
+            teacher: teacherName,
+            teacherLastName: teacherLast,
+            room: schedule["classes"][k]["room"],
+            period: days[0][day][school][currentSlot]["period"],
+            time: ""};
+          break;
         }
-        if (scheduleObj.teacher == "N/A") {
-          scheduleObj.teacher = "";
-        }
-        if (scheduleObj.room == "N/A") {
-          scheduleObj.room = "";
-        }
-        // Add in photos if the user's schedule is being rendered
-        if (type == "full") {
+      }
+    } else { // If it is a special class, such as Lunch, Assembly, or Class Meeting
+      // Note that 0 Period Instrumental Music does not fall in this category
+      scheduleObj = {
+        name: days[0][day][school][currentSlot]["period"],
+        teacher: "",
+        room: "",
+        period: "X",
+        time: ""
+      };
+      if (scheduleObj.name == "Lunch" ||
+        scheduleObj.name == "Assembly" ||
+        scheduleObj.name == "US Community") {
 
-          // If the user is a normal user and the class is a normal class
-          if (scheduleObj.teacher != "" && schedule.grade) {
-            var sanitized_teacher_name;
-            sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
-            sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
-            scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
-            scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
-
-          // If class is a special class or free period
-          } else if (scheduleObj.period == "X" || scheduleObj.name == "Free Period") {
-            scheduleObj.teacherLink = "";
-            var image_url = scheduleObj.name.toLowerCase();
-            image_url = image_url.replace("/", "");
-            image_url = image_url.replace(/\s/g, '');
-            scheduleObj.avatar = "/images/" + image_url + ".jpg";
-
-          // If the class is a normal class but the user is a teacher
-          } else {
-            sanitized_teacher_name = schedule.firstname + "_" + schedule.lastname;
-            sanitized_teacher_name = sanitized_teacher_name.toLowerCase();
-            scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
-          }
-          scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
-
-
-        } else if (type == "lite") {
-          if (letterToNum(scheduleObj.period) <= 8) { // If it's a class period
-            scheduleObj.shared = false; // Find out if the user has a class that period
-            for (var i = 0; i < userSchedule.classes.length; i++) {
-              if (userSchedule.classes[i].period == scheduleObj.period && userSchedule.classes[i].name == scheduleObj.name) { // TODO find the name of GSH
-                scheduleObj.shared = true;
-                break;
-              }
-            }
-          } else {
-            continue; // Skip over lunch, advisory, assembly, etc.
-          }
-        }
-
-        var times = days[0][day][school][currentSlot]["time"].split('-');
-        scheduleObj.startTime = times[0].trim();
-        scheduleObj.endTime = times[1].trim();
-        todaySchedule.push(scheduleObj);
+        scheduleObj.room = "LPC Commons";
+      }
+      if (scheduleObj.name == "Lunch") {
+        scheduleObj.lunchInfo = lunchInfo;
+      }
     }
-
-    scheduleElement.entries = todaySchedule;
-
+    if (scheduleObj.teacher == "N/A") {
+      scheduleObj.teacher = "";
+    }
+    if (scheduleObj.room == "N/A") {
+      scheduleObj.room = "";
+    }
+    // Add in photos if the user's schedule is being rendered
     if (type == "full") {
+      // Add the left-hand images to the schedule
+      addScheduleImages(scheduleObj, schedule);
+    } else if (type == "lite") {
+      if (isStandardClass(scheduleObj.period)) { // If it's a class period
+        // Determine if the class is shared
+        scheduleObj.shared = isSharedClass(scheduleObj);
+      } else {
+        return null; // Skip over lunch, advisory, assembly, etc.
+      }
+    }
+    // Split the time into the start and end times
+    var times = days[0][day][school][currentSlot]["time"].split('-');
+    scheduleObj.startTime = times[0].trim();
+    scheduleObj.endTime = times[1].trim();
+    return scheduleObj;
+  }
+
+  // Add the images on the left side to full schedules
+  function addScheduleImages(scheduleObj, userSchedule) {
+    // If the user is a normal user and the class is a normal class
+    if (scheduleObj.teacher != "" && userSchedule.grade) {
+      var sanitized_teacher_name;
+      sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
+      sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
+      scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
+      scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
+
+    // If class is a special class or free period
+    } else if (scheduleObj.period == "X" || scheduleObj.name == "Free Period") {
+      scheduleObj.teacherLink = "";
+      var image_name = scheduleObj.name.toLowerCase();
+      image_name = image_name.replace("/", "");
+      image_name = image_name.replace(/\s/g, '');
+      scheduleObj.avatar = "/images/" + image_name + ".jpg";
+
+    // If the class is a normal class but the user is a teacher
+    } else {
+      sanitized_teacher_name = userSchedule.firstname + "_" + userSchedule.lastname;
+      sanitized_teacher_name = sanitized_teacher_name.toLowerCase();
+      scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
+    }
+    scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
+  }
+
+  function isSharedClass(scheduleObj) {
+    for (var i = 0; i < userSchedule.classes.length; i++) {
+      if (userSchedule.classes[i].period == scheduleObj.period &&
+          userSchedule.classes[i].name == scheduleObj.name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function getLunchForDate(lunch_list, date) {
+    // Returns the lunch for the given date
+    // If there is no lunch, returns null
+    for (var i = 0; i < lunch_list.length; i++) {
+      var lunch = lunch_list[i];
+      // Note that date.getMonth is from 0-11 but
+      // all lunch date months are stored 1-12
+      if (
+        date.getDate() == lunch["day"] &&
+        date.getMonth() + 1 == lunch["month"] &&
+        date.getFullYear() == lunch["year"]
+        ) {
+        return lunch;
+      }
+    }
+  }
+
+  function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list) {
+    // Either MS or US
+    var school = getSchool(schedule.grade);
+    var todaySchedule = [];
+    var lunchInfo = getLunchForDate(lunch_list, dateObj);
+    // The current schedule for that day
+    var day = getScheduleTypeForDate(dateObj, days);
+    // If it is a normal day (no all day event)
+    if (!days[0][day].allDayEvent) {
+      // For each class
+      for (var currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
+        // Render the base of the class
+        var scheduleObj = createClassEntry(schedule, school, day, currentSlot, type, lunchInfo);
+        if (scheduleObj) { // If scheduleObj is not null
+          // To see when scheduleObj might be null, look at createClassEntry()
+          // Push scheduleObj to a list of class objs
+          todaySchedule.push(scheduleObj);
+        }
+      }
+      // Add the list of schedules to scheduleElement's entries array
       scheduleElement.entries = todaySchedule;
+      // Tell the element that it is not an all day event
+      scheduleElement.allDayEvent = null;
+    } else { // If it is an all day event
+      // Get the data for the imageObj
+      var imgUrl = getRandomImage(days[0][day].allDayEvent);
+      var imageObj = {url: imgUrl, text: days[0][day].allDayEvent.name};
+      scheduleElement.allDayEvent = imageObj;
+      scheduleElement.entries = null; // Clear the classes
+    }
+    // Add in the expansion functions to the full schedule
+    if (type == "full") {
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
         var name = orig_name.replace(" ", "_");
@@ -443,6 +499,7 @@
     pages.exitAnimation = "";
     pages.selected = 1;
   }
+
   function closePopup() {
     pages.entryAnimation = "";
     pages.exitAnimation = "slide-right-animation";
