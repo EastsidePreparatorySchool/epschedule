@@ -198,6 +198,14 @@
   }
 },
 
+"ThanksgivingBreak":{
+  "allDayEvent": {
+    "imagePrefix": "thanksgiving",
+    "name": "Thanksgiving Break",
+    "numImages": 1
+  }
+},
+
 "ServiceLearning":{
   "allDayEvent": {
     "imagePrefix": "service",
@@ -209,7 +217,7 @@
 "FallTriSchedules":{
   "allDayEvent": {
     "imagePrefix": "noschool",
-    "name": "Fall Trimester Schedules",
+    "name": "Fall Trimester Schedules Today",
     "numImages": 1
   }
 }
@@ -232,5 +240,12 @@
 {"day": 18, "month": 11, "year": 2015, "schedule": "FallFinalsD2"},
 {"day": 19, "month": 11, "year": 2015, "schedule": "FallFinalsD3"},
 {"day": 20, "month": 11, "year": 2015, "schedule": "NoSchool"},
+{"day": 23, "month": 11, "year": 2015, "schedule": "ThanksgivingBreak"},
+{"day": 24, "month": 11, "year": 2015, "schedule": "ThanksgivingBreak"},
+{"day": 25, "month": 11, "year": 2015, "schedule": "ThanksgivingBreak"},
+{"day": 26, "month": 11, "year": 2015, "schedule": "ThanksgivingBreak"},
+{"day": 27, "month": 11, "year": 2015, "schedule": "ThanksgivingBreak"},
+{"day": 30, "month": 11, "year": 2015, "schedule": "NoSchool"},
+{"day": 1, "month": 12, "year": 2015, "schedule": "FallTriSchedules"}
 ]
 ]

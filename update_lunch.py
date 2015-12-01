@@ -83,7 +83,7 @@ def writeToDB(events): # Takes the raw events, sanitizes them, and plops them in
         # Remove html from the description, and break it up into lines
         desc = event["DESCRIPTION"]
         desc = desc.replace("\,", ",")
-        desc = desc.replace("\;", ",")
+        desc = desc.replace("\;", ";")
         no_html_desc = re.sub("<.*?>", '', desc)
         description = string.split(no_html_desc, '\\n')
 
