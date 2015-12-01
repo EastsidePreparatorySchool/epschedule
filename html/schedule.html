@@ -156,9 +156,9 @@
             <template is="dom-if" if="{{isLunchWithDesc(item)}}">
               <div layout vertical class="lunch">
                 <ul>
-                  <li>{{getLineInDesc(item, 0)}}</li>
-                  <li>{{getLineInDesc(item, 1)}}</li>
-                  <li>{{getLineInDesc(item, 2)}}</li>
+                  <li>{{getLineInDesc(item, "0")}}</li>
+                  <li>{{getLineInDesc(item, "1")}}</li>
+                  <li>{{getLineInDesc(item, "2")}}</li>
                 </ul>
               </div>
             </template>
@@ -194,13 +194,14 @@
       },
       isLunchWithDesc: function(item) {
         if (item.lunchInfo) {
-          return true
+          return true;
         }
-        return false
+        return false;
       },
       getLineInDesc: function(item, linenum) {
         if (item.lunchInfo) {
-          return item.lunchInfo.description[linenum];
+          var num = parseInt(linenum);
+          return item.lunchInfo.description[num];
         }
       },
       hasTeacherAndRoom: function(item) {
