@@ -262,6 +262,9 @@
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
         '<img src="/images/material_face.svg" width="128px" height="128px">' +
+        '<div class="social">' +
+        '<paper-button class="bluebutton">Friend</paper-button>' +
+        '</div>' +
         '<div layout vertical><h3><span class="grade">' + grade + '</span></h3>' +
         '<p><a href="mailto:' + email + '""><iron-icon icon="communication:email"></iron-icon>' +
         '<span class="email">Email ' + studentObj.firstname + '</span></a></p></div></div></paper-material>' +
@@ -531,6 +534,10 @@
   neon-animated-pages {
     height: 100%;
   }
+  .social {
+    width: 300px;
+    height: 500px;
+  }
   #drawerheader {
     background: white;
   }
@@ -546,6 +553,11 @@
     text-align: left;
     text-transform: none;
     font-size: 14px;
+  }
+  .bluebutton {
+      margin: 12px auto;
+      color: white;
+      background: #2196f3;
   }
   #changepassword {
     color:white;
