@@ -262,9 +262,10 @@
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
         '<img src="/images/material_face.svg" width="128px" height="128px">' +
-        '<div class="social">' +
+        '<div class="social"><div class="buttonscolumn">' +
         '<paper-button class="bluebutton">Friend</paper-button>' +
-        '</div>' +
+        '<paper-button disabled>' + studentObj.firstname + ' is friends with you</paper-button>' +
+        '</div><div class=socialheader>' + studentObj.firstname + ' is friends with</div></div>' +
         '<div layout vertical><h3><span class="grade">' + grade + '</span></h3>' +
         '<p><a href="mailto:' + email + '""><iron-icon icon="communication:email"></iron-icon>' +
         '<span class="email">Email ' + studentObj.firstname + '</span></a></p></div></div></paper-material>' +
@@ -599,6 +600,11 @@
     padding: 16px;
     background: white;
     margin-bottom: 16px;
+  }
+  .-socialheader {
+    padding: 16px;
+    font-size: 14px;
+    color: gray;
   }
   #popup a {
     color: gray;
