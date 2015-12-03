@@ -442,7 +442,9 @@
     // Either MS or US
     var school = getSchool(schedule.grade);
     var todaySchedule = [];
-    var lunchInfo = getLunchForDate(lunch_list, dateObj);
+    if (type == "full") {
+      var lunchInfo = getLunchForDate(lunch_list, dateObj);
+    }
     // The current schedule for that day
     var day = getScheduleTypeForDate(dateObj, days);
     // If it is a normal day (no all day event)
