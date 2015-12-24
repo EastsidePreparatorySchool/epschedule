@@ -1,0 +1,55 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//10.20.30.25//NONSGML kigkonsult.se iCalcreator 2.20//
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-FROM-URL:http://www.eastsideprep.org
+X-WR-TIMEZONE:America/Los_Angeles
+BEGIN:VTIMEZONE
+TZID:America/Los_Angeles
+X-LIC-LOCATION:America/Los_Angeles
+BEGIN:STANDARD
+DTSTART:20151101T020000
+TZOFFSETFROM:-0700
+TZOFFSETTO:-0800
+TZNAME:PST
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20160313T020000
+TZOFFSETFROM:-0800
+TZOFFSETTO:-0700
+TZNAME:PDT
+END:DAYLIGHT
+END:VTIMEZONE
+
+BEGIN:VEVENT
+UID:ai1ec-359585@www.eastsideprep.org
+DTSTAMP:99991220T235231Z
+CATEGORIES;LANGUAGE=en-US:Lunch
+CONTACT:
+DESCRIPTION:<p>Reuben sandwich (RB\, Sauerkraut\, 1000 Island\, Swiss\, Rye
+  Bread)\, Tim’s potato chips- GF\, DF available<br />\nVegetarian: Grilled
+  Mushroom sandwich<br />\nPrice: $7.50</p>
+DTSTART;TZID=America/Los_Angeles:20151026T110000
+DTEND;TZID=America/Los_Angeles:20151026T121500
+SEQUENCE:0
+SUMMARY:Testy test test test | $99.99
+URL:http://www.eastsideprep.org/event/reuben-sandwich-7-50/
+END:VEVENT
+
+BEGIN:VEVENT
+UID:ai1ec-359586@www.eastsideprep.org
+DTSTAMP:99991221T235231Z
+CATEGORIES;LANGUAGE=en-US:Lunch
+CONTACT:
+DESCRIPTION:<p>Penne\, Italian sausage with garlic cream sauce\, spinach\,
+ Bread stick- GF available<br />\nVegetarian: Penne garlic cream sauce\, Sp
+ inach\, roasted tomatoes<br />\nPrice:$7.50</p>
+DTSTART;TZID=America/Los_Angeles:20151027T110500
+DTEND;TZID=America/Los_Angeles:20151027T121000
+SEQUENCE:0
+SUMMARY:FOOBARBARBAR | $99.99
+URL:http://www.eastsideprep.org/event/penne-and-italian-sausage-7-50/
+END:VEVENT
+
+END:VCALENDAR

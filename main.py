@@ -778,7 +778,7 @@ class AdminHandler(RegisterBaseHandler):
 class CronHandler(BaseHandler):
     def get(self, job): # On url invoke
         if job == "lunch":
-            update_lunch.updateDB()
+            update_lunch.update_db()
             self.response.write("Success")
 
 app = webapp2.WSGIApplication([

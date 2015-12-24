@@ -8,14 +8,9 @@ import re
 from google.appengine.ext import ndb
 from HTMLParser import HTMLParser
 
-class MLStripper(HTMLParser):
-    def __init__(self):
-        self.reset()
-        self.fed = []
-    def handle_data(self, d):
-        self.fed.append(d)
-    def get_data(self):
-        return ''.join(self.fed)
+# Globals
+format = "%Y%m%dT%H%M%S"
+lunch_url = "http://www.eastsideprep.org/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&ai1ec_cat_ids=57?"
 
 class Lunch(ndb.Model):
     summary = ndb.StringProperty(required=True)
@@ -23,15 +18,7 @@ class Lunch(ndb.Model):
     description = ndb.StringProperty(repeated=True)
     day = ndb.DateProperty(required=True)
 
-def strip_tags(html):
-    s = MLStripper()
-    s.feed(html)
-    return s.get_data()
-
-def getDateObj(text):
-    pass
-
-def getEvents(lines): # lines is a list of all lines of text in the whole file
+def parse_events(lines): # lines is a list of all lines of text in the whole file
     in_event = False # Whether the current line is in an event
     properties = {} # When properties are discovered, they will be stuffed in here
     events = [] # The list of all properties objects
@@ -49,32 +36,19 @@ def getEvents(lines): # lines is a list of all lines of text in the whole file
                 properties[last_prop_name] += line[1:]
             else: # If it is the start of a normal line
                 # Sample line: DTSTART;TZID=America/Los_Angeles:20151030T110500
-                colon_seperated_values = string.split(line, ":")
+                colon_separated_values = string.split(line, ":")
 
                 # Garbage anything between ; and :
-                last_prop_name = string.split(colon_seperated_values[0], ";")[0]
+                last_prop_name = string.split(colon_separated_values[0], ";")[0]
 
-                properties[last_prop_name] = colon_seperated_values[1]
+                properties[last_prop_name] = colon_separated_values[1]
     return events
 
-def writeToDB(events): # Takes the raw events, sanitizes them, and plops them into the db
+def sanitize_events(events): # Sanitizes a list of events obtained from parse_events
     for event in events:
-        # Prettify the summary, date, and description
-
         # Convert the datetime string (e.g. 20151124T233401) to a date object
-        format = "%Y%m%dT%H%M%S"
+        # Gets format from global var
         date = datetime.datetime.strptime(event["DTSTART"], format).date()
-
-        lunches_for_date = Lunch.query(Lunch.day == date)
-        logging.info(lunches_for_date)
-        has_lunch_for_date = False
-
-        for lunch in lunches_for_date: # If any results were returned
-            has_lunch_for_date = True
-
-        if (has_lunch_for_date):
-            logging.info(str(date) + " is already in the DB")
-            continue
 
         # Remove the price and back slashes from the summary
         summary = string.split(event["SUMMARY"], " | ")[0] # Remove the price
@@ -91,23 +65,56 @@ def writeToDB(events): # Takes the raw events, sanitizes them, and plops them in
             summary=summary, \
             description=description, \
             day=date)
-        logging.info(str(entry))
-        entry.put()
 
-def updateDB():
-    url = "http://www.eastsideprep.org/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&ai1ec_cat_ids=57?"
-    mainresponse = urllib2.urlopen(url)
-    #mainresponse = open("download.ics") # Opens downloaded ics file
+        write_event_to_db(entry)
 
-    text = mainresponse.read()
+def write_event_to_db(entry): # Places a single entry into the db
+
+    # Check how many lunches there are already for that date (always 1 or 0)
+    lunches_for_date = Lunch.query(Lunch.day == entry.date)
+
+    # Check if there is already a lunch for that date (it has already been parsed)
+    has_lunch_for_date = False
+    for lunch in lunches_for_date:
+        has_lunch_for_date = True
+        break
+
+    # If it has been parsed
+    if (has_lunch_for_date):
+        logging.info(str(date) + " is already in the DB")
+        return
+
+    # If not, log it and put it into the db
+
+    logging.info(str(entry))
+    entry.put()
+
+def add_events(response):
+    text = response.read()
     lines = text.splitlines()
-    events = getEvents(lines)
-    writeToDB(events)
+    events = parse_events(lines)
 
-def getLunchForDate(days_into_past=7): # date is a date object
+    # Sanitize and write the events to the database
+    sanitize_events(events)
+
+# ---------------------------------------------- #
+# Functions below here will be called externally #
+# ---------------------------------------------- #
+
+def test_read_lunches(): # Will be called by unit tests
+    # Adds two fake lunch objects to db with dates 12/20/9999 and 12/21/9999
+    mainresponse = open("data/test_lunch.ics")
+    add_events(mainresponse)
+
+def read_lunches(): # Update the database with new lunches
+    # lunch_url is a global var
+    mainresponse = urllib2.urlopen(lunch_url)
+    add_events(mainresponse)
+
+# Returns lunches to be displayed in a schedule
+def getLunchForDate(days_into_past = 7):
     # days_into_past is the number of days into the past to go
     current_date = datetime.date.today()
-    #current_date = datetime.date(2015, 10, 27)
     earliest_lunch = current_date - datetime.timedelta(days_into_past)
     query = Lunch.query(Lunch.day >= earliest_lunch)
     lunch_objs = []
