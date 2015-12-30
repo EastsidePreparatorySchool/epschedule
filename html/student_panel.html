@@ -1,0 +1,228 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+
+<link rel="import" href="swipeable-behavior.html">
+
+<dom-module id="student-panel">
+  <style>
+    /* TODO(polyup): For speed, consider reworking these styles with .classes
+                     and #ids rather than [attributes].
+    */
+    [layout] {
+      @apply(--layout);
+    }
+    [layout][vertical] {
+      @apply(--layout-vertical);
+    }
+    [layout][center] {
+      @apply(--layout-center);
+    }
+  </style>
+  <style>
+    :host {
+      width: 100%;
+      display: block;
+      position: relative;
+      background-color: #efefef;
+      font-size: 1.2rem;
+      font-weight: 300;
+      margin-bottom: 1px;
+      border-radius: 2px;
+      transition: 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+    :host-context(.no-transition) {
+      transition: none;
+    }
+    .status {
+      width: 100%;
+    }
+    .status img {
+      width: 100%;
+      position: absolute;
+      top: 0px;
+    }
+    .status p {
+      position: relative;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 16px;
+      margin: 0px;
+      color: white;
+      font-size: 1.5rem;
+    }
+    .card {
+      margin-bottom: 1px;
+      cursor: pointer;
+    }
+    .card-header {
+      background: white;
+    }
+    .card-header ::content img {
+      width: 48px;
+      padding: 1px;
+      border-radius: 50%;
+      margin: 16px;
+      background: #efefef center no-repeat;
+    }
+    .card-header ::content h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 300;
+    }
+    .card-header ::content p {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: gray;
+    }
+    .card-header ::content a {
+      color: gray;
+      font-weight: 300;
+      text-decoration: none;
+    }
+    .card-header ::content a:hover {
+      color: #2196f3;
+    }
+    .selected {
+    }
+    iron-collapse {
+      background: #efefef;
+    }
+    .student {
+      background: white;
+      /* uncomment to enable gray lines between students
+      #margin-bottom: 1px;*/
+    }
+    .student img {
+      width: 32px;
+      padding: 1px;
+      border-radius: 50%;
+      margin-left: 24px;
+      margin-right: 24px;
+      background: #efefef; /*center no-repeat;*/
+    }
+    .student p {
+      font-size: 16px; #0.9rem;
+    }
+    .student iron-icon {
+      margin-right: 24px;
+    }
+    .student a {
+      color: gray;
+    }
+    .student a:hover {
+      color: #2196f3;
+    }
+    .lunch {
+      background: white;
+      padding-left: 64px;
+      padding-right: 16px;
+      font-size: 0.9rem;
+    }
+  </style>
+  <template>
+    <paper-material class="header" elevation="2">
+    <div layout horizontal center>
+    <img src="/images/material_face.svg" width="128px" height="128px">
+    <div class="social"><div class="buttonscolumn">
+    <paper-button class="bluebutton">Friend</paper-button>
+    <paper-button disabled>' + studentObj.firstname + ' is friends with you</paper-button>
+    </div><div class=socialheader><p>' + studentObj.firstname + ' is friends with</p>
+    <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
+    <img src="/images/material_face.svg" width="32" height="32"><div class="flex">
+    <p><span>Gavin</span><span>Uberti</span></p></div>
+    <a href="mailto:guberti@eastsideprep.org"><iron-icon icon="communication:email">
+    </iron-icon></a></div></div></div>
+    <div layout vertical><h3><span class="grade">' + grade + '</span></h3>
+    <p><a href="mailto:'{{item.email}}'"><iron-icon icon="communication:email"></iron-icon>
+    <span class="email">Email {{item.firstname}}</span></a></p></div></div></paper-material>
+    <schedule-lite id="studentschedule"></schedule-lite>
+  </template>
+  <script>
+    Polymer({
+      is: 'x-schedule',
+      behaviors: [ SwipeableBehavior ],
+      properties: { entries: { notify: true } },
+      ready: function() {
+      // disable vertical gestures on the card
+        this.querySelector('paper-material').setScrollDirection('y');
+      },
+      isLunchWithDesc: function(item) {
+        if (item.lunchInfo) {
+          return true;
+        }
+        return false;
+      },
+      getLineInDesc: function(item, linenum) {
+        if (item.lunchInfo) {
+          var num = parseInt(linenum);
+          return item.lunchInfo.description[num];
+        }
+      },
+      hasTeacherAndRoom: function(item) {
+        return item.teacherLastName && item.room;
+      },
+      hasTeacherOnly: function(item) {
+        return item.teacherLastName && !item.room;
+      },
+      hasRoomOnly: function(item) {
+        return !item.teacherLastName && item.room;
+      },
+      computeCollapseId: function(name) {
+        return "collapse-" + name;
+      },
+      computeEmailLink: function(email) {
+        return "mailto:" + email;
+      },
+      toggleExpand: function(e) {
+        // if expanding, XHR, and then set model
+        var el = e.currentTarget;
+        el.classList.toggle("selected");
+        var item = this.$.entryList.itemForElement(el);
+        console.log(item.lunchInfo);
+        var collapse = document.getElementById(this.computeCollapseId(item.name));
+        // We need the item.name != "Lunch" because we just
+        // want the lunch cards to toggle every time
+        if (el.classList.contains("selected") && item.name != "Lunch") {
+          var xhr = new XMLHttpRequest();
+          // Squash all punctuation to underscores
+          var cleanedClass = item.name.replace(/[\W]/g, "_");
+          var url = "class/" + cleanedClass + "/" + item.period.toLowerCase();
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+              var obj = JSON.parse(this.responseText);
+              e.model.set('item.students', obj.students);
+              collapse.toggle();
+            }
+          }
+          xhr.open("GET", url, true);
+          xhr.send();
+        } else {
+          collapse.toggle();
+          //e.model.set('item.students', []);
+        }
+      },
+      studentThunk: function(e) {
+        e.stopPropagation();
+        if (this.onStudentTap) {
+          this.onStudentTap(e);
+        }
+      },
+      roomThunk: function(e) {
+        e.stopPropagation();
+        if (this.onRoomTap) {
+          this.onRoomTap(e);
+        }
+      },
+      teacherThunk: function(e) {
+        e.stopPropagation();
+        if (this.onTeacherTap) {
+          this.onTeacherTap(e);
+        }
+      }
+    });
+  </script>
+</dom-module>
