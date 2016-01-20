@@ -247,6 +247,9 @@
 {"day": 27, "month": 11, "year": 2015, "schedule": "ThanksgivingBreak"},
 {"day": 30, "month": 11, "year": 2015, "schedule": "NoSchool"},
 {"day": 1, "month": 12, "year": 2015, "schedule": "FallTriSchedules"},
-{"day": 2, "month": 12, "year": 2015, "schedule": "FullMonday"}
+{"day": 2, "month": 12, "year": 2015, "schedule": "FullMonday"},
+{"day": 18, "month": 1, "year": 2016, "schedule": "NoSchool"},
+{"day": 19, "month": 1, "year": 2016, "schedule": "NoSchool"},
+{"day": 20, "month": 1, "year": 2016, "schedule": "Monday"}
 ]
 ]
