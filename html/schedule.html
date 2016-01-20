@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/communication-icons.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/star-rating/star-rating.html">
 <link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="x-schedule">
@@ -160,6 +161,7 @@
                   <li>{{getLineInDesc(item, "1")}}</li>
                   <li>{{getLineInDesc(item, "2")}}</li>
                 </ul>
+                <star-rating id="lunchrater" onclick="submitLunchRating()"></star-rating>
               </div>
             </template>
             <div layout vertical>
@@ -203,6 +205,9 @@
           var num = parseInt(linenum);
           return item.lunchInfo.description[num];
         }
+      },
+      submitLunchRating: function() {
+        alert('Submitting lunch rating');
       },
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
@@ -266,5 +271,12 @@
         }
       }
     });
+    // Functions called from onclick events
+    function submitLunchRating() {
+      var element = document.getElementById("lunchrater");
+      if (this.onTeacherTap) {
+        this.onLunchRate(element.rate);
+      }
+    }
   </script>
 </dom-module>

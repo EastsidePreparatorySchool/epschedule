@@ -12,11 +12,21 @@ from HTMLParser import HTMLParser
 format = "%Y%m%dT%H%M%S"
 lunch_url = "http://www.eastsideprep.org/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&ai1ec_cat_ids=57?"
 
+# NDB class definitions
+
 class Lunch(ndb.Model):
     summary = ndb.StringProperty(required=True)
     # description is a list of lines in the description
     description = ndb.StringProperty(repeated=True)
     day = ndb.DateProperty(required=True)
+
+class LunchRating(ndb.Model):
+    sid = ndb.IntegerProperty(required=True)
+    rating = ndb.IntegerProperty(required=True) # 1-10 star rating
+    lunch_id = ndb.IntegerProperty(required=True) # Which type of lunch its for
+    created = ndb.DateProperty() # What date the rating was made
+
+# Functions for parsing iCal files
 
 def parse_events(lines): # lines is a list of all lines of text in the whole file
     in_event = False # Whether the current line is in an event
@@ -112,7 +122,7 @@ def read_lunches(): # Update the database with new lunches
     add_events(mainresponse)
 
 # Returns lunches to be displayed in a schedule
-def getLunchForDate(days_into_past = 7):
+def getLunchForDate(days_into_past = 28):
     # days_into_past is the number of days into the past to go
     current_date = datetime.date.today()
     earliest_lunch = current_date - datetime.timedelta(days_into_past)
@@ -128,3 +138,38 @@ def getLunchForDate(days_into_past = 7):
         }
         lunch_objs.append(obj)
     return lunch_objs
+
+def calc_lunch_rating(lunch_id): # Uses mean, returns a float
+    rating_sum = 0
+    rating_num = 0
+
+    lunches = LunchRating.query(LunchRating.lunch_id == lunch_id)
+    for lunch in lunches:
+        rating_sum += lunch.rating
+        rating_num += 1
+
+    return rating_sum / float(rating_num)
+
+def place_rating(rating, sid, lunch_id, date, overwrite = True):
+    # Detects if there is already a rating for that student and lunch,
+    # and if not (or if overwrite is true) writes a new rating
+    current_rating = LunchRating.query( \
+        LunchRating.sid == sid and \
+        LunchRating.date == date)
+
+    for foo in current_rating: # If there is already a rating
+        if not overwrite: # If not set to overwrite
+            return # To not make any changes
+
+        # Otherwise, if we should override,
+        foo.key.delete() # Delete the existing ndb entity
+        break
+
+    # Place a new rating
+    obj = LunchRating( \
+        sid = sid, \
+        rating = rating, \
+        lunch_id = lunch_id, \
+        created = date \
+        )
+    obj.put()

@@ -651,6 +651,10 @@ class MainHandler(BaseHandler):
         else:
             self.response.write("No schedule for id " + id)
 
+class LunchRateHandler(BaseHandler):
+    def post(self):
+        pass
+
 class AboutHandler(BaseHandler):
     def get(self):
         template_values = { 'components': self.get_components_filename() }
@@ -795,6 +799,7 @@ app = webapp2.WSGIApplication([
     ('/room/([\w\-]+)', RoomHandler),
     ('/teacher/([\w\-]+)', TeacherHandler),
     ('/student/([\w\-]+)', StudentHandler),
+    ('/lunch', LunchRateHandler),
     ('/admin', AdminHandler),
     ('/admin/(\w+)', AdminHandler),
     ('/cron/(\w+)', CronHandler)

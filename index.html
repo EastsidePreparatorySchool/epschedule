@@ -11,18 +11,27 @@
   <script>
 
   function signOut() {
+    sendPostMessage("logout", reload);
+  }
+  function reload() {
+    location.reload();
+  }
+  function sendPostMessage(location, successFunction) {
+    // Location is the suburl to send data to, e.g. /logout
+    // Successfunction is the function to call if 200 is returned
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
+        result = JSON.parse(xhr.responseText);
         if (xhr.status==200) {
-          location.reload();
+          successFunction(result);
         } else {
-          result = JSON.parse(xhr.responseText);
           console.log(result.error);
+          renderToast(result.error);
         }
       }
     }
-    xhr.open("POST", "logout", true);
+    xhr.open("POST", location, true);
     xhr.send();
   }
   function reportBug() {
@@ -492,7 +501,13 @@
         requestAdditionalData(name, "room", renderRoom);
         openPopup(orig_name);
       }
+      scheduleElement.onLunchRate = function(rating) {
+        sendPostMessage("lunch", ratingSuccessful)
+      }
     }
+  }
+  function ratingSuccessful(result) {
+    renderToast("Your vote has been recorded");
   }
   function openPopup(title) {
     var titleSpan = document.getElementById("popupTitle");
