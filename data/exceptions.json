@@ -17,8 +17,8 @@
   {"period": "B", "time": "8:45-9:25"},
   {"period": "C", "time": "9:30-10:10"},
   {"period": "D", "time": "10:15-10:55"},
-  {"period": "E", "time": "11:00-11:30"},
-  {"period": "Lunch", "time": "11:35-12:15"},
+  {"period": "E", "time": "11:00-11:40"},
+  {"period": "Lunch", "time": "11:45-12:15"},
   {"period": "F", "time": "12:20-1:00"},
   {"period": "G", "time": "1:05-1:45"},
   {"period": "US Community", "time": "1:50-2:30"},
@@ -212,7 +212,48 @@
     "name": "Service Learning Day",
     "numImages": 2
   }
-}
+},
+
+"WinterFinalsD1":{
+  "MS": [
+  {"period": "C", "time": "8:00-9:30"},
+  {"period": "D", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"},
+  {"period": "Advisory", "time": "12:30-1:00"},
+  {"period": "E", "time": "1:00-2:30"}],
+  "US": [
+  {"period": "C", "time": "8:00-9:30"},
+  {"period": "D", "time": "10:15-11:45"},
+  {"period": "Advisory", "time": "11:45-12:30"},
+  {"period": "Lunch", "time": "12:30-1:00"},
+  {"period": "E", "time": "1:00-2:30"}
+]},
+
+"WinterFinalsD2":{
+  "MS": [
+  {"period": "F", "time": "8:00-9:30"},
+  {"period": "G", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"},
+  {"period": "Advisory", "time": "12:30-1:00"},
+  {"period": "H", "time": "1:00-2:30"}],
+  "US": [
+  {"period": "F", "time": "8:00-9:30"},
+  {"period": "G", "time": "10:15-11:45"},
+  {"period": "Advisory", "time": "11:45-12:30"},
+  {"period": "Lunch", "time": "12:30-1:00"},
+  {"period": "H", "time": "1:00-2:30"}
+]},
+
+"WinterFinalsD3":{
+  "MS": [
+  {"period": "A", "time": "8:00-9:30"},
+  {"period": "B", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"}],
+  "US": [
+  {"period": "A", "time": "8:00-9:30"},
+  {"period": "B", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"}
+]}
 
 },
 [
@@ -237,6 +278,14 @@
 {"day": 25, "month": 11, "year": 2015, "schedule": "ThanksgivingBreak"},
 {"day": 26, "month": 11, "year": 2015, "schedule": "ThanksgivingBreak"},
 {"day": 27, "month": 11, "year": 2015, "schedule": "ThanksgivingBreak"},
-{"day": 30, "month": 11, "year": 2015, "schedule": "NoSchool"}
+{"day": 30, "month": 11, "year": 2015, "schedule": "NoSchool"},
+{"day": 29, "month": 2, "year": 2016, "schedule": "FullMonday"},
+{"day": 1, "month": 3, "year": 2016, "schedule": "WinterFinalsD1"},
+{"day": 2, "month": 3, "year": 2016, "schedule": "WinterFinalsD2"},
+{"day": 3, "month": 3, "year": 2016, "schedule": "WinterFinalsD3"},
+{"day": 4, "month": 3, "year": 2016, "schedule": "NoSchool"},
+{"day": 7, "month": 3, "year": 2016, "schedule": "NoSchool"},
+{"day": 8, "month": 3, "year": 2016, "schedule": "NoSchool"},
+{"day": 9, "month": 3, "year": 2016, "schedule": "Monday"}
 ]
 ]
