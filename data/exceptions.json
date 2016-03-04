@@ -212,14 +212,6 @@
     "name": "Service Learning Day",
     "numImages": 2
   }
-},
-
-"FallTriSchedules":{
-  "allDayEvent": {
-    "imagePrefix": "noschool",
-    "name": "Fall Trimester Schedules Today",
-    "numImages": 1
-  }
 }
 
 },

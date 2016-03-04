@@ -87,7 +87,6 @@
 
   var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
-  var lunches = {{lunches | safe}};
   var globalDate = getInitialDate();
 
   function getInitialDate() {
@@ -134,7 +133,7 @@
   function updateMainSchedule() {
     var scheduleElement = document.getElementById('mainschedule');
     renderDate(globalDate);
-    renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches);
+    renderSchedule(globalDate, userSchedule, "full", scheduleElement);
   }
   function renderToast(text) {
     toast = document.getElementById("toast");
@@ -323,7 +322,7 @@
   }
 
   // Generate basic name, teacher, room, time, and period info for a class
-  function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
+  function createClassEntry(schedule, school, day, currentSlot, type) {
     var scheduleObj;
     // If it is a normal period
     if (isStandardClass(days[0][day][school][currentSlot]["period"])) {
@@ -354,9 +353,6 @@
         scheduleObj.name == "US Community") {
 
         scheduleObj.room = "LPC Commons";
-      }
-      if (scheduleObj.name == "Lunch") {
-        scheduleObj.lunchInfo = lunchInfo;
       }
     }
     if (scheduleObj.teacher == "N/A") {
@@ -421,30 +417,10 @@
     return false;
   }
 
-  function getLunchForDate(lunch_list, date) {
-    // Returns the lunch for the given date
-    // If there is no lunch, returns null
-    for (var i = 0; i < lunch_list.length; i++) {
-      var lunch = lunch_list[i];
-      // Note that date.getMonth is from 0-11 but
-      // all lunch date months are stored 1-12
-      if (
-        date.getDate() == lunch["day"] &&
-        date.getMonth() + 1 == lunch["month"] &&
-        date.getFullYear() == lunch["year"]
-        ) {
-        return lunch;
-      }
-    }
-  }
-
-  function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list) {
+  function renderSchedule(dateObj, schedule, type, scheduleElement) {
     // Either MS or US
     var school = getSchool(schedule.grade);
     var todaySchedule = [];
-    if (type == "full") {
-      var lunchInfo = getLunchForDate(lunch_list, dateObj);
-    }
     // The current schedule for that day
     var day = getScheduleTypeForDate(dateObj, days);
     // If it is a normal day (no all day event)
@@ -452,7 +428,7 @@
       // For each class
       for (var currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
         // Render the base of the class
-        var scheduleObj = createClassEntry(schedule, school, day, currentSlot, type, lunchInfo);
+        var scheduleObj = createClassEntry(schedule, school, day, currentSlot, type);
         if (scheduleObj) { // If scheduleObj is not null
           // To see when scheduleObj might be null, look at createClassEntry()
           // Push scheduleObj to a list of class objs

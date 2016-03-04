@@ -23,8 +23,6 @@ import os
 import string
 import logging
 import datetime
-import update_lunch
-
 from google.appengine.ext import db
 from google.appengine.ext import vendor
 
@@ -139,7 +137,7 @@ REGISTER_SUCCESS = {
 class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this handler
     def check_id(self):
         encoded_id = self.request.cookies.get("SID")
-        if not encoded_id:
+        if encoded_id is None:
             return None
         # TODO add code to check if id is valid
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
@@ -637,14 +635,11 @@ class MainHandler(BaseHandler):
             id = "4093"
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
-        lunch_objs = update_lunch.getLunchForDate()
         if schedule is not None:
-            # Handler for how to serialize date objs into json
             template_values = { \
               'schedule': json.dumps(schedule), \
               'days': json.dumps(DAYS), \
-              'components': self.get_components_filename(), \
-              'lunches': json.dumps(lunch_objs) \
+              'components': self.get_components_filename() \
             }
             template = JINJA_ENVIRONMENT.get_template('index.html')
             self.response.write(template.render(template_values))
@@ -775,12 +770,6 @@ class AdminHandler(RegisterBaseHandler):
             if len(verification[email]['verified']) == 1 and len(verification[email]['unverified']) >= 1:
                 db.delete(verification[email]['unverified'])
 
-class CronHandler(BaseHandler):
-    def get(self, job): # On url invoke
-        if job == "lunch":
-            update_lunch.updateDB()
-            self.response.write("Success")
-
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/about', AboutHandler),
@@ -796,6 +785,5 @@ app = webapp2.WSGIApplication([
     ('/teacher/([\w\-]+)', TeacherHandler),
     ('/student/([\w\-]+)', StudentHandler),
     ('/admin', AdminHandler),
-    ('/admin/(\w+)', AdminHandler),
-    ('/cron/(\w+)', CronHandler)
+    ('/admin/(\w+)', AdminHandler)
 ], debug=True)
