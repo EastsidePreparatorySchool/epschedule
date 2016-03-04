@@ -190,6 +190,55 @@
   {"period": "H", "time": "2:30-3:15"}
 ]},
 
+"WinterFinalsD1":{
+  "MS": [
+  {"period": "C", "time": "8:00-9:30"},
+  {"period": "D", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"},
+  {"period": "Advisory", "time": "12:30-1:00"},
+  {"period": "E", "time": "1:00-2:30"}],
+  "US": [
+  {"period": "C", "time": "8:00-9:30"},
+  {"period": "D", "time": "10:15-11:45"},
+  {"period": "Advisory", "time": "11:45-12:30"},
+  {"period": "Lunch", "time": "12:30-1:00"},
+  {"period": "E", "time": "1:00-2:30"}
+]},
+
+"WinterFinalsD2":{
+  "MS": [
+  {"period": "F", "time": "8:00-9:30"},
+  {"period": "G", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"},
+  {"period": "Advisory", "time": "12:30-1:00"},
+  {"period": "H", "time": "1:00-2:30"}],
+  "US": [
+  {"period": "F", "time": "8:00-9:30"},
+  {"period": "G", "time": "10:15-11:45"},
+  {"period": "Advisory", "time": "11:45-12:30"},
+  {"period": "Lunch", "time": "12:30-1:00"},
+  {"period": "H", "time": "1:00-2:30"}
+]},
+
+"WinterFinalsD3":{
+  "MS": [
+  {"period": "A", "time": "8:00-9:30"},
+  {"period": "B", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"}],
+  "US": [
+  {"period": "A", "time": "8:00-9:30"},
+  {"period": "B", "time": "10:15-11:45"},
+  {"period": "Lunch", "time": "11:45-12:30"}
+]},
+
+"Conferences":{
+  "allDayEvent": {
+    "imagePrefix": "noschool",
+    "name": "Student-Led Conferences",
+    "numImages": 6
+  }
+},
+
 "NoSchool":{
   "allDayEvent": {
     "imagePrefix": "noschool",
@@ -211,6 +260,30 @@
     "imagePrefix": "service",
     "name": "Service Learning Day",
     "numImages": 2
+  }
+},
+
+"FallTriSchedules":{
+  "allDayEvent": {
+    "imagePrefix": "noschool",
+    "name": "Fall Trimester Schedules Today",
+    "numImages": 1
+  }
+},
+
+"WinterTriSchedules":{
+  "allDayEvent": {
+    "imagePrefix": "noschool",
+    "name": "Winter Trimester Schedules Today",
+    "numImages": 1
+  }
+},
+
+"EBC":{
+  "allDayEvent": {
+    "imagePrefix": "noschool",
+    "name": "EBC",
+    "numImages": 1
   }
 }
 
@@ -242,6 +315,25 @@
 {"day": 2, "month": 12, "year": 2015, "schedule": "FullMonday"},
 {"day": 18, "month": 1, "year": 2016, "schedule": "NoSchool"},
 {"day": 19, "month": 1, "year": 2016, "schedule": "NoSchool"},
-{"day": 20, "month": 1, "year": 2016, "schedule": "Monday"}
+{"day": 20, "month": 1, "year": 2016, "schedule": "Monday"},
+{"day": 15, "month": 2, "year": 2016, "schedule": "NoSchool"},
+{"day": 16, "month": 2, "year": 2016, "schedule": "NoSchool"},
+{"day": 17, "month": 2, "year": 2016, "schedule": "NoSchool"},
+{"day": 18, "month": 2, "year": 2016, "schedule": "NoSchool"},
+{"day": 19, "month": 2, "year": 2016, "schedule": "NoSchool"},
+{"day": 29, "month": 2, "year": 2016, "schedule": "FullMonday"},
+{"day": 1, "month": 3, "year": 2016, "schedule": "WinterFinalsD1"},
+{"day": 2, "month": 3, "year": 2016, "schedule": "WinterFinalsD2"},
+{"day": 3, "month": 3, "year": 2016, "schedule": "WinterFinalsD3"},
+{"day": 4, "month": 3, "year": 2016, "schedule": "NoSchool"},
+{"day": 7, "month": 3, "year": 2016, "schedule": "Conferences"},
+{"day": 8, "month": 3, "year": 2016, "schedule": "Conferences"},
+{"day": 9, "month": 3, "year": 2016, "schedule": "WinterTriSchedules"},
+{"day": 18, "month": 3, "year": 2016, "schedule": "NoSchool"},
+{"day": 28, "month": 3, "year": 2016, "schedule": "EBC"},
+{"day": 29, "month": 3, "year": 2016, "schedule": "EBC"},
+{"day": 30, "month": 3, "year": 2016, "schedule": "EBC"},
+{"day": 31, "month": 3, "year": 2016, "schedule": "EBC"},
+{"day": 1, "month": 4, "year": 2016, "schedule": "EBC"}
 ]
 ]
