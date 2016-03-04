@@ -653,7 +653,16 @@ class MainHandler(BaseHandler):
 
 class LunchRateHandler(BaseHandler):
     def post(self):
-        pass
+        id = self.check_id()
+        if id is None:
+            self.error(403)
+            return
+
+        date = datetime.date.today()
+        lunch_id = update_lunch.get_lunch_id_for_date(date)
+        rating = self.request.get('rating')
+
+        update_lunch.place_rating(rating, id, lunch_id, date)
 
 class AboutHandler(BaseHandler):
     def get(self):
@@ -782,7 +791,7 @@ class AdminHandler(RegisterBaseHandler):
 class CronHandler(BaseHandler):
     def get(self, job): # On url invoke
         if job == "lunch":
-            update_lunch.update_db()
+            update_lunch.read_lunches()
             self.response.write("Success")
 
 app = webapp2.WSGIApplication([

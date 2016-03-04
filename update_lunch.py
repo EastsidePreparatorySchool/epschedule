@@ -81,7 +81,7 @@ def sanitize_events(events): # Sanitizes a list of events obtained from parse_ev
 def write_event_to_db(entry): # Places a single entry into the db
 
     # Check how many lunches there are already for that date (always 1 or 0)
-    lunches_for_date = Lunch.query(Lunch.day == entry.date)
+    lunches_for_date = Lunch.query(Lunch.day == entry.day)
 
     # Check if there is already a lunch for that date (it has already been parsed)
     has_lunch_for_date = False
@@ -150,9 +150,14 @@ def calc_lunch_rating(lunch_id): # Uses mean, returns a float
 
     return rating_sum / float(rating_num)
 
+def get_lunch_id_for_date(date):
+    lunch = Lunch.query(Lunch.day == date).fetch(1)[0]
+    return lunch.key.id();
+
 def place_rating(rating, sid, lunch_id, date, overwrite = True):
     # Detects if there is already a rating for that student and lunch,
     # and if not (or if overwrite is true) writes a new rating
+    logging.info("Placing a rating of " + str(rating))
     current_rating = LunchRating.query( \
         LunchRating.sid == sid and \
         LunchRating.date == date)

@@ -502,6 +502,7 @@
         openPopup(orig_name);
       }
       scheduleElement.onLunchRate = function(rating) {
+        console.log("LunchClicked");
         sendPostMessage("lunch", ratingSuccessful)
       }
     }
