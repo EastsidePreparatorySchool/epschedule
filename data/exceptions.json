@@ -312,9 +312,6 @@
 {"day": 27, "month": 11, "year": 2015, "schedule": "ThanksgivingBreak"},
 {"day": 30, "month": 11, "year": 2015, "schedule": "NoSchool"},
 {"day": 1, "month": 12, "year": 2015, "schedule": "FallTriSchedules"},
-<<<<<<< HEAD
-{"day": 2, "month": 12, "year": 2015, "schedule": "FullMonday"}
-=======
 {"day": 2, "month": 12, "year": 2015, "schedule": "FullMonday"},
 {"day": 18, "month": 1, "year": 2016, "schedule": "NoSchool"},
 {"day": 19, "month": 1, "year": 2016, "schedule": "NoSchool"},
@@ -338,6 +335,5 @@
 {"day": 30, "month": 3, "year": 2016, "schedule": "EBC"},
 {"day": 31, "month": 3, "year": 2016, "schedule": "EBC"},
 {"day": 1, "month": 4, "year": 2016, "schedule": "EBC"}
->>>>>>> refs/remotes/origin/master
 ]
 ]
