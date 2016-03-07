@@ -161,7 +161,9 @@
                   <li>{{getLineInDesc(item, "1")}}</li>
                   <li>{{getLineInDesc(item, "2")}}</li>
                 </ul>
-                <star-rating id="lunchrater" onclick="submitLunchRating()"></star-rating>
+                <template is="dom-if" if="{{canRateLunch(item.startTime, isToday)}}">
+                  <star-rating id="lunchrater" on-tap="ratingThunk"></star-rating>
+                </template>
               </div>
             </template>
             <div layout vertical>
@@ -207,6 +209,7 @@
         }
       },
       submitLunchRating: function() {
+        console.log("Submitting rating");
         alert('Submitting lunch rating');
       },
       hasTeacherAndRoom: function(item) {
@@ -217,6 +220,23 @@
       },
       hasRoomOnly: function(item) {
         return !item.teacherLastName && item.room;
+      },
+      canRateLunch: function(strTime, isToday) { // Change to strTime later
+        /*Takes in a time as a string, and returns
+        whether the current time is after that time*/
+
+        var timeArray = strTime.split(":"); // [minutes, seconds]
+        if (timeArray[0] < 8) { // If it is a PM time
+          timeArray[0] += 12; // Correct it
+        }
+        var time = new Date(); // Current date and time
+        var lunchStart = new Date(time.getYear(), time.getMonth(),
+          time.getDay(), parseInt(timeArray[0]), parseInt(timeArray[1]), 0, 0);
+
+        var pastTime = (time.getTime() > lunchStart.getTime());
+
+
+        return (pastTime && isToday);
       },
       computeCollapseId: function(name) {
         return "collapse-" + name;
@@ -252,6 +272,14 @@
           //e.model.set('item.students', []);
         }
       },
+      ratingThunk: function(e) {
+        var rating = document.getElementById("lunchrater").rate;
+        console.log(rating);
+        e.stopPropagation();
+        if (this.onRate) {
+          this.onRate(rating);
+        }
+      },
       studentThunk: function(e) {
         e.stopPropagation();
         if (this.onStudentTap) {
@@ -271,12 +299,5 @@
         }
       }
     });
-    // Functions called from onclick events
-    function submitLunchRating() {
-      var element = document.getElementById("lunchrater");
-      if (this.onTeacherTap) {
-        this.onLunchRate(element.rate);
-      }
-    }
   </script>
 </dom-module>

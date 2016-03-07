@@ -16,7 +16,8 @@
   function reload() {
     location.reload();
   }
-  function sendPostMessage(location, successFunction) {
+  // Data argument is optional
+  function sendPostMessage(location, successFunction, data) {
     // Location is the suburl to send data to, e.g. /logout
     // Successfunction is the function to call if 200 is returned
     xhr = new XMLHttpRequest();
@@ -32,7 +33,13 @@
       }
     }
     xhr.open("POST", location, true);
-    xhr.send();
+
+    // If there is no data to send
+    if (typeof data === "undefined") {
+      xhr.send();
+    } else {
+      xhr.send(data);
+    }
   }
   function reportBug() {
     window.open("https://github.com/guberti/epschedule/issues");
@@ -447,6 +454,14 @@
     }
   }
 
+  function dateIsCurrentDay(d1) {
+    var d2 = new Date();
+    return (
+      d1.getDate() == d2.getDate() &&
+      d1.getMonth() == d2.getMonth() &&
+      d1.getYear() == d2.getYear());
+  }
+
   function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list) {
     // Either MS or US
     var school = getSchool(schedule.grade);
@@ -501,10 +516,13 @@
         requestAdditionalData(name, "room", renderRoom);
         openPopup(orig_name);
       }
-      scheduleElement.onLunchRate = function(rating) {
-        console.log("LunchClicked");
-        sendPostMessage("lunch", ratingSuccessful)
+      scheduleElement.onRate = function(rating) {
+        var data = new FormData();
+        data.append('rating', rating);
+        sendPostMessage("lunch", ratingSuccessful, data);
       }
+      //scheduleElement.isToday = dateIsCurrentDay(dateObj);
+      scheduleElement.isToday = true;
     }
   }
   function ratingSuccessful(result) {

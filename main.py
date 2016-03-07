@@ -651,17 +651,19 @@ class MainHandler(BaseHandler):
         else:
             self.response.write("No schedule for id " + id)
 
+
 class LunchRateHandler(BaseHandler):
     def post(self):
-        id = self.check_id()
+        id = int(self.check_id())
         if id is None:
             self.error(403)
             return
 
-        date = datetime.date.today()
+        logging.info(self.request.get('rating'));
+        #date = datetime.datetine.now()
+        date = datetime.date(2016, 3, 10);
         lunch_id = update_lunch.get_lunch_id_for_date(date)
-        rating = self.request.get('rating')
-
+        rating = int(self.request.get('rating'))
         update_lunch.place_rating(rating, id, lunch_id, date)
 
 class AboutHandler(BaseHandler):

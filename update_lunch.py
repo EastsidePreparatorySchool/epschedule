@@ -151,16 +151,19 @@ def calc_lunch_rating(lunch_id): # Uses mean, returns a float
     return rating_sum / float(rating_num)
 
 def get_lunch_id_for_date(date):
-    lunch = Lunch.query(Lunch.day == date).fetch(1)[0]
-    return lunch.key.id();
+    lunches = Lunch.query(Lunch.day == date).fetch(1)
+    if lunches: # If there is a lunch for the date
+        return lunches[0].key.id()
+    else:
+        return None
 
 def place_rating(rating, sid, lunch_id, date, overwrite = True):
     # Detects if there is already a rating for that student and lunch,
     # and if not (or if overwrite is true) writes a new rating
-    logging.info("Placing a rating of " + str(rating))
+
     current_rating = LunchRating.query( \
         LunchRating.sid == sid and \
-        LunchRating.date == date)
+        LunchRating.lunch_id == lunch_id)
 
     for foo in current_rating: # If there is already a rating
         if not overwrite: # If not set to overwrite
@@ -175,6 +178,5 @@ def place_rating(rating, sid, lunch_id, date, overwrite = True):
         sid = sid, \
         rating = rating, \
         lunch_id = lunch_id, \
-        created = date \
-        )
+        created = date)
     obj.put()
