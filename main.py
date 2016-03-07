@@ -651,6 +651,13 @@ class MainHandler(BaseHandler):
         else:
             self.response.write("No schedule for id " + id)
 
+ERR_NO_LUNCH_TO_RATE = {
+  "error": "You cannot rate today's lunch"
+}
+
+LUNCH_RATE = {
+  "error": "Your vote has been recorded"
+}
 
 class LunchRateHandler(BaseHandler):
     def post(self):
@@ -663,8 +670,14 @@ class LunchRateHandler(BaseHandler):
         #date = datetime.datetine.now()
         date = datetime.date(2016, 3, 10);
         lunch_id = update_lunch.get_lunch_id_for_date(date)
+
+        if not lunch_id: # If there is no lunch for the date
+            self.response.write(json.dumps(ERR_NO_LUNCH_TO_RATE))
+            return
+
         rating = int(self.request.get('rating'))
         update_lunch.place_rating(rating, id, lunch_id, date)
+        self.response.write(json.dumps(LUNCH_RATE))
 
 class AboutHandler(BaseHandler):
     def get(self):

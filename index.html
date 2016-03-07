@@ -526,7 +526,7 @@
     }
   }
   function ratingSuccessful(result) {
-    renderToast("Your vote has been recorded");
+    renderToast(result.error);
   }
   function openPopup(title) {
     var titleSpan = document.getElementById("popupTitle");
