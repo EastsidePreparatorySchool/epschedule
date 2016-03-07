@@ -217,20 +217,23 @@
       hasRoomOnly: function(item) {
         return !item.teacherLastName && item.room;
       },
-      canRateLunch: function(strTime, isToday) { // Change to strTime later
+      canRateLunch: function(strTime, isToday) {
         /*Takes in a time as a string, and returns
         whether the current time is after that time*/
 
-        var timeArray = strTime.split(":"); // [minutes, seconds]
+        var strArray = strTime.split(":"); // [minutes, seconds]
+        var timeArray = [parseInt(strArray[0]), parseInt(strArray[1])];
+
         if (timeArray[0] < 8) { // If it is a PM time
           timeArray[0] += 12; // Correct it
         }
+
         var time = new Date(); // Current date and time
-        var lunchStart = new Date(time.getYear(), time.getMonth(),
-          time.getDay(), parseInt(timeArray[0]), parseInt(timeArray[1]), 0, 0);
+        var lunchStart = new Date();
+        lunchStart.setHours(timeArray[0]);
+        lunchStart.setMinutes(timeArray[1]);
 
         var pastTime = (time.getTime() > lunchStart.getTime());
-
 
         return (pastTime && isToday);
       },
@@ -245,7 +248,6 @@
         var el = e.currentTarget;
         el.classList.toggle("selected");
         var item = this.$.entryList.itemForElement(el);
-        console.log(item.lunchInfo);
         var collapse = document.getElementById(this.computeCollapseId(item.name));
         // We need the item.name != "Lunch" because we just
         // want the lunch cards to toggle every time
@@ -270,7 +272,6 @@
       },
       ratingThunk: function(e) {
         var rating = document.getElementById("lunchrater").rate;
-        console.log(rating);
         e.stopPropagation();
         if (this.onRate) {
           this.onRate(rating);
