@@ -655,8 +655,12 @@ ERR_NO_LUNCH_TO_RATE = {
   "error": "You cannot rate today's lunch"
 }
 
-LUNCH_RATE = {
+ORIG_LUNCH_RATE = {
   "error": "Your vote has been recorded"
+}
+
+LUNCH_RATE_OVERWRITE = {
+  "error": "Your vote has been updated"
 }
 
 class LunchRateHandler(BaseHandler):
@@ -676,8 +680,11 @@ class LunchRateHandler(BaseHandler):
             return
 
         rating = int(self.request.get('rating'))
-        update_lunch.place_rating(rating, id, lunch_id, date)
-        self.response.write(json.dumps(LUNCH_RATE))
+        overwrote = update_lunch.place_rating(rating, id, lunch_id, date)
+        if (overwrote):
+            self.response.write(json.dumps(LUNCH_RATE_OVERWRITE))
+        else:
+            self.response.write(json.dumps(ORIG_LUNCH_RATE))
 
 class AboutHandler(BaseHandler):
     def get(self):

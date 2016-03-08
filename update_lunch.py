@@ -157,12 +157,13 @@ def get_lunch_id_for_date(date):
     else:
         return None
 
-def is_current_rating(lunch_id, sid):
-    pass
 
 def place_rating(rating, sid, lunch_id, date, overwrite = True):
     # Detects if there is already a rating for that student and lunch,
     # and if not (or if overwrite is true) writes a new rating
+    # Returns whether a rating was overwritten
+
+    overwrote = False
 
     current_rating = LunchRating.query( \
         LunchRating.sid == sid and \
@@ -170,11 +171,12 @@ def place_rating(rating, sid, lunch_id, date, overwrite = True):
 
     for foo in current_rating: # If there is already a rating
         if not overwrite: # If not set to overwrite
-            return # To not make any changes
+            return overwrote # To not make any changes
 
-        # Otherwise, if we should override,
+
+        # Otherwise, if we should overwrite,
         foo.key.delete() # Delete the existing ndb entity
-        break
+        overwrote = True # Record that something was overwritten
 
     # Place a new rating
     obj = LunchRating( \
@@ -183,3 +185,5 @@ def place_rating(rating, sid, lunch_id, date, overwrite = True):
         lunch_id = lunch_id, \
         created = date)
     obj.put()
+
+    return overwrote
