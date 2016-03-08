@@ -122,6 +122,9 @@
       padding-right: 16px;
       font-size: 0.9rem;
     }
+    .inline {
+      display:inline-block;
+    }
   </style>
   <template>
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
@@ -162,7 +165,8 @@
                   <li>{{getLineInDesc(item, "2")}}</li>
                 </ul>
                 <template is="dom-if" if="{{canRateLunch(item.startTime, isToday)}}">
-                  <star-rating id="lunchrater" on-tap="ratingThunk"></star-rating>
+                  <span class="inline">Rate this lunch: </span>
+                  <star-rating class="inline" id="lunchrater" on-tap="ratingThunk"></star-rating>
                 </template>
               </div>
             </template>

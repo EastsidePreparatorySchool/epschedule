@@ -522,7 +522,8 @@
         sendPostMessage("lunch", ratingSuccessful, data);
       }
 
-      scheduleElement.isToday = dateIsCurrentDay(dateObj);
+      scheduleElement.isToday = true;
+      //scheduleElement.isToday = dateIsCurrentDay(dateObj);
     }
   }
   function ratingSuccessful(result) {
