@@ -111,9 +111,9 @@ def add_events(response):
 # Functions below here will be called externally #
 # ---------------------------------------------- #
 
-def test_read_lunches(): # Will be called by unit tests
+def test_read_lunches(fakepath): # Will be called by unit tests
     # Adds two fake lunch objects to db with dates 12/20/9999 and 12/21/9999
-    mainresponse = open("data/test_lunch.ics")
+    mainresponse = open(fakepath)
     add_events(mainresponse)
 
 def read_lunches(): # Update the database with new lunches
@@ -122,9 +122,8 @@ def read_lunches(): # Update the database with new lunches
     add_events(mainresponse)
 
 # Returns lunches to be displayed in a schedule
-def getLunchForDate(days_into_past = 28):
+def getLunchForDate(current_date, days_into_past = 28):
     # days_into_past is the number of days into the past to go
-    current_date = datetime.date.today()
     earliest_lunch = current_date - datetime.timedelta(days_into_past)
     query = Lunch.query(Lunch.day >= earliest_lunch)
     lunch_objs = []

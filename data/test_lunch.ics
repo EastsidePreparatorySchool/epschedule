@@ -37,19 +37,4 @@ SUMMARY:Testy test test test | $99.99
 URL:http://www.eastsideprep.org/event/reuben-sandwich-7-50/
 END:VEVENT
 
-BEGIN:VEVENT
-UID:ai1ec-359586@www.eastsideprep.org
-DTSTAMP:99991221T235231Z
-CATEGORIES;LANGUAGE=en-US:Lunch
-CONTACT:
-DESCRIPTION:<p>Penne\, Italian sausage with garlic cream sauce\, spinach\,
- Bread stick- GF available<br />\nVegetarian: Penne garlic cream sauce\, Sp
- inach\, roasted tomatoes<br />\nPrice:$7.50</p>
-DTSTART;TZID=America/Los_Angeles:20151027T110500
-DTEND;TZID=America/Los_Angeles:20151027T121000
-SEQUENCE:0
-SUMMARY:FOOBARBARBAR | $99.99
-URL:http://www.eastsideprep.org/event/penne-and-italian-sausage-7-50/
-END:VEVENT
-
 END:VCALENDAR

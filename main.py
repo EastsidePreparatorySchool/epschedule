@@ -637,7 +637,7 @@ class MainHandler(BaseHandler):
             id = "4093"
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
-        lunch_objs = update_lunch.getLunchForDate()
+        lunch_objs = update_lunch.getLunchForDate(datetime.date.today())
         if schedule is not None:
             # Handler for how to serialize date objs into json
             template_values = { \
