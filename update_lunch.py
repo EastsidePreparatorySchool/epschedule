@@ -91,7 +91,7 @@ def write_event_to_db(entry): # Places a single entry into the db
 
     # If it has been parsed
     if (has_lunch_for_date):
-        logging.info(str(date) + " is already in the DB")
+        logging.info(str(entry.day) + " is already in the DB")
         return
 
     # If not, log it and put it into the db
