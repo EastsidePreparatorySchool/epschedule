@@ -59,7 +59,7 @@ year = sys.argv[4]
 res = post(uri, obj)
 dump()
 
-for k in range(100, 4600):
+for k in range(100, 130) + range(2000, 4600):
     download_schedule(k, term, year)
 print "Schedules downloaded"
 print "Pasing schedules"
