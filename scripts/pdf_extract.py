@@ -156,14 +156,19 @@ for f in files:    #For each file in the directory
 
 print "Entering full names!"
 for person_num in range (0, len(students)):
-    if students[person_num]['grade'] is not None: #If the person is a students
+    if students[person_num]['grade'] is not None: #If the person is a student
         for class_num in range (0, len(students[person_num]['classes'])): #For each class
             for teacher in students:
-                if teacher['grade'] is None: #If the person is a teacher
-                    for taught_class in teacher['classes']:
-                        if students[person_num]['classes'][class_num]['period'] == taught_class['period'] and students[person_num]['classes'][class_num]['room'] == taught_class['room'] and students[person_num]['classes'][class_num]['name'] == taught_class['name']:
-                            students[person_num]['classes'][class_num]['teacher'] = teacher['firstname'] + " " + teacher['lastname']
+                if teacher['grade'] is None: # if the person is a teacher
+                    # If the person is a teacher with the correct last names
+                    if students[person_num]['classes'][class_num]['teacher'] == teacher['lastname']:
+                        print "Match found"
+                        for taught_class in teacher['classes']: # For each class that they teach
+                            if students[person_num]['classes'][class_num]['period'] == taught_class['period'] and \
+                            students[person_num]['classes'][class_num]['room'] == taught_class['room'] and \
+                            students[person_num]['classes'][class_num]['name'] == taught_class['name']:
+
+                                students[person_num]['classes'][class_num]['teacher'] = teacher['firstname'] + " " + teacher['lastname']
 
 file = open('../data/schedules.json', 'w')
 file.write(json.dumps(students))
-#print students  #Print the list of schedules
