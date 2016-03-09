@@ -172,4 +172,3 @@ for person_num in range (0, len(students)):
 
 file = open('../data/schedules.json', 'w')
 file.write(json.dumps(students))
-#print students  #Print the list of schedules
