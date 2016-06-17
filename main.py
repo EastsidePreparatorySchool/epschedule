@@ -417,6 +417,7 @@ class ChangePasswordHandler(BaseHandler):
 class LogoutHandler(BaseHandler):
     def post(self):
         self.response.delete_cookie("SID")
+        self.response.write(json.dumps({}))
 
 class ClassHandler(BaseHandler):
     def get_class_schedule(self, class_name, period):

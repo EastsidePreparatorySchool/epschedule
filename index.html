@@ -13,7 +13,7 @@
   function signOut() {
     sendPostMessage("logout", reload);
   }
-  function reload() {
+  function reload(result) {
     location.reload();
   }
   // Data argument is optional
@@ -36,7 +36,7 @@
 
     // If there is no data to send
     if (typeof data === "undefined") {
-      xhr.send();
+      xhr.send(new FormData());
     } else {
       xhr.send(data);
     }
@@ -522,8 +522,8 @@
         sendPostMessage("lunch", ratingSuccessful, data);
       }
 
-      scheduleElement.isToday = true;
-      //scheduleElement.isToday = dateIsCurrentDay(dateObj);
+      //scheduleElement.isToday = true;
+      scheduleElement.isToday = dateIsCurrentDay(dateObj);
     }
   }
   function ratingSuccessful(result) {

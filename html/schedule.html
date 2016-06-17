@@ -123,7 +123,8 @@
       font-size: 0.9rem;
     }
     .inline {
-      display:inline-block;
+      position: relative;
+      bottom: 0;
     }
   </style>
   <template>
@@ -165,8 +166,10 @@
                   <li>{{getLineInDesc(item, "2")}}</li>
                 </ul>
                 <template is="dom-if" if="{{canRateLunch(item.startTime, isToday)}}">
-                  <span class="inline">Rate this lunch: </span>
-                  <star-rating class="inline" id="lunchrater" on-tap="ratingThunk"></star-rating>
+                  <div>
+                    <span class="inline">Rate this lunch: </span>
+                    <star-rating class="inline" id="lunchrater" on-tap="ratingThunk"></star-rating>
+                  </div>
                 </template>
               </div>
             </template>
@@ -236,6 +239,9 @@
         var lunchStart = new Date();
         lunchStart.setHours(timeArray[0]);
         lunchStart.setMinutes(timeArray[1]);
+
+        console.log(pastTime);
+        console.log(isToday);
 
         var pastTime = (time.getTime() > lunchStart.getTime());
 
