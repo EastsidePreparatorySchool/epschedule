@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/communication-icons.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
 <link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="x-schedule">
@@ -88,32 +89,26 @@
     .selected {
     }
     iron-collapse {
-      background: #efefef;
+      background: white;
     }
     .student {
       background: white;
-      /* uncomment to enable gray lines between students
-      #margin-bottom: 1px;*/
+      padding: 2px;
     }
     .student img {
-      width: 32px;
-      padding: 1px;
-      border-radius: 50%;
-      margin-left: 24px;
-      margin-right: 24px;
-      background: #efefef; /*center no-repeat;*/
+      xmargin-left: 8px;
+      xmargin-right: 8px;
     }
-    .student p {
-      font-size: 16px; #0.9rem;
-    }
-    .student iron-icon {
-      margin-right: 24px;
-    }
-    .student a {
-      color: gray;
-    }
-    .student a:hover {
-      color: #2196f3;
+    .studentname {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      font-size: 14px;
+      padding: 8px;
     }
   </style>
   <template>
@@ -146,21 +141,16 @@
             </div>
           </div>
           <iron-collapse id="{{computeCollapseId(item.name)}}">
-            <div layout vertical>
-              <template is="dom-repeat" items="{{item.students}}">
+            <iron-list items="{{item.students}}" grid>
+              <template>
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                  <img src="/images/material_face.svg" width="32" height="32">
-                  <div class="flex">
-                    <p>
-                      <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
-                    </p>
+                  <iron-image sizing="cover" src="http://cdn.c.photoshelter.com/img-get2/I0000ST5728yzlbw/fit=1000x750/sean-carter-actor-headshot.jpg" width="128" height="128">
+                  <div class="studentname">
+                    <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
                   </div>
-                  <a href="{{computeEmailLink(item.email)}}">
-                    <iron-icon icon="communication:email"></iron-icon>
-                  </a>
                 </div>
               </template>
-            </div>
+            </iron-list>
           </iron-collapse>
         </div>
       </template>
@@ -206,7 +196,9 @@
             if (xhr.readyState == 4 && xhr.status == 200) {
               var obj = JSON.parse(this.responseText);
               e.model.set('item.students', obj.students);
-              collapse.toggle();
+              //setTimeout(function() {
+                collapse.toggle();
+              //}, 0);
             }
           }
           xhr.open("GET", url, true);
