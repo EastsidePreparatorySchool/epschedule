@@ -95,16 +95,11 @@
       background: white;
       padding: 2px;
     }
-    .student img {
-      xmargin-left: 8px;
-      xmargin-right: 8px;
-    }
     .studentname {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
+      bottom: 2px;
+      left: 2px;
+      right: 2px;
       background: rgba(0,0,0,0.5);
       color: white;
       font-size: 14px;
@@ -145,6 +140,7 @@
               <template>
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
                   <iron-image sizing="cover" src="http://cdn.c.photoshelter.com/img-get2/I0000ST5728yzlbw/fit=1000x750/sean-carter-actor-headshot.jpg" width="128" height="128">
+                  </iron-image>
                   <div class="studentname">
                     <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
                   </div>
@@ -196,9 +192,7 @@
             if (xhr.readyState == 4 && xhr.status == 200) {
               var obj = JSON.parse(this.responseText);
               e.model.set('item.students', obj.students);
-              //setTimeout(function() {
-                collapse.toggle();
-              //}, 0);
+              collapse.toggle();
             }
           }
           xhr.open("GET", url, true);
