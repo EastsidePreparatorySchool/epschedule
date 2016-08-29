@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import webapp2
 import base64
+import webapp2
 import copy
 import json
 import jinja2
@@ -23,6 +23,9 @@ import os
 import string
 import logging
 import datetime
+import update_lunch
+import authenticate_user
+
 from google.appengine.ext import db
 from google.appengine.ext import vendor
 
@@ -34,6 +37,7 @@ from py_bcrypt import bcrypt
 from slowaes import aes
 from sendgrid import SendGridClient
 from sendgrid import Mail
+from Crypto.Hash import SHA256
 
 def open_data_file(filename, has_test_data = False):
     if has_test_data and 'EPSCHEDULE_USE_TEST_DATA' in os.environ:
@@ -66,6 +70,10 @@ class User(db.Model):
     join_date = db.DateTimeProperty()
     verified = db.BooleanProperty(required=True)
 
+    share_photo = db.BooleanProperty(default=False)
+    share_schedule = db.BooleanProperty(default=False)
+    seen_update_dialog = db.BooleanProperty(default=False)
+
 def convert_email_to_id(email):
     email = email.lower()
     pieces = string.split(email, "@")
@@ -76,6 +84,21 @@ def convert_email_to_id(email):
         if (student[0] == username):
             return student[1]
     return None
+
+def convert_id_to_email(id):
+    email = ""
+
+    if str(id) == DEMO_ID:
+        email = DEMO_USER
+
+    for student in ID_TABLE:
+        if (student[1] == int(id)):
+            email = student[0]
+
+    if email == "":
+        return None
+    else:
+        return email + "@eastsideprep.org"
 
 def normalize_name(name):
     name = name.lower()
@@ -135,9 +158,21 @@ REGISTER_SUCCESS = {
 }
 
 class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this handler
+    def gen_photo_url(self, firstname, lastname, folder):
+        input_data = (lastname + "_" + firstname).lower()
+
+        photo_hasher = SHA256.new(CRYPTO_KEY)
+
+        photo_hasher.update(input_data)
+        encoded_filename = photo_hasher.hexdigest()
+
+        logging.info(input_data + " --> " + encoded_filename)
+
+        return ('/' + folder + '/' + encoded_filename + '.jpg')
+
     def check_id(self):
         encoded_id = self.request.cookies.get("SID")
-        if encoded_id is None:
+        if not encoded_id:
             return None
         # TODO add code to check if id is valid
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
@@ -234,7 +269,6 @@ class RegisterBaseHandler(BaseHandler):
             'email': email,
             'url': self.get_confirmation_link(row_id)
         }
-
         creds = API_KEYS['sendgrid']
         client = SendGridClient(creds['username'], creds['password'], secure=True)
         message = Mail()
@@ -366,20 +400,34 @@ class LoginHandler (BaseHandler):
         email = self.request.get('email').lower()
         password = self.request.get('password')
 
+        id = convert_email_to_id(email)
+
+        if not id: # If there is no id for the email, don't try to log in
+            self.response.write(json.dumps(ERR_NOT_EPS_EMAIL))
+            return
+
         err = self.check_password(email, password) # Returns an object, so we don't have to call create_error_obj() on this
+
         if err:
-            self.response.write(json.dumps(err))
+            # If we got an error, try authenticating the user with four11 (slower, so we should use our own auth first)
+            username = string.split(email, "@")[0]
+
+            if not (authenticate_user.auth_user(username, password)): # If four11 authentication failed, return our error
+                self.response.write(json.dumps(err))
+                return
+
+        # If the authentication was successful, give the user an auth token
+
+        id = convert_email_to_id(email)
+        if id is not None:
+            encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
+            expiration_date = datetime.datetime.now()
+            expiration_date += datetime.timedelta(3650) # Set expiration date 10 years in the future
+            self.response.set_cookie('SID', encoded_id, expires=expiration_date)
+            self.response.write(create_error_obj(""))
         else:
-            id = convert_email_to_id(email)
-            if id is not None:
-                encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
-                expiration_date = datetime.datetime.now()
-                expiration_date += datetime.timedelta(3650) # Set expiration date 10 years in the future
-                self.response.set_cookie('SID', encoded_id, expires=expiration_date)
-                self.response.write(create_error_obj(""))
-            else:
-                self.response.write(create_error_obj("Something went wrong! " + \
-                    email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
+            self.response.write(create_error_obj("Something went wrong! " + \
+                email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
 
 class ChangePasswordHandler(BaseHandler):
     def post(self):
@@ -415,11 +463,14 @@ class ChangePasswordHandler(BaseHandler):
 class LogoutHandler(BaseHandler):
     def post(self):
         self.response.delete_cookie("SID")
+        self.response.write(json.dumps({}))
 
 class ClassHandler(BaseHandler):
     def get_class_schedule(self, class_name, period):
         schedules = get_schedule_data()
         result = None
+        opted_in = db.GqlQuery("SELECT * FROM User WHERE share_photo = TRUE")
+
         for schedule in schedules: # Load up each student's schedule
             for classobj in schedule['classes']: # For each one of their classes
                 if normalize_classname(classobj['name']) == class_name.lower() and \
@@ -429,9 +480,22 @@ class ClassHandler(BaseHandler):
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
                                       "students": []}
+                            continue # Don't add teachers to the student list
+
+                        email = generate_email(schedule['firstname'], schedule['lastname'])
+                        photo_url = "/images/material_face.svg" # Default placeholder
+
+                        for student in opted_in:
+                            if (student.email == email):
+                                if (student.share_photo):
+                                    photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
+                                continue
+
                         student = {"firstname": schedule['firstname'], \
                                    "lastname": schedule['lastname'], \
-                                   "email": generate_email(schedule['firstname'], schedule['lastname'])}
+                                   "email": email,
+                                   "photo_url": photo_url}
+
 
                         result['students'].append(student)
 
@@ -461,10 +525,20 @@ class StudentHandler(BaseHandler):
         student_names = student_name.split("_")
         firstname = student_names[0].lower()
         lastname = student_names[1].lower()
+
+        show_full_schedule = False
+        show_photo = False
+        email = firstname[0] + lastname + "@eastsideprep.org"
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
+
+        for user_obj in user_obj_query:
+            show_full_schedule = user_obj.share_schedule
+            show_photo = user_obj.share_photo
+
         student_schedule = self.get_schedule_for_name(firstname, lastname)
         user_schedule = self.get_schedule_for_id(id)
 
-        if is_teacher_schedule(user_schedule):
+        if is_teacher_schedule(user_schedule) or show_full_schedule:
             # If the user is a teacher
             response_schedule = copy.deepcopy(student_schedule)
         else:
@@ -472,6 +546,11 @@ class StudentHandler(BaseHandler):
 
         # Generate email address
         response_schedule["email"] = generate_email(firstname, lastname)
+
+        if show_photo:
+            response_schedule["photo_url"] = self.gen_photo_url(firstname, lastname, 'school_photos')
+        else:
+            response_schedule["photo_url"] = "/images/material_face.svg"
 
         self.response.write(json.dumps(response_schedule))
 
@@ -635,16 +714,54 @@ class MainHandler(BaseHandler):
             id = "4093"
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
+        lunch_objs = update_lunch.getLunchForDate(datetime.date.today())
         if schedule is not None:
+            # Handler for how to serialize date objs into json
             template_values = { \
               'schedule': json.dumps(schedule), \
               'days': json.dumps(DAYS), \
-              'components': self.get_components_filename() \
+              'components': self.get_components_filename(), \
+              'lunches': json.dumps(lunch_objs) \
             }
             template = JINJA_ENVIRONMENT.get_template('index.html')
             self.response.write(template.render(template_values))
         else:
             self.response.write("No schedule for id " + id)
+
+ERR_NO_LUNCH_TO_RATE = {
+  "error": "You cannot rate today's lunch"
+}
+
+ORIG_LUNCH_RATE = {
+  "error": "Your vote has been recorded"
+}
+
+LUNCH_RATE_OVERWRITE = {
+  "error": "Your vote has been updated"
+}
+
+class LunchRateHandler(BaseHandler):
+    def post(self):
+        id = int(self.check_id())
+        if id is None:
+            self.error(403)
+            return
+
+        logging.info(self.request.get('rating'));
+        #date = datetime.datetine.now()
+        date = datetime.date(2016, 3, 10);
+        lunch_id = update_lunch.get_lunch_id_for_date(date)
+
+        if not lunch_id: # If there is no lunch for the date
+            self.response.write(json.dumps(ERR_NO_LUNCH_TO_RATE))
+            return
+
+        rating = int(self.request.get('rating'))
+        overwrote = update_lunch.place_rating(rating, id, lunch_id, date)
+        if (overwrote):
+            self.response.write(json.dumps(LUNCH_RATE_OVERWRITE))
+        else:
+            self.response.write(json.dumps(ORIG_LUNCH_RATE))
 
 class AboutHandler(BaseHandler):
     def get(self):
@@ -770,9 +887,72 @@ class AdminHandler(RegisterBaseHandler):
             if len(verification[email]['verified']) == 1 and len(verification[email]['unverified']) >= 1:
                 db.delete(verification[email]['unverified'])
 
+class CronHandler(BaseHandler):
+    def get(self, job): # On url invoke
+        if job == "lunch":
+            update_lunch.read_lunches()
+            self.response.write("Success")
+
+class PrivacyHandler(BaseHandler): # Change and view privacy settings
+    def load_obj(self):
+        id = self.check_id()
+        if id is None:
+            return None
+
+        logging.info(id)
+
+        email = convert_id_to_email(id)
+
+        logging.info(email)
+
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
+        for user_obj in user_obj_query:
+            return user_obj
+
+    def unicode_to_boolean(self, string):
+        if (string == 'true'):
+            return True
+        elif (string == 'false'):
+            return False
+        return None
+
+    def get(self):
+        user_obj = self.load_obj()
+        if user_obj is None:
+            self.error(403)
+            return 
+
+        response = {"share_photo": user_obj.share_photo, "share_schedule": user_obj.share_schedule}
+        self.response.write(json.dumps(response))
+
+    def post(self):
+        user_obj = self.load_obj()
+        if user_obj is None:
+            self.error(403)
+            return
+
+        logging.info(self.unicode_to_boolean(self.request.get('share_photo')))
+        logging.info(self.unicode_to_boolean(type(self.request.get('share_photo'))))
+
+        user_obj.share_photo = self.unicode_to_boolean(self.request.get('share_photo'))
+        user_obj.share_schedule = self.unicode_to_boolean(self.request.get('share_schedule'))
+        user_obj.put()
+        self.response.write(json.dumps({}))
+
+class AvatarHandler(BaseHandler):
+    def get(self, user):
+        id = self.check_id()
+        if id != "4093":
+            self.error(403)
+            return
+            
+        args = string.split(user, '_')
+        url = self.gen_photo_url(args[1], args[0], 'school_photos')
+        self.redirect(url)
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/about', AboutHandler),
+    ('/avatar/(\w+).jpg', AvatarHandler),
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/register', RegisterHandler),
@@ -784,6 +964,9 @@ app = webapp2.WSGIApplication([
     ('/room/([\w\-]+)', RoomHandler),
     ('/teacher/([\w\-]+)', TeacherHandler),
     ('/student/([\w\-]+)', StudentHandler),
+    ('/lunch', LunchRateHandler),
     ('/admin', AdminHandler),
-    ('/admin/(\w+)', AdminHandler)
+    ('/admin/(\w+)', AdminHandler),
+    ('/cron/(\w+)', CronHandler),
+    ('/privacy', PrivacyHandler),
 ], debug=True)

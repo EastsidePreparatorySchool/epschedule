@@ -77,9 +77,6 @@ def getClass(textbox):#Each textbox is passed in
 def explode_pdf(path):
     path_properties = string.split(path, "/")  #Split the file name into a series of directories
     schedule_properties = string.split(path_properties[2], "-") #Extract the information from the name of the pdf
-    if len(schedule_properties) > 4: #If the person has a dash in their last name
-        schedule_properties[2] += "-" + schedule_properties[3]
-        schedule_properties[3] = schedule_properties[4]
 
     #Turns the pdf into a list of pages of text boxes
     fp = file(path, 'rb')
@@ -89,6 +86,8 @@ def explode_pdf(path):
     laparams = LAParams()
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
+    firstname = None
+    lastname = None
     advisor_first = None
     advisor_last = None
     grade = None
@@ -103,17 +102,24 @@ def explode_pdf(path):
           if isinstance(obj, LTTextBox):    #If the object is a text box
             class_obj = getClass(obj.get_text())    #Extract the information from the text box
             info = string.split(obj.get_text(), "|")
+            teacher_names = string.split(obj.get_text(), ", ")
             if class_obj != None:   #If getClass() didn't return an error
                 #print classes
                 #print class_obj["period_num"]
                 classes.append(class_obj['class'])  #Shove the information passed back from getClass() into it's appropriate space in the list
             elif len(info) == 4: #If the obj contains information on the user's name, advisor, grade, and locker num
+                names = string.split(info[0], ", ")
+                firstname = names[1][:-1]
+                lastname = names[0]
                 graduating_year = info[1][-5:-1]
                 grade = graduating_year_to_grade(graduating_year)
                 advisor = info[2][10:-1]
                 advisor_names = string.split(advisor, ", ")
                 advisor_first = advisor_names[1]
                 advisor_last = advisor_names[0]
+            elif len(teacher_names) == 2:
+                firstname = teacher_names[1][:-1]
+                lastname = teacher_names[0]
     device.close()
 
     cleaned_classes = [] #Remove duplicates from classes
@@ -122,7 +128,7 @@ def explode_pdf(path):
             cleaned_classes.append(l)
 
     schedule_properties[3] = schedule_properties[3][:-4] #Remove the .pdf extention
-    schedule_obj = {'firstname':schedule_properties[3], 'lastname':schedule_properties[2], 'term':schedule_properties[1], 'id':schedule_properties[0], 'grade':grade, 'advisorfirstname':advisor_first, 'advisorlastname':advisor_last, 'classes':cleaned_classes}
+    schedule_obj = {'firstname':firstname, 'lastname':lastname, 'term':schedule_properties[1], 'id':schedule_properties[0], 'grade':grade, 'advisorfirstname':advisor_first, 'advisorlastname':advisor_last, 'classes':cleaned_classes}
     return schedule_obj    #Return object created in the previous line
 
 def add_free_periods(schedule_obj):

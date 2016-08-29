@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/communication-icons.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/star-rating/star-rating.html">
 <link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="x-schedule">
@@ -115,6 +116,16 @@
     .student a:hover {
       color: #2196f3;
     }
+    .lunch {
+      background: white;
+      padding-left: 64px;
+      padding-right: 16px;
+      font-size: 0.9rem;
+    }
+    .inline {
+      position: relative;
+      bottom: 0;
+    }
   </style>
   <template>
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
@@ -143,13 +154,29 @@
                 </template>
               </p>
               <h2>{{item.name}}</h2>
+              <p>{{item.lunchInfo.summary}}</p>
             </div>
           </div>
           <iron-collapse id="{{computeCollapseId(item.name)}}">
+            <template is="dom-if" if="{{isLunchWithDesc(item)}}">
+              <div layout vertical class="lunch">
+                <ul>
+                  <li>{{getLineInDesc(item, "0")}}</li>
+                  <li>{{getLineInDesc(item, "1")}}</li>
+                  <li>{{getLineInDesc(item, "2")}}</li>
+                </ul>
+                <template is="dom-if" if="{{canRateLunch(item.startTime, isToday)}}">
+                  <div>
+                    <span class="inline">Rate this lunch: </span>
+                    <star-rating class="inline" id="lunchrater" on-tap="ratingThunk"></star-rating>
+                  </div>
+                </template>
+              </div>
+            </template>
             <div layout vertical>
               <template is="dom-repeat" items="{{item.students}}">
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                  <img src="/images/material_face.svg" width="32" height="32">
+                  <img src="{{item.photo_url}}" width="32" height="32">
                   <div class="flex">
                     <p>
                       <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
@@ -176,6 +203,18 @@
       // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
       },
+      isLunchWithDesc: function(item) {
+        if (item.lunchInfo) {
+          return true;
+        }
+        return false;
+      },
+      getLineInDesc: function(item, linenum) {
+        if (item.lunchInfo) {
+          var num = parseInt(linenum);
+          return item.lunchInfo.description[num];
+        }
+      },
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
       },
@@ -184,6 +223,32 @@
       },
       hasRoomOnly: function(item) {
         return !item.teacherLastName && item.room;
+      },
+      getIconURL: function(item) {
+        return "/96x96_photos/" + item.lastname + "_" + item.firstname + ".jpg"
+      },
+      canRateLunch: function(strTime, isToday) {
+        /*Takes in a time as a string, and returns
+        whether the current time is after that time*/
+
+        var strArray = strTime.split(":"); // [minutes, seconds]
+        var timeArray = [parseInt(strArray[0]), parseInt(strArray[1])];
+
+        if (timeArray[0] < 8) { // If it is a PM time
+          timeArray[0] += 12; // Correct it
+        }
+
+        var time = new Date(); // Current date and time
+        var lunchStart = new Date();
+        lunchStart.setHours(timeArray[0]);
+        lunchStart.setMinutes(timeArray[1]);
+
+        console.log(pastTime);
+        console.log(isToday);
+
+        var pastTime = (time.getTime() > lunchStart.getTime());
+
+        return (pastTime && isToday);
       },
       computeCollapseId: function(name) {
         return "collapse-" + name;
@@ -197,7 +262,9 @@
         el.classList.toggle("selected");
         var item = this.$.entryList.itemForElement(el);
         var collapse = document.getElementById(this.computeCollapseId(item.name));
-        if (el.classList.contains("selected")) {
+        // We need the item.name != "Lunch" because we just
+        // want the lunch cards to toggle every time
+        if (el.classList.contains("selected") && item.name != "Lunch") {
           var xhr = new XMLHttpRequest();
           // Squash all punctuation to underscores
           var cleanedClass = item.name.replace(/[\W]/g, "_");
@@ -214,6 +281,13 @@
         } else {
           collapse.toggle();
           //e.model.set('item.students', []);
+        }
+      },
+      ratingThunk: function(e) {
+        var rating = document.getElementById("lunchrater").rate;
+        e.stopPropagation();
+        if (this.onRate) {
+          this.onRate(rating);
         }
       },
       studentThunk: function(e) {

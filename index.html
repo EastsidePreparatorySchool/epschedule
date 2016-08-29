@@ -11,19 +11,35 @@
   <script>
 
   function signOut() {
+    sendPostMessage("logout", reload);
+  }
+  function reload(result) {
+    location.reload();
+  }
+  // Data argument is optional
+  function sendPostMessage(location, successFunction, data) {
+    // Location is the suburl to send data to, e.g. /logout
+    // Successfunction is the function to call if 200 is returned
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
+        result = JSON.parse(xhr.responseText);
         if (xhr.status==200) {
-          location.reload();
+          successFunction(result);
         } else {
-          result = JSON.parse(xhr.responseText);
           console.log(result.error);
+          renderToast(result.error);
         }
       }
     }
-    xhr.open("POST", "logout", true);
-    xhr.send();
+    xhr.open("POST", location, true);
+
+    // If there is no data to send
+    if (typeof data === "undefined") {
+      xhr.send(new FormData());
+    } else {
+      xhr.send(data);
+    }
   }
   function reportBug() {
     window.open("https://github.com/guberti/epschedule/issues");
@@ -33,10 +49,6 @@
   }
   function openSettings() {
     var dialog = document.getElementById("dialog");
-    dialog.innerHTML = '<div id="settingspanel"><h2>Settings</h2><h3>Change password</h3>' +
-    '<paper-input label="Old password" id="oldpassword" type="password"></paper-input>' +
-    '<paper-input label="New password" id="newpassword" type="password"></paper-input>' +
-    '<paper-button onclick="submitChangePassword()" raised id="changepassword" style="text-align:center">CHANGE PASSWORD</paper-button></div>';
     dialog.open();
   }
   function submitChangePassword() {
@@ -53,7 +65,6 @@
           renderToast("Password changed successfully.");
           oldPassword.value = "";
           newPassword.value = "";
-          console.log("Changed password!");
         } else {
           console.log(result.error);
           renderToast(result.error);
@@ -61,6 +72,28 @@
       }
     }
     xhr.open("POST", "changepassword", true);
+    xhr.send(data);
+  }
+  function submitUpdatePrivacy() {
+    var data = new FormData();
+    var share_photo = document.getElementById("sharephototoggle")
+    var share_schedule = document.getElementById("sharescheduletoggle")
+    data.append('share_photo', share_photo.checked)
+    data.append('share_schedule', share_schedule.checked)
+
+    xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status==200) {
+        result = JSON.parse(xhr.responseText);
+        if (!result.error) {
+          renderToast("Settings updated!");
+        } else {
+          console.log(result.error);
+          renderToast(result.error);
+        }
+      }
+    }
+    xhr.open("POST", "privacy", true);
     xhr.send(data);
   }
   document.onkeydown = function(event) {
@@ -87,6 +120,7 @@
 
   var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
+  var lunches = {{lunches | safe}};
   var globalDate = getInitialDate();
 
   function getInitialDate() {
@@ -133,7 +167,7 @@
   function updateMainSchedule() {
     var scheduleElement = document.getElementById('mainschedule');
     renderDate(globalDate);
-    renderSchedule(globalDate, userSchedule, "full", scheduleElement);
+    renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches);
   }
   function renderToast(text) {
     toast = document.getElementById("toast");
@@ -260,7 +294,7 @@
     popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
-        '<img src="/images/material_face.svg" width="128px" height="128px">' +
+        '<img src="' + studentObj.photo_url + '">' +
         '<div layout vertical><h3><span class="grade">' + grade + '</span></h3>' +
         '<p><a href="mailto:' + email + '""><iron-icon icon="communication:email"></iron-icon>' +
         '<span class="email">Email ' + studentObj.firstname + '</span></a></p></div></div></paper-material>' +
@@ -322,7 +356,7 @@
   }
 
   // Generate basic name, teacher, room, time, and period info for a class
-  function createClassEntry(schedule, school, day, currentSlot, type) {
+  function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
     var scheduleObj;
     // If it is a normal period
     if (isStandardClass(days[0][day][school][currentSlot]["period"])) {
@@ -353,6 +387,9 @@
         scheduleObj.name == "US Community") {
 
         scheduleObj.room = "LPC Commons";
+      }
+      if (scheduleObj.name == "Lunch") {
+        scheduleObj.lunchInfo = lunchInfo;
       }
     }
     if (scheduleObj.teacher == "N/A") {
@@ -417,10 +454,38 @@
     return false;
   }
 
-  function renderSchedule(dateObj, schedule, type, scheduleElement) {
+  function getLunchForDate(lunch_list, date) {
+    // Returns the lunch for the given date
+    // If there is no lunch, returns null
+    for (var i = 0; i < lunch_list.length; i++) {
+      var lunch = lunch_list[i];
+      // Note that date.getMonth is from 0-11 but
+      // all lunch date months are stored 1-12
+      if (
+        date.getDate() == lunch["day"] &&
+        date.getMonth() + 1 == lunch["month"] &&
+        date.getFullYear() == lunch["year"]
+        ) {
+        return lunch;
+      }
+    }
+  }
+
+  function dateIsCurrentDay(d1) {
+    var d2 = new Date();
+    return (
+      d1.getDate() == d2.getDate() &&
+      d1.getMonth() == d2.getMonth() &&
+      d1.getYear() == d2.getYear());
+  }
+
+  function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list) {
     // Either MS or US
     var school = getSchool(schedule.grade);
     var todaySchedule = [];
+    if (type == "full") {
+      var lunchInfo = getLunchForDate(lunch_list, dateObj);
+    }
     // The current schedule for that day
     var day = getScheduleTypeForDate(dateObj, days);
     // If it is a normal day (no all day event)
@@ -428,7 +493,7 @@
       // For each class
       for (var currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
         // Render the base of the class
-        var scheduleObj = createClassEntry(schedule, school, day, currentSlot, type);
+        var scheduleObj = createClassEntry(schedule, school, day, currentSlot, type, lunchInfo);
         if (scheduleObj) { // If scheduleObj is not null
           // To see when scheduleObj might be null, look at createClassEntry()
           // Push scheduleObj to a list of class objs
@@ -468,7 +533,18 @@
         requestAdditionalData(name, "room", renderRoom);
         openPopup(orig_name);
       }
+      scheduleElement.onRate = function(rating) {
+        var data = new FormData();
+        data.append('rating', rating);
+        sendPostMessage("lunch", ratingSuccessful, data);
+      }
+
+      //scheduleElement.isToday = true;
+      scheduleElement.isToday = dateIsCurrentDay(dateObj);
     }
+  }
+  function ratingSuccessful(result) {
+    renderToast(result.error);
   }
   function openPopup(title) {
     var titleSpan = document.getElementById("popupTitle");
@@ -525,9 +601,10 @@
     text-transform: none;
     font-size: 14px;
   }
-  #changepassword {
-    color:white;
-    background:#2196f3;
+  .settingsbutton {
+    color: white;
+    background: #2196f3;
+    text-align: center;
   }
   .drawer-icon {
     padding-right: 16px;
@@ -559,6 +636,9 @@
     height: 100%;
     background: #efefef;
   }
+  .inline {
+    width: 100%;
+  }
   #popup .header {
     padding: 16px;
     background: white;
@@ -586,6 +666,13 @@
   .teacher img {
     #margin-left: 16px;
   }
+  .leftfloat {
+    float: left;
+    padding-right: 32px;
+  }
+  .rightfloat {
+    float: right;
+  }
   </style>
 </head>
 
@@ -600,18 +687,18 @@
           <div class="image-container">
             <img src="images/epslogo.jpg">
           </div>
-          <paper-button noink onclick="signOut()">
+          <div onclick="signOut()">
             <iron-icon class="drawer-icon" icon="account-circle"></iron-icon>Sign out
-          </paper-button>
-          <paper-button noink onclick="openSettings()">
+          </div>
+          <div onclick="openSettings()">
             <iron-icon class="drawer-icon" icon="settings"></iron-icon>Settings
-          </paper-button>
-          <paper-button noink onclick="reportBug()">
+          </div>
+          <div onclick="reportBug()">
             <iron-icon class="drawer-icon" icon="bug-report"></iron-icon>Report a bug
-          </paper-button>
-          <paper-button noink onclick="about()">
+          </div>
+          <div onclick="about()">
             <iron-icon class="drawer-icon" icon="info"></iron-icon>About
-          </paper-button>
+          </div>
         </div>
       </paper-header-panel>
       <paper-header-panel id="mainheader" main>
@@ -638,6 +725,16 @@
     </div>
     </paper-header-panel>
   </neon-animated-pages>
-  <paper-dialog id="dialog"></paper-dialog>
+  <paper-dialog id="dialog">
+    <div id="settingspanel"><h2>Settings</h2>
+    <h3>Privacy settings</h3>
+    <div class="inline"><span class="leftfloat">Show other EPS students my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
+    <div class="inline"><span class="leftfloat">Show other EPS students my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
+    <paper-button onclick="submitUpdatePrivacy()" raised class="settingsbutton" id="updatesettings">UPDATE SETTINGS</paper-button>
+    <h3>Change password</h3>
+    <paper-input label="Old password" id="oldpassword" type="password"></paper-input>
+    <paper-input label="New password" id="newpassword" type="password"></paper-input>
+    <paper-button onclick="submitChangePassword()" raised class="settingsbutton" id="changepassword">CHANGE PASSWORD</paper-button></div>
+  </paper-dialog>
   <paper-toast id="toast" text="" duration=10000></paper-toast>
 </body></html>
