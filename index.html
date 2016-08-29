@@ -49,10 +49,6 @@
   }
   function openSettings() {
     var dialog = document.getElementById("dialog");
-    dialog.innerHTML = '<div id="settingspanel"><h2>Settings</h2><h3>Change password</h3>' +
-    '<paper-input label="Old password" id="oldpassword" type="password"></paper-input>' +
-    '<paper-input label="New password" id="newpassword" type="password"></paper-input>' +
-    '<paper-button onclick="submitChangePassword()" raised id="changepassword" style="text-align:center">CHANGE PASSWORD</paper-button></div>';
     dialog.open();
   }
   function submitChangePassword() {
@@ -69,7 +65,6 @@
           renderToast("Password changed successfully.");
           oldPassword.value = "";
           newPassword.value = "";
-          console.log("Changed password!");
         } else {
           console.log(result.error);
           renderToast(result.error);
@@ -77,6 +72,28 @@
       }
     }
     xhr.open("POST", "changepassword", true);
+    xhr.send(data);
+  }
+  function submitUpdatePrivacy() {
+    var data = new FormData();
+    var share_photo = document.getElementById("sharephototoggle")
+    var share_schedule = document.getElementById("sharescheduletoggle")
+    data.append('share_photo', share_photo.checked)
+    data.append('share_schedule', share_schedule.checked)
+
+    xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status==200) {
+        result = JSON.parse(xhr.responseText);
+        if (!result.error) {
+          renderToast("Settings updated!");
+        } else {
+          console.log(result.error);
+          renderToast(result.error);
+        }
+      }
+    }
+    xhr.open("POST", "privacy", true);
     xhr.send(data);
   }
   document.onkeydown = function(event) {
@@ -277,7 +294,7 @@
     popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
-        '<img src="/images/material_face.svg" width="128px" height="128px">' +
+        '<img src="' + studentObj.photo_url + '">' +
         '<div layout vertical><h3><span class="grade">' + grade + '</span></h3>' +
         '<p><a href="mailto:' + email + '""><iron-icon icon="communication:email"></iron-icon>' +
         '<span class="email">Email ' + studentObj.firstname + '</span></a></p></div></div></paper-material>' +
@@ -584,9 +601,10 @@
     text-transform: none;
     font-size: 14px;
   }
-  #changepassword {
-    color:white;
-    background:#2196f3;
+  .settingsbutton {
+    color: white;
+    background: #2196f3;
+    text-align: center;
   }
   .drawer-icon {
     padding-right: 16px;
@@ -618,6 +636,9 @@
     height: 100%;
     background: #efefef;
   }
+  .inline {
+    width: 100%;
+  }
   #popup .header {
     padding: 16px;
     background: white;
@@ -645,6 +666,13 @@
   .teacher img {
     #margin-left: 16px;
   }
+  .leftfloat {
+    float: left;
+    padding-right: 32px;
+  }
+  .rightfloat {
+    float: right;
+  }
   </style>
 </head>
 
@@ -659,18 +687,18 @@
           <div class="image-container">
             <img src="images/epslogo.jpg">
           </div>
-          <paper-button noink onclick="signOut()">
+          <div onclick="signOut()">
             <iron-icon class="drawer-icon" icon="account-circle"></iron-icon>Sign out
-          </paper-button>
-          <paper-button noink onclick="openSettings()">
+          </div>
+          <div onclick="openSettings()">
             <iron-icon class="drawer-icon" icon="settings"></iron-icon>Settings
-          </paper-button>
-          <paper-button noink onclick="reportBug()">
+          </div>
+          <div onclick="reportBug()">
             <iron-icon class="drawer-icon" icon="bug-report"></iron-icon>Report a bug
-          </paper-button>
-          <paper-button noink onclick="about()">
+          </div>
+          <div onclick="about()">
             <iron-icon class="drawer-icon" icon="info"></iron-icon>About
-          </paper-button>
+          </div>
         </div>
       </paper-header-panel>
       <paper-header-panel id="mainheader" main>
@@ -697,6 +725,16 @@
     </div>
     </paper-header-panel>
   </neon-animated-pages>
-  <paper-dialog id="dialog"></paper-dialog>
+  <paper-dialog id="dialog">
+    <div id="settingspanel"><h2>Settings</h2>
+    <h3>Privacy settings</h3>
+    <div class="inline"><span class="leftfloat">Show other EPS students my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
+    <div class="inline"><span class="leftfloat">Show other EPS students my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
+    <paper-button onclick="submitUpdatePrivacy()" raised class="settingsbutton" id="updatesettings">UPDATE SETTINGS</paper-button>
+    <h3>Change password</h3>
+    <paper-input label="Old password" id="oldpassword" type="password"></paper-input>
+    <paper-input label="New password" id="newpassword" type="password"></paper-input>
+    <paper-button onclick="submitChangePassword()" raised class="settingsbutton" id="changepassword">CHANGE PASSWORD</paper-button></div>
+  </paper-dialog>
   <paper-toast id="toast" text="" duration=10000></paper-toast>
 </body></html>

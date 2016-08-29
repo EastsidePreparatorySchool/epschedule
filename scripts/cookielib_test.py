@@ -25,6 +25,14 @@ def download(uri, filename):
     f = opener.open(req)
     _, params = cgi.parse_header(f.headers.get('Content-Disposition', ''))
     xfilename = params['filename']
+
+    # This kid is somehow programmed into the system wrong
+    # He won't be able to use the service, but this will fix
+    # the parser breaking at his name
+
+    if (xfilename == "schedule_Kirkpatrick-Heim.pdf"):
+        xfilename = "schedule_Kirkpatrick_Heim.pdf"
+
     filenamelist = extract_name(xfilename)
     finalfilename = '..' + os.sep + 'schedules' + os.sep + filename + '-' + filenamelist[1] + '-' + filenamelist[2] + '.pdf'
     with open(finalfilename, "wb") as pdf:
@@ -59,7 +67,7 @@ year = sys.argv[4]
 res = post(uri, obj)
 dump()
 
-for k in range(100, 130) + range(2000, 4600):
+for k in range(4500, 4600):
     download_schedule(k, term, year)
 print "Schedules downloaded"
 print "Pasing schedules"

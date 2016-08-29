@@ -176,7 +176,7 @@
             <div layout vertical>
               <template is="dom-repeat" items="{{item.students}}">
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                  <img src="/images/material_face.svg" width="32" height="32">
+                  <img src="{{item.photo_url}}" width="32" height="32">
                   <div class="flex">
                     <p>
                       <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
@@ -223,6 +223,9 @@
       },
       hasRoomOnly: function(item) {
         return !item.teacherLastName && item.room;
+      },
+      getIconURL: function(item) {
+        return "/96x96_photos/" + item.lastname + "_" + item.firstname + ".jpg"
       },
       canRateLunch: function(strTime, isToday) {
         /*Takes in a time as a string, and returns
