@@ -8,6 +8,7 @@ import webtest
 os.environ['EPSCHEDULE_USE_TEST_DATA'] = '1'
 import main  # module being tested
 from main import User
+import update_lunch
 
 from google.appengine.api import datastore
 from google.appengine.ext import db
@@ -26,6 +27,10 @@ INVALID_EPS_EMAIL = 'invalid@eastsideprep.org'
 TEST_PASSWORD = 'testtest'
 ADMIN_PASSWORD = 'adminpass'
 BAD_PASSWORD = 'badbadbad'
+TEST_LUNCH_PATH = 'data/test_lunch.ics'
+TEST_LUNCH_DATE = datetime.date(9999, 12, 20)
+TEST_LUNCH_SUMMARY = 'Foobar'
+LUNCH_DESCRIPTION_LENGTH = 3
 
 class FakeSendGridClient():
     def __init__(self):
@@ -269,6 +274,15 @@ class StudentHandlerTest(HandlerTestBase):
 class TeacherHandlerTest(HandlerTestBase):
     def testLoadTeacherData(self):
         pass
+
+class LunchesTest(HandlerTestBase):
+    def testParseLunches(self):
+        pass
+        #update_lunch.test_read_lunches(TEST_LUNCH_PATH)
+        #lunches = update_lunch.getLunchForDate(TEST_LUNCH_DATE)
+        #for lunch in lunches: # Will only run once, but we need this
+        #    self.assertEqual(lunch.summary, TEST_LUNCH_SUMMARY)
+        #    self.assertEqual(lunch.description.length, LUNCH_DESCRIPTION_LENGTH)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,5 +1,5 @@
 [{
-"Monday":{
+"Wednesday":{
   "MS": [
   {"period": "A", "time": "8:00-8:40"},
   {"period": "B", "time": "8:45-9:25"},
@@ -25,7 +25,7 @@
   {"period": "H", "time": "2:35-3:15"}
 ]},
 
-"Tuesday":{
+"Monday":{
   "MS": [
   {"period": "A", "time": "8:00-9:25"},
   {"period": "B", "time": "9:35-11:00"},
@@ -43,7 +43,7 @@
   {"period": "D", "time": "1:50-3:15"}
 ]},
 
-"Wednesday":{
+"Tuesday":{
   "MS": [
   {"period": "E", "time": "8:00-9:25"},
   {"period": "F", "time": "9:35-11:00"},
@@ -247,6 +247,14 @@
   }
 },
 
+"Overnights":{
+  "allDayEvent": {
+    "imagePrefix": "noschool",
+    "name": "Fall overnights",
+    "numImages": 6
+  }
+},
+
 "ThanksgivingBreak":{
   "allDayEvent": {
     "imagePrefix": "thanksgiving",
@@ -283,6 +291,40 @@
   "allDayEvent": {
     "imagePrefix": "noschool",
     "name": "EBC",
+    "numImages": 1
+  }
+},
+
+"CapstonePresentation":{
+  "MS": [
+  {"period": "A", "time": "8:00-8:35"},
+  {"period": "B", "time": "8:40-9:15"},
+  {"period": "C", "time": "9:20-9:55"},
+  {"period": "D", "time": "10:00-10:35"},
+  {"period": "E", "time": "10:40-11:15"},
+  {"period": "Lunch", "time": "11:20-11:55"},
+  {"period": "F", "time": "12:00-12:35"},
+  {"period": "G", "time": "12:40-1:15"},
+  {"period": "H", "time": "1:20-1:55"},
+  {"period": "Capstone", "time": "2:00-3:15"}],
+
+  "US": [
+  {"period": "A", "time": "8:00-8:35"},
+  {"period": "B", "time": "8:40-9:15"},
+  {"period": "C", "time": "9:20-9:55"},
+  {"period": "D", "time": "10:00-10:35"},
+  {"period": "E", "time": "10:40-11:15"},
+  {"period": "F", "time": "11:20-11:55"},
+  {"period": "Lunch", "time": "12:00-12:35"},
+  {"period": "G", "time": "12:40-1:15"},
+  {"period": "H", "time": "1:20-1:55"},
+  {"period": "Capstone", "time": "2:00-3:15"}]
+},
+
+"Field Day":{
+  "allDayEvent": {
+    "imagePrefix": "fieldday",
+    "name": "Field Day",
     "numImages": 1
   }
 }
@@ -329,11 +371,32 @@
 {"day": 7, "month": 3, "year": 2016, "schedule": "Conferences"},
 {"day": 8, "month": 3, "year": 2016, "schedule": "Conferences"},
 {"day": 9, "month": 3, "year": 2016, "schedule": "WinterTriSchedules"},
+{"day": 14, "month": 3, "year": 2016, "schedule": "Tuesday"},
+{"day": 15, "month": 3, "year": 2016, "schedule": "Wednesday"},
+{"day": 16, "month": 3, "year": 2016, "schedule": "Thursday"},
+{"day": 17, "month": 3, "year": 2016, "schedule": "Friday"},
 {"day": 18, "month": 3, "year": 2016, "schedule": "NoSchool"},
 {"day": 28, "month": 3, "year": 2016, "schedule": "EBC"},
 {"day": 29, "month": 3, "year": 2016, "schedule": "EBC"},
 {"day": 30, "month": 3, "year": 2016, "schedule": "EBC"},
 {"day": 31, "month": 3, "year": 2016, "schedule": "EBC"},
-{"day": 1, "month": 4, "year": 2016, "schedule": "EBC"}
+{"day": 1, "month": 4, "year": 2016, "schedule": "EBC"},
+{"day": 11, "month": 4, "year": 2016, "schedule": "NoSchool"},
+{"day": 25, "month": 4, "year": 2016, "schedule": "Tuesday"},
+{"day": 26, "month": 4, "year": 2016, "schedule": "Wednesday"},
+{"day": 27, "month": 4, "year": 2016, "schedule": "ServiceLearning"},
+{"day": 2, "month": 5, "year": 2016, "schedule": "CapstonePresentation"},
+{"day": 16, "month": 5, "year": 2016, "schedule": "Tuesday"},
+{"day": 17, "month": 5, "year": 2016, "schedule": "Wednesday"},
+{"day": 18, "month": 5, "year": 2016, "schedule": "Thursday"},
+{"day": 19, "month": 5, "year": 2016, "schedule": "Friday"},
+{"day": 20, "month": 5, "year": 2016, "schedule": "NoSchool"},
+{"day": 23, "month": 5, "year": 2016, "schedule": "Tuesday"},
+{"day": 24, "month": 5, "year": 2016, "schedule": "Wednesday"},
+{"day": 25, "month": 5, "year": 2016, "schedule": "Thursday"},
+{"day": 26, "month": 5, "year": 2016, "schedule": "Friday"},
+{"day": 27, "month": 5, "year": 2016, "schedule": "Field Day"},
+{"day": 8, "month": 9, "year": 2016, "schedule": "Overnights"},
+{"day": 9, "month": 9, "year": 2016, "schedule": "Overnights"}
 ]
 ]

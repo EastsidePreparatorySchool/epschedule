@@ -1,7 +1,4 @@
 cron:
-- description: download parse and crop schedules
-  url: /scripts/cookielib_test
-  schedule: every 24 hours synchronized
-- description: download and crop teacher images
-  url: /scripts/get_image_links
-  schedule: 1 of jan,april,july,oct 00:00
+- description: Add new lunches to database
+  url: /cron/lunch
+  schedule: every 1 hours
