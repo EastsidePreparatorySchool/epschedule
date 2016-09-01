@@ -63,8 +63,11 @@ def getClass(textbox):#Each textbox is passed in
         except:
             pass
         period = letterToNum(textboxlist[0][0])   #Takes the first character of the first line of the text box
-        if len(roomteacher) == 1: #If the class has no teacher
-            class_obj = {'name':textboxlist[2], 'room':roomteacher[0], 'teacher':"None", 'period':textboxlist[0][0]}
+        if len(roomteacher) == 1: #If the class has no teacher or no room
+            if roomteacher[0][0:4] == "NA :":
+                class_obj = {'name':textboxlist[2], 'room':"MS-100", 'teacher':roomteacher[0][4:], 'period':textboxlist[0][0]}
+            else:
+                class_obj = {'name':textboxlist[2], 'room':roomteacher[0], 'teacher':"None", 'period':textboxlist[0][0]}
         else:
             class_obj = {'name':textboxlist[2], 'room':roomteacher[0], 'teacher':roomteacher[1], 'period':textboxlist[0][0]}#Shoves all the information into a object
         return {'period_num':period, 'class':class_obj }#Returns an object containing the class info and the period info
@@ -145,6 +148,8 @@ def add_free_periods(schedule_obj):
 students = []
 files = [f for f in os.listdir('..' + os.sep + 'schedules')]#Create a list of all files in the directory
 for f in files:    #For each file in the directory
+    #if f != "4093-1-Uberti-Gavin.pdf":
+    #    continue
     if f in DO_NOT_PARSE: # If the schedule shouldn't be parsed
         print "Skipping"
         continue

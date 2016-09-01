@@ -247,6 +247,14 @@
   }
 },
 
+"Overnights":{
+  "allDayEvent": {
+    "imagePrefix": "noschool",
+    "name": "Fall overnights",
+    "numImages": 6
+  }
+},
+
 "ThanksgivingBreak":{
   "allDayEvent": {
     "imagePrefix": "thanksgiving",
@@ -387,6 +395,8 @@
 {"day": 24, "month": 5, "year": 2016, "schedule": "Wednesday"},
 {"day": 25, "month": 5, "year": 2016, "schedule": "Thursday"},
 {"day": 26, "month": 5, "year": 2016, "schedule": "Friday"},
-{"day": 27, "month": 5, "year": 2016, "schedule": "Field Day"}
+{"day": 27, "month": 5, "year": 2016, "schedule": "Field Day"},
+{"day": 8, "month": 9, "year": 2016, "schedule": "Overnights"},
+{"day": 9, "month": 9, "year": 2016, "schedule": "Overnights"}
 ]
 ]
