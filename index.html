@@ -605,6 +605,11 @@
     color: white;
     background: #2196f3;
     text-align: center;
+    width: 100px;
+    float: left;
+    margin-top: 32px;
+    margin-bottom: 24px;
+    margin-left: 0px;
   }
   .drawer-icon {
     padding-right: 16px;
@@ -636,8 +641,9 @@
     height: 100%;
     background: #efefef;
   }
-  .inline {
+  .inlinesettingsswitch {
     width: 100%;
+    height: 22px;
   }
   #popup .header {
     padding: 16px;
@@ -672,6 +678,19 @@
   }
   .rightfloat {
     float: right;
+  }
+  .settingsdividerline {
+    padding-left: 32px;
+    padding-right: 32px;
+    background-color: black;
+    height: 1px;
+  }
+  .settingstitle {
+    margin-bottom: 8px;
+  }
+  .privacypaneltitle {
+    margin-top: 16px;
+    margin-bottom: 8px;
   }
   </style>
 </head>
@@ -726,15 +745,14 @@
     </paper-header-panel>
   </neon-animated-pages>
   <paper-dialog id="dialog">
-    <div id="settingspanel"><h2>Settings</h2>
-    <h3>Privacy settings</h3>
-    <div class="inline"><span class="leftfloat">Show other EPS students my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
-    <div class="inline"><span class="leftfloat">Show other EPS students my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
-    <paper-button onclick="submitUpdatePrivacy()" raised class="settingsbutton" id="updatesettings">UPDATE SETTINGS</paper-button>
-    <h3>Change password</h3>
-    <paper-input label="Old password" id="oldpassword" type="password"></paper-input>
-    <paper-input label="New password" id="newpassword" type="password"></paper-input>
-    <paper-button onclick="submitChangePassword()" raised class="settingsbutton" id="changepassword">CHANGE PASSWORD</paper-button></div>
+    <div id="settingspanel">
+      <h2 class="settingstitle">Settings</h2>
+      <div class="settingsdividerline"></div>
+      <h3 class="privacypaneltitle">Privacy</h3>
+      <div class="inlinesettingsswitch"><span class="leftfloat">Show other EPS students my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
+      <div class="inlinesettingsswitch"><span class="leftfloat">Show other EPS students my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
+      <paper-button onclick="submitUpdatePrivacy()" raised class="settingsbutton" id="updatesettings">OK</paper-button>
+    </div>
   </paper-dialog>
   <paper-toast id="toast" text="" duration=10000></paper-toast>
 </body></html>
