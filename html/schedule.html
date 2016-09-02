@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/communication-icons.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../bower_components/star-rating/star-rating.html">
 <link rel="import" href="swipeable-behavior.html">
 
@@ -89,32 +90,21 @@
     .selected {
     }
     iron-collapse {
-      background: #efefef;
+      background: white;
     }
     .student {
       background: white;
-      /* uncomment to enable gray lines between students
-      #margin-bottom: 1px;*/
+      padding: 2px;
     }
-    .student img {
-      width: 32px;
-      padding: 1px;
-      border-radius: 50%;
-      margin-left: 24px;
-      margin-right: 24px;
-      background: #efefef; /*center no-repeat;*/
-    }
-    .student p {
-      font-size: 16px; #0.9rem;
-    }
-    .student iron-icon {
-      margin-right: 24px;
-    }
-    .student a {
-      color: gray;
-    }
-    .student a:hover {
-      color: #2196f3;
+    .studentname {
+      position: absolute;
+      bottom: 2px;
+      left: 2px;
+      right: 2px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      font-size: 14px;
+      padding: 8px;
     }
     .lunch {
       background: white;
@@ -139,7 +129,7 @@
       <template is="dom-repeat" id="entryList" items="{{entries}}">
         <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
           <div class="card-header" layout="" horizontal="" center="">
-            <img src="{{item.avatar}}">
+            <img src="{{item.avatar}}" onerror="if (this.src != '/images/placeholder_small.png') this.src = '/images/placeholder_small.png';">
             <div class="card-mid" layout="" vertical="">
               <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
                 <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
@@ -157,7 +147,7 @@
               <p>{{item.lunchInfo.summary}}</p>
             </div>
           </div>
-          <iron-collapse id="{{computeCollapseId(item.name)}}">
+          <iron-collapse id="{{computeCollapseId(item)}}">
             <template is="dom-if" if="{{isLunchWithDesc(item)}}">
               <div layout vertical class="lunch">
                 <ul>
@@ -173,21 +163,17 @@
                 </template>
               </div>
             </template>
-            <div layout vertical>
-              <template is="dom-repeat" items="{{item.students}}">
+            <iron-list items="{{item.students}}" grid>
+              <template>
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                  <img src="{{item.photo_url}}" width="32" height="32">
-                  <div class="flex">
-                    <p>
-                      <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
-                    </p>
+                  <iron-image sizing="cover" src="{{item.photo_url}}" width="128" height="128">
+                  </iron-image>
+                  <div class="studentname">
+                    <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
                   </div>
-                  <a href="{{computeEmailLink(item.email)}}">
-                    <iron-icon icon="communication:email"></iron-icon>
-                  </a>
                 </div>
               </template>
-            </div>
+            </iron-list>
           </iron-collapse>
         </div>
       </template>
@@ -250,8 +236,9 @@
 
         return (pastTime && isToday);
       },
-      computeCollapseId: function(name) {
-        return "collapse-" + name;
+      computeCollapseId: function(item) {
+        console.log(item);
+        return "collapse-" + item.name + "-" + item.period;
       },
       computeEmailLink: function(email) {
         return "mailto:" + email;
@@ -259,9 +246,10 @@
       toggleExpand: function(e) {
         // if expanding, XHR, and then set model
         var el = e.currentTarget;
+        console.log(el);
         el.classList.toggle("selected");
         var item = this.$.entryList.itemForElement(el);
-        var collapse = document.getElementById(this.computeCollapseId(item.name));
+        var collapse = document.getElementById(this.computeCollapseId(item));
         // We need the item.name != "Lunch" because we just
         // want the lunch cards to toggle every time
         if (el.classList.contains("selected") && item.name != "Lunch") {
@@ -269,6 +257,7 @@
           // Squash all punctuation to underscores
           var cleanedClass = item.name.replace(/[\W]/g, "_");
           var url = "class/" + cleanedClass + "/" + item.period.toLowerCase();
+          console.log(url);
           xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
               var obj = JSON.parse(this.responseText);

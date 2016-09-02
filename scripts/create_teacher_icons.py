@@ -5,10 +5,10 @@ import json
 exceptions_file = open('photo_exceptions.json', 'rb')
 exceptions = json.load(exceptions_file)
 
-for image in os.listdir("../school_photos"):
+for image in os.listdir("../teacher_photos"):
     print "Cropping " + str(image)
     try:
-        with Image(filename=('../school_photos/' + str(image))) as img:
+        with Image(filename=('../teacher_photos/' + str(image))) as img:
             if (img.width > img.height):
                 img.resize((96 * img.width) / img.height, 96)
                 border = (img.width - 96) / 2

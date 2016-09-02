@@ -76,10 +76,15 @@
   }
   function submitUpdatePrivacy() {
     var data = new FormData();
-    var share_photo = document.getElementById("sharephototoggle")
-    var share_schedule = document.getElementById("sharescheduletoggle")
-    data.append('share_photo', share_photo.checked)
-    data.append('share_schedule', share_schedule.checked)
+    var share_photo = document.getElementById("sharephototoggle");
+    var share_schedule = document.getElementById("sharescheduletoggle");
+    sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
+  }
+
+  function sendUpdatePrivacyRequest(share_photo, share_schedule) {
+    var data = new FormData();
+    data.append('share_photo', share_photo);
+    data.append('share_schedule', share_schedule);
 
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -121,6 +126,7 @@
   var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
   var lunches = {{lunches | safe}};
+  var showPrivacyDialog = {{show_privacy_dialog | safe}};
   var globalDate = getInitialDate();
 
   function getInitialDate() {
@@ -294,7 +300,7 @@
     popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
-        '<img src="' + studentObj.photo_url + '">' +
+        '<img src="' + studentObj.photo_url + '" onerror="if (this.src != \'/images/placeholder.png\') this.src = \'/images/placeholder.png\';">' +
         '<div layout vertical><h3><span class="grade">' + grade + '</span></h3>' +
         '<p><a href="mailto:' + email + '""><iron-icon icon="communication:email"></iron-icon>' +
         '<span class="email">Email ' + studentObj.firstname + '</span></a></p></div></div></paper-material>' +
@@ -567,12 +573,24 @@
     return text;
   }
 
+  function closePrivacyDialog() {
+    document.getElementById("privacydialog").close();
+    sendUpdatePrivacyRequest(true, true);
+  }
+
+  function changePrivacySettings() {
+    document.getElementById("privacydialogcollapse").show()
+  }
+
   document.addEventListener('WebComponentsReady', function() {
     var scheduleElement = document.getElementById('mainschedule');
     scheduleElement.addEventListener("swiped", scheduleSwiped, false);
     updateMainSchedule();
   });
 
+  if (showPrivacyDialog) {
+    setTimeout(function(){ document.getElementById("privacydialog").open(); }, 0);
+  }
   </script>
 
   <style>
@@ -690,6 +708,36 @@
   }
   .privacypaneltitle {
     margin-top: 16px;
+  }
+  .privacydialogpadding {
+    padding-left: 16px;
+  }
+  .privdialogheading {
+    padding-bottom: 20px;
+  }
+  .privacybuttonpadding {
+    padding-top: 24px;
+    padding-bottom: 8px;
+  }
+  .selfphoto {
+    width: 100%;
+  }
+  .underline {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .newlinebelow {
+    padding-bottom: 8px;
+  }
+  .privcollapsepadding {
+    width: 100%;
+    height: 16px;
+  }
+  .switchspacing {
+    height: 32px;
+  }
+  #privacydialog {
+    margin-top: 8px;
     margin-bottom: 8px;
   }
   </style>
@@ -752,6 +800,21 @@
       <div class="inlinesettingsswitch"><span class="leftfloat">Show other EPS students my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
       <div class="inlinesettingsswitch"><span class="leftfloat">Show other EPS students my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
       <paper-button onclick="submitUpdatePrivacy()" raised class="settingsbutton" id="updatesettings">OK</paper-button>
+    </div>
+  </paper-dialog>
+  <paper-dialog id="privacydialog" modal>
+    <div class="privacydialogpadding">
+      <h2 class="privdialogheading">Welcome to the new EPSchedule</h2>
+      <!--<img class="selfphoto" src="{{self_photo | safe}}" onerror="this.style.display='none'">-->
+      <div class="newlinebelow"><span>EPSchedule now supports school photos!</span></div>
+      <div class="inline"><span>We'd like to allow other students to see your photo and schedule, but</span><br><span>first we need your OK. If you'd like to change these settings, </span><span class="underline" onclick="changePrivacySettings()">click here</span><span>.</span></div>
+      <iron-collapse id="privacydialogcollapse">
+        <div class="privcollapsepadding"></div>
+        <div class="inline switchspacing"><span class="leftfloat">Allow other EPS students to see my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
+        <div class="inline switchspacing"><span class="leftfloat">Allow other EPS students to see my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
+      </iron-collapse>
+      <div class="privacybuttonpadding"><paper-button raised class="settingsbutton" onclick="closePrivacyDialog()">OK, I UNDERSTAND</paper-button></div>
+      <img src="/images/photos_demo_screenshot.png">
     </div>
   </paper-dialog>
   <paper-toast id="toast" text="" duration=10000></paper-toast>
