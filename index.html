@@ -79,6 +79,7 @@
     var share_photo = document.getElementById("sharephototoggle");
     var share_schedule = document.getElementById("sharescheduletoggle");
     sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
+    document.getElementById("dialog").close()
   }
 
   function sendUpdatePrivacyRequest(share_photo, share_schedule) {
@@ -619,6 +620,11 @@
     text-transform: none;
     font-size: 14px;
   }
+  .privacypopupbutton {
+    color: white;
+    background: #2196f3;
+    text-align: center;
+  }
   .settingsbutton {
     color: white;
     background: #2196f3;
@@ -817,7 +823,7 @@
         <div class="inline switchspacing"><span class="leftfloat">Allow other EPS students to see my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
         <div class="inline switchspacing"><span class="leftfloat">Allow other EPS students to see my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
       </iron-collapse>
-      <div class="privacybuttonpadding"><paper-button raised class="settingsbutton" onclick="closePrivacyDialog()">OK, I UNDERSTAND</paper-button></div>
+      <div class="privacybuttonpadding"><paper-button raised class="privacypopupbutton" onclick="closePrivacyDialog()">OK, I UNDERSTAND</paper-button></div>
       <img src="/images/photos_demo_screenshot.png">
     </div>
   </paper-dialog>

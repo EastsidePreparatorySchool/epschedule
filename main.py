@@ -500,7 +500,9 @@ class ClassHandler(BaseHandler):
     def get_class_schedule(self, class_name, period):
         schedules = get_schedule_data()
         result = None
+        logging.info("Starting DB query")
         opted_in = db.GqlQuery("SELECT * FROM User WHERE share_photo = TRUE")
+        logging.info("Finished DB query")
 
         for schedule in schedules: # Load up each student's schedule
             for classobj in schedule['classes']: # For each one of their classes
@@ -508,7 +510,6 @@ class ClassHandler(BaseHandler):
                     classobj['period'].lower() == period.lower(): # Check class name and period match
                     if classobj['teacher'] != "" or classobj['name'] == "Free Period": # If they are a student or it is a free period
                         if not result:
-                            logging.info("Setting result!")
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
                                       "students": []}
@@ -517,11 +518,13 @@ class ClassHandler(BaseHandler):
                         email = generate_email(schedule['firstname'], schedule['lastname'])
                         photo_url = "/images/placeholder_small.png" # Default placeholder
 
+                        logging.info("Starting to rip through db result")
                         for student in opted_in:
                             if (student.email == email):
                                 if (student.share_photo):
                                     photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
                                 break
+                        logging.info("Finished that rip through")
 
                         student = {"firstname": schedule['firstname'], \
                                    "lastname": schedule['lastname'], \
@@ -539,10 +542,10 @@ class ClassHandler(BaseHandler):
                         #           "email": email,
                         #           "photo_url": "/96x96_photos/" + teacher_schedule["firstname"] + "_" + teacher_schedule["lastname"] + ".jpg"}
 
-                        logging.info("adding result!")
                         result['students'].append(student)
 
         result['students'].sort(key=lambda s: s['firstname'])
+        logging.info("Finished handling request")
         return result
     def get(self, class_name, period):
         # Get the cookie
