@@ -736,18 +736,22 @@
           <div class="image-container">
             <img src="images/epslogo.jpg">
           </div>
-          <div onclick="signOut()">
-            <iron-icon class="drawer-icon" icon="account-circle"></iron-icon>Sign out
-          </div>
-          <div onclick="openSettings()">
-            <iron-icon class="drawer-icon" icon="settings"></iron-icon>Settings
-          </div>
-          <div onclick="reportBug()">
-            <iron-icon class="drawer-icon" icon="bug-report"></iron-icon>Report a bug
-          </div>
-          <div onclick="about()">
-            <iron-icon class="drawer-icon" icon="info"></iron-icon>About
-          </div>
+          <paper-icon-item onclick="signOut()">
+            <iron-icon class="drawer-icon" icon="account-circle" item-icon></iron-icon>
+            <span>Sign out</span>
+          </paper-icon-item>
+          <paper-icon-item onclick="openSettings()">
+            <iron-icon class="drawer-icon" icon="settings" item-icon></iron-icon>
+            <span>Settings</span>
+          </paper-icon-item>
+          <paper-icon-item onclick="reportBug()">
+            <iron-icon class="drawer-icon" icon="bug-report" item-icon></iron-icon>
+            <span>Report a bug</span>
+          </paper-icon-item>
+          <paper-icon-item onclick="about()">
+            <iron-icon class="drawer-icon" icon="info" item-icon></iron-icon>
+            <span>About</span>
+          </paper-icon-item>
         </div>
       </paper-header-panel>
       <paper-header-panel id="mainheader" main>
