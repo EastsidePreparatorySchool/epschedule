@@ -104,6 +104,9 @@
       color: white;
       font-size: 14px;
       padding: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   </style>
   <template>
@@ -139,10 +142,10 @@
             <iron-list items="{{item.students}}" grid>
               <template>
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                  <iron-image sizing="cover" src="http://cdn.c.photoshelter.com/img-get2/I0000ST5728yzlbw/fit=1000x750/sean-carter-actor-headshot.jpg" width="128" height="128">
+                  <iron-image sizing="cover" src="https://four11.eastsideprep.org/system/students/idphotos/000/004/085/medium/6D8A2410.jpg" width="112" height="112">
                   </iron-image>
                   <div class="studentname">
-                    <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
+                    <span>{{item.firstname}} {{item.lastname}}</span>
                   </div>
                 </div>
               </template>
