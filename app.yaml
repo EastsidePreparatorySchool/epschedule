@@ -19,14 +19,23 @@ handlers:
 
 - url: /images
   static_dir: images
+
 - url: /bower_components
   static_dir: bower_components
+
 - url: /html
   static_dir: html
+
 - url: /96x96_photos
   static_dir: 96x96_photos
+
+- url: /school_photos
+  static_dir: school_photos
+  application_readable: true
+
 - url: /misc_photos
   static_dir: misc_photos
+
 - url: /teacher_photos_fullsize
   static_dir: teacher_photos_fullsize
 
@@ -38,6 +47,8 @@ libraries:
 - name: webapp2
   version: "2.5.2"
 - name: jinja2
+  version: latest
+- name: pycrypto
   version: latest
 
 skip_files:
