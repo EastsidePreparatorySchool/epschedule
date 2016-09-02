@@ -105,6 +105,9 @@
       color: white;
       font-size: 14px;
       padding: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .lunch {
       background: white;
@@ -169,7 +172,7 @@
                   <iron-image sizing="cover" src="{{item.photo_url}}" width="128" height="128">
                   </iron-image>
                   <div class="studentname">
-                    <span>{{item.firstname}}</span> <span>{{item.lastname}}</span>
+                    <span>{{item.firstname}} {{item.lastname}}</span>
                   </div>
                 </div>
               </template>
