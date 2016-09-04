@@ -553,20 +553,20 @@
   function ratingSuccessful(result) {
     renderToast(result.error);
   }
-  function openSearchBar() {
+  /*function openSearchBar() {
     var titlebar = document.querySelector(".headerbarpages");
-    titlebar.entryAnimation = "slide-from-right-animation";
+    titlebar.entryAnimation = "ripple-animation";
     titlebar.exitAnimation = "";
     titlebar.selected = 1;
     document.querySelector("paper-input.paper-typeahead-input").tabIndex = 1;
     setTimeout(function(){ document.querySelector("paper-input.paper-typeahead-input").focus(); }, 200);
-  }
-  function closeSearchBar() {
+  }*/
+  /*function closeSearchBar() {
     var titlebar = document.querySelector(".headerbarpages");
-    titlebar.exitAnimation = "slide-right-animation";
+    titlebar.exitAnimation = "slide-up-animation";
     titlebar.entryAnimation = "";
     titlebar.selected = 0;
-  }
+  }*/
   function openPopup(title) {
     var titleSpan = document.getElementById("popupTitle");
     titleSpan.textContent = title;
@@ -611,6 +611,23 @@
       }
       openPopup(obj.name);
     });
+
+    // Set up search bar
+    var scope = document.querySelector('template[is="dom-bind"]');
+
+    scope.openSearchBar = function(event) {
+      this.$.ripplefrom.sharedElements = {
+        'ripple': event.target,
+        'reverse-ripple': event.target
+      };
+
+      this.$.headerbarpages.selected = 1;
+      setTimeout(function(){ document.querySelector("paper-input.paper-typeahead-input").focus(); }, 200);
+    };
+
+    scope.closeSearchBar = function(event) {
+      this.$.headerbarpages.selected = 0;
+    };
   });
 
   if (showPrivacyDialog) {
@@ -816,6 +833,9 @@
   .wide {
     width: 100%;
   }
+  .tall {
+    height: 100%;
+  }
   paper-toolbar ::shadow #topBar {
     padding: 0px;
   }
@@ -857,31 +877,28 @@
       </paper-header-panel>
       <paper-header-panel id="mainheader" main>
         <paper-toolbar class="headerbar">
-          <neon-animated-pages class="headerbarpages" selected="0">
-            <div class="headerbarpage mainheader">
-              <paper-icon-button class="" icon="menu" paper-drawer-toggle></paper-icon-button>
-              <span class="title" id="day">Today</span>
-              <paper-icon-button class="rightfloat" icon="arrow-back" onclick="dateBack()"></paper-icon-button>
-              <paper-icon-button class="rightfloat" icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
-              <paper-icon-button class="rightfloat" icon="search" onclick="openSearchBar()"></paper-icon-button>
-            <!--<div class="toolbarsearchbox flex">
-              <iron-collapse horizontal class="searchbarcollapse">
-                <paper-typeahead-input max-suggestions="5" placeholder="Search students" remote-url="/search/%QUERY" remote-url-wait-ms="100" is-candidates-json display-prop="name">
-                </paper-typeahead-input>
-              </iron-collapse>
-              <paper-icon-button icon="search" onclick="openSearchBar()">
-              </paper-icon-button>
-            </div>-->
-            </div>
-            <div class="headerbarpage searchbackground">
-              <div class="layout horizontal wide">
-                <paper-icon-button class="grey headercenteredicon" icon="arrow-back" onclick="closeSearchBar()"></paper-icon-button>
-                <paper-typeahead-input max-suggestions="5" placeholder="Search students" remote-url="/search/%QUERY" remote-url-wait-ms="100" is-candidates-json display-prop="name">
-                </paper-typeahead-input>
-              </div>
-            </div>
-          </neon-animated-pages>
-          <!-- example of showing avatar in toolbar. could also go in drawer -->
+          <template is="dom-bind">
+            <neon-animated-pages id="headerbarpages" class="headerbarpages" selected="0">
+              <ripple-from id="ripplefrom">
+                <div class="headerbarpage mainheader tall">
+                  <paper-icon-button class="" icon="menu" paper-drawer-toggle></paper-icon-button>
+                  <span class="title" id="day">Today</span>
+                  <paper-icon-button class="rightfloat" icon="arrow-back" onclick="dateBack()"></paper-icon-button>
+                  <paper-icon-button class="rightfloat" icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
+                  <paper-icon-button class="rightfloat" icon="search" on-click="openSearchBar"></paper-icon-button>
+                </div>
+              </ripple-from>
+              <ripple-to id="rippleto">
+                <div class="headerbarpage searchbackground tall">
+                  <div class="layout horizontal wide tall">
+                    <paper-icon-button class="grey headercenteredicon" icon="arrow-back" on-click="closeSearchBar"></paper-icon-button>
+                    <paper-typeahead-input max-suggestions="5" placeholder="Search students" remote-url="/search/%QUERY" remote-url-wait-ms="100" is-candidates-json display-prop="name">
+                    </paper-typeahead-input>
+                  </div>
+                </div>
+              </ripple-to>
+            </neon-animated-pages>
+          </template>
         </paper-toolbar>
         <div id="container" class="container" layout="" vertical="" center="">
           <x-schedule id="mainschedule" show="all"></x-schedule>
