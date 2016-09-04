@@ -1015,6 +1015,26 @@ class AvatarHandler(BaseHandler):
         url = self.gen_photo_url(args[1], args[0], 'school_photos')
         self.redirect(url)
 
+class SearchHandler(BaseHandler):
+    def get_url_prefix(self, grade):
+        if grade:
+            return "student"
+        else:
+            return "teacher"
+
+    def get(self, keyword):
+        RESULTS_TO_RETURN = 5 
+
+        results = []
+        for schedule in SCHEDULE_INFO:
+            test_keyword = schedule['firstname'] + " " + schedule['lastname']
+            if keyword.lower() in test_keyword.lower():
+                results.append({"name": test_keyword, "prefix": self.get_url_prefix(schedule['grade'])})
+
+
+        self.response.write(json.dumps(results))
+
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/about', AboutHandler),
@@ -1032,6 +1052,7 @@ app = webapp2.WSGIApplication([
     ('/student/([\w\-]+)', StudentHandler),
     ('/lunch', LunchRateHandler),
     ('/admin', AdminHandler),
+    ('/search/(.*)', SearchHandler),
     ('/admin/(\w+)', AdminHandler),
     ('/cron/(\w+)', CronHandler),
     ('/privacy', PrivacyHandler),
