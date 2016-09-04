@@ -430,7 +430,7 @@ class LoginHandler (BaseHandler):
 
             # If authentication was successful, check to see if the person has an EPSchedule account
             has_account = False
-            user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email) # Combine this with password lookup to make it faster
+            user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email) # Combine this with password lookup to make it faster
             for query_result in user_obj_query:
                 has_account = True
 
@@ -970,7 +970,7 @@ class PrivacyHandler(BaseHandler): # Change and view privacy settings
 
         email = convert_id_to_email(id)
 
-        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
         for user_obj in user_obj_query:
             return user_obj
 
