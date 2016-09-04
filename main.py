@@ -489,6 +489,14 @@ class LogoutHandler(BaseHandler):
         self.response.write(json.dumps({}))
 
 class ClassHandler(BaseHandler):
+    def gen_opted_in_table(self):
+        table = {}
+        opted_in = db.GqlQuery("SELECT * FROM User WHERE share_photo = TRUE")
+        for student in opted_in:
+            table[student.email] = student.share_photo
+
+        return table
+
     def get_teacher_photo(self, num):
         for schedule in get_schedule_data():
             if not schedule["grade"]: # If they are a teacher
@@ -501,7 +509,7 @@ class ClassHandler(BaseHandler):
         schedules = get_schedule_data()
         result = None
         logging.info("Starting DB query")
-        opted_in = db.GqlQuery("SELECT * FROM User WHERE share_photo = TRUE")
+        opted_in = self.gen_opted_in_table()
         logging.info("Finished DB query")
 
         for schedule in schedules: # Load up each student's schedule
@@ -518,13 +526,8 @@ class ClassHandler(BaseHandler):
                         email = generate_email(schedule['firstname'], schedule['lastname'])
                         photo_url = "/images/placeholder_small.png" # Default placeholder
 
-                        logging.info("Starting to rip through db result")
-                        for student in opted_in:
-                            if (student.email == email):
-                                if (student.share_photo):
-                                    photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
-                                break
-                        logging.info("Finished that rip through")
+                        if email in opted_in:
+                                photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
 
                         student = {"firstname": schedule['firstname'], \
                                    "lastname": schedule['lastname'], \
