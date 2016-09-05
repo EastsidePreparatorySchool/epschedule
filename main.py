@@ -53,6 +53,7 @@ def load_json_file(filename, has_test_data = False):
 
 DEMO_USER = "demo"
 DEMO_ID = "9999"
+GAVIN_ID = "4093"
 CRYPTO_KEY = load_data_file('crypto.key', True).strip()
 API_KEYS = load_json_file('api_keys.json', True)
 ID_TABLE = load_json_file('id_table.json', True)
@@ -94,8 +95,7 @@ def convert_id_to_email(id):
 
 
     for student in ID_TABLE:
-        logging.info(student[1])
-        if (student[1] == str(id)):
+        if (student[1] == int(id)):
             email = student[0]
 
     if email == "":
@@ -183,6 +183,9 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         # TODO add code to check if id is valid
         id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
         return id
+
+    def check_admin_id(self):
+        return self.check_id() == GAVIN_ID
 
     def check_password(self, email, password):
         # Returns 0 for all good,
@@ -562,7 +565,7 @@ class StudentHandler(BaseHandler):
             return
 
         if id == str(DEMO_ID):
-            id = "4093"
+            id = GAVIN_ID
 
         # Split student_name into firstname and lastname
         student_names = student_name.split("_")
@@ -635,8 +638,8 @@ class PeriodHandler(BaseHandler):
         # which rooms are free, what class you currently have then,
         # and what classes you could take then
         dataobj = {'freeteachers':[], 'freerooms':[], 'currentclass':{}, 'potentialclassschedules':[]}
-        if id == DEMO_ID: # If this is the demo accound
-            id = "4093"
+        if id == DEMO_ID: # If this is the demo account
+            id = GAVIN_ID
         schedule_data = get_schedule_data()
         user_schedule = None
 
@@ -755,21 +758,20 @@ class MainHandler(BaseHandler):
 
         logging.info("New request for id: " + id)
         if id == DEMO_ID: # If this is the demo account
-            id = "4093"
+            id = GAVIN_ID
         # schedule = self.get_schedule(self.request.get('id'))
         schedule = self.get_schedule(id)
         lunch_objs = update_lunch.getLunchForDate(datetime.date.today())
+
         if schedule is not None:
 
             show_privacy_dialog = False
 
             if self.request.cookies.get("SEENPRIVDIALOG") != "1":
-
                 if schedule['grade']: # If the user is a student
                     user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", convert_id_to_email(id))
                     for obj in user_obj_query:
                         show_privacy_dialog = not obj.seen_update_dialog
-
                 if not show_privacy_dialog:
                     expiration_date = datetime.datetime.now()
                     expiration_date += datetime.timedelta(3650) # Set expiration date 10 years in the future
@@ -833,29 +835,59 @@ class AboutHandler(BaseHandler):
 
 class AdminHandler(RegisterBaseHandler):
     def get(self):
-        id = self.check_id()
-        if id != "4093":
+        if not self.check_admin_id():
             self.error(403)
             return
 
-        verification = self.read_db()
+        data = self.read_db()
 
         html = "<h1>Stats</h1>"
 
-        html += "<h2>" + str(len(verification))
+        html += "<h2>" + str(len(data))
         html += " unique emails entered</h2>"
 
-        only_verified = sorted([ k for k,v in verification.iteritems() if len(v['verified']) == 1 and len(v['unverified']) == 0 ])
-        html += "<h3>" + str(len(only_verified)) + " emails in good condition</h3>"
-        for email in only_verified:
-            html += email + "<br>"
+        only_verified_dict = {k: v for (k, v) in data.iteritems() \
+            if len(v['verified']) == 1 and len(v['unverified']) == 0 }
+        only_verified_list = sorted([k for k in only_verified_dict])
+        num_four11 = len({k: v for (k, v) in only_verified_dict.iteritems() \
+            if len(v.get('password')) == 0})
+        num_seen_dialog = len({k: v for (k, v) in only_verified_dict.iteritems() \
+            if v.get('seen_update_dialog')})
+        num_share_photo = len({k: v for (k, v) in only_verified_dict.iteritems() \
+            if v.get('share_photo')})
+        num_share_schedule = len({k: v for (k, v) in only_verified_dict.iteritems() \
+            if v.get('share_schedule')})
+        percent_four11 = 0
+        percent_seen_dialog = 0
+        percent_share_photo = 0
+        percent_share_schedule = 0
+        if len(only_verified_list) > 0:
+          percent_four11 = num_four11 * 100 / len(only_verified_list)
+          percent_seen_dialog = num_seen_dialog * 100 / len(only_verified_list)
+        if num_seen_dialog > 0:
+          percent_share_photo = num_share_photo * 100 / num_seen_dialog
+          percent_share_schedule = num_share_schedule * 100 / num_seen_dialog
 
-        verified_and_unverified = sorted([ k for k,v in verification.iteritems() if len(v['verified']) >= 1 and len(v['unverified']) >= 1 ])
+        html += "<h3>" + str(len(only_verified_list)) + " emails in good condition</h3>"
+        for email in only_verified_list:
+            html += email + "<br>"
+        html += "<h4>" + str(num_four11) + \
+            " (" + str(percent_four11) + "%) using four11 login<br>"
+        html += str(num_seen_dialog) + \
+            " (" + str(percent_seen_dialog) + "%) have seen privacy dialog<br>"
+        html += str(num_share_photo) + \
+            " (" + str(percent_share_photo) + "%) sharing their photo<br>"
+        html += str(num_share_schedule) + \
+            " (" + str(percent_share_schedule) + "%) sharing their schedule</h4>"
+
+        verified_and_unverified = sorted([ k for k, v in data.iteritems() \
+            if len(v['verified']) >= 1 and len(v['unverified']) >= 1 ])
         html += "<h3>" + str(len(verified_and_unverified)) + " emails with verified and unverified records</h3>"
         for email in verified_and_unverified:
-            html += email + " [" + str(len(verification[email]['unverified'])) + "]<br>"
+            html += email + " [" + str(len(data[email]['unverified'])) + "]<br>"
 
-        only_unverified = sorted([ k for k,v in verification.iteritems() if len(v['verified']) == 0 and len(v['unverified']) >= 1 ])
+        only_unverified = sorted([ k for k, v in data.iteritems() \
+            if len(v['verified']) == 0 and len(v['unverified']) >= 1 ])
         html += "<h3>" + str(len(only_unverified)) + " emails with only unverified records</h3>"
         for email in only_unverified:
             email_schedule = self.get_schedule_for_id(convert_email_to_id(email))
@@ -864,14 +896,15 @@ class AdminHandler(RegisterBaseHandler):
             if email_schedule:
                 is_valid = "valid"
 
-            html += email + " [" + str(len(verification[email]['unverified'])) + ", " + is_valid + "]<br>"
+            html += email + " [" + str(len(data[email]['unverified'])) + ", " + is_valid + "]<br>"
 
-        multiple_verified = sorted([ k for k,v in verification.iteritems() if len(v['verified']) > 1 ])
+        multiple_verified = sorted([ k for k, v in data.iteritems() \
+            if len(v['verified']) > 1 ])
         # If there are ever any entries in multiple_verified, the DB is in a very bad state
         if multiple_verified:
             html += "<h3>Attention! There are " + str(len(multiple_verified)) + " emails with more than one verified record. The DB is REALLY messed up!</h3>"
             for email in multiple_verified:
-                html += email + " [" + str(len(verification[email]['verified'])) + ", " + str(len(verification[email]['unverified'])) + "]<br>"
+                html += email + " [" + str(len(data[email]['verified'])) + ", " + str(len(data[email]['unverified'])) + "]<br>"
 
         html += """
         <script>
@@ -898,26 +931,36 @@ class AdminHandler(RegisterBaseHandler):
         html += ")'>Clean up duplicates of confirmed users</button>"
         self.response.write(html)
 
-    def read_db(self): # Returns the entire database as an dictionary
-
-        verification = {}
+    # Returns the entire database as a dictionary
+    def read_db(self):
+        data = {}
         query = db.GqlQuery("SELECT * FROM User")
         for query_result in query:
-            if not query_result.email in verification:
-                verification[query_result.email] = {'verified': [], 'unverified': []}
+            if not query_result.email in data:
+                data[query_result.email] = {'verified': [], 'unverified': []}
             # Append the entity's key to the appropriate list
-            verification[query_result.email][self.get_key(query_result.verified)].append(query_result.key())
+            obj =  data[query_result.email]
+            obj[self.get_key(query_result.verified)].append(query_result.key())
+            # If we have a verified record, add the privacy info
+            if query_result.verified:
+                obj['password'] = query_result.password
+                if query_result.seen_update_dialog:
+                    obj['seen_update_dialog'] = True
+                if query_result.share_photo:
+                    obj['share_photo'] = True
+                if query_result.share_schedule:
+                    obj['share_schedule'] = True
 
-        return verification
+        return data
 
-    def get_key(self, verified): # A function that takes either True or False and returns either "verified" or "unverified"
+    # A function that takes either True or False and returns either "verified" or "unverified"
+    def get_key(self, verified):
         if verified:
             return "verified"
         return "unverified"
 
     def post(self, action):
-        id = self.check_id()
-        if id != "4093":
+        if not self.check_admin_id():
             self.error(403)
             return
 
@@ -927,12 +970,12 @@ class AdminHandler(RegisterBaseHandler):
             self.clean_up_db()
 
     def send_email_blast(self):
-        verification = self.read_db()
+        data = self.read_db()
         # Generate unverified_row_ids
 
-        for email in verification:
-            if len(verification[email]['verified']) == 0:
-                numerical_id = verification[email]['unverified'][0].id()
+        for email in data:
+            if len(data[email]['verified']) == 0:
+                numerical_id = data[email]['unverified'][0].id()
                 try:
                     email_schedule = self.get_schedule_for_id(convert_email_to_id(email))
                     if email_schedule:
@@ -944,10 +987,10 @@ class AdminHandler(RegisterBaseHandler):
                     logging.error("Attempt to send an email to " + email + " was unsuccessful, ", e)
 
     def clean_up_db(self):
-        verification = self.read_db()
-        for email in verification:
-            if len(verification[email]['verified']) == 1 and len(verification[email]['unverified']) >= 1:
-                db.delete(verification[email]['unverified'])
+        data = self.read_db()
+        for email in data:
+            if len(data[email]['verified']) == 1 and len(data[email]['unverified']) >= 1:
+                db.delete(data[email]['unverified'])
 
 class CronHandler(BaseHandler):
     def get(self, job): # On url invoke
@@ -979,7 +1022,7 @@ class PrivacyHandler(BaseHandler): # Change and view privacy settings
         user_obj = self.load_obj()
         if user_obj is None:
             self.error(403)
-            return 
+            return
 
         response = {"share_photo": user_obj.share_photo, "share_schedule": user_obj.share_schedule}
 
@@ -1003,11 +1046,10 @@ class PrivacyHandler(BaseHandler): # Change and view privacy settings
 
 class AvatarHandler(BaseHandler):
     def get(self, user):
-        id = self.check_id()
-        if id != "4093":
+        if not self.check_admin_id():
             self.error(403)
             return
-            
+
         args = string.split(user, '_')
         url = self.gen_photo_url(args[1], args[0], 'school_photos')
         self.redirect(url)
