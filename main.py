@@ -187,6 +187,9 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
     def check_admin_id(self):
         return self.check_id() == GAVIN_ID
 
+    def query_by_email(self, email, verified):
+        return db.GqlQuery("SELECT * FROM User WHERE email = :1 and verified = :2", email, verified)
+
     def check_password(self, email, password):
         # Returns 0 for all good,
         # returns 1 for correct password but you need to verify the account,
@@ -201,7 +204,7 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         if email[-17:] != "@eastsideprep.org":
             return ERR_NOT_EPS_EMAIL
 
-        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
+        user_obj_query = self.query_by_email(email, True)
         for query_result in user_obj_query:
             logging.info(query_result.password)
             if not query_result.password:
@@ -226,10 +229,10 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
 
     def check_signed_up(self, email):
         # Returns false if there is already a registered user signed up, returns true if there is not
-        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
-        for query_result in user_obj_query:
-            return False
-        return True
+        user_obj_query = self.query_by_email(email, True)
+        if user_obj_query.get():
+            return True
+        return False
 
     def get_schedule_for_name(self, firstname, lastname):
         schedule_data = get_schedule_data()
@@ -348,7 +351,7 @@ class ResendEmailHandler(RegisterBaseHandler):
     def post(self):
         email = self.request.get('email').lower()
         password = self.request.get('password')
-        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = FALSE", email)
+        user_obj_query = self.query_by_email(email, False)
         for user_obj in user_obj_query:
             if bcrypt.hashpw(password, user_obj.password) == user_obj.password:
                 self.send_confirmation_email(email, str(user_obj.key().id()))
@@ -432,12 +435,8 @@ class LoginHandler (BaseHandler):
 
 
             # If authentication was successful, check to see if the person has an EPSchedule account
-            has_account = False
-            user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email) # Combine this with password lookup to make it faster
-            for query_result in user_obj_query:
-                has_account = True
-
-            if not has_account:
+            user_obj_query = self.query_by_email(email, True)
+            if not user_obj_query.get():
                 student_obj = User(email = email, verified = True, join_date = datetime.datetime.now())
                 student_obj.put()
 
@@ -472,12 +471,11 @@ class ChangePasswordHandler(BaseHandler):
             self.response.write(json.dumps({"error":"Your password is incorrect."}))
         else:
             hashed = bcrypt.hashpw(new_password, bcrypt.gensalt(1))
-            user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
-            for query_result in user_obj_query:
-                query_result.password = hashed
-                db.put(query_result)
-                self.response.write(json.dumps({}))
-                break
+            user_obj_query = self.query_by_email(email, True)
+            query_result = user_obj_query.get()
+            query_result.password = hashed
+            db.put(query_result)
+            self.response.write(json.dumps({}))
 
     def get_username(self, id):
         for id_obj in ID_TABLE:
@@ -581,11 +579,10 @@ class StudentHandler(BaseHandler):
         show_full_schedule = False
         show_photo = False
         email = firstname[0] + lastname + "@eastsideprep.org"
-        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
-
-        for user_obj in user_obj_query:
-            show_full_schedule = user_obj.share_schedule
-            show_photo = user_obj.share_photo
+        user_obj_query = self.query_by_email(email, True)
+        user_obj = user_obj_query.get()
+        show_full_schedule = user_obj.share_schedule
+        show_photo = user_obj.share_photo
 
         student_schedule = self.get_schedule_for_name(firstname, lastname)
         user_schedule = self.get_schedule_for_id(id)
@@ -775,8 +772,9 @@ class MainHandler(BaseHandler):
 
             if self.request.cookies.get("SEENPRIVDIALOG") != "1":
                 if schedule['grade']: # If the user is a student
-                    user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", convert_id_to_email(id))
-                    for obj in user_obj_query:
+                    user_obj_query = self.query_by_email(convert_id_to_email(id), True)
+                    obj = user_obj_query.get():
+                    if obj:
                         show_privacy_dialog = not obj.seen_update_dialog
                 if not show_privacy_dialog:
                     expiration_date = datetime.datetime.now()
@@ -1012,10 +1010,8 @@ class PrivacyHandler(BaseHandler): # Change and view privacy settings
             return None
 
         email = convert_id_to_email(id)
-
-        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
-        for user_obj in user_obj_query:
-            return user_obj
+        user_obj_query = self.query_by_email(email, True)
+        return user_obj_query.get()
 
     def unicode_to_boolean(self, string):
         if (string == 'true'):
