@@ -430,7 +430,7 @@ class LoginHandler (BaseHandler):
 
             # If authentication was successful, check to see if the person has an EPSchedule account
             has_account = False
-            user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email) # Combine this with password lookup to make it faster
+            user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email) # Combine this with password lookup to make it faster
             for query_result in user_obj_query:
                 has_account = True
 
@@ -489,6 +489,14 @@ class LogoutHandler(BaseHandler):
         self.response.write(json.dumps({}))
 
 class ClassHandler(BaseHandler):
+    def gen_opted_in_table(self):
+        table = set()
+        opted_in = db.GqlQuery("SELECT * FROM User WHERE share_photo = TRUE")
+        for student in opted_in:
+            table.add(student.email)
+
+        return table
+
     def get_teacher_photo(self, num):
         for schedule in get_schedule_data():
             if not schedule["grade"]: # If they are a teacher
@@ -500,7 +508,9 @@ class ClassHandler(BaseHandler):
     def get_class_schedule(self, class_name, period):
         schedules = get_schedule_data()
         result = None
-        opted_in = db.GqlQuery("SELECT * FROM User WHERE share_photo = TRUE")
+        logging.info("Starting DB query")
+        opted_in = self.gen_opted_in_table()
+        logging.info("Finished DB query")
 
         for schedule in schedules: # Load up each student's schedule
             for classobj in schedule['classes']: # For each one of their classes
@@ -508,7 +518,6 @@ class ClassHandler(BaseHandler):
                     classobj['period'].lower() == period.lower(): # Check class name and period match
                     if classobj['teacher'] != "" or classobj['name'] == "Free Period": # If they are a student or it is a free period
                         if not result:
-                            logging.info("Setting result!")
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
                                       "students": []}
@@ -517,11 +526,8 @@ class ClassHandler(BaseHandler):
                         email = generate_email(schedule['firstname'], schedule['lastname'])
                         photo_url = "/images/placeholder_small.png" # Default placeholder
 
-                        for student in opted_in:
-                            if (student.email == email):
-                                if (student.share_photo):
-                                    photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
-                                break
+                        if email in opted_in:
+                            photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
 
                         student = {"firstname": schedule['firstname'], \
                                    "lastname": schedule['lastname'], \
@@ -539,10 +545,10 @@ class ClassHandler(BaseHandler):
                         #           "email": email,
                         #           "photo_url": "/96x96_photos/" + teacher_schedule["firstname"] + "_" + teacher_schedule["lastname"] + ".jpg"}
 
-                        logging.info("adding result!")
                         result['students'].append(student)
 
         result['students'].sort(key=lambda s: s['firstname'])
+        logging.info("Finished handling request")
         return result
     def get(self, class_name, period):
         # Get the cookie
@@ -964,7 +970,7 @@ class PrivacyHandler(BaseHandler): # Change and view privacy settings
 
         email = convert_id_to_email(id)
 
-        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
+        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1 AND verified = TRUE", email)
         for user_obj in user_obj_query:
             return user_obj
 
@@ -1012,6 +1018,25 @@ class AvatarHandler(BaseHandler):
         url = self.gen_photo_url(args[1], args[0], 'school_photos')
         self.redirect(url)
 
+class SearchHandler(BaseHandler):
+    def get_url_prefix(self, grade):
+        if grade:
+            return "student"
+        else:
+            return "teacher"
+
+    def get(self, keyword):
+        results = []
+        for schedule in SCHEDULE_INFO:
+            test_keyword = schedule['firstname'] + " " + schedule['lastname']
+            if keyword.lower() in test_keyword.lower():
+                results.append({"name": test_keyword, "prefix": self.get_url_prefix(schedule['grade'])})
+                if (len(results) >= 5): # We only display five results
+                    break
+
+        self.response.write(json.dumps(results))
+
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/about', AboutHandler),
@@ -1029,6 +1054,7 @@ app = webapp2.WSGIApplication([
     ('/student/([\w\-]+)', StudentHandler),
     ('/lunch', LunchRateHandler),
     ('/admin', AdminHandler),
+    ('/search/(.*)', SearchHandler),
     ('/admin/(\w+)', AdminHandler),
     ('/cron/(\w+)', CronHandler),
     ('/privacy', PrivacyHandler),

@@ -79,6 +79,7 @@
     var share_photo = document.getElementById("sharephototoggle");
     var share_schedule = document.getElementById("sharescheduletoggle");
     sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
+    document.getElementById("dialog").close()
   }
 
   function sendUpdatePrivacyRequest(share_photo, share_schedule) {
@@ -552,6 +553,23 @@
   function ratingSuccessful(result) {
     renderToast(result.error);
   }
+  function openSearchBar() {
+    var titlebar = document.querySelector(".headerbarpages");
+    titlebar.entryAnimation = "slide-from-top-animation";
+    titlebar.exitAnimation = "";
+    titlebar.selected = 1;
+    var input = document.querySelector("paper-input.paper-typeahead-input")
+    input.tabIndex = 1; // We can only focus elements with tab indexes, so we need to give our paper-input one
+
+    // We need to set a time out here, because the dom renders funny when a focused input moves
+    setTimeout(function(){ input.focus(); }, 200);
+  }
+  function closeSearchBar() {
+    var titlebar = document.querySelector(".headerbarpages");
+    titlebar.exitAnimation = "slide-up-animation";
+    titlebar.entryAnimation = "";
+    titlebar.selected = 0;
+  }
   function openPopup(title) {
     var titleSpan = document.getElementById("popupTitle");
     titleSpan.textContent = title;
@@ -586,6 +604,18 @@
     var scheduleElement = document.getElementById('mainschedule');
     scheduleElement.addEventListener("swiped", scheduleSwiped, false);
     updateMainSchedule();
+    var input = document.querySelector("paper-input.paper-typeahead-input")
+
+    input.addEventListener('pt-item-confirmed', function() {
+      var obj = input.inputObject;
+      var name = obj.name.replace(" ", "_");
+      if (obj.prefix == "student") {
+        requestAdditionalData(name, "student", renderStudent);
+      } else {
+        requestAdditionalData(name, "teacher", renderTeacher);
+      }
+      openPopup(obj.name);
+    });
   });
 
   if (showPrivacyDialog) {
@@ -593,7 +623,7 @@
   }
   </script>
 
-  <style>
+  <style is="custom-style">
   html,body {
     height: 100%;
     margin: 0;
@@ -618,6 +648,11 @@
     text-align: left;
     text-transform: none;
     font-size: 14px;
+  }
+  .privacypopupbutton {
+    color: white;
+    background: #2196f3;
+    text-align: center;
   }
   .settingsbutton {
     color: white;
@@ -740,6 +775,63 @@
     margin-top: 8px;
     margin-bottom: 8px;
   }
+  .flex {
+    display: flex;
+  }
+  .toolbarsearchbox {
+    align-items: center;
+  }
+  .searchbarcollapse {
+    align-items: center;
+    height: 100%;
+    background-color: white;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .popupcontainerholder {
+    width:100%;
+  }
+  .rightfloat {
+    float: right;
+  }
+  .headerbarpage {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .headerbarpages {
+    width: 100%;
+  }
+  .headerbar {
+    padding: 0px;
+  }
+  .searchbackground {
+    background-color: white;
+  }
+  .grey {
+    color: gray;
+  }
+  paper-typeahead-input {
+    display: inline-flex;
+    width: calc(100% - 60px);
+  }
+  .wide {
+    width: 100%;
+  }
+  /*CSS below sets the padding our paper-toolbar to 0 
+  so that we don't have to change the element*/
+  paper-toolbar ::shadow #topBar {
+    padding: 0px;
+  }
+  /* Same goes for here, but with a typeahead*/
+  paper-typeahead-input ::shadow div {
+    width: 100%;
+  }
+
+  .mainheader {
+    padding: 0 16px;
+    width: initial;
+  }
   </style>
 </head>
 
@@ -773,11 +865,29 @@
         </div>
       </paper-header-panel>
       <paper-header-panel id="mainheader" main>
-        <paper-toolbar>
-          <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-          <span class="title" id="day">Today</span>
-          <paper-icon-button icon="arrow-back" onclick="dateBack()"></paper-icon-button>
-          <paper-icon-button icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
+        <paper-toolbar class="headerbar">
+          <neon-animated-pages class="headerbarpages" selected="0">
+            <div class="headerbarpage mainheader">
+              <paper-icon-button class="" icon="menu" paper-drawer-toggle></paper-icon-button>
+              <span class="title" id="day">Today</span>
+              <paper-icon-button class="rightfloat" icon="arrow-back" onclick="dateBack()"></paper-icon-button>
+              <paper-icon-button class="rightfloat" icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
+              <paper-icon-button class="rightfloat" icon="search" onclick="openSearchBar()"></paper-icon-button>
+            <!--<div class="toolbarsearchbox flex">
+              <iron-collapse horizontal class="searchbarcollapse">
+                <paper-typeahead-input max-suggestions="5" placeholder="Search students" remote-url="/search/%QUERY" remote-url-wait-ms="100" is-candidates-json display-prop="name">
+                </paper-typeahead-input>
+              </iron-collapse>
+              <paper-icon-button icon="search" onclick="openSearchBar()">
+              </paper-icon-button>
+            </div>-->
+            </div>
+            <div class="headerbarpage searchbackground">
+              <paper-icon-button class="grey" icon="arrow-back" onclick="closeSearchBar()"></paper-icon-button>
+              <paper-typeahead-input max-suggestions="5" placeholder="Search students" remote-url="/search/%QUERY" remote-url-wait-ms="100" is-candidates-json display-prop="name">
+              </paper-typeahead-input>
+            </div>
+          </neon-animated-pages>
           <!-- example of showing avatar in toolbar. could also go in drawer -->
         </paper-toolbar>
         <div id="container" class="container" layout="" vertical="" center="">
@@ -786,7 +896,7 @@
       </paper-header-panel>
     </paper-drawer-panel>
     <paper-header-panel id="popup">
-    <div>
+    <div class="popupcontainerholder">
       <paper-toolbar>
         <paper-icon-button icon="arrow-back" onclick="closePopup()"></paper-icon-button>
         <span id="popupTitle" class="title"></span>
@@ -817,7 +927,7 @@
         <div class="inline switchspacing"><span class="leftfloat">Allow other EPS students to see my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
         <div class="inline switchspacing"><span class="leftfloat">Allow other EPS students to see my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
       </iron-collapse>
-      <div class="privacybuttonpadding"><paper-button raised class="settingsbutton" onclick="closePrivacyDialog()">OK, I UNDERSTAND</paper-button></div>
+      <div class="privacybuttonpadding"><paper-button raised class="privacypopupbutton" onclick="closePrivacyDialog()">OK, I UNDERSTAND</paper-button></div>
       <img src="/images/photos_demo_screenshot.png">
     </div>
   </paper-dialog>
