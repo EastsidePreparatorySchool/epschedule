@@ -1031,7 +1031,8 @@ class SearchHandler(BaseHandler):
             test_keyword = schedule['firstname'] + " " + schedule['lastname']
             if keyword.lower() in test_keyword.lower():
                 results.append({"name": test_keyword, "prefix": self.get_url_prefix(schedule['grade'])})
-
+                if (len(results) >= 5): # We only display five results
+                    break
 
         self.response.write(json.dumps(results))
 

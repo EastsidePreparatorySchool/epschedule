@@ -604,8 +604,10 @@
     var scheduleElement = document.getElementById('mainschedule');
     scheduleElement.addEventListener("swiped", scheduleSwiped, false);
     updateMainSchedule();
-    document.querySelector("paper-typeahead-input").addEventListener('pt-item-confirmed', function() {
-      var obj = document.querySelector("paper-typeahead-input").inputObject;
+    var input = document.querySelector("paper-input.paper-typeahead-input")
+
+    input.addEventListener('pt-item-confirmed', function() {
+      var obj = input.inputObject;
       var name = obj.name.replace(" ", "_");
       if (obj.prefix == "student") {
         requestAdditionalData(name, "student", renderStudent);
