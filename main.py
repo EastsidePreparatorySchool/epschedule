@@ -850,7 +850,7 @@ class AdminHandler(RegisterBaseHandler):
             if len(v['verified']) == 1 and len(v['unverified']) == 0 }
         only_verified_list = sorted([k for k in only_verified_dict])
         num_four11 = len({k: v for (k, v) in only_verified_dict.iteritems() \
-            if len(v.get('password')) == 0})
+            if not v.get('password')})
         num_seen_dialog = len({k: v for (k, v) in only_verified_dict.iteritems() \
             if v.get('seen_update_dialog')})
         num_share_photo = len({k: v for (k, v) in only_verified_dict.iteritems() \
@@ -862,11 +862,11 @@ class AdminHandler(RegisterBaseHandler):
         percent_share_photo = 0
         percent_share_schedule = 0
         if len(only_verified_list) > 0:
-          percent_four11 = num_four11 * 100 / len(only_verified_list)
-          percent_seen_dialog = num_seen_dialog * 100 / len(only_verified_list)
+            percent_four11 = num_four11 * 100 / len(only_verified_list)
+            percent_seen_dialog = num_seen_dialog * 100 / len(only_verified_list)
         if num_seen_dialog > 0:
-          percent_share_photo = num_share_photo * 100 / num_seen_dialog
-          percent_share_schedule = num_share_schedule * 100 / num_seen_dialog
+            percent_share_photo = num_share_photo * 100 / num_seen_dialog
+            percent_share_schedule = num_share_schedule * 100 / num_seen_dialog
 
         html += "<h3>" + str(len(only_verified_list)) + " emails in good condition</h3>"
         for email in only_verified_list:
