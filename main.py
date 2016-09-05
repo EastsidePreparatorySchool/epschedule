@@ -95,7 +95,7 @@ def convert_id_to_email(id):
 
 
     for student in ID_TABLE:
-        if (student[1] == int(id)):
+        if (str(student[1]) == str(id)):
             email = student[0]
 
     if email == "":
