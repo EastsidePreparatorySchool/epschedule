@@ -490,10 +490,10 @@ class LogoutHandler(BaseHandler):
 
 class ClassHandler(BaseHandler):
     def gen_opted_in_table(self):
-        table = {}
+        table = set()
         opted_in = db.GqlQuery("SELECT * FROM User WHERE share_photo = TRUE")
         for student in opted_in:
-            table[student.email] = student.share_photo
+            table.add(student.email)
 
         return table
 
@@ -527,7 +527,7 @@ class ClassHandler(BaseHandler):
                         photo_url = "/images/placeholder_small.png" # Default placeholder
 
                         if email in opted_in:
-                                photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
+                            photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
 
                         student = {"firstname": schedule['firstname'], \
                                    "lastname": schedule['lastname'], \
@@ -1026,8 +1026,6 @@ class SearchHandler(BaseHandler):
             return "teacher"
 
     def get(self, keyword):
-        RESULTS_TO_RETURN = 5 
-
         results = []
         for schedule in SCHEDULE_INFO:
             test_keyword = schedule['firstname'] + " " + schedule['lastname']
