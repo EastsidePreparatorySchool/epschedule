@@ -15,17 +15,18 @@
 # limitations under the License.
 #
 import base64
-import webapp2
 import copy
-import json
-import jinja2
-import os
-import string
-import logging
 import datetime
-import update_lunch
-import authenticate_user
+import jinja2
+import json
+import logging
+import os
 import random
+import string
+import webapp2
+
+import authenticate_user
+import update_lunch
 
 from google.appengine.ext import db
 from google.appengine.ext import vendor
@@ -773,7 +774,7 @@ class MainHandler(BaseHandler):
             if self.request.cookies.get("SEENPRIVDIALOG") != "1":
                 if schedule['grade']: # If the user is a student
                     user_obj_query = self.query_by_email(convert_id_to_email(id), True)
-                    obj = user_obj_query.get():
+                    obj = user_obj_query.get()
                     if obj:
                         show_privacy_dialog = not obj.seen_update_dialog
                 if not show_privacy_dialog:
