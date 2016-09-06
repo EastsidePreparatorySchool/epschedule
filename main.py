@@ -188,8 +188,13 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
     def check_admin_id(self):
         return self.check_id() == GAVIN_ID
 
-    def query_by_email(self, email, verified):
-        return db.GqlQuery("SELECT * FROM User WHERE email = :1 and verified = :2", email, verified)
+    def query_by_email(self, email, verified = None):
+        if verified == True:
+          return db.GqlQuery("SELECT * FROM User WHERE email = :1 and verified = TRUE", email)
+        elif verified == False:
+          return db.GqlQuery("SELECT * FROM User WHERE email = :1 and verified = FALSE", email)
+        else:
+          return db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
 
     def check_password(self, email, password):
         # Returns 0 for all good,
@@ -228,12 +233,12 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
 
         return {}  # success
 
-    def check_signed_up(self, email):
-        # Returns false if there is already a registered user signed up, returns true if there is not
+    # Returns false if there is already a registered user, or true if not
+    def check_no_account(self, email):
         user_obj_query = self.query_by_email(email, True)
         if user_obj_query.get():
-            return True
-        return False
+            return False
+        return True
 
     def get_schedule_for_name(self, firstname, lastname):
         schedule_data = get_schedule_data()
@@ -319,18 +324,16 @@ class RegisterHandler (RegisterBaseHandler):
             self.response.write(json.dumps(ERR_SIGNUP_EMAIL_NOT_EPS))
             return
 
-        if not self.check_signed_up(email):
+        if not self.check_no_account(email):
             self.response.write(json.dumps(ERR_EMAIL_ALREADY_REGISTERED))
             return
 
         id = convert_email_to_id(email)
-
-        if not convert_email_to_id: # If id is None
+        if not id: # If id is None
             self.response.write(json.dumps(ERR_UNKNOWN_EMAIL))
             return
 
         schedule = self.get_schedule_for_id(id)
-
         if not schedule:
             self.response.write(json.dumps(ERR_NOT_ALLOWED_EMAIL))
             return
@@ -381,7 +384,7 @@ class ConfirmHandler(BaseHandler):
 
         self.redirect("/")
 
-        user_obj_query = db.GqlQuery("SELECT * FROM User WHERE email = :1", obj_to_confirm.email)
+        user_obj_query = self.query_by_email(obj_to_confirm.email)
         for user_obj in user_obj_query:
             if user_obj.key() != obj_to_confirm.key():
                 if not user_obj.verified:
@@ -579,9 +582,13 @@ class StudentHandler(BaseHandler):
 
         show_full_schedule = False
         show_photo = False
-        email = firstname[0] + lastname + "@eastsideprep.org"
+        email = generate_email(firstname, lastname)
         user_obj_query = self.query_by_email(email, True)
         user_obj = user_obj_query.get()
+        if not user_obj:
+            self.error(404)
+            return
+
         show_full_schedule = user_obj.share_schedule
         show_photo = user_obj.share_photo
 
@@ -595,7 +602,7 @@ class StudentHandler(BaseHandler):
             response_schedule = self.sanitize_schedule(student_schedule, user_schedule)
 
         # Generate email address
-        response_schedule["email"] = generate_email(firstname, lastname)
+        response_schedule["email"] = email
 
         if show_photo:
             logging.info("Args: [" + firstname + ", " + lastname + "]")

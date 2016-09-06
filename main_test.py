@@ -51,6 +51,12 @@ class HandlerTestBase(unittest.TestCase):
     def tearDown(self):
         self.testbed.deactivate()
 
+    def login(self):
+        return self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
+
+    def loginAsAdmin(self):
+        return self.sendEmailPasswordPostRequest('/login', ADMIN_EMAIL, ADMIN_PASSWORD)
+
     def sendGetRequest(self, path, expect_errors = False):
         # PhantomJS uses WebKit, so Safari is closest to the truth.
         return self.test_app.get(path, headers = {'User-Agent': 'Safari'},
@@ -76,6 +82,9 @@ class HandlerTestBase(unittest.TestCase):
 
     def addUnverifiedUser(self):
         self.addUser(TEST_EMAIL, TEST_PASSWORD, datetime.datetime.now(), False)
+
+    def addAdminUser(self):
+        self.addUser(ADMIN_EMAIL, ADMIN_PASSWORD, datetime.datetime.now(), True)
 
     def addUser(self, email, password, join_date, verified):
         hashed = bcrypt.hashpw(password, bcrypt.gensalt(1))
@@ -240,11 +249,14 @@ class LoginHandlerTest(HandlerTestBase):
 
 class AdminHandlerTest(HandlerTestBase):
     def testLoadAdminPage(self):
-        pass
+        self.addAdminUser()
+        self.loginAsAdmin()
+        response = self.sendGetRequest('/admin')
+        self.assertEqual(response.status_int, 200)
 
     def testResendVerificationEmails(self):
         now = datetime.datetime.now()
-        self.addUser(ADMIN_EMAIL, ADMIN_PASSWORD, now, True)
+        self.addAdminUser()
         self.addUser("bbison@eastsideprep.org", "bison4ever", now, False)
         self.addUser("ggrasshopper@eastsideprep.org", "hophophop", now, False)
         self.addUser("doesnotexist@eastsideprep.org", "doesnotexist", now, False)
@@ -261,7 +273,10 @@ class AdminHandlerTest(HandlerTestBase):
 
 class ClassHandlerTest(HandlerTestBase):
     def testLoadClassData(self):
-        pass
+        self.addVerifiedUser()
+        self.login()
+        response = self.sendGetRequest('/class/greasy_burger_eating_7_8/a')
+        self.assertEqual(response.status_int, 200)
 
 class RoomHandlerTest(HandlerTestBase):
     def testLoadRoomData(self):
@@ -269,11 +284,18 @@ class RoomHandlerTest(HandlerTestBase):
 
 class StudentHandlerTest(HandlerTestBase):
     def testLoadStudentData(self):
-        pass
+        self.addVerifiedUser()
+        self.addUser('bbison@eastsideprep.org', 'bisons4ever', datetime.datetime.now(), True)
+        self.login()
+        response = self.sendGetRequest('/student/bulky_bison')
+        self.assertEqual(response.status_int, 200)
 
 class TeacherHandlerTest(HandlerTestBase):
     def testLoadTeacherData(self):
-        pass
+        self.addVerifiedUser()
+        self.login()
+        response = self.sendGetRequest('/teacher/steve_fassino')
+        self.assertEqual(response.status_int, 200)
 
 class LunchesTest(HandlerTestBase):
     def testParseLunches(self):
