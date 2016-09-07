@@ -552,7 +552,8 @@ class ClassHandler(BaseHandler):
 
                         result['students'].append(student)
 
-        result['students'].sort(key=lambda s: s['firstname'])
+        if result:
+            result['students'].sort(key=lambda s: s['firstname'])
         logging.info("Finished handling request")
         return result
     def get(self, class_name, period):
@@ -563,7 +564,12 @@ class ClassHandler(BaseHandler):
             return
 
         # schedule = self.get_schedule(self.request.get('id'))
-        self.response.write(json.dumps(self.get_class_schedule(class_name, period)))
+        result = self.get_class_schedule(class_name, period)
+        if not result:
+            self.error(404)
+            return
+
+        self.response.write(json.dumps(result))
 
 class StudentHandler(BaseHandler):
     def get(self, student_name):
@@ -723,6 +729,11 @@ class RoomHandler(BaseHandler):
                 room_schedule['latitude'] = room_obj['latitude']
                 room_schedule['longitude'] = room_obj['longitude']
                 break
+
+        if len(room_schedule['classes']) == 0:
+            self.error(404)
+            return
+
         self.response.write(json.dumps(room_schedule))
 
 class TeacherHandler(BaseHandler):
@@ -731,21 +742,30 @@ class TeacherHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
+
         teacher = teacher.lower()
-        bio = self.getBio(teacher)
+        bio = self.get_bio(teacher)
         schedule_data = get_schedule_data()
         teachernames = string.split(teacher, "_")
+        result = None
 
         for schedule in schedule_data:
             if schedule['firstname'].lower() == teachernames[0] and schedule['lastname'].lower() == teachernames[1]:
-                schedule['email'] = generate_email(schedule['firstname'], schedule['lastname'])
-                schedule['bio'] = bio
-                self.response.write(json.dumps(schedule))
+                result = copy.deepcopy(schedule)
+                result['email'] = generate_email(schedule['firstname'], schedule['lastname'])
+                result['bio'] = bio
 
-    def getBio(self, teacher):
+        if not result:
+            self.error(404)
+            return
+
+        self.response.write(json.dumps(result))
+
+    def get_bio(self, teacher):
         for bio in BIOS:
             if bio['name'] == teacher:
                 return bio['bio']
+
 class MainHandler(BaseHandler):
     # def __init__(self):
     def get_schedule(self, id):
@@ -1021,10 +1041,10 @@ class PrivacyHandler(BaseHandler): # Change and view privacy settings
         user_obj_query = self.query_by_email(email, True)
         return user_obj_query.get()
 
-    def unicode_to_boolean(self, string):
-        if (string == 'true'):
+    def string_to_boolean(self, string):
+        if string == 'true':
             return True
-        elif (string == 'false'):
+        elif string == 'false':
             return False
         return None
 
@@ -1048,8 +1068,8 @@ class PrivacyHandler(BaseHandler): # Change and view privacy settings
             self.error(403)
             return
 
-        user_obj.share_photo = self.unicode_to_boolean(self.request.get('share_photo'))
-        user_obj.share_schedule = self.unicode_to_boolean(self.request.get('share_schedule'))
+        user_obj.share_photo = self.string_to_boolean(self.request.get('share_photo'))
+        user_obj.share_schedule = self.string_to_boolean(self.request.get('share_schedule'))
         user_obj.seen_update_dialog = True;
         user_obj.put()
         self.response.write(json.dumps({}))

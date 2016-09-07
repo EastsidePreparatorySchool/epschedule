@@ -23,6 +23,10 @@ def post(uri, obj):
     return opener.open(req)
 
 def auth_user(username, password):
+    # don't try to use four11 for unit tests
+    if 'EPSCHEDULE_USE_TEST_DATA' in os.environ:
+        return False
+
     obj =  {'user[user_name]' : username, 'user[password]' : password}
     res = post(AUTHENTICATION_URL, obj)
     for cookie in cookies:

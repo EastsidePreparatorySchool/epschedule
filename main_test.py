@@ -57,17 +57,20 @@ class HandlerTestBase(unittest.TestCase):
     def loginAsAdmin(self):
         return self.sendEmailPasswordPostRequest('/login', ADMIN_EMAIL, ADMIN_PASSWORD)
 
-    def sendGetRequest(self, path, expect_errors = False):
+    def sendGetRequest(self, path, status=200):
         # PhantomJS uses WebKit, so Safari is closest to the truth.
         return self.test_app.get(path, headers = {'User-Agent': 'Safari'},
-                                 expect_errors = expect_errors)
+                                 status=status)
 
     def sendEmailPasswordPostRequest(self, path, email, password):
         body = 'email={0}&password={1}'.format(email, password)
         return self.test_app.post(path, body, headers = {'User-Agent': 'Safari'})
 
-    def sendPostRequest(self, path):
-        return self.test_app.post(path)
+    def sendPostRequest(self, path, body=None):
+        if not body:
+          return self.test_app.post(path)
+        return self.test_app.post(path, body)
+
 
     def assertNoError(self, response):
         obj = json.loads(response.body)
@@ -117,7 +120,6 @@ class RegisterHandlerTest(HandlerTestBase):
     # Tests normal account creation and confirmation.
     def testCreateAndConfirm(self):
         response = self.sendEmailPasswordPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 1)
@@ -127,8 +129,7 @@ class RegisterHandlerTest(HandlerTestBase):
         self.assertEqual(len(self.getSentEmails()), 1)
         self.assertEqual(self.getSentEmails()[0].to[0], TEST_EMAIL)
         path = self.getPathFromEmail(self.getSentEmails()[0])
-        response = self.sendGetRequest(path)
-        self.assertEqual(response.status_int, 302)
+        response = self.sendGetRequest(path, status=302)
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
@@ -136,7 +137,6 @@ class RegisterHandlerTest(HandlerTestBase):
     # Tests creating two account entries and verifying the second.
     def testCreateTwiceAndConfirm(self):
         response = self.sendEmailPasswordPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 1)
@@ -144,7 +144,6 @@ class RegisterHandlerTest(HandlerTestBase):
         self.assertEqual(len(self.getSentEmails()), 1)
         path = self.getPathFromEmail(self.getSentEmails()[0])
         response = self.sendEmailPasswordPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 2)
@@ -152,8 +151,7 @@ class RegisterHandlerTest(HandlerTestBase):
         self.assertFalse(users[1].verified)
         self.assertEqual(len(self.getSentEmails()), 2)
         path = self.getPathFromEmail(self.getSentEmails()[1])
-        response = self.sendGetRequest(path)
-        self.assertEqual(response.status_int, 302)
+        response = self.sendGetRequest(path, status=302)
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
@@ -162,20 +160,17 @@ class RegisterHandlerTest(HandlerTestBase):
     # The second confirm should fail.
     def testCreateAndConfirmTwice(self):
         response = self.sendEmailPasswordPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 1)
         self.assertFalse(users[0].verified)
         self.assertEqual(len(self.getSentEmails()), 1)
         path = self.getPathFromEmail(self.getSentEmails()[0])
-        response = self.sendGetRequest(path)
-        self.assertEqual(response.status_int, 302)
+        response = self.sendGetRequest(path, status=302)
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
-        response = self.sendGetRequest(path, True)
-        self.assertEqual(response.status_int, 400)
+        response = self.sendGetRequest(path, status=400)
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
@@ -184,67 +179,56 @@ class RegisterHandlerTest(HandlerTestBase):
     # successfully confirming with the second email.
     def testCreateAndResend(self):
         response = self.sendEmailPasswordPostRequest('/register', TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         self.assertEqual(len(self.getSentEmails()), 1)
         self.assertEqual(self.getSentEmails()[0].to[0], TEST_EMAIL)
         response = self.sendEmailPasswordPostRequest('/resend', TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         #BUG: self.assertNoError(response) - success msg in response
         self.assertEqual(len(self.getSentEmails()), 2)
         self.assertEqual(self.getSentEmails()[1].to[0], TEST_EMAIL)
         path = self.getPathFromEmail(self.getSentEmails()[1])
-        response = self.sendGetRequest(path)
-        self.assertEqual(response.status_int, 302)
+        response = self.sendGetRequest(path, status=302)
         users = self.queryUsersByEmail(TEST_EMAIL)
         self.assertEqual(len(users), 1)
         self.assertTrue(users[0].verified)
 
     def testCreateWithNonEpsEmail(self):
         response = self.sendEmailPasswordPostRequest('/register', NON_EPS_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
     def testCreateWithNonexistentEpsEmail(self):
         response = self.sendEmailPasswordPostRequest('/register', UNKNOWN_EPS_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
     def testCreateWithInvalidEpsEmail(self):
         response = self.sendEmailPasswordPostRequest('/register', INVALID_EPS_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
 class LoginHandlerTest(HandlerTestBase):
     def testLogin(self):
         self.addVerifiedUser()
         response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         self.assertNoError(response)
         self.assertNotEqual(response.headers['Set-Cookie'], None)
 
     def testLoginWithNoAccount(self):
         response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
     def testLoginWithUnconfirmedAccount(self):
         self.addUnverifiedUser()
         response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
     def testLoginWithConfirmedAndUnconfirmedAccount(self):
         self.addVerifiedUser()
         self.addUnverifiedUser()
         response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         self.assertNoError(response)
 
     def testLoginWithBadPassword(self):
         self.addVerifiedUser()
         response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, BAD_PASSWORD)
-        self.assertEqual(response.status_int, 200)
         self.assertHasError(response)
 
 class AdminHandlerTest(HandlerTestBase):
@@ -261,7 +245,7 @@ class AdminHandlerTest(HandlerTestBase):
         self.addUser("ggrasshopper@eastsideprep.org", "hophophop", now, False)
         self.addUser("doesnotexist@eastsideprep.org", "doesnotexist", now, False)
 
-        self.sendEmailPasswordPostRequest('/login', ADMIN_EMAIL, ADMIN_PASSWORD)
+        self.loginAsAdmin()
         response = self.sendPostRequest('/admin/emailblast')
         self.assertEqual(response.status_int, 200)
 
@@ -276,11 +260,15 @@ class ClassHandlerTest(HandlerTestBase):
         self.addVerifiedUser()
         self.login()
         response = self.sendGetRequest('/class/greasy_burger_eating_7_8/a')
-        self.assertEqual(response.status_int, 200)
+        response = self.sendGetRequest('/class/greasy_burger_eating_7_8/b', status=404)
+        response = self.sendGetRequest('/class/does_not_exist/a', status=404)
 
 class RoomHandlerTest(HandlerTestBase):
     def testLoadRoomData(self):
-        pass
+        self.addVerifiedUser()
+        self.login()
+        response = self.sendGetRequest('/room/hb_103')
+        response = self.sendGetRequest('/room/hb_999', status=404)
 
 class StudentHandlerTest(HandlerTestBase):
     def testLoadStudentData(self):
@@ -288,14 +276,60 @@ class StudentHandlerTest(HandlerTestBase):
         self.addUser('bbison@eastsideprep.org', 'bisons4ever', datetime.datetime.now(), True)
         self.login()
         response = self.sendGetRequest('/student/bulky_bison')
+        response = self.sendGetRequest('/student/doesnot_exist', status=404)
+
+class PrivacyHandlerTest(HandlerTestBase):
+    def testReadAndSetPrivacy(self):
+        self.addVerifiedUser()
+        self.login()
+        users = self.queryUsersByEmail(TEST_EMAIL)
+        self.assertEqual(users[0].seen_update_dialog, False)
+        self.assertEqual(users[0].share_photo, False)
+        self.assertEqual(users[0].share_schedule, False)
+        # get initial state
+        response = self.sendGetRequest('/privacy')
+        obj = json.loads(response.body)
+        self.assertEqual(obj['share_photo'], False)
+        self.assertEqual(obj['share_schedule'], False)
+        users = self.queryUsersByEmail(TEST_EMAIL)
+        self.assertEqual(users[0].seen_update_dialog, False)
+        self.assertEqual(users[0].share_photo, False)
+        self.assertEqual(users[0].share_schedule, False)
+        # set share_photo to True
+        response = self.sendPostRequest('/privacy', \
+            'share_schedule=false&share_photo=true')
         self.assertEqual(response.status_int, 200)
+        users = self.queryUsersByEmail(TEST_EMAIL)
+        self.assertEqual(users[0].seen_update_dialog, True)
+        self.assertEqual(users[0].share_photo, True)
+        self.assertEqual(users[0].share_schedule, False)
+        # refresh state
+        response = self.sendGetRequest('/privacy')
+        self.assertEqual(response.status_int, 200)
+        obj = json.loads(response.body)
+        self.assertEqual(obj['share_photo'], True)
+        self.assertEqual(obj['share_schedule'], False)
+        # set both to True
+        response = self.sendPostRequest('/privacy', \
+            'share_schedule=true&share_photo=true')
+        self.assertEqual(response.status_int, 200)
+        users = self.queryUsersByEmail(TEST_EMAIL)
+        self.assertEqual(users[0].seen_update_dialog, True)
+        self.assertEqual(users[0].share_photo, True)
+        self.assertEqual(users[0].share_schedule, True)
+        # one final check
+        response = self.sendGetRequest('/privacy')
+        self.assertEqual(response.status_int, 200)
+        obj = json.loads(response.body)
+        self.assertEqual(obj['share_photo'], True)
+        self.assertEqual(obj['share_schedule'], True)
 
 class TeacherHandlerTest(HandlerTestBase):
     def testLoadTeacherData(self):
         self.addVerifiedUser()
         self.login()
         response = self.sendGetRequest('/teacher/steve_fassino')
-        self.assertEqual(response.status_int, 200)
+        response = self.sendGetRequest('/teacher/doesnot_exist', status=404)
 
 class LunchesTest(HandlerTestBase):
     def testParseLunches(self):
