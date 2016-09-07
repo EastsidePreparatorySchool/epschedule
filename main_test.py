@@ -255,29 +255,6 @@ class AdminHandlerTest(HandlerTestBase):
         self.assertEqual(self.getSentEmails()[1].to[0], "ggrasshopper@eastsideprep.org")
         self.assertEqual(len(self.getSentEmails()), 2)
 
-class ClassHandlerTest(HandlerTestBase):
-    def testLoadClassData(self):
-        self.addVerifiedUser()
-        self.login()
-        response = self.sendGetRequest('/class/greasy_burger_eating_7_8/a')
-        response = self.sendGetRequest('/class/greasy_burger_eating_7_8/b', status=404)
-        response = self.sendGetRequest('/class/does_not_exist/a', status=404)
-
-class RoomHandlerTest(HandlerTestBase):
-    def testLoadRoomData(self):
-        self.addVerifiedUser()
-        self.login()
-        response = self.sendGetRequest('/room/hb_103')
-        response = self.sendGetRequest('/room/hb_999', status=404)
-
-class StudentHandlerTest(HandlerTestBase):
-    def testLoadStudentData(self):
-        self.addVerifiedUser()
-        self.addUser('bbison@eastsideprep.org', 'bisons4ever', datetime.datetime.now(), True)
-        self.login()
-        response = self.sendGetRequest('/student/bulky_bison')
-        response = self.sendGetRequest('/student/doesnot_exist', status=404)
-
 class PrivacyHandlerTest(HandlerTestBase):
     def testReadAndSetPrivacy(self):
         self.addVerifiedUser()
@@ -324,12 +301,56 @@ class PrivacyHandlerTest(HandlerTestBase):
         self.assertEqual(obj['share_photo'], True)
         self.assertEqual(obj['share_schedule'], True)
 
+class ClassHandlerTest(HandlerTestBase):
+    def testLoadClassData(self):
+        self.addVerifiedUser()
+        self.login()
+        response = self.sendGetRequest('/class/greasy_burger_eating_7_8/a')
+        response = self.sendGetRequest('/class/greasy_burger_eating_7_8/b', status=404)
+        response = self.sendGetRequest('/class/does_not_exist/a', status=404)
+
+class RoomHandlerTest(HandlerTestBase):
+    def testLoadRoomData(self):
+        self.addVerifiedUser()
+        self.login()
+        response = self.sendGetRequest('/room/hb_103')
+        response = self.sendGetRequest('/room/hb_999', status=404)
+
+class StudentHandlerTest(HandlerTestBase):
+    def testLoadStudentData(self):
+        self.addVerifiedUser()
+        self.addUser('bbison@eastsideprep.org', 'bisons4ever', datetime.datetime.now(), True)
+        self.login()
+        response = self.sendGetRequest('/student/bulky_bison')
+        response = self.sendGetRequest('/student/doesnot_exist', status=404)
+
 class TeacherHandlerTest(HandlerTestBase):
     def testLoadTeacherData(self):
         self.addVerifiedUser()
         self.login()
         response = self.sendGetRequest('/teacher/steve_fassino')
         response = self.sendGetRequest('/teacher/doesnot_exist', status=404)
+
+class SearchHandlerTest(HandlerTestBase):
+    def testSearch(self):
+        self.addVerifiedUser()
+        self.login()
+        response = self.sendGetRequest('/search/bulky')
+        obj = json.loads(response.body)
+        self.assertEqual(len(obj), 1)
+        self.assertEqual(obj[0]['name'], 'Bulky Bison')
+        self.assertEqual(obj[0]['prefix'], 'student')
+        response = self.sendGetRequest('/search/steve')
+        obj = json.loads(response.body)
+        self.assertEqual(len(obj), 1)
+        self.assertEqual(obj[0]['name'], 'Steve Fassino')
+        self.assertEqual(obj[0]['prefix'], 'teacher')
+        response = self.sendGetRequest('/search/a')
+        obj = json.loads(response.body)
+        self.assertEqual(len(obj), 3)
+        response = self.sendGetRequest('/search/blarg')
+        obj = json.loads(response.body)
+        self.assertEqual(len(obj), 0)
 
 class LunchesTest(HandlerTestBase):
     def testParseLunches(self):
@@ -339,6 +360,16 @@ class LunchesTest(HandlerTestBase):
         #for lunch in lunches: # Will only run once, but we need this
         #    self.assertEqual(lunch.summary, TEST_LUNCH_SUMMARY)
         #    self.assertEqual(lunch.description.length, LUNCH_DESCRIPTION_LENGTH)
+
+# Untested handlers
+#('/', MainHandler),
+#('/about', AboutHandler),
+#('/avatar/(\w+).jpg', AvatarHandler),
+#('/logout', LogoutHandler),
+#('/changepassword', ChangePasswordHandler),
+#('/period/(\w+)', PeriodHandler),
+#('/lunch', LunchRateHandler),
+#('/cron/(\w+)', CronHandler),
 
 if __name__ == '__main__':
     unittest.main()
