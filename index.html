@@ -604,7 +604,7 @@
     var scheduleElement = document.getElementById('mainschedule');
     scheduleElement.addEventListener("swiped", scheduleSwiped, false);
     updateMainSchedule();
-    var input = document.querySelector("paper-input.paper-typeahead-input")
+    var input = document.querySelector("paper-typeahead-input")
 
     input.addEventListener('pt-item-confirmed', function() {
       var obj = input.inputObject;

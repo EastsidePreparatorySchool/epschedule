@@ -99,30 +99,28 @@
 
 "FirstDay":{
   "MS": [
-  {"period": "Advisory", "time": "8:00-8:10"},
-  {"period": "Assembly", "time": "8:15-9:05"},
-  {"period": "A", "time": "9:10-9:45"},
-  {"period": "B", "time": "9:50-10:25"},
-  {"period": "C", "time": "10:30-11:05"},
-  {"period": "Lunch", "time": "11:10-11:50"},
-  {"period": "D", "time": "11:55-12:35"},
-  {"period": "E", "time": "12:40-1:15"},
-  {"period": "F", "time": "1:20-1:55"},
-  {"period": "G", "time": "2:00-2:35"},
-  {"period": "H", "time": "2:40-3:15"}],
+  {"period": "Advisory", "time": "8:00-9:30"},
+  {"period": "A", "time": "9:35-10:05"},
+  {"period": "B", "time": "10:10-10:45"},
+  {"period": "C", "time": "10:50-11:20"},
+  {"period": "Lunch", "time": "11:25-12:00"},
+  {"period": "E", "time": "12:05-12:40"},
+  {"period": "D", "time": "12:45-1:15"},
+  {"period": "F", "time": "1:20-1:50"},
+  {"period": "G", "time": "1:55-2:25"},
+  {"period": "H", "time": "2:30-3:00"}],
 
   "US": [
-  {"period": "Advisory", "time": "8:00-8:10"},
-  {"period": "Assembly", "time": "8:15-9:05"},
-  {"period": "A", "time": "9:10-9:45"},
-  {"period": "B", "time": "9:50-10:25"},
-  {"period": "C", "time": "10:30-11:05"},
-  {"period": "D", "time": "11:10-11:50"},
-  {"period": "Lunch", "time": "11:55-12:35"},
-  {"period": "E", "time": "12:40-1:15"},
-  {"period": "F", "time": "1:20-1:55"},
-  {"period": "G", "time": "2:00-2:35"},
-  {"period": "H", "time": "2:40-3:15"}
+  {"period": "Advisory", "time": "8:00-9:30"},
+  {"period": "A", "time": "9:35-10:05"},
+  {"period": "B", "time": "10:10-10:45"},
+  {"period": "C", "time": "10:50-11:20"},
+  {"period": "E", "time": "11:25-12:00"},
+  {"period": "Lunch", "time": "12:05-12:40"},
+  {"period": "D", "time": "12:45-1:15"},
+  {"period": "F", "time": "1:20-1:50"},
+  {"period": "G", "time": "1:55-2:25"},
+  {"period": "H", "time": "2:30-3:00"}
 ]},
 
 "FallFinalsD1":{
@@ -331,7 +329,6 @@
 
 },
 [
-{"day": 9, "month": 9, "year": 2015, "schedule": "FirstDay"},
 {"day": 5, "month": 10, "year": 2015, "schedule": "Tuesday"},
 {"day": 6, "month": 10, "year": 2015, "schedule": "Wednesday"},
 {"day": 7, "month": 10, "year": 2015, "schedule": "Thursday"},
@@ -396,6 +393,7 @@
 {"day": 25, "month": 5, "year": 2016, "schedule": "Thursday"},
 {"day": 26, "month": 5, "year": 2016, "schedule": "Friday"},
 {"day": 27, "month": 5, "year": 2016, "schedule": "Field Day"},
+{"day": 7, "month": 9, "year": 2016, "schedule": "FirstDay"},
 {"day": 8, "month": 9, "year": 2016, "schedule": "Overnights"},
 {"day": 9, "month": 9, "year": 2016, "schedule": "Overnights"}
 ]
