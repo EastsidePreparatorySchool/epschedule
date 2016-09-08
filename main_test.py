@@ -207,9 +207,11 @@ class RegisterHandlerTest(HandlerTestBase):
 class LoginHandlerTest(HandlerTestBase):
     def testLogin(self):
         self.addVerifiedUser()
+        self.assertFalse('SID' in self.test_app.cookies)
         response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
         self.assertNoError(response)
         self.assertNotEqual(response.headers['Set-Cookie'], None)
+        self.assertTrue('SID' in self.test_app.cookies)
 
     def testLoginWithNoAccount(self):
         response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, TEST_PASSWORD)
@@ -230,6 +232,15 @@ class LoginHandlerTest(HandlerTestBase):
         self.addVerifiedUser()
         response = self.sendEmailPasswordPostRequest('/login', TEST_EMAIL, BAD_PASSWORD)
         self.assertHasError(response)
+
+class LogoutHandlerTest(HandlerTestBase):
+    def testLogout(self):
+        self.addVerifiedUser()
+        self.assertFalse('SID' in self.test_app.cookies)
+        self.login()
+        self.assertTrue('SID' in self.test_app.cookies)
+        self.sendPostRequest('/logout')
+        self.assertFalse('SID' in self.test_app.cookies)
 
 class AdminHandlerTest(HandlerTestBase):
     def testLoadAdminPage(self):
