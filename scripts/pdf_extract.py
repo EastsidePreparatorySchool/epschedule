@@ -18,6 +18,7 @@ import json
 from datetime import date
 
 DO_NOT_PARSE = ["4491-1-Mein-Angelika.pdf"]
+UPPER_SCHOOL_STUDY_HALL_PERIODS = {"A": "OH-102", "B": "AS-101", "C": "LPC-100B", "D": "TMAC-102", "E": "LPC-204", "F": "TMAC-201", "G": "HB-101", "H": "TMAC-102"}
 
 def convert_pdf_to_txt(path):
     rsrcmgr = PDFResourceManager()
@@ -65,7 +66,12 @@ def getClass(textbox):#Each textbox is passed in
         period = letterToNum(textboxlist[0][0])   #Takes the first character of the first line of the text box
         if len(roomteacher) == 1: #If the class has no teacher or no room
             if roomteacher[0][0:4] == "NA :":
-                class_obj = {'name':textboxlist[2], 'room':"MS-100", 'teacher':roomteacher[0][4:], 'period':textboxlist[0][0]}
+                room = "MS-100" # For MS study halls
+
+                if (textboxlist[2] == "US Study Hall"): # US study halls have a different room
+                    room = UPPER_SCHOOL_STUDY_HALL_PERIODS[textboxlist[0][0]]
+
+                class_obj = {'name':textboxlist[2], 'room':room, 'teacher':roomteacher[0][4:], 'period':textboxlist[0][0]}
             else:
                 class_obj = {'name':textboxlist[2], 'room':roomteacher[0], 'teacher':"None", 'period':textboxlist[0][0]}
         else:
