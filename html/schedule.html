@@ -224,9 +224,7 @@
       },
       showChevron: function(item) {
         var expandablePeriods = ["A", "B", "C", "D", "E", "F", "G", "H"];
-        if (expandablePeriods.indexOf(item.period) >= 0) {
-          return true;
-        } else if (item.lunchInfo) {
+        if (expandablePeriods.indexOf(item.period) >= 0 || item.lunchInfo) {
           return true;
         } else {
           return false;
