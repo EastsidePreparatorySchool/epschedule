@@ -591,12 +591,10 @@ class StudentHandler(BaseHandler):
         email = generate_email(firstname, lastname)
         user_obj_query = self.query_by_email(email, True)
         user_obj = user_obj_query.get()
-        if not user_obj:
-            self.error(404)
-            return
 
-        show_full_schedule = user_obj.share_schedule
-        show_photo = user_obj.share_photo
+        if user_obj:
+            show_full_schedule = user_obj.share_schedule
+            show_photo = user_obj.share_photo
 
         student_schedule = self.get_schedule_for_name(firstname, lastname)
         user_schedule = self.get_schedule_for_id(id)
