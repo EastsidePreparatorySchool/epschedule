@@ -3,11 +3,10 @@
 <link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../bower_components/iron-icons/hardware-icons.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../bower_components/star-rating/star-rating.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="x-schedule">
@@ -168,15 +167,8 @@
             <template is="dom-if" if="{{showChevron(item)}}">
               <div class="optionicon">
                 <iron-pages selected="0">
-                  <iron-icon icon="arrow-drop-down"></iron-icon>
-                  <paper-menu-button on-tap="moreOptionsThunk">
-                    <paper-icon-button icon="more-vert" class="dropdown-trigger"></paper-icon-button>
-                    <paper-menu class="dropdown-content">
-                      <paper-item><a href="{{computeEmailClassLink(item, item.students)}}" class="emaillink">Email class</a></paper-item>
-                      <!--<paper-item  on-tap="periodThunk">View period</paper-item>
-                      <paper-item>Other times</paper-item>-->
-                    </paper-menu>
-                  </paper-menu-button>
+                  <iron-icon icon="hardware:keyboard-arrow-down"></iron-icon>
+                  <iron-icon icon="hardware:keyboard-arrow-up"></iron-icon>
                 </iron-pages>
               </div>
             </template>
@@ -197,16 +189,6 @@
                 </template>
               </div>
             </template>
-            <!--<div class="actionbar" layout horizontal xcenter="">
-              <div class="action" layout horizontal>
-                <a href="{{computeEmailClassLink(item, item.students)}}">
-                  <span>Email class</span>
-                  <paper-icon-button icon="mail"></paper-icon-button>
-                </a>
-              </div>
-              <paper-icon-button icon="work" class="action"></paper-icon-button>
-              <span class="stretch"></span>
-            </div>-->
             <iron-list items="{{item.students}}" grid>
               <template>
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
@@ -293,21 +275,6 @@
       computeCollapseId: function(item) {
         console.log(item);
         return "collapse-" + item.name + "-" + item.period;
-      },
-      computeEmailClassLink: function(item, students) {
-        var suffix = "@eastsideprep.org";
-        var link = "mailto:";
-        // Add teacher
-        teacherNames = item.teacher.split(" "); // We should do this better
-        link += teacherNames[0][0] + teacherNames[1] + suffix;
-
-        // Add students
-        for (var i = 0; i < students.length; i++) {
-          link += ";" + students[i].email;
-        }
-
-        console.log(link);
-        return link.toLowerCase();
       },
       toggleExpand: function(e) {
         // if expanding, XHR, and then set model
