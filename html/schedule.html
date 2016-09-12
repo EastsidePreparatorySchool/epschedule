@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../bower_components/iron-icons/hardware-icons.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../bower_components/star-rating/star-rating.html">
@@ -54,9 +55,11 @@
       color: white;
       font-size: 1.5rem;
     }
+
     .card {
       margin-bottom: 1px;
       cursor: pointer;
+      position: relative;
     }
     .card-header {
       background: white;
@@ -120,6 +123,12 @@
       position: relative;
       bottom: 0;
     }
+    .optionicon {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      padding: 8px;
+    }
   </style>
   <template>
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
@@ -150,6 +159,14 @@
               <h2>{{item.name}}</h2>
               <p>{{item.lunchInfo.summary}}</p>
             </div>
+            <template is="dom-if" if="{{showChevron(item)}}">
+              <div class="optionicon">
+                <iron-pages selected="0">
+                  <iron-icon icon="hardware:keyboard-arrow-down"></iron-icon>
+                  <iron-icon icon="hardware:keyboard-arrow-up"></iron-icon>
+                </iron-pages>
+              </div>
+            </template>
           </div>
           <iron-collapse id="{{computeCollapseId(item)}}">
             <template is="dom-if" if="{{isLunchWithDesc(item)}}">
@@ -205,6 +222,14 @@
           return item.lunchInfo.description[num];
         }
       },
+      showChevron: function(item) {
+        var expandablePeriods = ["A", "B", "C", "D", "E", "F", "G", "H"];
+        if (expandablePeriods.indexOf(item.period) >= 0 || item.lunchInfo) {
+          return true;
+        } else {
+          return false;
+        }
+      },
       hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
       },
@@ -244,13 +269,9 @@
         console.log(item);
         return "collapse-" + item.name + "-" + item.period;
       },
-      computeEmailLink: function(email) {
-        return "mailto:" + email;
-      },
       toggleExpand: function(e) {
         // if expanding, XHR, and then set model
         var el = e.currentTarget;
-        console.log(el);
         el.classList.toggle("selected");
         var item = this.$.entryList.itemForElement(el);
         var collapse = document.getElementById(this.computeCollapseId(item));
@@ -264,6 +285,8 @@
           console.log(url);
           xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
+              // Change the chevron to a more-vert
+              el.children[0].children[2].children[0].selected = 1;
               var obj = JSON.parse(this.responseText);
               e.model.set('item.students', obj.students);
               collapse.toggle();
@@ -273,6 +296,8 @@
           xhr.send();
         } else {
           collapse.toggle();
+          // Change more-vert back to chevron
+          el.children[0].children[2].children[0].selected = 0;
           //e.model.set('item.students', []);
         }
       },
