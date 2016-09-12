@@ -9,8 +9,8 @@ from google.appengine.ext import ndb
 from HTMLParser import HTMLParser
 
 # Globals
-format = "%Y%m%dT%H%M%S"
-lunch_url = "http://www.eastsideprep.org/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&ai1ec_cat_ids=57?"
+format = "%Y%m%d"
+lunch_url = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=1"
 
 # NDB class definitions
 
@@ -41,7 +41,6 @@ def parse_events(lines): # lines is a list of all lines of text in the whole fil
             events.append(properties)
             properties = {}
         elif in_event:
-            print line
             if line[0] == " ": # If the current line is a continuation of the previous line
                 properties[last_prop_name] += line[1:]
             else: # If it is the start of a normal line
@@ -58,8 +57,13 @@ def sanitize_events(events): # Sanitizes a list of events obtained from parse_ev
     for event in events:
         # Convert the datetime string (e.g. 20151124T233401) to a date object
         # Gets format from global var
-        date = datetime.datetime.strptime(event["DTSTART"], format).date()
+        startdate = event["DTSTART"].split("T")[0] # Break datetime object into a date
+        date = datetime.datetime.strptime(startdate, format).date()
 
+        if not "Price" in event["DESCRIPTION"]:
+            continue
+        
+        print event["SUMMARY"]
         # Remove the price and back slashes from the summary
         summary = string.split(event["SUMMARY"], " | ")[0] # Remove the price
         summary = summary.replace("\\", "") # Remove back slashes
@@ -68,6 +72,8 @@ def sanitize_events(events): # Sanitizes a list of events obtained from parse_ev
         desc = event["DESCRIPTION"]
         desc = desc.replace("\,", ",")
         desc = desc.replace("\;", ";")
+        desc = desc.replace("\\r", "")
+
         no_html_desc = re.sub("<.*?>", '', desc)
         description = string.split(no_html_desc, '\\n')
 
@@ -75,7 +81,6 @@ def sanitize_events(events): # Sanitizes a list of events obtained from parse_ev
             summary=summary, \
             description=description, \
             day=date)
-
         write_event_to_db(entry)
 
 def write_event_to_db(entry): # Places a single entry into the db
@@ -96,7 +101,6 @@ def write_event_to_db(entry): # Places a single entry into the db
 
     # If not, log it and put it into the db
 
-    logging.info(str(entry))
     entry.put()
 
 def add_events(response):
@@ -186,3 +190,5 @@ def place_rating(rating, sid, lunch_id, date, overwrite = True):
     obj.put()
 
     return overwrote
+
+read_lunches()
