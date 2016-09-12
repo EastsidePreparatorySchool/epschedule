@@ -60,7 +60,7 @@ def download_schedule(student_id, term, year):
         print "Failed to download " + str(student_id) + ", that number must not be in use"
 
 if len(sys.argv) < 3:
-    print "Usage: cookielib_test.py <username> <password> <term (1-3)> <year (eg. 17)> [subdomain (optional, defaults for four11)]"
+    print "Usage: download_schedules.py <username> <password> <term (1-3)> <year (eg. 17)> [subdomain (optional, defaults for four11)]"
     sys.exit()
 
 uri = 'https://'
@@ -82,6 +82,7 @@ for k in range(3500, 4700):
     download_schedule(k, term, year)
 
 print "Schedules downloaded"
-print "Pasing schedules"
-#import pdf_extract #Runs pdf_extract.py
-#import id_table_generator #Runs id_table_generator.py
+print "Parsing schedules"
+
+import pdf_extract #Runs pdf_extract.py
+import id_table_generator #Runs id_table_generator.py
