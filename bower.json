@@ -11,9 +11,7 @@
     "iron-elements": "PolymerElements/iron-elements#1.0.0",
     "paper-elements": "PolymerElements/paper-elements#1.0.1",
     "platinum-elements": "PolymerElements/platinum-elements#1.0.1",
-    "neon-elements": "PolymerElements/neon-elements#1.0.0",
-    "paper-typeahead-input": "^1.1.12",
-    "paper-menu-button": "PolymerElements/paper-menu-button#^1.5.1"
+    "neon-elements": "PolymerElements/neon-elements#1.0.0"
   },
   "resolutions": {
     "polymer": "^1.0.0",
