@@ -6,6 +6,8 @@
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../bower_components/star-rating/star-rating.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="x-schedule">
@@ -54,9 +56,11 @@
       color: white;
       font-size: 1.5rem;
     }
+
     .card {
       margin-bottom: 1px;
       cursor: pointer;
+      position: relative;
     }
     .card-header {
       background: white;
@@ -120,6 +124,17 @@
       position: relative;
       bottom: 0;
     }
+    .optionicon {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+    }
+    iron-icon {
+      padding: 8px;
+    }
+    .emaillink {
+      color: black;
+    }
   </style>
   <template>
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
@@ -150,6 +165,21 @@
               <h2>{{item.name}}</h2>
               <p>{{item.lunchInfo.summary}}</p>
             </div>
+            <template is="dom-if" if="{{showChevron(item)}}">
+              <div class="optionicon">
+                <iron-pages selected="0">
+                  <iron-icon icon="arrow-drop-down"></iron-icon>
+                  <paper-menu-button on-tap="moreOptionsThunk">
+                    <paper-icon-button icon="more-vert" class="dropdown-trigger"></paper-icon-button>
+                    <paper-menu class="dropdown-content">
+                      <paper-item><a href="{{computeEmailClassLink(item, item.students)}}" class="emaillink">Email class</a></paper-item>
+                      <!--<paper-item  on-tap="periodThunk">View period</paper-item>
+                      <paper-item>Other times</paper-item>-->
+                    </paper-menu>
+                  </paper-menu-button>
+                </iron-pages>
+              </div>
+            </template>
           </div>
           <iron-collapse id="{{computeCollapseId(item)}}">
             <template is="dom-if" if="{{isLunchWithDesc(item)}}">
@@ -167,6 +197,16 @@
                 </template>
               </div>
             </template>
+            <!--<div class="actionbar" layout horizontal xcenter="">
+              <div class="action" layout horizontal>
+                <a href="{{computeEmailClassLink(item, item.students)}}">
+                  <span>Email class</span>
+                  <paper-icon-button icon="mail"></paper-icon-button>
+                </a>
+              </div>
+              <paper-icon-button icon="work" class="action"></paper-icon-button>
+              <span class="stretch"></span>
+            </div>-->
             <iron-list items="{{item.students}}" grid>
               <template>
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
@@ -203,6 +243,16 @@
         if (item.lunchInfo) {
           var num = parseInt(linenum);
           return item.lunchInfo.description[num];
+        }
+      },
+      showChevron: function(item) {
+        var expandablePeriods = ["A", "B", "C", "D", "E", "F", "G", "H"];
+        if (expandablePeriods.indexOf(item.period) >= 0) {
+          return true;
+        } else if (item.lunchInfo) {
+          return true;
+        } else {
+          return false;
         }
       },
       hasTeacherAndRoom: function(item) {
@@ -244,13 +294,24 @@
         console.log(item);
         return "collapse-" + item.name + "-" + item.period;
       },
-      computeEmailLink: function(email) {
-        return "mailto:" + email;
+      computeEmailClassLink: function(item, students) {
+        var suffix = "@eastsideprep.org";
+        var link = "mailto:";
+        // Add teacher
+        teacherNames = item.teacher.split(" "); // We should do this better
+        link += teacherNames[0][0] + teacherNames[1] + suffix;
+
+        // Add students
+        for (var i = 0; i < students.length; i++) {
+          link += ";" + students[i].email;
+        }
+
+        console.log(link);
+        return link.toLowerCase();
       },
       toggleExpand: function(e) {
         // if expanding, XHR, and then set model
         var el = e.currentTarget;
-        console.log(el);
         el.classList.toggle("selected");
         var item = this.$.entryList.itemForElement(el);
         var collapse = document.getElementById(this.computeCollapseId(item));
@@ -264,6 +325,8 @@
           console.log(url);
           xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
+              // Change the chevron to a more-vert
+              el.children[0].children[2].children[0].selected = 1;
               var obj = JSON.parse(this.responseText);
               e.model.set('item.students', obj.students);
               collapse.toggle();
@@ -273,6 +336,8 @@
           xhr.send();
         } else {
           collapse.toggle();
+          // Change more-vert back to chevron
+          el.children[0].children[2].children[0].selected = 0;
           //e.model.set('item.students', []);
         }
       },
@@ -300,6 +365,15 @@
         if (this.onTeacherTap) {
           this.onTeacherTap(e);
         }
+      },
+      periodThunk: function(e) {
+        e.stopPropagation();
+        if (this.onPeriodTap) {
+          this.onPeriodTap(e);
+        }
+      },
+      moreOptionsThunk: function(e) {
+        e.stopPropagation();
       }
     });
   </script>
