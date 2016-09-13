@@ -41,7 +41,6 @@ def parse_events(lines): # lines is a list of all lines of text in the whole fil
             events.append(properties)
             properties = {}
         elif in_event:
-            print line
             if line[0] == " ": # If the current line is a continuation of the previous line
                 properties[last_prop_name] += line[1:]
             else: # If it is the start of a normal line
