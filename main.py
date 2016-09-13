@@ -599,11 +599,6 @@ class StudentHandler(BaseHandler):
         show_photo = user_obj.share_photo
 
         student_schedule = self.get_schedule_for_name(firstname, lastname)
-
-        if not student_schedule:
-            self.error(404)
-            return
-
         user_schedule = self.get_schedule_for_id(id)
 
         if is_teacher_schedule(user_schedule) or show_full_schedule:
