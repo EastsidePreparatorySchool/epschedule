@@ -1,28 +1,26 @@
 [{
 "Wednesday":{
   "MS": [
-  {"period": "A", "time": "8:00-8:40"},
-  {"period": "B", "time": "8:45-9:25"},
-  {"period": "C", "time": "9:30-10:10"},
-  {"period": "D", "time": "10:15-10:55"},
-  {"period": "Lunch", "time": "11:00-11:30"},
-  {"period": "E", "time": "11:35-12:15"},
-  {"period": "F", "time": "12:20-1:00"},
-  {"period": "G", "time": "1:05-1:45"},
-  {"period": "H", "time": "1:50-2:30"},
-  {"period": "Assembly", "time": "2:35-3:15"}],
+  {"period": "A", "time": "8:00-8:45"},
+  {"period": "B", "time": "8:50-9:35"},
+  {"period": "C", "time": "9:40-10:25"},
+  {"period": "D", "time": "10:30-11:15"},
+  {"period": "Lunch", "time": "11:20-11:55"},
+  {"period": "E", "time": "12:00-12:45"},
+  {"period": "F", "time": "12:50-1:35"},
+  {"period": "G", "time": "1:40-2:25"},
+  {"period": "H", "time": "2:30-3:15"}],
 
   "US": [
-  {"period": "A", "time": "8:00-8:40"},
-  {"period": "B", "time": "8:45-9:25"},
-  {"period": "C", "time": "9:30-10:10"},
-  {"period": "D", "time": "10:15-10:55"},
-  {"period": "E", "time": "11:00-11:40"},
-  {"period": "Lunch", "time": "11:45-12:15"},
-  {"period": "F", "time": "12:20-1:00"},
-  {"period": "G", "time": "1:05-1:45"},
-  {"period": "US Community", "time": "1:50-2:30"},
-  {"period": "H", "time": "2:35-3:15"}
+  {"period": "A", "time": "8:00-8:45"},
+  {"period": "B", "time": "8:50-9:35"},
+  {"period": "C", "time": "9:40-10:25"},
+  {"period": "D", "time": "10:30-11:15"},
+  {"period": "E", "time": "11:20-12:05"},
+  {"period": "Lunch", "time": "12:10-12:45"},
+  {"period": "F", "time": "12:50-1:35"},
+  {"period": "G", "time": "1:40-2:25"},
+  {"period": "H", "time": "2:30-3:15"}
 ]},
 
 "Monday":{
@@ -95,6 +93,32 @@
   {"period": "Lunch", "time": "11:40-12:10"},
   {"period": "F", "time": "12:15-1:40"},
   {"period": "E", "time": "1:50-3:15"}
+]},
+
+"AssemblyWednesday":{
+  "MS": [
+  {"period": "A", "time": "8:00-8:40"},
+  {"period": "B", "time": "8:45-9:25"},
+  {"period": "C", "time": "9:30-10:10"},
+  {"period": "D", "time": "10:15-10:55"},
+  {"period": "Lunch", "time": "11:00-11:30"},
+  {"period": "E", "time": "11:35-12:15"},
+  {"period": "F", "time": "12:20-1:00"},
+  {"period": "G", "time": "1:05-1:45"},
+  {"period": "H", "time": "1:50-2:30"},
+  {"period": "Assembly", "time": "2:35-3:15"}],
+
+  "US": [
+  {"period": "A", "time": "8:00-8:40"},
+  {"period": "B", "time": "8:45-9:25"},
+  {"period": "C", "time": "9:30-10:10"},
+  {"period": "D", "time": "10:15-10:55"},
+  {"period": "E", "time": "11:00-11:40"},
+  {"period": "Lunch", "time": "11:45-12:15"},
+  {"period": "F", "time": "12:20-1:00"},
+  {"period": "G", "time": "1:05-1:45"},
+  {"period": "US Community", "time": "1:50-2:30"},
+  {"period": "H", "time": "2:35-3:15"}
 ]},
 
 "FirstDay":{
