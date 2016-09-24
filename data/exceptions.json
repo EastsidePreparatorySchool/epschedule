@@ -395,6 +395,7 @@
 {"day": 27, "month": 5, "year": 2016, "schedule": "Field Day"},
 {"day": 7, "month": 9, "year": 2016, "schedule": "FirstDay"},
 {"day": 8, "month": 9, "year": 2016, "schedule": "Overnights"},
-{"day": 9, "month": 9, "year": 2016, "schedule": "Overnights"}
+{"day": 9, "month": 9, "year": 2016, "schedule": "Overnights"},
+{"day": 14, "month": 9, "year": 2016, "schedule": "FullMonday"}
 ]
 ]
