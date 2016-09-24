@@ -136,6 +136,10 @@ def explode_pdf(path):
         if l not in cleaned_classes:
             cleaned_classes.append(l)
 
+    # Remove extra spaces from first name
+    if firstname[-1:] == " ":
+        firstname = firstname[:-1]
+        
     schedule_properties[3] = schedule_properties[3][:-4] #Remove the .pdf extention
     schedule_obj = {'firstname':firstname, 'lastname':lastname, 'term':schedule_properties[1], 'id':schedule_properties[0], 'grade':grade, 'advisorfirstname':advisor_first, 'advisorlastname':advisor_last, 'classes':cleaned_classes}
     return schedule_obj    #Return object created in the previous line
