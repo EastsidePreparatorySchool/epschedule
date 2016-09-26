@@ -10,7 +10,7 @@ from HTMLParser import HTMLParser
 
 # Globals
 format = "%Y%m%dT%H%M%S"
-lunch_url = "http://www.eastsideprep.org/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&ai1ec_cat_ids=57?"
+lunch_url = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
 
 # NDB class definitions
 
@@ -29,6 +29,7 @@ class LunchRating(ndb.Model):
 # Functions for parsing iCal files
 
 def parse_events(lines): # lines is a list of all lines of text in the whole file
+
     in_event = False # Whether the current line is in an event
     properties = {} # When properties are discovered, they will be stuffed in here
     events = [] # The list of all properties objects
@@ -41,7 +42,6 @@ def parse_events(lines): # lines is a list of all lines of text in the whole fil
             events.append(properties)
             properties = {}
         elif in_event:
-            print line
             if line[0] == " ": # If the current line is a continuation of the previous line
                 properties[last_prop_name] += line[1:]
             else: # If it is the start of a normal line
@@ -186,3 +186,4 @@ def place_rating(rating, sid, lunch_id, date, overwrite = True):
     obj.put()
 
     return overwrote
+    
