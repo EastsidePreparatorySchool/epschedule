@@ -9,8 +9,8 @@ from google.appengine.ext import ndb
 from HTMLParser import HTMLParser
 
 # Globals
-format = "%Y%m%d"
-lunch_url = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=1"
+LUNCH_DATE_FORMAT = "%Y%m%d"
+LUNCH_URL = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=1"
 
 # NDB class definitions
 
@@ -58,7 +58,12 @@ def sanitize_events(events): # Sanitizes a list of events obtained from parse_ev
         # Convert the datetime string (e.g. 20151124T233401) to a date object
         # Gets format from global var
         startdate = event["DTSTART"].split("T")[0] # Break datetime object into a date
-        date = datetime.datetime.strptime(startdate, format).date()
+        date = datetime.datetime.strptime(startdate, LUNCH_DATE_FORMAT).date()
+
+        # Lunch items are not tagged "lunch", but we can determine which
+        # calendar events are lunches because only lunches have the
+        # word "price" in them (and all lunches have the word price)
+        # It's not very clean, but there is not a better way
 
         if not "Price" in event["DESCRIPTION"]:
             continue
@@ -121,8 +126,8 @@ def test_read_lunches(fakepath): # Will be called by unit tests
     add_events(mainresponse)
 
 def read_lunches(): # Update the database with new lunches
-    # lunch_url is a global var
-    mainresponse = urllib2.urlopen(lunch_url)
+    # LUNCH_URL is a global var
+    mainresponse = urllib2.urlopen(LUNCH_URL)
     add_events(mainresponse)
 
 # Returns lunches to be displayed in a schedule
