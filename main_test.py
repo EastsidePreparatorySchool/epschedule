@@ -29,8 +29,9 @@ ADMIN_PASSWORD = 'adminpass'
 BAD_PASSWORD = 'badbadbad'
 TEST_LUNCH_PATH = 'data/test_lunch.ics'
 TEST_LUNCH_DATE = datetime.date(9999, 12, 20)
-TEST_LUNCH_SUMMARY = 'Foobar'
-LUNCH_DESCRIPTION_LENGTH = 3
+TEST_LUNCH_SUMMARY = 'Testy test test test'
+TEST_LUNCH_DESCRIPTION_LENGTH = 3
+TEST_LUNCH_PRICE = 'Price: $7.50'
 
 class FakeSendGridClient():
     def __init__(self):
@@ -44,6 +45,7 @@ class HandlerTestBase(unittest.TestCase):
         self.testbed = testbed.Testbed()
         self.testbed.activate()
         self.testbed.init_datastore_v3_stub()
+        self.testbed.init_memcache_stub()
         self.test_app = webtest.TestApp(main.app)
         self.fake_sendgrid = FakeSendGridClient()
         main.SendGridClient.send = self.fake_sendgrid.send
@@ -365,12 +367,17 @@ class SearchHandlerTest(HandlerTestBase):
 
 class LunchesTest(HandlerTestBase):
     def testParseLunches(self):
+        update_lunch.test_read_lunches(TEST_LUNCH_PATH)
+        lunches = update_lunch.getLunchForDate(TEST_LUNCH_DATE)
+        self.assertEqual(len(lunches), 1)
+        lunch = lunches[0]
+        self.assertEqual(lunch['summary'], TEST_LUNCH_SUMMARY)
+        self.assertEqual(len(lunch['description']), TEST_LUNCH_DESCRIPTION_LENGTH)
+        self.assertEqual(lunch['description'][2], TEST_LUNCH_PRICE)
+
+    def testRateLunch(self):
+        update_lunch.test_read_lunches(TEST_LUNCH_PATH)
         pass
-        #update_lunch.test_read_lunches(TEST_LUNCH_PATH)
-        #lunches = update_lunch.getLunchForDate(TEST_LUNCH_DATE)
-        #for lunch in lunches: # Will only run once, but we need this
-        #    self.assertEqual(lunch.summary, TEST_LUNCH_SUMMARY)
-        #    self.assertEqual(lunch.description.length, LUNCH_DESCRIPTION_LENGTH)
 
 # Untested handlers
 #('/', MainHandler),
@@ -379,7 +386,6 @@ class LunchesTest(HandlerTestBase):
 #('/logout', LogoutHandler),
 #('/changepassword', ChangePasswordHandler),
 #('/period/(\w+)', PeriodHandler),
-#('/lunch', LunchRateHandler),
 #('/cron/(\w+)', CronHandler),
 
 if __name__ == '__main__':

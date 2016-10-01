@@ -30,8 +30,8 @@ CONTACT:
 DESCRIPTION:<p>Reuben sandwich (RB\, Sauerkraut\, 1000 Island\, Swiss\, Rye
   Bread)\, Tim’s potato chips- GF\, DF available<br />\nVegetarian: Grilled
   Mushroom sandwich<br />\nPrice: $7.50</p>
-DTSTART;TZID=America/Los_Angeles:20151026T110000
-DTEND;TZID=America/Los_Angeles:20151026T121500
+DTSTART;TZID=America/Los_Angeles:99991220T110000
+DTEND;TZID=America/Los_Angeles:99991220T121500
 SEQUENCE:0
 SUMMARY:Testy test test test | $99.99
 URL:http://www.eastsideprep.org/event/reuben-sandwich-7-50/
