@@ -9,8 +9,8 @@ from google.appengine.ext import ndb
 from HTMLParser import HTMLParser
 
 # Globals
-format = "%Y%m%dT%H%M%S"
-lunch_url = "http://www.eastsideprep.org/?plugin=all-in-one-event-calendar&controller=ai1ec_exporter_controller&action=export_events&ai1ec_cat_ids=57?"
+LUNCH_DATE_FORMAT = "%Y%m%d"
+LUNCH_URL = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=1"
 
 # NDB class definitions
 
@@ -57,8 +57,18 @@ def sanitize_events(events): # Sanitizes a list of events obtained from parse_ev
     for event in events:
         # Convert the datetime string (e.g. 20151124T233401) to a date object
         # Gets format from global var
-        date = datetime.datetime.strptime(event["DTSTART"], format).date()
+        startdate = event["DTSTART"].split("T")[0] # Break datetime object into a date
+        date = datetime.datetime.strptime(startdate, LUNCH_DATE_FORMAT).date()
 
+        # Lunch items are not tagged "lunch", but we can determine which
+        # calendar events are lunches because only lunches have the
+        # word "price" in them (and all lunches have the word price)
+        # It's not very clean, but there is not a better way
+
+        if not "Price" in event["DESCRIPTION"]:
+            continue
+        
+        print event["SUMMARY"]
         # Remove the price and back slashes from the summary
         summary = string.split(event["SUMMARY"], " | ")[0] # Remove the price
         summary = summary.replace("\\", "") # Remove back slashes
@@ -67,6 +77,8 @@ def sanitize_events(events): # Sanitizes a list of events obtained from parse_ev
         desc = event["DESCRIPTION"]
         desc = desc.replace("\,", ",")
         desc = desc.replace("\;", ";")
+        desc = desc.replace("\\r", "")
+
         no_html_desc = re.sub("<.*?>", '', desc)
         description = string.split(no_html_desc, '\\n')
 
@@ -74,7 +86,6 @@ def sanitize_events(events): # Sanitizes a list of events obtained from parse_ev
             summary=summary, \
             description=description, \
             day=date)
-
         write_event_to_db(entry)
 
 def write_event_to_db(entry): # Places a single entry into the db
@@ -95,7 +106,6 @@ def write_event_to_db(entry): # Places a single entry into the db
 
     # If not, log it and put it into the db
 
-    logging.info(str(entry))
     entry.put()
 
 def add_events(response):
@@ -116,8 +126,8 @@ def test_read_lunches(fakepath): # Will be called by unit tests
     add_events(mainresponse)
 
 def read_lunches(): # Update the database with new lunches
-    # lunch_url is a global var
-    mainresponse = urllib2.urlopen(lunch_url)
+    # LUNCH_URL is a global var
+    mainresponse = urllib2.urlopen(LUNCH_URL)
     add_events(mainresponse)
 
 # Returns lunches to be displayed in a schedule
@@ -185,3 +195,4 @@ def place_rating(rating, sid, lunch_id, date, overwrite = True):
     obj.put()
 
     return overwrote
+    
