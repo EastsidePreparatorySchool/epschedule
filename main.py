@@ -526,7 +526,6 @@ class ClassHandler(BaseHandler):
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
                                       "students": []}
-                            continue # Don't add teachers to the student list
 
                         email = generate_email(schedule['firstname'], schedule['lastname'])
                         photo_url = "/images/placeholder_small.png" # Default placeholder

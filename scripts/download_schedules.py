@@ -51,8 +51,8 @@ def dump():
     for cookie in cookies:
         print cookie.name, cookie.value
 
-def download_schedule(student_id, term, year):
-    url = 'https://four11.eastsideprep.org/registrar/pdf_schedules?color=1&student_id=' + str(student_id) + '&term_id=' + str(term) + '&year_id=' + str(year)
+def download_schedule(student_id, term, year, subdomain):
+    url = 'https://' + subdomain + '.eastsideprep.org/registrar/pdf_schedules?color=1&student_id=' + str(student_id) + '&term_id=' + str(term) + '&year_id=' + str(year)
     filename = str(student_id) + '-' + str(term)
     try:
         download(url, filename, term)
@@ -64,11 +64,11 @@ if len(sys.argv) < 3:
     sys.exit()
 
 uri = 'https://'
-
+subdomain = 'four11'
 if len(sys.argv) >= 4: # If the subdomain argument was specified
-    uri += sys.argv[5]
-else: # If it was not specified, it defaults to four11
-    uri += 'four11'
+    p = sys.argv[5]
+
+uri += subdomain
 
 uri += '.eastsideprep.org/auth/auth'
 obj =  {'user[user_name]' : sys.argv[1], 'user[password]' : sys.argv[2]}
@@ -78,8 +78,8 @@ res = post(uri, obj)
 dump()
 
 #for k in range(100, 125) + range(2200, 4700):
-for k in range(3500, 4700):
-    download_schedule(k, term, year)
+for k in range(2504, 4700):
+    download_schedule(k, term, year, subdomain)
 
 print "Schedules downloaded"
 print "Parsing schedules"
