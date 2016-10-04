@@ -420,6 +420,9 @@
 {"day": 7, "month": 9, "year": 2016, "schedule": "FirstDay"},
 {"day": 8, "month": 9, "year": 2016, "schedule": "Overnights"},
 {"day": 9, "month": 9, "year": 2016, "schedule": "Overnights"},
-{"day": 21, "month": 9, "year": 2016, "schedule": "AssemblyWednesday"}
+{"day": 21, "month": 9, "year": 2016, "schedule": "AssemblyWednesday"},
+{"day": 3, "month": 10, "year": 2016, "schedule": "NoSchool"},
+{"day": 4, "month": 10, "year": 2016, "schedule": "Monday"},
+{"day": 5, "month": 10, "year": 2016, "schedule": "Tuesday"}
 ]
 ]
