@@ -423,6 +423,16 @@
 {"day": 21, "month": 9, "year": 2016, "schedule": "AssemblyWednesday"},
 {"day": 3, "month": 10, "year": 2016, "schedule": "NoSchool"},
 {"day": 4, "month": 10, "year": 2016, "schedule": "Monday"},
-{"day": 5, "month": 10, "year": 2016, "schedule": "Tuesday"}
+{"day": 5, "month": 10, "year": 2016, "schedule": "Tuesday"},
+{"day": 14, "month": 11, "year": 2016, "schedule": "Wednesday"},
+{"day": 15, "month": 11, "year": 2016, "schedule": "FallFinalsD1"},
+{"day": 16, "month": 11, "year": 2016, "schedule": "FallFinalsD2"},
+{"day": 17, "month": 11, "year": 2016, "schedule": "FallFinalsD3"},
+{"day": 18, "month": 11, "year": 2016, "schedule": "NoSchool"},
+{"day": 21, "month": 11, "year": 2016, "schedule": "ThanksgivingBreak"},
+{"day": 22, "month": 11, "year": 2016, "schedule": "ThanksgivingBreak"},
+{"day": 23, "month": 11, "year": 2016, "schedule": "ThanksgivingBreak"},
+{"day": 24, "month": 11, "year": 2016, "schedule": "ThanksgivingBreak"},
+{"day": 25, "month": 11, "year": 2016, "schedule": "ThanksgivingBreak"}
 ]
 ]
