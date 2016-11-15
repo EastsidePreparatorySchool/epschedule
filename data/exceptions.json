@@ -423,6 +423,13 @@
 {"day": 21, "month": 9, "year": 2016, "schedule": "AssemblyWednesday"},
 {"day": 3, "month": 10, "year": 2016, "schedule": "NoSchool"},
 {"day": 4, "month": 10, "year": 2016, "schedule": "Monday"},
-{"day": 5, "month": 10, "year": 2016, "schedule": "Tuesday"}
+{"day": 5, "month": 10, "year": 2016, "schedule": "Tuesday"},
+{"day": 12, "month": 10, "year": 2016, "schedule": "Thursday"},
+{"day": 13, "month": 10, "year": 2016, "schedule": "Friday"},
+{"day": 14, "month": 10, "year": 2016, "schedule": "NoSchool"},
+{"day": 19, "month": 10, "year": 2016, "schedule": "AssemblyWednesday"},
+{"day": 26, "month": 10, "year": 2016, "schedule": "AssemblyWednesday"},
+{"day": 1, "month": 11, "year": 2016, "schedule": "Monday"},
+{"day": 2, "month": 11, "year": 2016, "schedule": "Tuesday"}
 ]
 ]
