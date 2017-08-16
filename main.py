@@ -69,7 +69,7 @@ def convert_email_to_id(email):
         return DEMO_ID
     for student in ID_TABLE:
         if (student["username"] == username):
-            return student["sid"]
+            return student["id"]
     return None
 
 # TODO merge with id to username function
@@ -81,7 +81,7 @@ def convert_id_to_email(id):
 
 
     for student in ID_TABLE:
-        if (str(student["sid"]) == str(id)):
+        if (str(student["id"]) == str(id)):
             email = student["username"]
 
     if email == "":
@@ -510,7 +510,7 @@ class ClassHandler(BaseHandler):
             for classobj in schedule['classes']: # For each one of their classes
                 if normalize_classname(classobj['name']) == class_name.lower() and \
                     classobj['period'].lower() == period.lower(): # Check class name and period match
-                    if classobj['teacher'] != "" or classobj['name'] == "Free Period": # If they are a student or it is a free period
+                    if classobj['teacher'] or classobj['name'] == "Free Period": # If they are a student or it is a free period
                         if not result:
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
