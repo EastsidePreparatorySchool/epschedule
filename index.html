@@ -134,9 +134,16 @@
     date = new Date();
     switch(date.getDay()) { // Falling through is intentional here
       case 6: // If Saturday, move the date forward twice
-        date.setDate(date.getDate() + 1);
+        date.setDate(date.getDate() + 2);
+        break;
       case 0: // If Sunday, move the date forward once
         date.setDate(date.getDate() + 1);
+    }
+
+    FIRST_DAY = new Date(2017, 8, 6);
+
+    if (date < FIRST_DAY) {
+      date = FIRST_DAY;
     }
     return date;
   }
@@ -206,7 +213,7 @@
     map.appendChild(marker);
   }
   function isStandardClass(letter) {
-    var standardPeriods = ["0", "A", "B", "C", "D", "E", "F", "G", "H"];
+    var standardPeriods = ["O", "A", "B", "C", "D", "E", "F", "G", "H"];
     return standardPeriods.indexOf(letter) >= 0;
   }
   function getGpsFail(error) {
@@ -348,53 +355,99 @@
     }
   }
 
+  function toTwoDig(num) {
+    var s = num.toString();
+    if (s.length == 1) {
+      return "0" + s;
+    } else {
+      return s;
+    }
+  }
   // Handles exceptions, also handles special weekend schedules
   function getScheduleTypeForDate(dateObj, exceptions) {
-    var day = dayOfWeekToString(dateObj.getDay());
-    for (var exception = 0; exception < exceptions[1].length; exception++) {
-        if (exceptions[1][exception]["day"] == dateObj.getDate() &&
-            exceptions[1][exception]["month"] == (dateObj.getMonth() + 1) &&
-            exceptions[1][exception]["year"] == dateObj.getFullYear()) {
-            day = exceptions[1][exception]["schedule"];
-        }
+
+    var s = dateObj.getFullYear() + "-" + toTwoDig(dateObj.getMonth() + 1) + "-" + toTwoDig(dateObj.getDate());
+    var day = exceptions[0][s];
+    return exceptions[1][day];
+  }
+
+  function incorrectSchool(s, school) {
+    var other = "MS";
+    if (school == "MS") {
+      other = "US";
     }
-    return day;
+
+    if (~s.indexOf(other)) {
+      return true;
+    }
+    if (school == "MS" && ~s.indexOf("Seminars")) {
+      return true;
+    }
+    return false;
+  }
+  function log(s, school) {
+    i = incorrectSchool(s, school);
+    console.log("For class " + s + " and school " + school + ", incorrectSchool() is " + i.toString());
+    return i;
   }
 
   // Generate basic name, teacher, room, time, and period info for a class
   function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
     var scheduleObj;
+    var foundClass = false;
     // If it is a normal period
-    if (isStandardClass(days[0][day][school][currentSlot]["period"])) {
+    if (isStandardClass(day[currentSlot]["period"])) {
       for (var k = 0; k < schedule["classes"].length; k++) {
-        if (schedule["classes"][k]["period"] == days[0][day][school][currentSlot]["period"]) {
-          var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
-          var teacherLast = teacherName.split(" ")[1]; // Teacher's last name
-          scheduleObj = { name: schedule["classes"][k]["name"],
-            teacher: teacherName,
-            teacherLastName: teacherLast,
-            room: schedule["classes"][k]["room"],
-            period: days[0][day][school][currentSlot]["period"],
-            time: ""};
+        if (schedule["classes"][k]["period"] == day[currentSlot]["period"]) {
+          if (schedule["classes"][k]["name"] == "Free Period") {
+            scheduleObj = { name: schedule["classes"][k]["name"],
+              teacher: "",
+              teacherLastName: "",
+              room: "",
+              period: day[currentSlot]["period"],
+              time: ""};
+          } else {
+            var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
+            if (teacherName) {
+              var teacherLast = teacherName.split(" ")[1]; // Teacher's last name
+            } else {
+              var teacherLast = null;
+            }
+            scheduleObj = { name: schedule["classes"][k]["name"],
+              teacher: teacherName,
+              teacherLastName: teacherLast,
+              room: schedule["classes"][k]["room"],
+              period: day[currentSlot]["period"],
+              time: ""};
+          }
+          foundClass = true;
           break;
         }
       }
+      if (!foundClass) { // We're looking for a period the user doesn't have, like O period
+        return null;
+      }
     } else { // If it is a special class, such as Lunch, Assembly, or Class Meeting
+
+      // Ensure that we don't display periods for middle schoolers for upper schoolers
+      if (log(day[currentSlot]["period"], school)) {
+        return null;
+      }
+
       // Note that 0 Period Instrumental Music does not fall in this category
       scheduleObj = {
-        name: days[0][day][school][currentSlot]["period"],
+        name: day[currentSlot]["period"],
         teacher: "",
         room: "",
         period: "X",
         time: ""
       };
-      if (scheduleObj.name == "Lunch" ||
-        scheduleObj.name == "Assembly" ||
-        scheduleObj.name == "US Community") {
+      LPC_COMMONS_CLASSES = ["Lunch (MS)", "Lunch (US)", "Assembly", "US Community"];
+      if (LPC_COMMONS_CLASSES.includes(scheduleObj.name)) {
 
         scheduleObj.room = "LPC Commons";
       }
-      if (scheduleObj.name == "Lunch") {
+      if (scheduleObj.name == "Lunch (MS)" || scheduleObj.name == "Lunch (US)") {
         scheduleObj.lunchInfo = lunchInfo;
       }
     }
@@ -417,7 +470,7 @@
       }
     }
     // Split the time into the start and end times
-    var times = days[0][day][school][currentSlot]["time"].split('-');
+    var times = day[currentSlot]["times"].split('-');
     scheduleObj.startTime = times[0].trim();
     scheduleObj.endTime = times[1].trim();
     return scheduleObj;
@@ -486,18 +539,26 @@
   }
 
   function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list) {
+
     // Either MS or US
     var school = getSchool(schedule.grade);
     var todaySchedule = [];
     if (type == "full") {
       var lunchInfo = getLunchForDate(lunch_list, dateObj);
     }
+
     // The current schedule for that day
     var day = getScheduleTypeForDate(dateObj, days);
     // If it is a normal day (no all day event)
-    if (!days[0][day].allDayEvent) {
+    if (!day) { // If there is no school
+      // Get the data for the imageObj
+      var imageObj = {url: "/images/epslogolarge.png", text: "No School"};
+      scheduleElement.allDayEvent = imageObj;
+      scheduleElement.entries = null; // Clear the classes
+    } else if (day.length > 1) {
       // For each class
-      for (var currentSlot = 0; currentSlot < days[0][day][school].length; currentSlot++) {
+      for (var currentSlot = 0; currentSlot < day.length; currentSlot++) {
+
         // Render the base of the class
         var scheduleObj = createClassEntry(schedule, school, day, currentSlot, type, lunchInfo);
         if (scheduleObj) { // If scheduleObj is not null
@@ -510,10 +571,9 @@
       scheduleElement.entries = todaySchedule;
       // Tell the element that it is not an all day event
       scheduleElement.allDayEvent = null;
-    } else { // If it is an all day event
+    } else if (day.length == 1) { // If it is an all day event
       // Get the data for the imageObj
-      var imgUrl = getRandomImage(days[0][day].allDayEvent);
-      var imageObj = {url: imgUrl, text: days[0][day].allDayEvent.name};
+      var imageObj = {url: '/images/epslogolarge.png', text: day[0]['period']};
       scheduleElement.allDayEvent = imageObj;
       scheduleElement.entries = null; // Clear the classes
     }
@@ -620,6 +680,7 @@
   if (showPrivacyDialog) {
     setTimeout(function(){ document.getElementById("privacydialog").open(); }, 0);
   }
+
   </script>
 
   <style is="custom-style">
@@ -872,14 +933,6 @@
               <paper-icon-button class="rightfloat" icon="arrow-back" onclick="dateBack()"></paper-icon-button>
               <paper-icon-button class="rightfloat" icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
               <paper-icon-button class="rightfloat" icon="search" onclick="openSearchBar()"></paper-icon-button>
-            <!--<div class="toolbarsearchbox flex">
-              <iron-collapse horizontal class="searchbarcollapse">
-                <paper-typeahead-input max-suggestions="5" placeholder="Search students" remote-url="/search/%QUERY" remote-url-wait-ms="100" is-candidates-json display-prop="name">
-                </paper-typeahead-input>
-              </iron-collapse>
-              <paper-icon-button icon="search" onclick="openSearchBar()">
-              </paper-icon-button>
-            </div>-->
             </div>
             <div class="headerbarpage searchbackground">
               <paper-icon-button class="grey" icon="arrow-back" onclick="closeSearchBar()"></paper-icon-button>

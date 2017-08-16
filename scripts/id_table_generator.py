@@ -22,3 +22,4 @@ for student in data:
 
 file = open('../data/id_table.json', 'wb')
 file.write(json.dumps(output))
+print "Wrote " + str(len(data)) + " user-id pairs to disc"

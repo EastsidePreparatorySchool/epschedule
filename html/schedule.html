@@ -129,6 +129,9 @@
       right: 0px;
       padding: 8px;
     }
+    .studentgrid {
+      height: 100vh;
+    }
   </style>
   <template>
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
@@ -156,7 +159,7 @@
                   (<a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
                 </template>
               </p>
-              <h2>{{item.name}}</h2>
+              <h2>{{getName(item.name)}}</h2>
               <p>{{item.lunchInfo.summary}}</p>
             </div>
             <template is="dom-if" if="{{showChevron(item)}}">
@@ -184,7 +187,7 @@
                 </template>
               </div>
             </template>
-            <iron-list items="{{item.students}}" grid>
+            <iron-list items="{{item.students}}" grid class="studentgrid">
               <template>
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
                   <iron-image sizing="cover" src="{{item.photo_url}}" width="128" height="128">
@@ -221,6 +224,11 @@
           var num = parseInt(linenum);
           return item.lunchInfo.description[num];
         }
+      },
+      getName: function(name) {
+        name = name.replace('&', 'and');
+        console.log(name);
+        return name; // Debug func
       },
       showChevron: function(item) {
         var expandablePeriods = ["A", "B", "C", "D", "E", "F", "G", "H"];

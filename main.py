@@ -1,19 +1,3 @@
-#!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
 import base64
 import copy
 import datetime
@@ -84,10 +68,11 @@ def convert_email_to_id(email):
     if username == DEMO_USER:
         return DEMO_ID
     for student in ID_TABLE:
-        if (student[0] == username):
-            return student[1]
+        if (student["username"] == username):
+            return student["sid"]
     return None
 
+# TODO merge with id to username function
 def convert_id_to_email(id):
     email = ""
 
@@ -96,8 +81,8 @@ def convert_id_to_email(id):
 
 
     for student in ID_TABLE:
-        if (str(student[1]) == str(id)):
-            email = student[0]
+        if (str(student["sid"]) == str(id)):
+            email = student["username"]
 
     if email == "":
         return None
@@ -166,6 +151,8 @@ REGISTER_SUCCESS = {
 
 class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this handler
     def gen_photo_url(self, firstname, lastname, folder):
+        if (folder == "school_photos"):
+            logging.info("Recieved a request for a full size photo")
         input_data = (lastname + "_" + firstname).lower().replace(" ", "")
 
         photo_hasher = SHA256.new(CRYPTO_KEY)
@@ -174,6 +161,8 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         encoded_filename = photo_hasher.hexdigest()
 
         logging.info(input_data + " --> " + encoded_filename)
+
+        logging.info("Returning the string: '" + '/' + folder + '/' + encoded_filename + '.jpg' + "'")
 
         return ('/' + folder + '/' + encoded_filename + '.jpg')
 
@@ -199,7 +188,7 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
     def check_password(self, email, password):
         # Returns 0 for all good,
         # returns 1 for correct password but you need to verify the account,
-        # returns 2 for incorrect password
+        # returns 2 for incorrect passwordh
         account_confirmed = False
         known_username = False
 
@@ -212,7 +201,6 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
 
         user_obj_query = self.query_by_email(email, True)
         for query_result in user_obj_query:
-            logging.info(query_result.password)
             if not query_result.password:
                 return USE_FOUR11_AUTH
             known_username = True
@@ -251,7 +239,7 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
     def get_schedule_for_id(self, id):
         schedule_data = get_schedule_data()
         for schedule in schedule_data:
-            if schedule["id"] == str(id): # If the schedule is the user's schedule
+            if schedule["sid"] == int(id): # If the schedule is the user's schedule
                 return schedule
         return None
 
@@ -274,7 +262,7 @@ class RegisterBaseHandler(BaseHandler):
 
         schedules = get_schedule_data()
         for schedule in schedules:
-            if int(schedule['id']) == int(id):
+            if int(schedule['sid']) == int(id):
                 return schedule['firstname']
 
     def format_html(self, email_text, obj):
@@ -427,22 +415,22 @@ class LoginHandler (BaseHandler):
             self.response.write(json.dumps(ERR_NOT_EPS_EMAIL))
             return
 
-        err = self.check_password(email, password) # Returns an object, so we don't have to call create_error_obj() on this
-
-        if err:
-            # If we got an error, try authenticating the user with four11 (slower, so we should use our own auth first)
-            username = string.split(email, "@")[0]
-
-            if not (authenticate_user.auth_user(username, password)): # If four11 authentication failed, return our error
-                self.response.write(json.dumps(err))
-                return
+        # If we got an error, try authenticating the user with four11 (slower, so we should use our own auth first)
+        username = string.split(email, "@")[0]
 
 
-            # If authentication was successful, check to see if the person has an EPSchedule account
-            user_obj_query = self.query_by_email(email, True)
-            if not user_obj_query.get():
-                student_obj = User(email = email, verified = True, join_date = datetime.datetime.now())
-                student_obj.put()
+        logging.info("Calling auth user with args " + username + ", " + password)
+
+        if not (authenticate_user.auth_user(username + "@eastsideprep.org", password)): # If four11 authentication failed, return our error
+            self.response.write(json.dumps({"error":"Your password is incorrect."}))
+            return
+
+
+        # If authentication was successful, check to see if the person has an EPSchedule account
+        user_obj_query = self.query_by_email(email, True)
+        if not user_obj_query.get():
+            student_obj = User(email = email, verified = True, join_date = datetime.datetime.now())
+            student_obj.put()
 
         # If the authentication was successful, give the user an auth token
 
@@ -483,8 +471,8 @@ class ChangePasswordHandler(BaseHandler):
 
     def get_username(self, id):
         for id_obj in ID_TABLE:
-            if str(id_obj[1]) == id:
-                return id_obj[0]
+            if str(id_obj["sid"]) == id:
+                return id_obj["username"]
         return None
 
 class LogoutHandler(BaseHandler):
@@ -504,7 +492,7 @@ class ClassHandler(BaseHandler):
 
     def get_teacher_photo(self, num):
         for schedule in get_schedule_data():
-            if not schedule["grade"]: # If they are a teacher
+            if is_teacher_schedule(schedule): # If they are a teacher
                 num -= 1
                 if num <= 0:
                     logging.info("Returning schedule, firstname is: " + schedule['firstname'])
@@ -512,6 +500,7 @@ class ClassHandler(BaseHandler):
 
     def get_class_schedule(self, class_name, period):
         schedules = get_schedule_data()
+        logging.info("Finished retrieving schedule data")
         result = None
         logging.info("Starting DB query")
         opted_in = self.gen_opted_in_table()
@@ -537,7 +526,7 @@ class ClassHandler(BaseHandler):
                                    "lastname": schedule['lastname'], \
                                    "email": email,
                                    "photo_url": photo_url}
-
+                 
 
                         # Lines below are for creating the demo, but are no longer used
 
@@ -550,12 +539,14 @@ class ClassHandler(BaseHandler):
                         #           "photo_url": "/96x96_photos/" + teacher_schedule["firstname"] + "_" + teacher_schedule["lastname"] + ".jpg"}
 
                         result['students'].append(student)
+        logging.info("Finishing schedule iteration")
 
         if result:
             result['students'].sort(key=lambda s: s['firstname'])
         logging.info("Finished handling request")
         return result
     def get(self, class_name, period):
+        logging.info("Class schedule retrival started")
         # Get the cookie
         id = self.check_id()
         if id is None:
@@ -569,6 +560,8 @@ class ClassHandler(BaseHandler):
             return
 
         self.response.write(json.dumps(result))
+        logging.info("Class schedule retrival finished")
+
 
 class StudentHandler(BaseHandler):
     def get(self, student_name):
@@ -588,20 +581,25 @@ class StudentHandler(BaseHandler):
         show_full_schedule = False
         show_photo = False
         email = generate_email(firstname, lastname)
+        logging.info(email)
         user_obj_query = self.query_by_email(email, True)
         user_obj = user_obj_query.get()
 
         if user_obj:
+            logging.info("Found user obj")
             show_full_schedule = user_obj.share_schedule
             show_photo = user_obj.share_photo
+            logging.info("show_photo equals " + str(show_photo))
 
         student_schedule = self.get_schedule_for_name(firstname, lastname)
+        logging.info(student_schedule)
 
         if not student_schedule:
             self.error(404)
             return
 
         user_schedule = self.get_schedule_for_id(id)
+        logging.info(user_schedule)
 
         if is_teacher_schedule(user_schedule) or show_full_schedule:
             # If the user is a teacher
@@ -613,6 +611,7 @@ class StudentHandler(BaseHandler):
         response_schedule["email"] = email
 
         if show_photo:
+            logging.info("IF statement has found show photo to be true")
             logging.info("Args: [" + firstname + ", " + lastname + "]")
             response_schedule["photo_url"] = self.gen_photo_url(firstname, lastname, 'school_photos')
         else:
@@ -664,7 +663,7 @@ class PeriodHandler(BaseHandler):
 
         period = period.upper()
         for schedule in schedule_data:
-            if schedule['id'] == id:
+            if schedule['sid'] == int(id):
                 user_schedule = schedule
                 break
         for class_obj in user_schedule['classes']: # Find out which class the user has then
@@ -771,9 +770,9 @@ class TeacherHandler(BaseHandler):
 class MainHandler(BaseHandler):
     # def __init__(self):
     def get_schedule(self, id):
-        schedules = get_schedule_data();
+        schedules = get_schedule_data()
         for schedule in schedules:
-            if schedule['id'] == id:
+            if schedule['sid'] == int(id):
                 return schedule
         return None
 
@@ -1081,7 +1080,7 @@ class AvatarHandler(BaseHandler):
         if not self.check_admin_id():
             self.error(403)
             return
-
+        logging.info("Recieved an administrator get request")
         args = string.split(user, '_')
         url = self.gen_photo_url(args[1], args[0], 'school_photos')
         self.redirect(url)

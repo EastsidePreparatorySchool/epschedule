@@ -19,69 +19,66 @@ from datetime import date
 
 DO_NOT_PARSE = ["4491-1-Mein-Angelika.pdf"]
 UPPER_SCHOOL_STUDY_HALL_PERIODS = {"A": "OH-102", "B": "AS-101", "C": "LPC-100B", "D": "TMAC-102", "E": "LPC-204", "F": "TMAC-201", "G": "HB-101", "H": "TMAC-102"}
+TIME_MAP = {"A": "01:50-03:15", "B": "12:15-01:40", "C": "09:35-11:00", "D": "08:00-09:25", \
+            "E": "01:50-03:15", "F": "12:15-01:40", "G": "09:35-11:00", "H": "08:00-09:25"}
 
-def convert_pdf_to_txt(path):
-    rsrcmgr = PDFResourceManager()
-    retstr = StringIO()
-    codec = 'utf-8'
-    laparams = LAParams()
-    device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
-    fp = file(path, 'rb')
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    password = ""
-    maxpages = 0
-    caching = True
-    pagenos=set()
-    for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, password=password,caching=caching, check_extractable=True):
-        interpreter.process_page(page)
-    fp.close()
-    device.close()
-    str = retstr.getvalue()
-    retstr.close()
-    return str
+LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
-def letterToNum(letter):#Converts a period into a list index
-    letters = ["A", "B", "C", "D", "E", "F", "G", "H", "S", "V", "M", "L", "O"] #S - aSsembly, V - adVisory, M - class Meeting, L - cLubs and activities, O - Zero Period IME
-    return letters.index(letter)
+with open('../data/id_table.json') as data_file:
+    id_table = json.load(data_file)
 
-def graduating_year_to_grade(gy):
-    date_obj = date.today() # Get today's date
-    grade = 13 - (int(gy) - date_obj.year) # 13 - (graduating year - current year)
-    if date_obj.month == 6: # If it is june
-        if date_obj.day <= 12:  # If it is before or the last day of school
-            grade -= 1 # Subtract one from the grade
-    elif date_obj.month < 6: # If it is before june
-        grade -= 1 # Subtract one from the grade
-    return grade
+def parse_classes(input):
+    classes = []
+    for k in range (0, len(LETTERS)):
 
-def getClass(textbox):#Each textbox is passed in
-    textboxlist = string.split(textbox, "\n")#Splits the textbox into lines
-    if len(textboxlist) == 4:#All classes have a length of four lines. This throws away anything that isn't a class
-        roomteacher = string.split(textboxlist[1], ": ")#Splits up the room and teacher into two different strings
+        classname = ""
         try:
-            if (roomteacher[1] == "n/a"): #Assembly periods are also four lines. This weeds out assembly so it doesn't overwrite the A period class
-                return None
-        except:
-            pass
-        period = letterToNum(textboxlist[0][0])   #Takes the first character of the first line of the text box
-        if len(roomteacher) == 1: #If the class has no teacher or no room
-            if roomteacher[0][0:4] == "NA :":
-                room = "MS-100" # For MS study halls
-
-                if (textboxlist[2] == "US Study Hall"): # US study halls have a different room
-                    room = UPPER_SCHOOL_STUDY_HALL_PERIODS[textboxlist[0][0]]
-
-                class_obj = {'name':textboxlist[2], 'room':room, 'teacher':roomteacher[0][4:], 'period':textboxlist[0][0]}
+            i = input.index(LETTERS[k] + " - ")
+            if LETTERS[k] != "H":
+                classname = input[i + 4 : input.index(LETTERS[k + 1] + " -") - 1]
             else:
-                class_obj = {'name':textboxlist[2], 'room':roomteacher[0], 'teacher':"None", 'period':textboxlist[0][0]}
-        else:
-            class_obj = {'name':textboxlist[2], 'room':roomteacher[0], 'teacher':roomteacher[1], 'period':textboxlist[0][0]}#Shoves all the information into a object
-        return {'period_num':period, 'class':class_obj }#Returns an object containing the class info and the period info
-    #elif len(textboxlist) = 3:
-    #    if
-    else:
-        return None
+                classname = input[i + 4: -1]
 
+            for person in id_table:
+                if not person['gradyear']: # If they are a teacher
+                    if person['lastname'] in classname:
+                        classname = classname.replace(person['lastname'], '')
+
+            classname = classname.replace('\n', '')
+            classname = string.split(classname, 'Independent Study')[0]
+            classname = string.split(classname, 'Seminars')[0]
+
+            # Remove trailing whitespace
+            classname = classname.rstrip()
+
+        except ValueError:
+            classname = "Free Period"
+
+        classes.append({'name': classname, 'room': None, 'period': LETTERS[k], 'teacher': None})
+
+    return classes
+
+def get_id_object(sid):
+    for item in id_table:
+        if item['id'] == sid:
+            return item
+
+# Detect whether or not one or more duplicate classes (with the same name) occurs in a schedule
+def duplicate_classes(classes):
+    for i in range (0, len(classes)):
+        for k in range (i + 1, len(classes)):
+            if classes[i]['name'] == classes[i]['name']:
+                return True
+
+    return False
+
+def is_period_free(classes, period):
+    for clss in classes:
+        if clss['period'] == period:
+            if clss['name'] == 'Free Period':
+                return True
+            else:
+                return False
 
 def explode_pdf(path):
     path_properties = string.split(path, "/")  #Split the file name into a series of directories
@@ -95,69 +92,86 @@ def explode_pdf(path):
     laparams = LAParams()
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
-    firstname = None
-    lastname = None
-    advisor_first = None
-    advisor_last = None
-    grade = None
-    ##################################################
     classes = []  #Creates an 8 long list with a space for each class
+    id_obj = get_id_object(int(schedule_properties[0]))
+    period_letters = []
+    duplicates = False
+    schedule = {'firstname': id_obj['firstname'], 'lastname': id_obj['lastname'], 'sid': int(schedule_properties[0]), 'gradyear': None, 'grade': None}
+    next_obj_is_advisor_name = 0
+
     for page in PDFPage.create_pages(document): #Run the following code on each page in the pdf
         interpreter.process_page(page)
         layout = device.get_result()
         if len(layout) == 0: #Weed out the blank pages
             continue
+
         for obj in layout:  #Run the following code on each object in the page
-          if isinstance(obj, LTTextBox):    #If the object is a text box
-            class_obj = getClass(obj.get_text())    #Extract the information from the text box
-            info = string.split(obj.get_text(), "|")
-            teacher_names = string.split(obj.get_text(), ", ")
-            if class_obj != None:   #If getClass() didn't return an error
-                #print classes
-                #print class_obj["period_num"]
-                classes.append(class_obj['class'])  #Shove the information passed back from getClass() into it's appropriate space in the list
-            elif len(info) == 4: #If the obj contains information on the user's name, advisor, grade, and locker num
-                names = string.split(info[0], ", ")
-                firstname = names[1][:-1]
-                lastname = names[0]
-                graduating_year = info[1][-5:-1]
-                grade = graduating_year_to_grade(graduating_year)
-                advisor = info[2][10:-1]
-                advisor_names = string.split(advisor, ", ")
-                advisor_first = advisor_names[1]
-                advisor_last = advisor_names[0]
-            elif len(teacher_names) == 2:
-                firstname = teacher_names[1][:-1]
-                lastname = teacher_names[0]
-    device.close()
 
-    cleaned_classes = [] #Remove duplicates from classes
-    for l in classes:
-        if l not in cleaned_classes:
-            cleaned_classes.append(l)
+            if isinstance(obj, LTTextBox): #If the object is a text box
 
-    # Remove extra spaces from first name
-    firstname = firstname.lstrip()
-        
-    schedule_properties[3] = schedule_properties[3][:-4] #Remove the .pdf extention
-    schedule_obj = {'firstname':firstname, 'lastname':lastname, 'term':schedule_properties[1], 'id':schedule_properties[0], 'grade':grade, 'advisorfirstname':advisor_first, 'advisorlastname':advisor_last, 'classes':cleaned_classes}
-    return schedule_obj    #Return object created in the previous line
+                contents = obj.get_text()
+                #print "''" + contents + "'"
 
-def add_free_periods(schedule_obj):
-    periods = ["A", "B", "C", "D", "E", "F", "G", "H"]
-    for class_obj in schedule_obj['classes']:
-        if periods.count(class_obj['period']):
-            periods.remove(class_obj['period'])
+                # Check for letters
+                if duplicates:
+                    pieces = string.split(contents, "\n")
+                    for letter in LETTERS:
+                        for piece in pieces:
+                            if len(piece) == 1 and letter in piece:
+                                if not is_period_free(classes, letter):
+                                    period_letters.append(letter)
 
-    for period in periods:
-        schedule_obj['classes'].append({'period':period, 'teacher':"", 'room':"", 'name':"Free Period"})
+                if "Block & Course" in contents:
+                    classes = parse_classes(contents)
+                    duplicates = duplicate_classes(classes)
 
-    return schedule_obj
-#print convert_pdf_to_txt("c:\\users\\guberti\\Documents\\My Projects\\Python\\Schedule Downloader\\4093-3-Uberti-Gavin.pdf")
+                elif "Class of " in contents:
+                    ageinfo = string.split(contents, "\n")
+
+                    schedule["gradyear"] = int(ageinfo[0][ageinfo[0].index("Class of") + 9 : ageinfo[0].index("Class of") + 13])
+                    schedule["grade"] = int(ageinfo[1][0 : ageinfo[1].index("th Grade")])
+
+                elif next_obj_is_advisor_name > 0:
+                    if next_obj_is_advisor_name == 2:
+                        schedule["advisor_first"] = contents[0:contents.index("\n")].rstrip()
+                    elif next_obj_is_advisor_name == 1:
+                        schedule["advisor_last"] = contents[0:contents.index("\n")].rstrip()
+
+                    next_obj_is_advisor_name -= 1
+
+                elif "Advisor:" in contents and not "advisor_first" in schedule:
+                    advisornames = string.split(contents, "\n")
+
+                    if len(advisornames) < 3: # If this person has no locker number
+                        next_obj_is_advisor_name = 2
+
+                    else:
+                        schedule["advisor_first"] = advisornames[1]
+                        schedule["advisor_last"] = advisornames[2]
+
+                elif "Middle Band Schedule" in contents:
+                    break
+                else:
+                    # Parsing tables is difficult, so we will now scan each line
+                    # to see what room each class is happening in
+                    for clss in classes:
+                        if clss['room'] or clss['name'] == "Free Period":
+                            continue
+
+                        # Otherwise, if we haven't figured out the room yet:
+                        abbreviated = clss['name'][0:15]
+                        contents = obj.get_text()
+
+                        if abbreviated in contents and TIME_MAP[clss['period']] in contents:
+                            clss['room'] = string.split(contents, "\n")[2]
+
+    schedule['classes'] = classes
+    return schedule
+
 students = []
-files = [f for f in os.listdir('..' + os.sep + 'schedules')]#Create a list of all files in the directory
+files = [f for f in os.listdir('..' + os.sep + 'schedules')] #Create a list of all files in the directory
 for f in files:    #For each file in the directory
-    #if f != "4093-1-Uberti-Gavin.pdf":
+    #if f != "3283-1-18.pdf":
     #    continue
     if f in DO_NOT_PARSE: # If the schedule shouldn't be parsed
         print "Skipping"
@@ -171,24 +185,72 @@ for f in files:    #For each file in the directory
 
     if f[-4:] == ".pdf":  #If the last 4 characters of the file name are .pdf (meaning the file is a schedule)
         exploded_schedule = explode_pdf(filepath)
-        exploded_schedule = add_free_periods(exploded_schedule)
         students.append(exploded_schedule)  #Add to the list of schedules the object returned by explode_pdf()
 
-print "Entering full names!"
+comment = """# Apply exceptions
+EXCEPTIONS = {"4699": {"E": {"room": "TMAC-205A"}}, \
+            "3283": {"B": {"room": "AX-107"}}, \
+            "3283": {"C": {"room": "MS-203"}}}
+
+for sid, exception in EXCEPTIONS.iteritems():
+    # Find the person with that SID
+    student = {}
+    for s in students:
+        if s['sid'] == int(sid):
+            student = s
+
+    if not student:
+        continue
+    
+    for period, data in exception.iteritems():
+
+        # Get correct period
+        for clss in student['classes']:
+            if clss['period'] == period:
+
+                # Apply each property
+                for prop, val in data.iteritems():
+                    clss[prop] = val
+                break
+"""
+
+print "Entering teacher names"
+
 for person_num in range (0, len(students)):
     if students[person_num]['grade'] is not None: #If the person is a student
         for class_num in range (0, len(students[person_num]['classes'])): #For each class
+
+            if students[person_num]['classes'][class_num]['name'] == 'Free Period':
+                continue
+
             for teacher in students:
                 if teacher['grade'] is None: # if the person is a teacher
                     # If the person is a teacher with the correct last names
-                    if students[person_num]['classes'][class_num]['teacher'] == teacher['lastname']:
-                        print "Match found"
-                        for taught_class in teacher['classes']: # For each class that they teach
-                            if students[person_num]['classes'][class_num]['period'] == taught_class['period'] and \
-                            students[person_num]['classes'][class_num]['room'] == taught_class['room'] and \
-                            students[person_num]['classes'][class_num]['name'] == taught_class['name']:
+                    if students[person_num]['classes'][class_num]['name'] == teacher['classes'][class_num]['name']:
+                        # If the name, room, and period all line up, it's probably the same class, so we can set the teacher
+                        students[person_num]['classes'][class_num]['teacher'] = teacher['firstname'] + " " + teacher['lastname']
 
-                                students[person_num]['classes'][class_num]['teacher'] = teacher['firstname'] + " " + teacher['lastname']
+    else: # If person is a teacher
+        for class_num in range (0, len(students[person_num]['classes'])): #For each class
+
+            if students[person_num]['classes'][class_num]['name'] == 'Free Period':
+                continue
+
+            for student in students:
+                if student['grade'] is not None: # if the person is a student
+
+                    if students[person_num]['classes'][class_num]['name'] == student['classes'][class_num]['name']:
+                        # If the name, room, and period all line up, it's probably the same class, so we can set the room
+                        students[person_num]['classes'][class_num]['room'] = student['classes'][class_num]['room']
+
+# Get exceptions that still must be added
+for student in students:
+    if student['gradyear']: # If they are a student
+        for clss in student['classes']:
+            if clss['name'] != 'Free Period' and not clss['teacher']:
+                print "SID " + str(student['sid']) + "(" + student['lastname'] + ", " + student['firstname'] + ") has no teacher for class " + clss['name']
 
 file = open('../data/schedules.json', 'w')
 file.write(json.dumps(students))
+
+#print json.dumps(students)

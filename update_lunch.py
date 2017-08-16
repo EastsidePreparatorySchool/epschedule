@@ -68,6 +68,7 @@ def sanitize_events(events): # Sanitizes a list of events obtained from parse_ev
         desc = event["DESCRIPTION"]
         desc = desc.replace("\,", ",")
         desc = desc.replace("\;", ";")
+        desc = desc.replace("\\r", ";")
         no_html_desc = re.sub("<.*?>", '', desc)
         description = string.split(no_html_desc, '\\n')
 
