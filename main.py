@@ -8,6 +8,7 @@ import os
 import random
 import string
 import webapp2
+from sets import Set
 
 import authenticate_user
 import update_lunch
@@ -655,53 +656,110 @@ class PeriodHandler(BaseHandler):
         # Should return back which of your teachers are free,
         # which rooms are free, what class you currently have then,
         # and what classes you could take then
-        dataobj = {'freeteachers':[], 'freerooms':[], 'currentclass':{}, 'potentialclassschedules':[]}
+        dataobj = {'classes': []}
+        altperiods = Set()
+        freerooms = Set()
+
         if id == DEMO_ID: # If this is the demo account
             id = GAVIN_ID
         schedule_data = get_schedule_data()
         user_schedule = None
+        user_class = None
 
         period = period.upper()
+
+        # Get user's schedule
         for schedule in schedule_data:
             if schedule['sid'] == int(id):
                 user_schedule = schedule
                 break
+
         for class_obj in user_schedule['classes']: # Find out which class the user has then
             if class_obj['period'] == period:
-                dataobj['currentclass'] = class_obj
+                user_class = class_obj
                 break
 
         for schedule in schedule_data:
-            if schedule['grade'] is None: # If the schedule is a teacher's schedule
-                for class_obj in user_schedule['classes']: # For each of your classes
-                    if class_obj['teacher'] == (schedule['firstname'] + " " + schedule['lastname']): # If the teacher is one of your teachers
-                        is_free = True
-                        for taught_class in schedule['classes']:
-                            if taught_class['period'] == period:
-                                is_free = False
-                                break
-                        if is_free:
-                            dataobj['freeteachers'].append(class_obj['teacher'])
+            logging.info("User's grade is " + str(user_schedule['grade']) + ", test grade is " + str(schedule['grade']))
+            if schedule['grade'] == user_schedule['grade']:
+                logging.info("They're a match!")
+                # For each person in the user's grade:
 
-            if schedule['grade'] == user_schedule['grade']: # Get all classes the user could be taking at that point in time
-                for class_obj in schedule['classes']:
-                    unique = True # Whether the current class is also had by the user
-                    for user_class_obj in user_schedule['classes']:
-                        if (class_obj == user_class_obj):
-                            unique = False
+                # Get what class they have in the period in question
+                testclass = {}
+                for clss in schedule['classes']:
+                    if clss['period'] == period and clss['name'] != "Free Period":
+                        testclass = clss
+                        break
+
+                if testclass:
+                    # Test if we already have an appropriate object
+                    newobjectneeded = True
+
+                    for clss in dataobj['classes']:
+                        if clss['name'] == testclass['name'] and clss['period'] == testclass['period']:
+                            newobjectneeded = False
                             break
-                    if unique:
-                        dataobj['potentialclassschedules'].append(class_obj)
 
-            for class_obj in schedule['classes']: # Get list of periods
-                if dataobj['freerooms'].count(class_obj['room']) == 0:
-                    dataobj['freerooms'].append(class_obj['room'])
+                    if newobjectneeded:
+                        if not user_schedule['grade']:
+                            testclass = copy.copy(testclass)
+                            testclass['teacher'] = schedule['firstname'] + " " + schedule['lastname']
 
-        for schedule in schedule_data: # Find out which periods are free
+                        dataobj['classes'].append(testclass)
+
+
+                        dataobj['classes'][-1]['students'] = 0
+
             for class_obj in schedule['classes']:
-                if class_obj['period'] == period:
-                    if (dataobj['freerooms'].count(class_obj['room']) > 0):
-                        dataobj['freerooms'].remove(class_obj['room'])
+
+                # For each class, add its room to our room set
+                freerooms.add(class_obj['room'])
+
+                # For each class, if it's the same class that
+                # we have that period but in a different period,
+                # add that to "other periods" list
+                if class_obj['name'] == user_class['name']:
+                    altperiods.add(class_obj['period'])
+
+        for schedule in schedule_data: # Find out which rooms are free
+            if not schedule['grade']:
+                continue
+            for clss in schedule['classes']:
+                if clss['period'] == period:
+                    for test_class in dataobj['classes']:
+                        if normalize_classname(test_class['name']) == normalize_classname(clss['name']):
+                            test_class['students'] += 1
+
+                    freerooms.discard(clss['room'])
+                    
+        # List comprehension to remove duplicate classes
+        # While it would also be possible to do this with a for loop,
+        # the fastest way is list comprehension
+        dataobj['classes'] = \
+        map(dict, set(tuple(sorted(potclass.items())) for potclass in dataobj['classes']))
+
+        for clss in reversed(dataobj['classes']):
+            if not clss['room']:
+                dataobj['classes'].remove(clss)
+
+
+        for clss in dataobj['classes']:
+            # We already know periods are the same
+            if clss['name'] == user_class['name'] and clss['room'] == user_class['room']:
+                dataobj['currentclass'] = clss
+                dataobj['classes'].remove(clss)
+                break
+        
+        if 'currentclass' not in dataobj:
+            dataobj['currentclass'] = {'name': "Free Period", 'period': period, 'room': None, 'teacher': None}
+
+        altperiods.remove(user_class['period'])
+
+        dataobj['period'] = period
+        dataobj['freerooms'] = sorted(list(freerooms))
+        dataobj['classes'].sort(key=lambda x: x['name'])
+        dataobj['altperiods'] = sorted(list(altperiods))
 
         self.response.write(json.dumps(dataobj))
 

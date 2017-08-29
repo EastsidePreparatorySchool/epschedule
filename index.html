@@ -300,6 +300,54 @@
       finishLiteSchedule(document.getElementById('teacherschedule'), teacherObj);
     }, 0);
   }
+  function stringifyRooms(arr) {
+    s = "";
+    for (var i = 0; i < arr.length; i++) {
+      s += arr[i];
+
+      // Don't put a comma after the last item
+      if (i != arr.length - 1) {
+        s += ", ";
+      }
+    }
+    return s;
+  }
+  function renderPeriod(periodObj) {
+    var popupContainer = document.getElementById("popupContainer");
+
+    popupContainer.innerHTML = 
+    '<div class="period" layout vertical>' + 
+      '<div class="halfwidth periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' + 
+        '<div class="periodheading">Other classes to take:</div>' + 
+        '<x-schedule id="altclassesschedule" show="all"></x-schedule>' +
+      '</paper-material></div>' + 
+
+      '<div class="halfwidth"><div class="periodbottomspace"><paper-material class="periodsubcontainer periodmediumpadding" elevation="2">' +
+        '<div class="periodheading">Empty rooms:</div>' +
+        '<div class="freeroomswarning">These are the classrooms without a class taking place this period.' + 
+        'You may use them to work or study as you choose. Note that there may be other students or teachers already in these rooms.</div>' + 
+        '<div>' + stringifyRooms(periodObj['freerooms']) + '</div>' +
+      '</paper-material></div>' +
+      '<div class="periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' + 
+        '<div class="periodheading">Current class:</div>' + 
+        '<x-schedule id="currentperiodclassschedule" show="all"></x-schedule>' +
+      '</paper-material></div></div>' + 
+    '</div>';
+
+    // Wait for HTML to be parsed/applied before trying to show the schedule.
+    // Without this, Firefox/Safari don't display the schedule.
+    setTimeout(function() {
+      var e = document.getElementById('altclassesschedule');
+      var f = document.getElementById('currentperiodclassschedule');
+
+      renderSchedule(copyDate(globalDate), periodObj, "core", e, {});
+      renderSchedule(copyDate(globalDate), {'classes': [periodObj['currentclass']]}, "core", f, {});
+      
+
+      e.behaviors = [];
+      f.behaviors = [];
+    }, 20);
+  }
   function renderStudent(studentObj) {
     var popupContainer = document.getElementById("popupContainer");
     var email = studentObj.email;
@@ -332,9 +380,6 @@
   function updateLiteSchedule(scheduleElement, otherUserObj) {
     scheduleElement.dateString = dateToString(scheduleElement.date);
     renderSchedule(scheduleElement.date, otherUserObj, "lite", scheduleElement);
-  }
-  function renderPeriod(periodObj) {
-    console.log(periodObj);
   }
   function renderDate(dateObj) {
     var daySpan = document.getElementById("day");
@@ -385,11 +430,6 @@
     }
     return false;
   }
-  function log(s, school) {
-    i = incorrectSchool(s, school);
-    console.log("For class " + s + " and school " + school + ", incorrectSchool() is " + i.toString());
-    return i;
-  }
 
   // Generate basic name, teacher, room, time, and period info for a class
   function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
@@ -419,6 +459,11 @@
               room: schedule["classes"][k]["room"],
               period: day[currentSlot]["period"],
               time: ""};
+
+            if (type == "core") {
+              console.log(schedule["classes"][k]);
+              scheduleObj['studentCount'] = schedule["classes"][k]["students"].toString();
+            }
           }
           foundClass = true;
           break;
@@ -430,7 +475,7 @@
     } else { // If it is a special class, such as Lunch, Assembly, or Class Meeting
 
       // Ensure that we don't display periods for middle schoolers for upper schoolers
-      if (log(day[currentSlot]["period"], school)) {
+      if (incorrectSchool(day[currentSlot]["period"], school)) {
         return null;
       }
 
@@ -458,9 +503,9 @@
       scheduleObj.room = "";
     }
     // Add in photos if the user's schedule is being rendered
-    if (type == "full") {
+    if (type == "full" || type == "core") {
       // Add the left-hand images to the schedule
-      addScheduleImages(scheduleObj, schedule);
+      addScheduleImages(scheduleObj, schedule, type);
     } else if (type == "lite") {
       if (isStandardClass(scheduleObj.period)) { // If it's a class period
         // Determine if the class is shared
@@ -470,21 +515,28 @@
       }
     }
     // Split the time into the start and end times
-    var times = day[currentSlot]["times"].split('-');
-    scheduleObj.startTime = times[0].trim();
-    scheduleObj.endTime = times[1].trim();
+    if (type != "core") {
+      var times = day[currentSlot]["times"].split('-');
+      scheduleObj.startTime = times[0].trim();
+      scheduleObj.endTime = times[1].trim();
+    }
     return scheduleObj;
   }
 
   // Add the images on the left side to full schedules
-  function addScheduleImages(scheduleObj, userSchedule) {
-    // If the user is a normal user and the class is a normal class
-    if (scheduleObj.teacher != "" && userSchedule.grade) {
-      var sanitized_teacher_name;
-      sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
-      sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
-      scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
-      scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
+  function addScheduleImages(scheduleObj, userSchedule, type) {
+    console.log(scheduleObj.name);
+    // If the user is a normal user and the class is a normal class, or if it is a core schedule
+    if ((scheduleObj.teacher != "" && userSchedule.grade)|| type == "core" ) {
+      if (scheduleObj.name == "Free Period") {
+        scheduleObj.avatar = "/images/freeperiod.jpg";
+      } else{
+        var sanitized_teacher_name;
+        sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
+        sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
+        scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
+        scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
+      }
 
     // If class is a special class or free period
     } else if (scheduleObj.period == "X" || scheduleObj.name == "Free Period") {
@@ -541,20 +593,37 @@
   function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list) {
 
     // Either MS or US
-    var school = getSchool(schedule.grade);
+    if (type == "full" || type == "lite") {
+      var school = getSchool(schedule.grade);
+    }
+
     var todaySchedule = [];
+
     if (type == "full") {
       var lunchInfo = getLunchForDate(lunch_list, dateObj);
     }
 
     // The current schedule for that day
     var day = getScheduleTypeForDate(dateObj, days);
+    if (type == "core") {
+      day = [{'period': schedule['classes'][0]['period'], 'times': ''}];
+    }
+    scheduleElement.type = type;
+
     // If it is a normal day (no all day event)
     if (!day) { // If there is no school
       // Get the data for the imageObj
       var imageObj = {url: "/images/epslogolarge.png", text: "No School"};
       scheduleElement.allDayEvent = imageObj;
       scheduleElement.entries = null; // Clear the classes
+    } else if (type == "core") {
+      for (var currentClass = 0; currentClass < schedule['classes'].length; currentClass++) {
+
+        var scheduleObj = createClassEntry({'classes': [schedule['classes'][currentClass]]}, school, day, 0, type, lunchInfo);
+        todaySchedule.push(scheduleObj);
+      }
+      scheduleElement.entries = todaySchedule;
+      scheduleElement.allDayEvent = null;
     } else if (day.length > 1) {
       // For each class
       for (var currentSlot = 0; currentSlot < day.length; currentSlot++) {
@@ -578,7 +647,7 @@
       scheduleElement.entries = null; // Clear the classes
     }
     // Add in the expansion functions to the full schedule
-    if (type == "full") {
+    if (type == "full" || type == "core") {
       scheduleElement.onTeacherTap = function(e) {
         var orig_name = e.model.item.teacher;
         var name = orig_name.replace(" ", "_");
@@ -599,10 +668,17 @@
         requestAdditionalData(name, "room", renderRoom);
         openPopup(orig_name);
       }
+      scheduleElement.onPeriodTap = function(e) {
+        requestAdditionalData(e.model.item.period, "period", renderPeriod);
+        openPopup(e.model.item.period + " Period");
+      }
       scheduleElement.onRate = function(rating) {
         var data = new FormData();
         data.append('rating', rating);
         sendPostMessage("lunch", ratingSuccessful, data);
+      }
+      if (type == "core") {
+        scheduleElement.behaviors = [];
       }
 
       //scheduleElement.isToday = true;
@@ -787,10 +863,23 @@
   }
   .leftfloat {
     float: left;
+  }
+  .padleft {
     padding-right: 32px;
   }
   .rightfloat {
     float: right;
+  }
+  .halfwidth {
+    width: 100%;
+
+    /*Below is a hacky-solution to ensure
+    that the x-schedule element doesn't get broken
+    up.*/
+    -webkit-column-break-inside: avoid; /*Chrome*/
+    break-inside: avoid-column; /*Edge (this is the correct way), but is not widely supported*/
+    page-break-inside: avoid; /*Firefox*/
+    display: table; /*Older browsers, and Safari, plus makes it work better on others*/
   }
   .settingsdividerline {
     padding-left: 32px;
@@ -870,6 +959,38 @@
   }
   .grey {
     color: gray;
+  }
+  .period {
+    padding-top: 24px;
+    columns: 2 664px;
+    -moz-columns: 2 664px;
+    -webkit-columns: 2 664px;
+  }
+  .periodsubcontainer {
+    width: 600px;
+    background-color: #FFF;
+    margin: 0 auto;
+  }
+  .periodbottomspace {
+    padding-bottom: 32px;
+  }
+  .periodmediumpadding {
+    width: 568px !important;
+    padding: 16px;
+  }
+  .periodheading {
+    font-size: 1.5rem;
+    font-weight: 300;
+    text-align: center;
+    width: 100%;
+    padding: 8px;
+  }
+  .freeroomswarning {
+    color: grey;
+    font-size: 0.9rem;
+    font-weight: 300;
+    font-style: italic;
+    padding-bottom: 12px;
   }
   paper-typeahead-input {
     display: inline-flex;
@@ -963,8 +1084,8 @@
       <h2 class="settingstitle">Settings</h2>
       <div class="settingsdividerline"></div>
       <h3 class="privacypaneltitle">Privacy</h3>
-      <div class="inlinesettingsswitch"><span class="leftfloat">Show other EPS students my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
-      <div class="inlinesettingsswitch"><span class="leftfloat">Show other EPS students my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
+      <div class="inlinesettingsswitch"><span class="leftfloat padleft">Show other EPS students my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
+      <div class="inlinesettingsswitch"><span class="leftfloat padleft">Show other EPS students my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
       <paper-button onclick="submitUpdatePrivacy()" raised class="settingsbutton" id="updatesettings">OK</paper-button>
     </div>
   </paper-dialog>
@@ -976,8 +1097,8 @@
       <div class="inline"><span>We'd like to allow other students to see your photo and schedule, but</span><br><span>first we need your OK. If you'd like to change these settings, </span><span class="underline" onclick="changePrivacySettings()">click here</span><span>.</span></div>
       <iron-collapse id="privacydialogcollapse">
         <div class="privcollapsepadding"></div>
-        <div class="inline switchspacing"><span class="leftfloat">Allow other EPS students to see my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
-        <div class="inline switchspacing"><span class="leftfloat">Allow other EPS students to see my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
+        <div class="inline switchspacing"><span class="leftfloat padleft">Allow other EPS students to see my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
+        <div class="inline switchspacing"><span class="leftfloat padleft">Allow other EPS students to see my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
       </iron-collapse>
       <div class="privacybuttonpadding"><paper-button raised class="privacypopupbutton" onclick="closePrivacyDialog()">OK, I UNDERSTAND</paper-button></div>
       <img src="/images/photos_demo_screenshot.png">

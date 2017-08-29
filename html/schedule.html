@@ -132,6 +132,31 @@
     .studentgrid {
       height: 100vh;
     }
+    .altclassescontainer {
+      height: 32px;
+      padding: 8px;
+      font-weight: 300;
+      color: gray;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .classinfodivider {
+      height: 1px;
+      width: 100%;
+      background-color: #EFEFEF;
+    }
+    .classinfoupwardsdivider {
+      padding-left: 8px;
+      padding-right: 8px;
+      width: 5px;
+      height: 100%;
+      background-color: #EFEFEF;
+    }
+    .classinfosubcontainer {
+      display: inline-block;
+      padding: 4px;
+      margin: 0 auto;
+    }
   </style>
   <template>
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
@@ -147,10 +172,20 @@
           <div class="card-header" layout="" horizontal="" center="">
             <img src="{{item.avatar}}" onerror="if (this.src != '/images/placeholder_small.png') this.src = '/images/placeholder_small.png';">
             <div class="card-mid" layout="" vertical="">
-              <p item="time"><span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
+              <p item="time">
+                <template is="dom-if" if="{{!isCore()}}">
+                  <span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
+                </template>
                 <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
                   (<a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
                   <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
+                </template>
+                <template is="dom-if" if="{{isCore()}}"> <!--If support for AND is ever added, use AND here instead of two IFS-->
+                  <template is="dom-if" if="{{item.teacherLastName}}">
+                    <a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>,
+                    <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>,
+                    <a href="#">{{item.studentCount}} students</a>
+                  </template>
                 </template>
                 <template is="dom-if" if="{{hasTeacherOnly(item)}}">
                   (<a on-tap="teacherThunk" item="link" href="#">{{item.teacherLastName}}</a>)
@@ -187,6 +222,15 @@
                 </template>
               </div>
             </template>
+            <template is="dom-if" if="{{!isCore()}}">
+              <div class="altclassescontainer">
+                <div class="classinfodivider"></div>
+                <div class="inline classinfosubcontainer" on-tap="periodThunk" item="{{item}}">
+                  Other periods    |    Alternative classes    |    Available classrooms
+                </div>
+                <div class="classinfodivider"></div>
+              </div>
+            </template>
             <iron-list items="{{item.students}}" grid class="studentgrid">
               <template>
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
@@ -213,6 +257,11 @@
       // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
       },
+      and: function(a, b) {
+        console.log(a);
+        console.log(b);
+        return a && b;
+      },
       isLunchWithDesc: function(item) {
         if (item.lunchInfo) {
           return true;
@@ -227,7 +276,6 @@
       },
       getName: function(name) {
         name = name.replace('&', 'and');
-        console.log(name);
         return name; // Debug func
       },
       showChevron: function(item) {
@@ -238,8 +286,11 @@
           return false;
         }
       },
+      isCore: function() {
+        return this.type == "core";
+      },
       hasTeacherAndRoom: function(item) {
-        return item.teacherLastName && item.room;
+        return item.teacherLastName && item.room && this.type != "core";
       },
       hasTeacherOnly: function(item) {
         return item.teacherLastName && !item.room;
@@ -266,15 +317,11 @@
         lunchStart.setHours(timeArray[0]);
         lunchStart.setMinutes(timeArray[1]);
 
-        console.log(pastTime);
-        console.log(isToday);
-
         var pastTime = (time.getTime() > lunchStart.getTime());
 
         return (pastTime && isToday);
       },
       computeCollapseId: function(item) {
-        console.log(item);
         return "collapse-" + item.name + "-" + item.period;
       },
       toggleExpand: function(e) {
@@ -290,13 +337,13 @@
           // Squash all punctuation to underscores
           var cleanedClass = item.name.replace(/[\W]/g, "_");
           var url = "class/" + cleanedClass + "/" + item.period.toLowerCase();
-          console.log(url);
           xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
               // Change the chevron to a more-vert
               el.children[0].children[2].children[0].selected = 1;
               var obj = JSON.parse(this.responseText);
               e.model.set('item.students', obj.students);
+              console.log(obj.students);
               collapse.toggle();
             }
           }
@@ -324,14 +371,20 @@
       },
       roomThunk: function(e) {
         e.stopPropagation();
-        if (this.onRoomTap) {
+        /*if (this.onRoomTap) {
           this.onRoomTap(e);
-        }
+        }*/
       },
       teacherThunk: function(e) {
         e.stopPropagation();
         if (this.onTeacherTap) {
           this.onTeacherTap(e);
+        }
+      },
+      periodThunk: function(e) {
+        e.stopPropagation();
+        if (this.onPeriodTap) {
+          this.onPeriodTap(e);
         }
       }
     });
