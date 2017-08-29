@@ -315,7 +315,6 @@ class LoginHandler (BaseHandler):
             self.response.write(json.dumps(ERR_NOT_EPS_EMAIL))
             return
 
-        # If we got an error, try authenticating the user with four11 (slower, so we should use our own auth first)
         username = string.split(email, "@")[0]
 
 
@@ -329,7 +328,7 @@ class LoginHandler (BaseHandler):
         # If authentication was successful, check to see if the person has an EPSchedule account
         user_obj_query = self.query_by_email(email, True)
         if not user_obj_query.get():
-            student_obj = User(email = email, verified = True, join_date = datetime.datetime.now())
+            student_obj = User(email = username + "@eastsideprep.org", verified = True, join_date = datetime.datetime.now())
             student_obj.put()
 
         # If the authentication was successful, give the user an auth token

@@ -75,7 +75,6 @@
     xhr.send(data);
   }
   function submitUpdatePrivacy() {
-    var data = new FormData();
     var share_photo = document.getElementById("sharephototoggle");
     var share_schedule = document.getElementById("sharescheduletoggle");
     sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
@@ -728,7 +727,9 @@
 
   function closePrivacyDialog() {
     document.getElementById("privacydialog").close();
-    sendUpdatePrivacyRequest(true, true);
+    var share_photo = document.getElementById("initialsharephototoggle");
+    var share_schedule = document.getElementById("initialsharescheduletoggle");
+    sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
   }
 
   function changePrivacySettings() {
@@ -1091,14 +1092,14 @@
   </paper-dialog>
   <paper-dialog id="privacydialog" modal>
     <div class="privacydialogpadding">
-      <h2 class="privdialogheading">Welcome to the new EPSchedule</h2>
+      <h2 class="privdialogheading">Welcome to EPSchedule</h2>
       <!--<img class="selfphoto" src="{{self_photo | safe}}" onerror="this.style.display='none'">-->
-      <div class="newlinebelow"><span>EPSchedule now supports school photos!</span></div>
+      <div class="newlinebelow"><span>EPSchedule supports school photos!</span></div>
       <div class="inline"><span>We'd like to allow other students to see your photo and schedule, but</span><br><span>first we need your OK. If you'd like to change these settings, </span><span class="underline" onclick="changePrivacySettings()">click here</span><span>.</span></div>
       <iron-collapse id="privacydialogcollapse">
         <div class="privcollapsepadding"></div>
-        <div class="inline switchspacing"><span class="leftfloat padleft">Allow other EPS students to see my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
-        <div class="inline switchspacing"><span class="leftfloat padleft">Allow other EPS students to see my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
+        <div class="inline switchspacing"><span class="leftfloat padleft">Allow other EPS students to see my photo</span><paper-toggle-button checked class="rightfloat" id="initialsharephototoggle"></paper-toggle-button></div>
+        <div class="inline switchspacing"><span class="leftfloat padleft">Allow other EPS students to see my schedule</span><paper-toggle-button checked class="rightfloat" id="initialsharescheduletoggle"></paper-toggle-button></div>
       </iron-collapse>
       <div class="privacybuttonpadding"><paper-button raised class="privacypopupbutton" onclick="closePrivacyDialog()">OK, I UNDERSTAND</paper-button></div>
       <img src="/images/photos_demo_screenshot.png">
