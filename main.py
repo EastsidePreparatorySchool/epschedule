@@ -883,8 +883,8 @@ class AdminHandler(RegisterBaseHandler):
           }
         </script>"""
         html += "<button type='button' onclick='sendEmails("
-        html += '"emailblast"'
-        html += ")'>Send verification emails to unregistered users</button>"
+        html += '"emaildomainadd"'
+        html += ")'>Add domains to emails</button>"
         html += "<button type='button' onclick='sendEmails("
         html += '"cleanup"'
         html += ")'>Clean up duplicates of confirmed users</button>"
@@ -927,6 +927,8 @@ class AdminHandler(RegisterBaseHandler):
             self.send_email_blast()
         elif action == "cleanup":
             self.clean_up_db()
+        elif action == "emaildomainadd":
+            self.email_domain_add()
 
     def send_email_blast(self):
         data = self.read_db()
@@ -950,6 +952,13 @@ class AdminHandler(RegisterBaseHandler):
         for email in data:
             if len(data[email]['verified']) == 1 and len(data[email]['unverified']) >= 1:
                 db.delete(data[email]['unverified'])
+
+    def email_domain_add(self):
+        query = db.GqlQuery("SELECT * FROM User")
+        for query_result in query:
+            if "@eastsideprep.org" not in query_result.email:
+                query_result.email += "@eastsideprep.org"
+                query_result.put()
 
 class CronHandler(BaseHandler):
     def get(self, job): # On url invoke
