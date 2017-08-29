@@ -304,107 +304,6 @@ class RegisterBaseHandler(BaseHandler):
         url = "{0}://{1}/confirm/{2}".format(scheme, host, encoded_row_id)
         return url
 
-class RegisterHandler (RegisterBaseHandler):
-    def post(self):
-        email = self.request.get('email').lower()
-        password = self.request.get('password')
-
-        if email[-17:] != "@eastsideprep.org":
-            self.response.write(json.dumps(ERR_SIGNUP_EMAIL_NOT_EPS))
-            return
-
-        if not self.check_no_account(email):
-            self.response.write(json.dumps(ERR_EMAIL_ALREADY_REGISTERED))
-            return
-
-        id = convert_email_to_id(email)
-        if not id: # If id is None
-            self.response.write(json.dumps(ERR_UNKNOWN_EMAIL))
-            return
-
-        schedule = self.get_schedule_for_id(id)
-        if not schedule:
-            self.response.write(json.dumps(ERR_NOT_ALLOWED_EMAIL))
-            return
-
-        if len(password) < 8:
-            self.response.write(json.dumps(ERR_PASSWORD_INVALID_FORMAT))
-            return
-
-        hashed = bcrypt.hashpw(password, bcrypt.gensalt(1))
-        user_obj = User(email = email, password = hashed, verified = False)
-        user_obj.join_date = datetime.datetime.now()
-        db.put(user_obj)
-        row_id = str(user_obj.key().id())
-        self.send_confirmation_email(email, row_id)
-        self.response.write(json.dumps(REGISTER_SUCCESS))
-
-
-class ResendEmailHandler(RegisterBaseHandler):
-    def post(self):
-        email = self.request.get('email').lower()
-        password = self.request.get('password')
-        user_obj_query = self.query_by_email(email, False)
-        for user_obj in user_obj_query:
-            if bcrypt.hashpw(password, user_obj.password) == user_obj.password:
-                self.send_confirmation_email(email, str(user_obj.key().id()))
-                self.response.write(json.dumps(REGISTER_SUCCESS))
-                return
-
-        self.response.write(json.dumps(ERR_NO_ACCOUNT_TO_SEND))
-
-class ConfirmHandler(BaseHandler):
-    def get(self, encoded_row_id):
-        row_id = aes.decryptData(CRYPTO_KEY, base64.urlsafe_b64decode(encoded_row_id))
-
-        obj_to_confirm = User.get_by_id(int(row_id)) # Note: Instead of email, use row id
-
-        if not obj_to_confirm: # If entity referenced in the email was deleted
-            self.response.write("This account has already been confirmed!")
-            self.error(400)
-            return
-        elif obj_to_confirm.verified:
-            self.response.write("This row id has already been confirmed!")
-            self.error(400)
-            return
-
-        obj_to_confirm.verified = True
-        obj_to_confirm.put()
-
-        self.redirect("/")
-
-        user_obj_query = self.query_by_email(obj_to_confirm.email)
-        for user_obj in user_obj_query:
-            if user_obj.key() != obj_to_confirm.key():
-                if not user_obj.verified:
-                    logging.info("Found extra unverified account under " + obj_to_confirm.email)
-                    user_obj.delete()
-                else:
-                    logging.error("Found multiple verified accounts under " + obj_to_confirm.email)
-                    logging.error("You should fix that, or add some code to prevent it in the future")
-
-ERR_UNCONFIRMED_ACCOUNT = {
-  "error": "Your need to confirm your account. Didn't receive a confirmation email? ",
-  "action":"resendConfirmationEmail",
-  "buttonText":"RESEND",
-  "actionId":"button"
-}
-ERR_FORGOT_PASSWORD = {
-  "error": "Your username or password is incorrect. ",
-  "action":"/forgot",
-  "buttonText":"FORGOT?",
-  "actionId":"url"
-}
-ERR_NO_ACCOUNT = {
-  "error": "That email is not yet registered",
-  "action":"switchToRegister",
-  "buttonText":"SIGN UP",
-  "actionId":"button"
-}
-ERR_NOT_EPS_EMAIL = {
-  "error": "Please sign in with your Eastside Prep email account "
-}
-
 class LoginHandler (BaseHandler):
     def post(self):
         email = self.request.get('email').lower()
@@ -445,36 +344,6 @@ class LoginHandler (BaseHandler):
         else:
             self.response.write(create_error_obj("Something went wrong! " + \
                 email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
-
-class ChangePasswordHandler(BaseHandler):
-    def post(self):
-        id = self.check_id() # TODO check to make sure that the account is associated with the proper id
-        if id is None:
-            self.error(403)
-            return
-        elif id == DEMO_ID: # If it is the demo account
-            self.response.write(json.dumps({"error":"You are a terrible person."}))
-            return
-        email = self.get_username(id) + "@eastsideprep.org"
-        old_password = self.request.get('oldpassword')
-        new_password = self.request.get('newpassword')
-        logging.info(email + " would like to change their password")
-        err = self.check_password(email, str(old_password))
-        if err:
-            self.response.write(json.dumps({"error":"Your password is incorrect."}))
-        else:
-            hashed = bcrypt.hashpw(new_password, bcrypt.gensalt(1))
-            user_obj_query = self.query_by_email(email, True)
-            query_result = user_obj_query.get()
-            query_result.password = hashed
-            db.put(query_result)
-            self.response.write(json.dumps({}))
-
-    def get_username(self, id):
-        for id_obj in ID_TABLE:
-            if str(id_obj["sid"]) == id:
-                return id_obj["username"]
-        return None
 
 class LogoutHandler(BaseHandler):
     def post(self):
@@ -732,7 +601,7 @@ class PeriodHandler(BaseHandler):
                             test_class['students'] += 1
 
                     freerooms.discard(clss['room'])
-                    
+
         # List comprehension to remove duplicate classes
         # While it would also be possible to do this with a for loop,
         # the fastest way is list comprehension
@@ -1168,10 +1037,6 @@ app = webapp2.WSGIApplication([
     ('/avatar/(\w+).jpg', AvatarHandler),
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
-    ('/register', RegisterHandler),
-    ('/resend', ResendEmailHandler),
-    ('/confirm/([\w\-=]+)', ConfirmHandler),
-    ('/changepassword', ChangePasswordHandler),
     ('/privacy', PrivacyHandler),
     ('/class/([\w\-]+)/([\w\-]+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
