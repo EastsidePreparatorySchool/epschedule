@@ -252,5 +252,3 @@ for student in students:
 
 file = open('../data/schedules.json', 'w')
 file.write(json.dumps(students))
-
-#print json.dumps(students)
