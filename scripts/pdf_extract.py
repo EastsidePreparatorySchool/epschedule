@@ -96,7 +96,9 @@ def explode_pdf(path):
     id_obj = get_id_object(int(schedule_properties[0]))
     period_letters = []
     duplicates = False
-    schedule = {'firstname': id_obj['firstname'], 'lastname': id_obj['lastname'], 'sid': int(schedule_properties[0]), 'gradyear': None, 'grade': None}
+    schedule = {'firstname': id_obj['firstname'], 'lastname': id_obj['lastname'], \
+        'username': id_obj['username'], 'sid': int(schedule_properties[0]), 'gradyear': None, 'grade': None}
+        
     next_obj_is_advisor_name = 0
 
     for page in PDFPage.create_pages(document): #Run the following code on each page in the pdf
