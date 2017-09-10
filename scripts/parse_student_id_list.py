@@ -19,8 +19,8 @@ with open('../data/user_ids_four11.csv', 'rb') as f:
     		isheader = False
     		continue
 
-        obj = {'id': int(row[0]), 'firstname': row[1], 'lastname': row[2], \
-        'username': string.split(row[4], "@")[0].lower(), 'gradyear': conv_gradyear(row[5])}
+        obj = {'id': int(row[0]), 'firstname': row[1], 'lastname': row[3], \
+        'username': string.split(row[5], "@")[0].lower(), 'gradyear': conv_gradyear(row[6])}
 
         if obj['gradyear']:
         	students += 1
