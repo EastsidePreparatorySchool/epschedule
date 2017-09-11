@@ -9,8 +9,7 @@
 <link rel="import" href="../bower_components/star-rating/star-rating.html">
 <link rel="import" href="swipeable-behavior.html">
 
-<dom-module id="{{name}}">
-{% raw %}
+<dom-module id="x-schedule">
   <style>
     /* TODO(polyup): For speed, consider reworking these styles with .classes
                      and #ids rather than [attributes].
@@ -84,7 +83,7 @@
       font-weight: 300;
       color: gray;
     }
-    a {
+    .card-header ::content a {
       color: gray;
       font-weight: 300;
       text-decoration: none;
@@ -131,6 +130,7 @@
       padding: 8px;
     }
     .studentgrid {
+      height: 100vh;
     }
     .altclassescontainer {
       height: 32px;
@@ -156,10 +156,6 @@
       display: inline-block;
       padding: 4px;
       margin: 0 auto;
-    }
-    .studentimage {
-      width: 128px;
-      height: 128px;
     }
   </style>
   <template>
@@ -229,17 +225,17 @@
             <template is="dom-if" if="{{!isCore()}}">
               <div class="altclassescontainer">
                 <div class="classinfodivider"></div>
-                <div class="inline classinfosubcontainer" item="{{item}}">
-                  <a class="classemaillink" item="link" on-tap="removeThunk" href="#">Email class</a>    |    <span on-tap="periodThunk"> Period info    |    Available classrooms </span>
+                <div class="inline classinfosubcontainer" on-tap="periodThunk" item="{{item}}">
+                  Other periods    |    Alternative classes    |    Available classrooms
                 </div>
                 <div class="classinfodivider"></div>
               </div>
             </template>
-            <iron-list items="{{item.students}}" grid class="studentgrid"  style="height:20vh">
+            <iron-list items="{{item.students}}" grid class="studentgrid">
               <template>
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                  <img class="studentimage" src="{{item.photo_url}}" onerror="if (this.src != '/images/placeholder_small.png') this.src = '/images/placeholder_small.png';">
-
+                  <iron-image sizing="cover" src="{{item.photo_url}}" width="128" height="128">
+                  </iron-image>
                   <div class="studentname">
                     <span>{{item.firstname}} {{item.lastname}}</span>
                   </div>
@@ -253,10 +249,9 @@
     </paper-material>
   </template>
   <script>
-  {% endraw %}
     Polymer({
-      is: '{{name}}',
-      behaviors: [ {{behaviors}} ],
+      is: 'x-schedule',
+      behaviors: [ SwipeableBehavior ],
       properties: { entries: { notify: true } },
       ready: function() {
       // disable vertical gestures on the card
@@ -266,9 +261,6 @@
         console.log(a);
         console.log(b);
         return a && b;
-      },
-      isStandardAndNotCore: function(item) {
-        return this.type == "core";
       },
       isLunchWithDesc: function(item) {
         if (item.lunchInfo) {
@@ -293,19 +285,6 @@
         } else {
           return false;
         }
-      },
-      genClassEmailURL: function(students) {
-        console.log(students);
-        console.log("Trying to render email!")
-        recipients = "";
-        for (var i = 0; i < students.length; i++) {
-          recipients += students[i]['email'];
-
-          if (i < students.length - 1) {
-            recipients += ",";
-          }
-        }
-        return "mailto:" + recipients;
       },
       isCore: function() {
         return this.type == "core";
@@ -348,20 +327,12 @@
       toggleExpand: function(e) {
         // if expanding, XHR, and then set model
         var el = e.currentTarget;
-
-        console.log(el);
         el.classList.toggle("selected");
         var item = this.$.entryList.itemForElement(el);
         var collapse = document.getElementById(this.computeCollapseId(item));
         // We need the item.name != "Lunch" because we just
         // want the lunch cards to toggle every time
-        console.log(item.period);
-
-        if (item.period == "X") { // Don't expand for lunch or advisory
-          return;
-        }
-
-        if (el.classList.contains("selected")) {
+        if (el.classList.contains("selected") && item.name != "Lunch") {
           var xhr = new XMLHttpRequest();
           // Squash all punctuation to underscores
           var cleanedClass = item.name.replace(/[\W]/g, "_");
@@ -372,25 +343,7 @@
               el.children[0].children[2].children[0].selected = 1;
               var obj = JSON.parse(this.responseText);
               e.model.set('item.students', obj.students);
-
-              // Calculate height
-              var height = (this.type == "full") ? 48 : 0;
-              height += Math.ceil(obj.students.length / 4) * (132);
-              height += 8; // Add a little buffer at the bottom
-              console.log("Height is " + height.toString())
-              el.querySelector("iron-list").style.height = height.toString() + "px";
-
-              if (el.querySelectorAll(".classemaillink").length) {
-                // Set class email address
-                recipients = "mailto:";
-                for (var i = 0; i < obj.students.length; i++) {
-                  recipients += obj.students[i]['email'];
-                  if (i < obj.students.length - 1) {
-                    recipients += ";";
-                  }
-                }
-                el.querySelector(".classemaillink").href = recipients;
-              }
+              console.log(obj.students);
               collapse.toggle();
             }
           }
@@ -433,9 +386,6 @@
         if (this.onPeriodTap) {
           this.onPeriodTap(e);
         }
-      },
-      removeThunk: function(e) {
-        e.stopPropagation();
       }
     });
   </script>

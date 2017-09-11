@@ -186,6 +186,42 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         else:
           return db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
 
+    def check_password(self, email, password):
+        # Returns 0 for all good,
+        # returns 1 for correct password but you need to verify the account,
+        # returns 2 for incorrect passwordh
+        account_confirmed = False
+        known_username = False
+
+        # If only username is supplied, assume eastsideprep.org.
+        if '@' not in email:
+            email += "@eastsideprep.org"
+        # If a domain is specified, it must be eastsideprep.org.
+        if email[-17:] != "@eastsideprep.org":
+            return ERR_NOT_EPS_EMAIL
+
+        user_obj_query = self.query_by_email(email, True)
+        for query_result in user_obj_query:
+            if not query_result.password:
+                return USE_FOUR11_AUTH
+            known_username = True
+            logging.info("Password is: " + str(password))
+            test_hashed_password = bcrypt.hashpw(password, query_result.password)
+            logging.info("Hashed password is: " + str(test_hashed_password))
+            password_match = test_hashed_password == query_result.password
+            if not password_match:
+                return ERR_FORGOT_PASSWORD
+            if query_result.verified:
+                account_confirmed = True
+                break
+
+        if not known_username:
+            return ERR_NO_ACCOUNT
+        elif not account_confirmed:
+            return ERR_UNCONFIRMED_ACCOUNT
+
+        return {}  # success
+
     # Returns false if there is already a registered user, or true if not
     def check_no_account(self, email):
         user_obj_query = self.query_by_email(email, True)
@@ -270,15 +306,13 @@ class RegisterBaseHandler(BaseHandler):
 
 class LoginHandler (BaseHandler):
     def post(self):
-        logging.info("Running handler")
         email = self.request.get('email').lower()
         password = self.request.get('password')
 
         id = convert_email_to_id(email)
-        logging.info(str(id))
 
         if not id: # If there is no id for the email, don't try to log in
-            self.response.write(json.dumps({"error":"That email is not recognized."}))
+            self.response.write(json.dumps(ERR_NOT_EPS_EMAIL))
             return
 
         username = string.split(email, "@")[0]
@@ -580,10 +614,7 @@ class PeriodHandler(BaseHandler):
 
         for clss in dataobj['classes']:
             # We already know periods are the same
-            logging.info("Testing " + json.dumps(clss))
-            logging.info("Does it have different information then " + json.dumps(user_class))
             if clss['name'] == user_class['name'] and clss['room'] == user_class['room']:
-                logging.info("No!")
                 dataobj['currentclass'] = clss
                 dataobj['classes'].remove(clss)
                 break
@@ -814,9 +845,8 @@ class AdminHandler(RegisterBaseHandler):
         for email in verified_and_unverified:
             html += email + " [" + str(len(data[email]['unverified'])) + "]<br>"
 
-        comment = """only_unverified = sorted([ k for k, v in data.iteritems() \
+        only_unverified = sorted([ k for k, v in data.iteritems() \
             if len(v['verified']) == 0 and len(v['unverified']) >= 1 ])
-
         html += "<h3>" + str(len(only_unverified)) + " emails with only unverified records</h3>"
         for email in only_unverified:
             email_schedule = self.get_schedule_for_id(convert_email_to_id(email))
@@ -825,7 +855,7 @@ class AdminHandler(RegisterBaseHandler):
             if email_schedule:
                 is_valid = "valid"
 
-            html += email + " [" + str(len(data[email]['unverified'])) + ", " + is_valid + ']<br>'"""
+            html += email + " [" + str(len(data[email]['unverified'])) + ", " + is_valid + "]<br>"
 
         multiple_verified = sorted([ k for k, v in data.iteritems() \
             if len(v['verified']) > 1 ])
@@ -990,21 +1020,6 @@ class AvatarHandler(BaseHandler):
         url = self.gen_photo_url(args[1], args[0], 'school_photos')
         self.redirect(url)
 
-class DynamicElementHandler(BaseHandler):
-    def get(self, component):
-        template_values = {}
-
-        if self.request.get('behavior'):
-            template_values['behaviors'] = self.request.get('behavior')
-
-        if self.request.get('name'):
-            template_values['name'] = self.request.get('name')
-        else:
-            template_values['name'] = string.split(component, ".")
-
-        template = JINJA_ENVIRONMENT.get_template('dynamic/' + component)
-        self.response.write(template.render(template_values))
-
 class SearchHandler(BaseHandler):
     def get_url_prefix(self, grade):
         if grade:
@@ -1028,7 +1043,6 @@ app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/about', AboutHandler),
     ('/avatar/(\w+).jpg', AvatarHandler),
-    ('/dynamic/(.*)', DynamicElementHandler),
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/privacy', PrivacyHandler),
