@@ -9,6 +9,7 @@
   <link rel="import" href="{{components}}">
   <link rel="import" href="dynamic/schedule.html?behavior=SwipeableBehavior&name=x-schedule">
   <link rel="import" href="dynamic/schedule.html?name=core-schedule">
+  <link rel="manifest" href="/manifest.json">
   <script>
 
   function signOut() {
@@ -1009,6 +1010,9 @@
   /* Same goes for here, but with a typeahead*/
   paper-typeahead-input ::shadow div {
     width: 100%;
+  }
+  paper-icon-item {
+    cursor: pointer;
   }
 
   .mainheader {

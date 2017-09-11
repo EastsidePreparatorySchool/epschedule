@@ -209,6 +209,8 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         return None
 
     def get_components_filename(self):
+        return 'components.html'
+        
         if self.request.get('vulcanize', '1') == '0':
             filename = 'components.html'
         else:

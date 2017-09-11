@@ -1,0 +1,14 @@
+{
+  "short_name": "EPSchedule",
+  "name": "EPSchedule",
+  "icons": [
+    {
+      "src": "images/applogo.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    }
+  ],
+  "start_url": "/",
+  "orientation": "portrait",
+  "display": "standalone"
+}

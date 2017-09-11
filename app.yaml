@@ -9,6 +9,10 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
+- url: /manifest\.json
+  static_files: manifest.json
+  upload: manifest\.json
+
 - url: /components\.html
   static_files: components.html
   upload: components\.html

@@ -64,4 +64,3 @@ Crypto
 scripts/Crypto
 *.pdf
 data/user_ids_four11.csv
-data/user_ids_four11_old.csv
