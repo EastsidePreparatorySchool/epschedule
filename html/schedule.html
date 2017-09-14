@@ -83,7 +83,7 @@
       font-weight: 300;
       color: gray;
     }
-    .card-header ::content a {
+    a {
       color: gray;
       font-weight: 300;
       text-decoration: none;
@@ -129,12 +129,9 @@
       right: 0px;
       padding: 8px;
     }
-    .studentgrid {
-      height: 100vh;
-    }
     .altclassescontainer {
-      height: 32px;
-      padding: 8px;
+      height: auto;
+      padding-bottom: 4px;
       font-weight: 300;
       color: gray;
       font-size: 0.9rem;
@@ -153,9 +150,16 @@
       background-color: #EFEFEF;
     }
     .classinfosubcontainer {
+      font-weight: bold;
       display: inline-block;
-      padding: 4px;
       margin: 0 auto;
+    }
+    .studentimage {
+      width: 128px;
+      height: 128px;
+    }
+    .classemaillink {
+      font-weight: bold;
     }
   </style>
   <template>
@@ -207,7 +211,7 @@
             </template>
           </div>
           <iron-collapse id="{{computeCollapseId(item)}}">
-            <template is="dom-if" if="{{isLunchWithDesc(item)}}">
+            <template is="dom-if" if="{{isLunchWithDesc(item)}}" style="height:auto">
               <div layout vertical class="lunch">
                 <ul>
                   <li>{{getLineInDesc(item, "0")}}</li>
@@ -222,20 +226,18 @@
                 </template>
               </div>
             </template>
-            <template is="dom-if" if="{{!isCore()}}">
+            <template is="dom-if" if="{{displayClassOptions(item)}}">
               <div class="altclassescontainer">
-                <div class="classinfodivider"></div>
-                <div class="inline classinfosubcontainer" on-tap="periodThunk" item="{{item}}">
-                  Other periods    |    Alternative classes    |    Available classrooms
+                <div class="inline classinfosubcontainer" item="{{item}}">
+                  <a class="classemaillink" item="link" on-tap="removeThunk" href="#">EMAIL CLASS</a>    |    <span on-tap="periodThunk"> PERIOD INFO </span>
                 </div>
-                <div class="classinfodivider"></div>
               </div>
             </template>
-            <iron-list items="{{item.students}}" grid class="studentgrid">
+            <iron-list items="{{item.students}}" grid class="studentgrid" style="height:20vh">
               <template>
                 <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                  <iron-image sizing="cover" src="{{item.photo_url}}" width="128" height="128">
-                  </iron-image>
+                  <img class="studentimage" src="{{item.photo_url}}" onerror="if (this.src != '/images/placeholder_small.png') this.src = '/images/placeholder_small.png';">
+
                   <div class="studentname">
                     <span>{{item.firstname}} {{item.lastname}}</span>
                   </div>
@@ -249,24 +251,26 @@
     </paper-material>
   </template>
   <script>
+
     Polymer({
       is: 'x-schedule',
-      behaviors: [ SwipeableBehavior ],
+      behaviors: [SwipeableBehavior],
       properties: { entries: { notify: true } },
       ready: function() {
       // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
+        this.behaviors[0].disabled = true;
       },
       and: function(a, b) {
         console.log(a);
         console.log(b);
         return a && b;
       },
+      displayClassOptions: function(item) {
+        return this.type != "core" && !Boolean(item.lunchInfo);
+      },
       isLunchWithDesc: function(item) {
-        if (item.lunchInfo) {
-          return true;
-        }
-        return false;
+        return Boolean(item.lunchInfo);
       },
       getLineInDesc: function(item, linenum) {
         if (item.lunchInfo) {
@@ -285,6 +289,19 @@
         } else {
           return false;
         }
+      },
+      genClassEmailURL: function(students) {
+        console.log(students);
+        console.log("Trying to render email!")
+        recipients = "";
+        for (var i = 0; i < students.length; i++) {
+          recipients += students[i]['email'];
+
+          if (i < students.length - 1) {
+            recipients += ",";
+          }
+        }
+        return "mailto:" + recipients;
       },
       isCore: function() {
         return this.type == "core";
@@ -327,12 +344,23 @@
       toggleExpand: function(e) {
         // if expanding, XHR, and then set model
         var el = e.currentTarget;
+
+        console.log(el);
         el.classList.toggle("selected");
         var item = this.$.entryList.itemForElement(el);
         var collapse = document.getElementById(this.computeCollapseId(item));
         // We need the item.name != "Lunch" because we just
         // want the lunch cards to toggle every time
-        if (el.classList.contains("selected") && item.name != "Lunch") {
+        console.log(item.period);
+
+        if (item.period == "X") { // Don't expand for non-standard classes
+          if (item.name.includes("Lunch")) { // Except for lunch
+            collapse.toggle();
+          }
+          return;
+        }
+
+        if (el.classList.contains("selected")) {
           var xhr = new XMLHttpRequest();
           // Squash all punctuation to underscores
           var cleanedClass = item.name.replace(/[\W]/g, "_");
@@ -343,7 +371,25 @@
               el.children[0].children[2].children[0].selected = 1;
               var obj = JSON.parse(this.responseText);
               e.model.set('item.students', obj.students);
-              console.log(obj.students);
+
+              // Calculate height
+              var height = (this.type == "full") ? 48 : 0;
+              height += Math.ceil(obj.students.length / 4) * (132);
+              height += 8; // Add a little buffer at the bottom
+              console.log("Height is " + height.toString())
+              el.querySelector("iron-list").style.height = height.toString() + "px";
+
+              if (el.querySelectorAll(".classemaillink").length) {
+                // Set class email address
+                recipients = "mailto:";
+                for (var i = 0; i < obj.students.length; i++) {
+                  recipients += obj.students[i]['email'];
+                  if (i < obj.students.length - 1) {
+                    recipients += ";";
+                  }
+                }
+                el.querySelector(".classemaillink").href = recipients;
+              }
               collapse.toggle();
             }
           }
@@ -386,6 +432,9 @@
         if (this.onPeriodTap) {
           this.onPeriodTap(e);
         }
+      },
+      removeThunk: function(e) {
+        e.stopPropagation();
       }
     });
   </script>

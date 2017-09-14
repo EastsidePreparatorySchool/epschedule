@@ -3,9 +3,18 @@
     listeners: {
       'transitionend': '_transitionEnd'
     },
-    swiped: false,
+    properties: {
+      swipeDisabled: {
+        type: Boolean,
+        value: false
+      }
+    },
     dest: null,
     handleTrack: function(e) {
+      console.log("This  is running - swipe disabled is " + this.swipeDisabled);
+      if (this.swipeDisabled) {
+        return;
+      }
       switch (e.detail.state) {
         case 'start':
           this._enableTransition(false);

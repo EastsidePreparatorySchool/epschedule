@@ -318,7 +318,7 @@
     '<div class="period" layout vertical>' + 
       '<div class="halfwidth periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' + 
         '<div class="periodheading">Other classes to take:</div>' + 
-        '<x-schedule id="altclassesschedule" show="all"></x-schedule>' +
+        '<x-schedule id="altclassesschedule" show="all" swipe-disabled></x-schedule>' +
       '</paper-material></div>' + 
 
       '<div class="halfwidth"><div class="periodbottomspace"><paper-material class="periodsubcontainer periodmediumpadding" elevation="2">' +
@@ -329,7 +329,7 @@
       '</paper-material></div>' +
       '<div class="periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' + 
         '<div class="periodheading">Current class:</div>' + 
-        '<x-schedule id="currentperiodclassschedule" show="all"></x-schedule>' +
+        '<x-schedule id="currentperiodclassschedule" show="all" swipe-disabled></x-schedule>' +
       '</paper-material></div></div>' + 
     '</div>';
 
@@ -968,7 +968,7 @@
     -webkit-columns: 2 664px;
   }
   .periodsubcontainer {
-    width: 600px;
+    max-width: 600px;
     background-color: #FFF;
     margin: 0 auto;
   }
@@ -976,7 +976,7 @@
     padding-bottom: 32px;
   }
   .periodmediumpadding {
-    width: 568px !important;
+    max-width: 568px !important;
     padding: 16px;
   }
   .periodheading {
