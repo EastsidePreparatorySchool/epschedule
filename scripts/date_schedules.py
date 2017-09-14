@@ -22,12 +22,11 @@ def download_json(d):
 
 for i in range (delta.days + 1):
 	d = START_DATE + timedelta(days=i)
+	print "Fetching " + str(d)
 
 	if d.weekday() >= 5: # If day is a weekend
 		# We don't write weekends to database, so skip it
 		continue
-
-	print d
 
 	data = download_json(d)
 
