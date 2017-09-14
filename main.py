@@ -186,42 +186,6 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         else:
           return db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
 
-    def check_password(self, email, password):
-        # Returns 0 for all good,
-        # returns 1 for correct password but you need to verify the account,
-        # returns 2 for incorrect passwordh
-        account_confirmed = False
-        known_username = False
-
-        # If only username is supplied, assume eastsideprep.org.
-        if '@' not in email:
-            email += "@eastsideprep.org"
-        # If a domain is specified, it must be eastsideprep.org.
-        if email[-17:] != "@eastsideprep.org":
-            return ERR_NOT_EPS_EMAIL
-
-        user_obj_query = self.query_by_email(email, True)
-        for query_result in user_obj_query:
-            if not query_result.password:
-                return USE_FOUR11_AUTH
-            known_username = True
-            logging.info("Password is: " + str(password))
-            test_hashed_password = bcrypt.hashpw(password, query_result.password)
-            logging.info("Hashed password is: " + str(test_hashed_password))
-            password_match = test_hashed_password == query_result.password
-            if not password_match:
-                return ERR_FORGOT_PASSWORD
-            if query_result.verified:
-                account_confirmed = True
-                break
-
-        if not known_username:
-            return ERR_NO_ACCOUNT
-        elif not account_confirmed:
-            return ERR_UNCONFIRMED_ACCOUNT
-
-        return {}  # success
-
     # Returns false if there is already a registered user, or true if not
     def check_no_account(self, email):
         user_obj_query = self.query_by_email(email, True)
@@ -312,7 +276,7 @@ class LoginHandler (BaseHandler):
         id = convert_email_to_id(email)
 
         if not id: # If there is no id for the email, don't try to log in
-            self.response.write(json.dumps(ERR_NOT_EPS_EMAIL))
+            self.response.write(json.dumps({"error":"That email is not recognized."}))
             return
 
         username = string.split(email, "@")[0]
