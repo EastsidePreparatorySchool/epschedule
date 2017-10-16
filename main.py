@@ -734,9 +734,8 @@ class LunchRateHandler(BaseHandler):
             self.error(403)
             return
 
-        logging.info(self.request.get('rating'));
-        #date = datetime.datetine.now()
-        date = datetime.date(2016, 3, 10);
+        date = datetime.datetime.now()
+
         lunch_id = update_lunch.get_lunch_id_for_date(date)
 
         if not lunch_id: # If there is no lunch for the date
