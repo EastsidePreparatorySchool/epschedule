@@ -384,11 +384,6 @@
     var daySpan = document.getElementById("day");
     daySpan.firstChild.textContent = dateToString(dateObj);
   }
-  function getRandomImage(dayEventObj) {
-    var index = Math.floor((Math.random() * dayEventObj.numImages) + 1);
-    var imageUrl = "/images/" + dayEventObj.imagePrefix + index.toString() + ".jpg";
-    return imageUrl;
-  }
 
   // Determine whether the user is in middle or upper school
   function getSchool(grade) {
@@ -543,6 +538,7 @@
       var image_name = scheduleObj.name.toLowerCase();
       image_name = image_name.replace("/", "");
       image_name = image_name.replace(/\s/g, '');
+      image_name = image_name.replace(/(\(.*?\))/g, ""); // Remove text between parentheses
       scheduleObj.avatar = "/images/" + image_name + ".jpg";
 
     // If the class is a normal class but the user is a teacher
