@@ -125,6 +125,9 @@ def create_error_obj(error_message, action="", buttontext=""):
         error_obj["buttontext"] = buttontext
     return json.dumps(error_obj)
 
+def num_to_trimester(trimester_num):
+    return ["fall_classes", "winter_classes", "spring_classes"][trimester_num]
+
 ERR_SIGNUP_EMAIL_NOT_EPS = {
   "error": "Use your Eastside Prep email account"
 }
@@ -331,7 +334,8 @@ class ClassHandler(BaseHandler):
                     logging.info("Returning schedule, firstname is: " + schedule['firstname'])
                     return schedule
 
-    def get_class_schedule(self, class_name, period):
+    def get_class_schedule(self, class_name, period, trimester):
+        tri = num_to_trimester(trimester)
         schedules = get_schedule_data()
         logging.info("Finished retrieving schedule data")
         result = None
@@ -340,7 +344,7 @@ class ClassHandler(BaseHandler):
         logging.info("Finished DB query")
 
         for schedule in schedules: # Load up each student's schedule
-            for classobj in schedule['classes']: # For each one of their classes
+            for classobj in schedule[tri]: # For each one of their classes
                 if normalize_classname(classobj['name']) == class_name.lower() and \
                     classobj['period'].lower() == period.lower(): # Check class name and period match
                     if classobj['teacher'] or classobj['name'] == "Free Period": # If they are a student or it is a free period
@@ -379,15 +383,15 @@ class ClassHandler(BaseHandler):
         logging.info("Finished handling request")
         return result
     def get(self, class_name, period):
-        logging.info("Class schedule retrival started")
         # Get the cookie
         id = self.check_id()
         if id is None:
             self.error(403)
             return
 
+
         # schedule = self.get_schedule(self.request.get('id'))
-        result = self.get_class_schedule(class_name, period)
+        result = self.get_class_schedule(class_name, period, self.request.get('trimester'))
         if not result:
             self.error(404)
             return

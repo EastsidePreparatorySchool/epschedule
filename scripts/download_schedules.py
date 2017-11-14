@@ -73,7 +73,14 @@ with open('../data/id_table.json') as data_file:
     data = json.load(data_file)
 
 for item in data:
-    download_schedule(item["id"], term, year, subdomain)
+    if (term <= 3):
+        download_schedule(item["id"], term, year, subdomain)
+    else: # If it's 4
+        download_schedule(item["id"], 1, year, subdomain)
+        download_schedule(item["id"], 2, year, subdomain)
+        download_schedule(item["id"], 3, year, subdomain)
+
+
 
 print "Schedules downloaded"
 print "Parsing schedules"

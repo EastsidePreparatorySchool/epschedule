@@ -21,8 +21,9 @@ DO_NOT_PARSE = ["4491-1-Mein-Angelika.pdf"]
 UPPER_SCHOOL_STUDY_HALL_PERIODS = {"A": "OH-102", "B": "AS-101", "C": "LPC-100B", "D": "TMAC-102", "E": "LPC-204", "F": "TMAC-201", "G": "HB-101", "H": "TMAC-102"}
 TIME_MAP = {"A": "01:50-03:15", "B": "12:15-01:40", "C": "09:35-11:00", "D": "08:00-09:25", \
             "E": "01:50-03:15", "F": "12:15-01:40", "G": "09:35-11:00", "H": "08:00-09:25"}
-
 LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"]
+
+TRIMESTER_MAP = {"1": "fall", "2": "winter", "3": "spring"}
 
 with open('../data/id_table.json') as data_file:
     id_table = json.load(data_file)
@@ -173,84 +174,73 @@ def explode_pdf(path):
 students = []
 files = [f for f in os.listdir('..' + os.sep + 'schedules')] #Create a list of all files in the directory
 for f in files:    #For each file in the directory
-    #if f != "3283-1-18.pdf":
-    #    continue
     if f in DO_NOT_PARSE: # If the schedule shouldn't be parsed
         print "Skipping"
         continue
     filepath = "../schedules/" + f   #Create the full filepath for the schedule
     print f
 
-    if os.path.getsize(filepath) < 5000: # If schedule is blank (e.g. is less than 5000 bytes)
+    if os.path.getsize(filepath) < 5000: # If schedule is blank (i.e. is less than 5000 bytes)
         print "Schedule is blank!"
         continue
 
     if f[-4:] == ".pdf":  #If the last 4 characters of the file name are .pdf (meaning the file is a schedule)
+        trimester = TRIMESTER_MAP[string.split(f, "-")[1]] + "_classes"
+
         exploded_schedule = explode_pdf(filepath)
-        students.append(exploded_schedule)  #Add to the list of schedules the object returned by explode_pdf()
+        exploded_schedule[trimester] = exploded_schedule['classes']
 
-comment = """# Apply exceptions
-EXCEPTIONS = {"4699": {"E": {"room": "TMAC-205A"}}, \
-            "3283": {"B": {"room": "AX-107"}}, \
-            "3283": {"C": {"room": "MS-203"}}}
+        del exploded_schedule['classes']
+        #delattr(exploded_schedule, 'classes')
 
-for sid, exception in EXCEPTIONS.iteritems():
-    # Find the person with that SID
-    student = {}
-    for s in students:
-        if s['sid'] == int(sid):
-            student = s
+        # Check if there's already an object for that student in our students list
+        found = False
 
-    if not student:
-        continue
-    
-    for period, data in exception.iteritems():
-
-        # Get correct period
-        for clss in student['classes']:
-            if clss['period'] == period:
-
-                # Apply each property
-                for prop, val in data.iteritems():
-                    clss[prop] = val
+        for student in students:
+            if student['sid'] == exploded_schedule['sid']:
+                found = True
+                student[trimester] = exploded_schedule[trimester]
                 break
-"""
+
+        if not found:
+            students.append(exploded_schedule)
 
 print "Entering teacher names"
+for trimester in ["fall_classes", "winter_classes", "spring_classes"]:
 
-for person_num in range (0, len(students)):
-    if students[person_num]['grade'] is not None: #If the person is a student
-        for class_num in range (0, len(students[person_num]['classes'])): #For each class
+    for person_num in range (0, len(students)):
+        if students[person_num]['grade'] is not None: #If the person is a student
+            for class_num in range (0, len(students[person_num][trimester])): #For each class
 
-            if students[person_num]['classes'][class_num]['name'] == 'Free Period':
-                continue
+                if students[person_num][trimester][class_num]['name'] == 'Free Period':
+                    continue
 
-            for teacher in students:
-                if teacher['grade'] is None: # if the person is a teacher
-                    # If the person is a teacher with the correct last names
-                    if students[person_num]['classes'][class_num]['name'] == teacher['classes'][class_num]['name']:
-                        # If the name, room, and period all line up, it's probably the same class, so we can set the teacher
-                        students[person_num]['classes'][class_num]['teacher'] = teacher['firstname'] + " " + teacher['lastname']
+                for teacher in students:
+                    if teacher['grade'] is None: # if the person is a teacher
+                        # If the person is a teacher with the correct last names
+                        if students[person_num][trimester][class_num]['name'] == teacher[trimester][class_num]['name']:
+                            # If the name, room, and period all line up, it's probably the same class, so we can set the teacher
+                            students[person_num][trimester][class_num]['teacher'] = teacher['firstname'] + " " + teacher['lastname']
 
-    else: # If person is a teacher
-        for class_num in range (0, len(students[person_num]['classes'])): #For each class
+        else: # If person is a teacher
+            for class_num in range (0, len(students[person_num][trimester])): #For each class
 
-            if students[person_num]['classes'][class_num]['name'] == 'Free Period':
-                continue
+                if students[person_num][trimester][class_num]['name'] == 'Free Period':
+                    continue
 
-            for student in students:
-                if student['grade'] is not None: # if the person is a student
+                for student in students:
+                    if student['grade'] is not None: # if the person is a student
 
-                    if students[person_num]['classes'][class_num]['name'] == student['classes'][class_num]['name']:
-                        # If the name, room, and period all line up, it's probably the same class, so we can set the room
-                        students[person_num]['classes'][class_num]['room'] = student['classes'][class_num]['room']
+                        if students[person_num][trimester][class_num]['name'] == student[trimester][class_num]['name']:
+                            # If the name, room, and period all line up, it's probably the same class, so we can set the room
+                            students[person_num][trimester][class_num]['room'] = student[trimester][class_num]['room']
 
-# Get exceptions that still must be added
-for student in students:
-    if student['gradyear']: # If they are a student
-        for clss in student['classes']:
-            if clss['name'] != 'Free Period' and not clss['teacher']:
-                print "SID " + str(student['sid']) + "(" + student['lastname'] + ", " + student['firstname'] + ") has no teacher for class " + clss['name']
+    # Get exceptions that still must be added
+    for student in students:
+        if student['gradyear']: # If they are a student
+            for clss in student[trimester]:
+                if clss['name'] != 'Free Period' and not clss['teacher']:
+                    print "SID " + str(student['sid']) + "(" + student['lastname'] + ", " + student['firstname'] + ") has no teacher for class " + clss['name']
 
 file = open('../data/schedules.json', 'w')
 file.write(json.dumps(students))
