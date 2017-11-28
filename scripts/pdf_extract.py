@@ -27,15 +27,16 @@ LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"]
 with open('../data/id_table.json') as data_file:
     id_table = json.load(data_file)
 
-def parse_classes(input):
+def parse_classes(input, usable_letters, isteacher):
     classes = []
-    for k in range (0, len(LETTERS)):
+    excessive_length_period = ""
+    for k in range (0, len(usable_letters)):
 
         classname = ""
         try:
-            i = input.index(LETTERS[k] + " - ")
-            if LETTERS[k] != "H":
-                classname = input[i + 4 : input.index(LETTERS[k + 1] + " -") - 1]
+            i = input.index(usable_letters[k] + " - ")
+            if usable_letters[k] != "H" and (usable_letters[k + 1] + " -") in input:
+                classname = input[i + 4 : input.index(usable_letters[k + 1] + " -") - 1]
             else:
                 classname = input[i + 4: -1]
 
@@ -54,9 +55,14 @@ def parse_classes(input):
         except ValueError:
             classname = "Free Period"
 
-        classes.append({'name': classname, 'room': None, 'period': LETTERS[k], 'teacher': None})
 
-    return classes
+        classes.append({'name': classname, 'room': None, 'period': usable_letters[k], 'teacher': None})
+
+        if len(classname) > 70 and not isteacher:
+            excessive_length_period = usable_letters[k]
+            break # To avoid adding excessive free periods
+
+    return [classes, excessive_length_period]
 
 def get_id_object(sid):
     for item in id_table:
@@ -107,12 +113,14 @@ def explode_pdf(path):
         if len(layout) == 0: #Weed out the blank pages
             continue
 
+        read_next_from = ""
+
         for obj in layout:  #Run the following code on each object in the page
 
             if isinstance(obj, LTTextBox): #If the object is a text box
 
                 contents = obj.get_text()
-                #print "''" + contents + "'"
+                #print "'" + contents + "'"
 
                 # Check for letters
                 if duplicates:
@@ -123,9 +131,18 @@ def explode_pdf(path):
                                 if not is_period_free(classes, letter):
                                     period_letters.append(letter)
 
-                if "Block & Course" in contents:
-                    classes = parse_classes(contents)
+                if read_next_from:
+                    print "Reading from next"
+                    nonused_letters = LETTERS[(LETTERS.index(read_next_from) + 1):]
+                    read_next_from = ""
+
+                    classes += parse_classes(contents, nonused_letters, False)[0]
                     duplicates = duplicate_classes(classes)
+
+                elif "Block & Course" in contents:
+                    returneddata = parse_classes(contents, LETTERS, not bool(id_obj['gradyear']))
+                    classes = returneddata[0]
+                    read_next_from = returneddata[1]
 
                 elif "Class of " in contents:
                     ageinfo = string.split(contents, "\n")
@@ -173,7 +190,7 @@ def explode_pdf(path):
 students = []
 files = [f for f in os.listdir('..' + os.sep + 'schedules')] #Create a list of all files in the directory
 for f in files:    #For each file in the directory
-    #if f != "3283-1-18.pdf":
+    #if f != "4093-2-18.pdf":
     #    continue
     if f in DO_NOT_PARSE: # If the schedule shouldn't be parsed
         print "Skipping"
@@ -217,6 +234,9 @@ for sid, exception in EXCEPTIONS.iteritems():
 """
 
 print "Entering teacher names"
+for person in students:
+    if person['username'] == 'raponte':
+        person['classes'] += [{"teacher": None, "period": "D", "name": "Free Period", "room": None}, {"teacher": None, "period": "E", "name": "Free Period", "room": None}, {"teacher": None, "period": "F", "name": "Free Period", "room": None}, {"teacher": None, "period": "G", "name": "Free Period", "room": None}, {"teacher": None, "period": "H", "name": "Free Period", "room": None}]
 
 for person_num in range (0, len(students)):
     if students[person_num]['grade'] is not None: #If the person is a student
@@ -245,12 +265,37 @@ for person_num in range (0, len(students)):
                         # If the name, room, and period all line up, it's probably the same class, so we can set the room
                         students[person_num]['classes'][class_num]['room'] = student['classes'][class_num]['room']
 
+TEACHER_OVERRIDES = {"Renaissance: The Cultural Epicenter": 'Ryan Aponte', "Emotion and Motive in Literature: Western Fiction and Drama": 'Stephen Keedy', "Modern Perspectives: Late 19th and Early 20th Century European Literature": 'Stephen Keedy'}
+
+students_with_too_few_classes = []
+
 # Get exceptions that still must be added
 for student in students:
     if student['gradyear']: # If they are a student
+
+        num_classes = 0
+
         for clss in student['classes']:
+            if clss['name'] != 'Free Period' and clss['name'] != 'Guided Study Hall' and clss['name'] != 'Study Hall':
+                num_classes += 1
+
             if clss['name'] != 'Free Period' and not clss['teacher']:
-                print "SID " + str(student['sid']) + "(" + student['lastname'] + ", " + student['firstname'] + ") has no teacher for class " + clss['name']
+                # Exceptions
+                if clss['name'] in TEACHER_OVERRIDES:
+                    clss['teacher'] = TEACHER_OVERRIDES[clss['name']]
+                else:
+                    print "SID " + str(student['sid']) + "(" + student['lastname'] + ", " + student['firstname'] + ") has no teacher for class " + clss['name'] + ", period " + clss['period']
+
+        if num_classes < 6:
+            students_with_too_few_classes.append(student['firstname'] + " " + student['lastname'])
 
 file = open('../data/schedules.json', 'w')
 file.write(json.dumps(students))
+
+file = open('../data/schedules_pretty.json', 'w')
+file.write(json.dumps(students, indent=4))
+
+print str(len(students_with_too_few_classes)) + " students have too few classes"
+print json.dumps(students_with_too_few_classes)
+
+print json.dumps(students[0]['classes'])
