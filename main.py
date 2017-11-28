@@ -157,8 +157,9 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         input_data = (lastname + "_" + firstname).lower().replace(" ", "")
 
         photo_hasher = SHA256.new(CRYPTO_KEY)
+        logging.info(input_data)
 
-        photo_hasher.update(input_data)
+        photo_hasher.update(bytes(input_data))
         encoded_filename = photo_hasher.hexdigest()
 
         logging.info(input_data + " --> " + encoded_filename)
