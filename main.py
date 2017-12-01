@@ -813,7 +813,10 @@ class AdminHandler(RegisterBaseHandler):
             if len(v['verified']) == 0 and len(v['unverified']) >= 1 ])
         html += "<h3>" + str(len(only_unverified)) + " emails with only unverified records</h3>"
         for email in only_unverified:
-            email_schedule = self.get_schedule_for_id(convert_email_to_id(email))
+            try:
+                email_schedule = self.get_schedule_for_id(convert_email_to_id(email))
+            except TypeError:
+                continue
             is_valid = "invalid" # Will either be "valid" or "invalid"
 
             if email_schedule:

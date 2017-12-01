@@ -36,7 +36,6 @@ def get_auth_token():
             return page_source[starting_index : ending_index]
 
 def auth_user(username, password):
-    logging.info("Username: " + username)
     # The thing in the UTF8 field is the encoded version of the UTF8 checkmark
     obj = {'authenticity_token' : get_auth_token(), 'pseudonym_session[unique_id]' : username, 'redirect_to_ssl': '1',\
     'pseudonym_session[password]' : password, 'utf8' : '%E2%9C%93', 'pseudonym_session[remember_me]': '0'}
