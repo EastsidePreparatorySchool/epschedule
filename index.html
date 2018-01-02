@@ -455,7 +455,6 @@
               time: ""};
 
             if (type == "core") {
-              console.log(schedule["classes"][k]);
               scheduleObj['studentCount'] = schedule["classes"][k]["students"].toString();
             }
           }
@@ -519,7 +518,6 @@
 
   // Add the images on the left side to full schedules
   function addScheduleImages(scheduleObj, userSchedule, type) {
-    console.log(scheduleObj.name);
     // If the user is a normal user and the class is a normal class, or if it is a core schedule
     if ((scheduleObj.teacher != "" && userSchedule.grade)|| type == "core" ) {
       if (scheduleObj.name == "Free Period") {
@@ -654,7 +652,11 @@
         var name = e.model.item.firstname + "_" + e.model.item.lastname;
         name = name.replace(/ /g, '');
         name = name.toLowerCase();
-        requestAdditionalData(name, "student", renderStudent);
+        if (e.model.item.grade) { // If they're a student
+          requestAdditionalData(name, "student", renderStudent);
+        } else {
+          requestAdditionalData(name, "teacher", renderTeacher);
+        }
         openPopup(orig_name);
       }
       scheduleElement.onRoomTap = function(e) {

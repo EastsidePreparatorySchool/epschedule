@@ -358,7 +358,8 @@ class ClassHandler(BaseHandler):
 
                         student = {"firstname": schedule['firstname'], \
                                    "lastname": schedule['lastname'], \
-                                   "email": email,
+                                   "grade": schedule['grade'], \
+                                   "email": email, \
                                    "photo_url": photo_url}
                  
 
