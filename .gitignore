@@ -52,7 +52,6 @@ schedules
 schedules.json
 id_table.json
 api_keys.json
-crypto.key
 teacher_photos
 96x96_photos
 lib
@@ -66,3 +65,4 @@ scripts/Crypto
 data/user_ids_four11.csv
 data/user_ids_four11_old.csv
 data/schedules_pretty.json
+*.key
