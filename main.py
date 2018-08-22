@@ -118,37 +118,8 @@ def get_schedule_data():
 def is_teacher_schedule(schedule):
     return not schedule["grade"]
 
-def create_error_obj(error_message, action="", buttontext=""):
-    error_obj = {"error":error_message}
-    if action: # If action is present (meaning the error has a button)
-        error_obj["action"] = action
-        error_obj["buttontext"] = buttontext
-    return json.dumps(error_obj)
-
-ERR_SIGNUP_EMAIL_NOT_EPS = {
-  "error": "Use your Eastside Prep email account"
-}
-ERR_UNKNOWN_EMAIL = {
-    "error": "Unknown email address"
-}
-ERR_NOT_ALLOWED_EMAIL = {
-    "error": "Invalid email address"
-}
-ERR_PASSWORD_INVALID_FORMAT = {
-  "error": "Your password must be at least eight characters"
-}
-ERR_EMAIL_ALREADY_REGISTERED = {
-  "error": "This email is already registered",
-  "action":"/forgot",
-  "buttonText":"FORGOT PASSWORD?",
-  "actionId":"url"
-}
-USE_FOUR11_AUTH = {
-    "error": "There is no password associated with this account"
-}
-REGISTER_SUCCESS = {
-  "error": "Success! Check your email to complete registration"
-}
+def create_error_obj(error_message):
+    return json.dumps({"error":error_message})
 
 class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this handler
     def gen_photo_url(self, firstname, lastname, folder):
@@ -187,13 +158,6 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         else:
           return db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
 
-    # Returns false if there is already a registered user, or true if not
-    def check_no_account(self, email):
-        user_obj_query = self.query_by_email(email, True)
-        if user_obj_query.get():
-            return False
-        return True
-
     def get_schedule_for_name(self, firstname, lastname):
         schedule_data = get_schedule_data()
         for schedule in schedule_data:
@@ -215,59 +179,6 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         else:
             filename = 'vulcanized.html'
         return filename
-
-ERR_NO_ACCOUNT_TO_SEND = {
-  "error": "There is no account with that username and password",
-  "action":"switchToRegister",
-  "buttonText":"SIGN UP",
-  "actionId":"button"
-}
-class RegisterBaseHandler(BaseHandler):
-    def get_name(self, email):
-        id = convert_email_to_id(email)
-
-        schedules = get_schedule_data()
-        for schedule in schedules:
-            if int(schedule['sid']) == int(id):
-                return schedule['firstname']
-
-    def format_html(self, email_text, obj):
-        for prop in obj:
-            search = "{" + prop + "}"
-            message_parts = string.split(email_text, search)
-            email_text = message_parts[0] + obj[prop] + message_parts[1]
-        return email_text
-
-    def send_confirmation_email(self, email, row_id):
-        email_file = open('confirm_email.html', 'rb')
-        email_text = email_file.read()
-        email_properties = {
-            'name': self.get_name(email),
-            'email': email,
-            'url': self.get_confirmation_link(row_id)
-        }
-        creds = API_KEYS['sendgrid']
-        client = SendGridClient(creds['username'], creds['password'], secure=True)
-        message = Mail()
-        message.set_subject("Sign up for EPSchedule")
-        message.set_html(self.format_html(email_text, email_properties))
-        # message.set_text('plaintext message body')
-        # TODO make sender fooy@epscheduleapp.appspot.com
-        message.set_from("The EPSchedule Team <gavin.uberti@gmail.com>")
-        message.add_to(email)
-        logging.info("Sending " + email + " a link to " + email_properties['url'])
-        client.send(message)
-
-    def get_confirmation_link(self, row_id):
-        encrypted_row_id = aes.encryptData(CRYPTO_KEY, str(row_id))
-        encoded_row_id = base64.urlsafe_b64encode(encrypted_row_id)
-        # Use the correct URL depending on where the app is running.
-        scheme = 'https'
-        host = os.getenv('HTTP_HOST')
-        if host.find('localhost') == 0:
-            scheme = 'http'
-        url = "{0}://{1}/confirm/{2}".format(scheme, host, encoded_row_id)
-        return url
 
 class LoginHandler (BaseHandler):
     def post(self):
@@ -380,6 +291,7 @@ class ClassHandler(BaseHandler):
             result['students'].sort(key=lambda s: s['firstname'])
         logging.info("Finished handling request")
         return result
+        
     def get(self, class_name, period):
         logging.info("Class schedule retrival started")
         # Get the cookie
@@ -757,7 +669,7 @@ class AboutHandler(BaseHandler):
         template = JINJA_ENVIRONMENT.get_template('about.html')
         self.response.write(template.render(template_values))
 
-class AdminHandler(RegisterBaseHandler):
+class AdminHandler(BaseHandler):
     def get(self):
         if not self.check_admin_id():
             self.error(403)
@@ -891,29 +803,10 @@ class AdminHandler(RegisterBaseHandler):
             self.error(403)
             return
 
-        if action == "emailblast":
-            self.send_email_blast()
-        elif action == "cleanup":
+        if action == "cleanup":
             self.clean_up_db()
         elif action == "emaildomainadd":
             self.email_domain_add()
-
-    def send_email_blast(self):
-        data = self.read_db()
-        # Generate unverified_row_ids
-
-        for email in data:
-            if len(data[email]['verified']) == 0:
-                numerical_id = data[email]['unverified'][0].id()
-                try:
-                    email_schedule = self.get_schedule_for_id(convert_email_to_id(email))
-                    if email_schedule:
-                        self.send_confirmation_email(email, numerical_id)
-                        logging.info("Successfully sent an email to " + email)
-                    else:
-                        logging.info("There is no valid schedule associated with " + email + ", no email was sent")
-                except Exception as e: # If email is ficticious or something else went wrong
-                    logging.error("Attempt to send an email to " + email + " was unsuccessful, ", e)
 
     def clean_up_db(self):
         data = self.read_db()
