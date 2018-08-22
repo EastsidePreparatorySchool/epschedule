@@ -4,8 +4,8 @@ import json
 
 BASE_URL = "https://four11.eastsideprep.org/epsnet/schedule_for_date?date="
 
-START_DATE = date(2017, 9, 6)
-END_DATE = date(2018, 5, 29)
+START_DATE = date(2018, 9, 6)
+END_DATE = date(2019, 6, 29)
 
 delta = END_DATE - START_DATE
 schedules = {}

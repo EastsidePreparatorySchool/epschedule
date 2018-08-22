@@ -139,7 +139,7 @@
         date.setDate(date.getDate() + 1);
     }
 
-    FIRST_DAY = new Date(2017, 8, 6);
+    FIRST_DAY = new Date(2018, 8, 12);
 
     if (date < FIRST_DAY) {
       date = FIRST_DAY;
@@ -429,16 +429,23 @@
   function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
     var scheduleObj;
     var foundClass = false;
+
+    // Ensure that we don't display periods for middle schoolers for upper schoolers
+    if (incorrectSchool(day[currentSlot]["period"], school)) {
+      return null;
+    } else {
+      var period = day[currentSlot]["period"].replace(" - " + school, "");
+    }
     // If it is a normal period
-    if (isStandardClass(day[currentSlot]["period"])) {
+    if (isStandardClass(period)) {
       for (var k = 0; k < schedule["classes"].length; k++) {
-        if (schedule["classes"][k]["period"] == day[currentSlot]["period"]) {
-          if (schedule["classes"][k]["name"] == "Free Period") {
+        if (schedule["classes"][k]["period"] == period) {
+          if (schedule["classes"][k]["teacher"] == null) {
             scheduleObj = { name: schedule["classes"][k]["name"],
               teacher: "",
               teacherLastName: "",
               room: "",
-              period: day[currentSlot]["period"],
+              period: period,
               time: ""};
           } else {
             var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
@@ -451,7 +458,7 @@
               teacher: teacherName,
               teacherLastName: teacherLast,
               room: schedule["classes"][k]["room"],
-              period: day[currentSlot]["period"],
+              period: period,
               time: ""};
 
             if (type == "core") {
@@ -467,25 +474,21 @@
       }
     } else { // If it is a special class, such as Lunch, Assembly, or Class Meeting
 
-      // Ensure that we don't display periods for middle schoolers for upper schoolers
-      if (incorrectSchool(day[currentSlot]["period"], school)) {
-        return null;
-      }
-
       // Note that 0 Period Instrumental Music does not fall in this category
       scheduleObj = {
-        name: day[currentSlot]["period"],
+        name: period,
         teacher: "",
         room: "",
         period: "X",
         time: ""
       };
-      LPC_COMMONS_CLASSES = ["Lunch (MS)", "Lunch (US)", "Assembly", "US Community"];
+      console.log(scheduleObj.name);
+      LPC_COMMONS_CLASSES = ["Lunch", "Assembly", "US Community"];
       if (LPC_COMMONS_CLASSES.includes(scheduleObj.name)) {
 
         scheduleObj.room = "LPC Commons";
       }
-      if (scheduleObj.name == "Lunch (MS)" || scheduleObj.name == "Lunch (US)") {
+      if (scheduleObj.name == "Lunch") {
         scheduleObj.lunchInfo = lunchInfo;
       }
     }

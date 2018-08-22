@@ -36,7 +36,8 @@ if now.month >= 7 or (now.month >= 6 and now.day >= 10):
 for item in data:
     #if item['username'] == "tkrauss-mcclurg":
     #    continue
-    req = requests.post(url + item['username'], headers=headers, params={"term_id": "3"})
+    req = requests.post(url + item['username'], headers=headers, params={"term_id": "1"})
+    print req.content
     briggs_person = json.loads(req.content)
 
     # Parse all the person info
@@ -44,6 +45,8 @@ for item in data:
     person['firstname'] = item['firstname']
     person['lastname'] = item['lastname']
     person['username'] = item['username']
+    print item
+    print item['username']
     person['sid'] = item['id']
     person['gradyear'] = item['gradyear']
     person['nickname'] = briggs_person['individual']['nickname']
@@ -98,7 +101,7 @@ for item in data:
 
     # Now we have finished the person object
     schedules.append(person)
-    print "Decoded " + person['username']
+    #print "Decoded " + person['username']
 
 file = open('../data/schedules.json', 'w')
 file.write(json.dumps(schedules, indent=4))
