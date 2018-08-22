@@ -34,19 +34,57 @@ if now.month >= 7 or (now.month >= 6 and now.day >= 10):
     end_year += 1
 
 for item in data:
-    #if item['username'] == "tkrauss-mcclurg":
-    #    continue
-    req = requests.post(url + item['username'], headers=headers, params={"term_id": "1"})
-    print req.content
-    briggs_person = json.loads(req.content)
 
-    # Parse all the person info
-    person = {}
+    person = {'classes': []}
+
+    for term_id in range(1, 4):
+        req = requests.post(url + item['username'], \
+            headers=headers, params={"term_id": str(term_id)})
+        briggs_person = json.loads(req.content)
+
+        # We now have all personal information that we need
+        # Now, we'll go trimester by trimester and parse schedules
+        trimClasses = []
+
+        trimester = json.loads(req.content)['sections']
+
+        for clss in trimester:
+            if clss['period'] in PARSEABLE_PERIODS:
+                obj = {
+                    'period': clss['period'], \
+                    'room': clss['location'], \
+                    'name': clss['course'], \
+                    'teacher': get_full_name(clss['teacher']), \
+                    'department': clss['department'] \
+                }
+                trimClasses.append(obj)
+
+        # Now, check to see if we need to add free period(s)
+        for period in PARSEABLE_PERIODS:
+            contains = False
+            for clss in trimClasses:
+                if clss['period'] == period:
+                    contains = True
+                    break
+
+            if not contains:
+                trimClasses.append({
+                    "period": period, \
+                    "room": None, \
+                    "name": "Free Period", \
+                    "teacher": None, \
+                    "department": None
+                })
+
+        # Now sort A-H
+        trimClasses.sort(key=lambda x: x['period'])
+        person['classes'].append(trimClasses)
+
     person['firstname'] = item['firstname']
     person['lastname'] = item['lastname']
     person['username'] = item['username']
+    person['givenfirst'] = item['givenfirst']
     print item
-    print item['username']
     person['sid'] = item['id']
     person['gradyear'] = item['gradyear']
     person['nickname'] = briggs_person['individual']['nickname']
@@ -61,43 +99,6 @@ for item in data:
     person['grade'] = None
     if person['gradyear']:
         person['grade'] = 12 - (person['gradyear'] - end_year)
-
-    # We now have all personal information that we need
-    # Now, we'll go trimester by trimester and parse schedules
-    person['classes'] = []
-
-    trimester = json.loads(req.content)['sections']
-
-    for clss in trimester:
-        if clss['period'] in PARSEABLE_PERIODS:
-            obj = {
-                'period': clss['period'], \
-                'room': clss['location'], \
-                'name': clss['course'], \
-                'teacher': get_full_name(clss['teacher']), \
-                'department': clss['department'] \
-            }
-            person['classes'].append(obj)
-
-    # Now, check to see if we need to add free period(s)
-    for period in PARSEABLE_PERIODS:
-        contains = False
-        for clss in person['classes']:
-            if clss['period'] == period:
-                contains = True
-                break
-
-        if not contains:
-            person['classes'].append({
-                "period": period, \
-                "room": None, \
-                "name": "Free Period", \
-                "teacher": None, \
-                "department": None
-            })
-
-    # Now sort A-H
-    person['classes'].sort(key=lambda x: x['period'])
 
     # Now we have finished the person object
     schedules.append(person)
