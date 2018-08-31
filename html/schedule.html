@@ -283,6 +283,9 @@
         return name; // Debug func
       },
       showChevron: function(item) {
+        if (!this.expandable) {
+          return false;
+        }
         var expandablePeriods = ["A", "B", "C", "D", "E", "F", "G", "H"];
         if (expandablePeriods.indexOf(item.period) >= 0 || item.lunchInfo) {
           return true;
@@ -342,6 +345,10 @@
         return "collapse-" + item.name + "-" + item.period;
       },
       toggleExpand: function(e) {
+        if (!this.expandable) {
+          return;
+        }
+
         // if expanding, XHR, and then set model
         var el = e.currentTarget;
 
@@ -361,10 +368,13 @@
         }
 
         if (el.classList.contains("selected")) {
+          console.log(item);
           var xhr = new XMLHttpRequest();
+          
           // Squash all punctuation to underscores
           var cleanedClass = item.name.replace(/[\W]/g, "_");
-          var url = "class/" + cleanedClass + "/" + item.period.toLowerCase();
+          var url = "class/" + item.period.toLowerCase() + "?term_id=" + item.termId;
+
           xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
               // Change the chevron to a more-vert

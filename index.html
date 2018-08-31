@@ -127,6 +127,9 @@
   var days = {{days | safe }};
   var lunches = {{lunches | safe}};
   var showPrivacyDialog = {{show_privacy_dialog | safe}};
+  // Multiply by 1000 to account for milliseconds
+  var fallTriEndDate = new Date({{fall_end_unix | safe}});
+  var wintTriEndDate = new Date({{wint_end_unix | safe}});
   var globalDate = getInitialDate();
 
   function getInitialDate() {
@@ -339,9 +342,14 @@
       var e = document.getElementById('altclassesschedule');
       var f = document.getElementById('currentperiodclassschedule');
 
-      renderSchedule(copyDate(globalDate), periodObj, "core", e, {});
-      renderSchedule(copyDate(globalDate), {'classes': [periodObj['currentclass']]}, "core", f, {});
-      
+      renderSchedule(copyDate(globalDate), periodObj, "core", e, {}, false);
+      console.log( {'classes': [[periodObj['currentclass']]*3]});
+
+      // We have the same item three times to simulate three trimesters
+      // That way, no matter what trimester we're in, we'll always pick "currentclass"
+      renderSchedule(copyDate(globalDate), {'classes': [[periodObj['currentclass']],
+        [periodObj['currentclass']],[periodObj['currentclass']]]}, "core", f, {}, false);
+
 
       e.behaviors = [];
       f.behaviors = [];
@@ -510,6 +518,7 @@
         return null; // Skip over lunch, advisory, assembly, etc.
       }
     }
+    scheduleObj.termId = termId;
     // Split the time into the start and end times
     if (type != "core") {
       var times = day[currentSlot]["times"].split('-');
@@ -586,8 +595,16 @@
       d1.getYear() == d2.getYear());
   }
 
-  function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list) {
+  function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, expandable = true) {
 
+    if (dateObj > wintTriEndDate) {
+      termId = 2;
+    } else if (globalDate > fallTriEndDate) {
+      termId = 1;
+    } else {
+      termId = 0;
+    }
+    console.log("Converted " + dateObj + " to a term ID of " + termId);
     // Either MS or US
     if (type == "full" || type == "lite") {
       var school = getSchool(schedule.grade);
@@ -602,10 +619,10 @@
     // The current schedule for that day
     var day = getScheduleTypeForDate(dateObj, days);
     if (type == "core") {
-      day = [{'period': schedule['classes'][0]['period'], 'times': ''}];
+      day = [{'period': schedule["classes"][termId][0]['period'], 'times': ''}];
     }
     scheduleElement.type = type;
-
+    scheduleElement.expandable = expandable;
     // If it is a normal day (no all day event)
     if (!day) { // If there is no school
       // Get the data for the imageObj
@@ -613,9 +630,9 @@
       scheduleElement.allDayEvent = imageObj;
       scheduleElement.entries = null; // Clear the classes
     } else if (type == "core") {
-      for (var currentClass = 0; currentClass < schedule['classes'].length; currentClass++) {
+      for (var currentClass = 0; currentClass < schedule["classes"][termId].length; currentClass++) {
 
-        var scheduleObj = createClassEntry({'classes': [schedule['classes'][currentClass]]}, school, day, 0, type, lunchInfo);
+        var scheduleObj = createClassEntry({'classes': [schedule["classes"][termId][currentClass]]}, school, day, 0, type, lunchInfo);
         todaySchedule.push(scheduleObj);
       }
       scheduleElement.entries = todaySchedule;
@@ -625,7 +642,9 @@
       for (var currentSlot = 0; currentSlot < day.length; currentSlot++) {
 
         // Render the base of the class
-        var scheduleObj = createClassEntry(schedule, school, day, currentSlot, type, lunchInfo);
+        var triSchedule = JSON.parse(JSON.stringify(schedule));
+        triSchedule['classes'] = triSchedule['classes'][termId]
+        var scheduleObj = createClassEntry(triSchedule, school, day, currentSlot, type, lunchInfo);
         if (scheduleObj) { // If scheduleObj is not null
           // To see when scheduleObj might be null, look at createClassEntry()
           // Push scheduleObj to a list of class objs

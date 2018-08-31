@@ -1,6 +1,7 @@
 import base64
 import copy
 import datetime
+import time
 import jinja2
 import json
 import logging
@@ -51,6 +52,9 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
+
+FALL_TRI_END = datetime.datetime(2018, 12, 21, 15, 30, 0, 0)
+WINT_TRI_END = datetime.datetime(2019, 3, 22, 15, 30, 0, 0)
 
 class User(db.Model):
     email = db.StringProperty(required=True)
@@ -107,13 +111,8 @@ def normalize_classname(text):
             clean_text += "_"
     return clean_text
 
-def generate_email(firstname, lastname):
-    firstname = normalize_name(firstname)
-    lastname = normalize_name(lastname)
-    return firstname[0] + lastname + "@eastsideprep.org"
-
-def get_schedule_data():
-    return SCHEDULE_INFO
+def generate_email(username):
+    return username + "@eastsideprep.org"
 
 def is_teacher_schedule(schedule):
     return not schedule["grade"]
@@ -122,20 +121,29 @@ def create_error_obj(error_message):
     return json.dumps({"error":error_message})
 
 class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this handler
+    def get_term_id(self):
+        tid = self.request.get("term_id")
+        if tid and int(tid) <= 2 and int(tid) >= 0:
+            return int(tid)
+        else:
+            now = datetime.datetime.now()
+            if now < FALL_TRI_END:
+                return 0
+            elif now < WINT_TRI_END:
+                return 1
+            else:
+                return 2
+
+    def get_schedule_data(self):
+        return SCHEDULE_INFO
+
     def gen_photo_url(self, firstname, lastname, folder):
-        if (folder == "school_photos"):
-            logging.info("Recieved a request for a full size photo")
         input_data = (lastname + "_" + firstname).lower().replace(" ", "")
 
         photo_hasher = SHA256.new(CRYPTO_KEY)
-        logging.info(input_data)
 
         photo_hasher.update(bytes(input_data))
         encoded_filename = photo_hasher.hexdigest()
-
-        logging.info(input_data + " --> " + encoded_filename)
-
-        logging.info("Returning the string: '" + '/' + folder + '/' + encoded_filename + '.jpg' + "'")
 
         return ('/' + folder + '/' + encoded_filename + '.jpg')
 
@@ -159,7 +167,7 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
           return db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
 
     def get_schedule_for_name(self, firstname, lastname):
-        schedule_data = get_schedule_data()
+        schedule_data = self.get_schedule_data()
         for schedule in schedule_data:
             if normalize_name(schedule['firstname']) == firstname.lower() and \
                normalize_name(schedule['lastname']) == lastname.lower(): # If the schedule is the requested schedule
@@ -167,7 +175,7 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
         return None
 
     def get_schedule_for_id(self, id):
-        schedule_data = get_schedule_data()
+        schedule_data = self.get_schedule_data()
         for schedule in schedule_data:
             if schedule["sid"] == int(id): # If the schedule is the user's schedule
                 return schedule
@@ -192,9 +200,6 @@ class LoginHandler (BaseHandler):
             return
 
         username = string.split(email, "@")[0]
-
-
-        logging.info("Calling auth user with args " + username + ", " + password)
 
         if not (authenticate_user.auth_user(username + "@eastsideprep.org", password)): # If four11 authentication failed, return our error
             self.response.write(json.dumps({"error":"Your password is incorrect."}))
@@ -235,33 +240,33 @@ class ClassHandler(BaseHandler):
 
         return table
 
-    def get_teacher_photo(self, num):
-        for schedule in get_schedule_data():
-            if is_teacher_schedule(schedule): # If they are a teacher
-                num -= 1
-                if num <= 0:
-                    logging.info("Returning schedule, firstname is: " + schedule['firstname'])
-                    return schedule
+    def is_same_class(self, a, b):
+        return normalize_classname(a['name']) == normalize_classname(b['name']) \
+                and a['period'] == b['period'] \
+                and a['teacher'] == b['teacher'] \
+                and a['room'] == b['room']
 
-    def get_class_schedule(self, class_name, period):
-        schedules = get_schedule_data()
-        logging.info("Finished retrieving schedule data")
-        result = None
-        logging.info("Starting DB query")
+
+    def get_class_schedule(self, user_class, term_id):
+        schedules = self.get_schedule_data()
+        result = {"period": user_class['period'], \
+                "teacher": user_class['teacher'], \
+                "term_id": term_id, \
+                "students": []}
+
         opted_in = self.gen_opted_in_table()
-        logging.info("Finished DB query")
 
         for schedule in schedules: # Load up each student's schedule
-            for classobj in schedule['classes']: # For each one of their classes
-                if normalize_classname(classobj['name']) == class_name.lower() and \
-                    classobj['period'].lower() == period.lower(): # Check class name and period match
+            for classobj in schedule['classes'][term_id]: # For each one of their classes
+                if self.is_same_class(user_class, classobj): # Check class name and period match
+
                     if classobj['teacher'] or classobj['name'] == "Free Period": # If they are a student or it is a free period
                         if not result:
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
                                       "students": []}
 
-                        email = generate_email(schedule['firstname'], schedule['lastname'])
+                        email = generate_email(schedule['username'])
                         photo_url = "/images/placeholder_small.png" # Default placeholder
 
                         if email in opted_in:
@@ -285,29 +290,29 @@ class ClassHandler(BaseHandler):
                         #           "photo_url": "/96x96_photos/" + teacher_schedule["firstname"] + "_" + teacher_schedule["lastname"] + ".jpg"}
 
                         result['students'].append(student)
-        logging.info("Finishing schedule iteration")
 
         if result:
             result['students'].sort(key=lambda s: s['firstname'])
-        logging.info("Finished handling request")
         return result
-        
-    def get(self, class_name, period):
-        logging.info("Class schedule retrival started")
+
+    def get(self, period):
         # Get the cookie
         id = self.check_id()
         if id is None:
             self.error(403)
             return
 
-        # schedule = self.get_schedule(self.request.get('id'))
-        result = self.get_class_schedule(class_name, period)
+        term_id = self.get_term_id()
+        user_schedule = self.get_schedule_for_id(id)
+
+        clss = next((c for c in user_schedule["classes"][term_id] if c["period"].lower() == period))
+
+        result = self.get_class_schedule(clss, term_id)
         if not result:
             self.error(404)
             return
 
         self.response.write(json.dumps(result))
-        logging.info("Class schedule retrival finished")
 
 
 class StudentHandler(BaseHandler):
@@ -327,26 +332,22 @@ class StudentHandler(BaseHandler):
 
         show_full_schedule = False
         show_photo = False
-        email = generate_email(firstname, lastname)
-        logging.info(email)
+        # TODO fix this ##########################################################
+        email = generate_email(firstname)
         user_obj_query = self.query_by_email(email, True)
         user_obj = user_obj_query.get()
 
         if user_obj:
-            logging.info("Found user obj")
             show_full_schedule = user_obj.share_schedule
             show_photo = user_obj.share_photo
-            logging.info("show_photo equals " + str(show_photo))
 
         student_schedule = self.get_schedule_for_name(firstname, lastname)
-        logging.info(student_schedule)
 
         if not student_schedule:
             self.error(404)
             return
 
         user_schedule = self.get_schedule_for_id(id)
-        logging.info(user_schedule)
 
         if is_teacher_schedule(user_schedule) or show_full_schedule:
             # If the user is a teacher
@@ -358,8 +359,6 @@ class StudentHandler(BaseHandler):
         response_schedule["email"] = email
 
         if show_photo:
-            logging.info("IF statement has found show photo to be true")
-            logging.info("Args: [" + firstname + ", " + lastname + "]")
             response_schedule["photo_url"] = self.gen_photo_url(firstname, lastname, 'school_photos')
         else:
             response_schedule["photo_url"] = "/images/placeholder.png"
@@ -369,15 +368,13 @@ class StudentHandler(BaseHandler):
     def sanitize_schedule(self, orig_schedule, user_schedule):
         schedule = copy.deepcopy(orig_schedule)
         for i in range (0, len(schedule["classes"])):
-            # If the class is not shared among the user and student
-            if not self.has_class(user_schedule, schedule["classes"][i]):
-                # Sanitize the class
-                schedule["classes"][i] = self.sanitize_class(schedule["classes"][i])
+            for k in range (0, len(schedule["classes"][i])):
+                # If the class is not shared among the user and student
+                if not schedule["classes"][i][k] in user_schedule["classes"][i]:
+                    # Sanitize the class
+                    schedule["classes"][i][k] = self.sanitize_class(schedule["classes"][i][k])
 
         return schedule
-
-    def has_class(self, schedule, input_obj):
-        return input_obj in schedule["classes"]
 
     def sanitize_class(self, orig_class_obj):
         class_obj = orig_class_obj.copy()
@@ -408,9 +405,10 @@ class PeriodHandler(BaseHandler):
 
         if id == DEMO_ID: # If this is the demo account
             id = GAVIN_ID
-        schedule_data = get_schedule_data()
+        schedule_data = self.get_schedule_data()
         user_schedule = None
         user_class = None
+        term_id = self.get_term_id()
 
         period = period.upper()
 
@@ -420,20 +418,18 @@ class PeriodHandler(BaseHandler):
                 user_schedule = schedule
                 break
 
-        for class_obj in user_schedule['classes']: # Find out which class the user has then
+        for class_obj in user_schedule['classes'][term_id]: # Find out which class the user has then
             if class_obj['period'] == period:
                 user_class = class_obj
                 break
 
         for schedule in schedule_data:
-            logging.info("User's grade is " + str(user_schedule['grade']) + ", test grade is " + str(schedule['grade']))
             if schedule['grade'] == user_schedule['grade']:
-                logging.info("They're a match!")
                 # For each person in the user's grade:
 
                 # Get what class they have in the period in question
                 testclass = {}
-                for clss in schedule['classes']:
+                for clss in schedule['classes'][term_id]:
                     if clss['period'] == period and clss['name'] != "Free Period":
                         testclass = clss
                         break
@@ -457,7 +453,7 @@ class PeriodHandler(BaseHandler):
 
                         dataobj['classes'][-1]['students'] = 0
 
-            for class_obj in schedule['classes']:
+            for class_obj in schedule['classes'][term_id]:
 
                 # For each class, add its room to our room set
                 freerooms.add(class_obj['room'])
@@ -471,9 +467,10 @@ class PeriodHandler(BaseHandler):
         for schedule in schedule_data: # Find out which rooms are free
             if not schedule['grade']:
                 continue
-            for clss in schedule['classes']:
+            for clss in schedule['classes'][term_id]:
                 if clss['period'] == period:
                     for test_class in dataobj['classes']:
+
                         if normalize_classname(test_class['name']) == normalize_classname(clss['name']):
                             test_class['students'] += 1
 
@@ -506,6 +503,11 @@ class PeriodHandler(BaseHandler):
         dataobj['freerooms'] = sorted(list(freerooms))
         dataobj['classes'].sort(key=lambda x: x['name'])
         dataobj['altperiods'] = sorted(list(altperiods))
+        dataobj['term_id'] = term_id
+
+        classes_for_trimester = dataobj['classes']
+        dataobj['classes'] = [None, None, None]
+        dataobj['classes'][term_id] = classes_for_trimester
 
         self.response.write(json.dumps(dataobj))
 
@@ -515,12 +517,12 @@ class RoomHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
-        schedules = get_schedule_data()
+        schedules = self.get_schedule_data()
         room = room.lower()
         room = room.replace('_', '-');
         room_schedule = {'name':room, 'classes':[]}
         for schedule in schedules:
-            for class_obj in schedule['classes']:
+            for class_obj in schedule['classes'][term_id]:
                 if room == class_obj['room'].lower(): # If the class is in the room
                     already_there = False
                     for room_class_obj in room_schedule['classes']:
@@ -550,14 +552,14 @@ class TeacherHandler(BaseHandler):
 
         teacher = teacher.lower()
         bio = self.get_bio(teacher)
-        schedule_data = get_schedule_data()
+        schedule_data = self.get_schedule_data()
         teachernames = string.split(teacher, "_")
         result = None
 
         for schedule in schedule_data:
             if schedule['firstname'].lower() == teachernames[0] and schedule['lastname'].lower() == teachernames[1]:
                 result = copy.deepcopy(schedule)
-                result['email'] = generate_email(schedule['firstname'], schedule['lastname'])
+                result['email'] = generate_email(schedule['username'])
                 result['bio'] = bio
 
         if not result:
@@ -574,7 +576,7 @@ class TeacherHandler(BaseHandler):
 class MainHandler(BaseHandler):
     # def __init__(self):
     def get_schedule(self, id):
-        schedules = get_schedule_data()
+        schedules = self.get_schedule_data()
         for schedule in schedules:
             if schedule['sid'] == int(id):
                 return schedule
@@ -592,7 +594,6 @@ class MainHandler(BaseHandler):
             self.send_login_response()
             return
 
-        logging.info("New request for id: " + id)
         if id == DEMO_ID: # If this is the demo account
             id = GAVIN_ID
         # schedule = self.get_schedule(self.request.get('id'))
@@ -621,7 +622,10 @@ class MainHandler(BaseHandler):
               'components': self.get_components_filename(), \
               'lunches': json.dumps(lunch_objs), \
               'self_photo': json.dumps(self.gen_photo_url(schedule["firstname"], schedule["lastname"], "school_photos")), \
-              'show_privacy_dialog': json.dumps(show_privacy_dialog) \
+              'show_privacy_dialog': json.dumps(show_privacy_dialog), \
+              # Multiply by 1000 to give Unix time in milliseconds
+              'fall_end_unix': str(int(time.mktime(FALL_TRI_END.timetuple()))*1000), \
+              'wint_end_unix': str(int(time.mktime(WINT_TRI_END.timetuple()))*1000) \
             }
 
             template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -830,7 +834,6 @@ class CronHandler(BaseHandler):
 class PrivacyHandler(BaseHandler): # Change and view privacy settings
     def load_obj(self):
         id = self.check_id()
-        logging.info(id)
         if id is None:
             return None
 
@@ -876,7 +879,6 @@ class AvatarHandler(BaseHandler):
         if not self.check_admin_id():
             self.error(403)
             return
-        logging.info("Recieved an administrator get request")
         args = string.split(user, '_')
         url = self.gen_photo_url(args[1], args[0], 'school_photos')
         self.redirect(url)
@@ -890,7 +892,7 @@ class SearchHandler(BaseHandler):
 
     def get(self, keyword):
         results = []
-        for schedule in SCHEDULE_INFO:
+        for schedule in self.get_schedule_data():
             test_keyword = schedule['firstname'] + " " + schedule['lastname']
             if keyword.lower() in test_keyword.lower():
                 results.append({"name": test_keyword, "prefix": self.get_url_prefix(schedule['grade'])})
@@ -907,7 +909,7 @@ app = webapp2.WSGIApplication([
     ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/privacy', PrivacyHandler),
-    ('/class/([\w\-]+)/([\w\-]+)', ClassHandler),
+    ('/class/(\w+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
     ('/room/([\w\-]+)', RoomHandler),
     ('/teacher/([\w\-]+)', TeacherHandler),
