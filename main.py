@@ -225,6 +225,24 @@ class LoginHandler (BaseHandler):
             self.response.write(create_error_obj("Something went wrong! " + \
                 email + " is in the password database, but it is not in schedules.json. Please contact the administrators."))
 
+class LunchIdLoginHandler(BaseHandler):
+    def post(self):
+        username = self.request.get('username').lower()
+        password = self.request.get('password')
+
+        ID = convert_email_to_id(username + "@eastsideprep.org")
+        logging.info(username + "@eastsideprep.org")
+        if not ID:
+            self.error(403)
+            self.response.write("No ID!")
+            return
+            
+        schedule = self.get_schedule_for_id(ID)
+        lunch_code = str(schedule["gradyear"]) + str(ID)
+        photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
+
+        self.response.write(json.dumps({"code": lunch_code, "photo": photo_url}))
+
 class LogoutHandler(BaseHandler):
     def post(self):
         self.response.delete_cookie("SID")
@@ -260,7 +278,7 @@ class ClassHandler(BaseHandler):
             for classobj in schedule['classes'][term_id]: # For each one of their classes
                 if self.is_same_class(user_class, classobj): # Check class name and period match
 
-                    if classobj['teacher'] or classobj['name'] == "Free Period": # If they are a student or it is a free period
+                    if schedule['gradyear'] or classobj['name'] == "Free Period": # If they are a student or it is a free period
                         if not result:
                             result = {"period": classobj['period'], \
                                       "teacher": classobj['teacher'], \
@@ -301,6 +319,9 @@ class ClassHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
+
+        if id == DEMO_ID:
+            id = GAVIN_ID
 
         term_id = self.get_term_id()
         user_schedule = self.get_schedule_for_id(id)
@@ -396,6 +417,10 @@ class PeriodHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
+
+        if id == DEMO_ID: # If this is the demo account
+            id = GAVIN_ID
+
         # Should return back which of your teachers are free,
         # which rooms are free, what class you currently have then,
         # and what classes you could take then
@@ -549,6 +574,9 @@ class TeacherHandler(BaseHandler):
         if id is None:
             self.error(403)
             return
+
+        if id == DEMO_ID: # If this is the demo account
+            id = GAVIN_ID
 
         teacher = teacher.lower()
         bio = self.get_bio(teacher)
@@ -919,4 +947,5 @@ app = webapp2.WSGIApplication([
     ('/admin/(\w+)', AdminHandler),
     ('/search/(.*)', SearchHandler),
     ('/cron/(\w+)', CronHandler),
+    ('/lunchid', LunchIdLoginHandler),
 ], debug=True)
