@@ -43,5 +43,6 @@ def auth_user(username, password):
         res = post(AUTHENTICATION_URL, obj)
         return True
     except urllib2.HTTPError as e:
-        logging.error("auth_user", e.fp.read())
+        logging.error(AUTHENTICATION_URL + ' returned ' + e.code)
+        logging.error(e.fp.read())
         return False
