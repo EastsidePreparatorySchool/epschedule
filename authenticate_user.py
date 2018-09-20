@@ -38,11 +38,15 @@ def get_auth_token():
 def auth_user(username, password):
     # The thing in the UTF8 field is the encoded version of the UTF8 checkmark
     obj = {'authenticity_token' : get_auth_token(), 'pseudonym_session[unique_id]' : username, 'redirect_to_ssl': '1',\
-    'pseudonym_session[password]' : password, 'utf8' : '%E2%9C%93', 'pseudonym_session[remember_me]': '0'}
+        'pseudonym_session[password]' : password, 'utf8' : '%E2%9C%93', 'pseudonym_session[remember_me]': '0'}
+    logging.info('Sending auth request for %s', username)
+
     try:
         res = post(AUTHENTICATION_URL, obj)
         return True
     except urllib2.HTTPError as e:
-        logging.error(AUTHENTICATION_URL + ' returned ' + e.code)
-        logging.error(e.fp.read())
+        logging.error('Auth request returned ' + str(e.code))
+        html = e.fp.read()
+        notices_pos = html.find('"notices"')
+        logging.error(html[notices_pos:])
         return False
