@@ -131,7 +131,7 @@
         "2018-09-11": "Conferences", 
         "2018-09-10": "Conferences", 
         "2018-09-13": "EBC Overnights", 
-        "2018-09-12": "A-H (no O)", 
+        "2018-09-12": "Convocation A-H", 
         "2018-09-14": "EBC Overnights", 
         "2018-09-17": "A-D_Mon", 
         "2018-12-06": "E-H_Thu", 
@@ -376,56 +376,6 @@
             {
                 "period": "E", 
                 "times": "02:05-03:30"
-            }
-        ], 
-        "A-H (no O)": [
-            {
-                "period": "A", 
-                "times": "08:00-08:40"
-            }, 
-            {
-                "period": "B", 
-                "times": "08:50-09:30"
-            }, 
-            {
-                "period": "C", 
-                "times": "09:40-10:20"
-            }, 
-            {
-                "period": "D", 
-                "times": "10:30-11:10"
-            }, 
-            {
-                "period": "E", 
-                "times": "11:20-11:50"
-            }, 
-            {
-                "period": "Lunch (MS)", 
-                "times": "12:00-12:30"
-            }, 
-            {
-                "period": "Advisory - US", 
-                "times": "12:00-12:30"
-            }, 
-            {
-                "period": "Lunch (US)", 
-                "times": "12:30-01:00"
-            }, 
-            {
-                "period": "Advisory - MS", 
-                "times": "12:30-01:00"
-            }, 
-            {
-                "period": "F", 
-                "times": "01:00-01:40"
-            }, 
-            {
-                "period": "G", 
-                "times": "01:50-02:30"
-            }, 
-            {
-                "period": "H", 
-                "times": "02:40-03:20"
             }
         ], 
         "EBC Overnights": [
@@ -684,6 +634,68 @@
             {
                 "period": "Make Up Exam Day", 
                 "times": "08:00-03:15"
+            }
+        ], 
+        "Convocation A-H": [
+            {
+                "period": "Advisory - US", 
+                "times": "08:00-08:15"
+            }, 
+            {
+                "period": "Advisory - MS", 
+                "times": "08:00-08:15"
+            }, 
+            {
+                "period": "Convocation", 
+                "times": "08:20-09:30"
+            }, 
+            {
+                "period": "A", 
+                "times": "09:35-10:10"
+            }, 
+            {
+                "period": "B", 
+                "times": "10:15-10:45"
+            }, 
+            {
+                "period": "C", 
+                "times": "10:50-11:20"
+            }, 
+            {
+                "period": "D", 
+                "times": "11:25-11:55"
+            }, 
+            {
+                "period": "E", 
+                "times": "12:00-01:05"
+            }, 
+            {
+                "period": "Lunch (MS)", 
+                "times": "12:00-12:30"
+            }, 
+            {
+                "period": "Lunch (US)", 
+                "times": "12:35-01:05"
+            }, 
+            {
+                "period": "F", 
+                "times": "01:10-01:40"
+            }, 
+            {
+                "period": "G", 
+                "times": "01:45-02:15"
+            }, 
+            {
+                "period": "H", 
+                "times": "02:20-02:50"
+            }, 
+            {
+                "period": "Advisory - MS", 
+                "times": "02:55-03:30"
+            }, 
+            {
+                "period": "Advisory - US", 
+                "times": "02:55-03:30"
             }
         ], 
         "A-D_Fri": [

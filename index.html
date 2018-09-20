@@ -157,6 +157,14 @@
     adjustDate(globalDate, 1);
     updateMainSchedule();
   }
+  function skipToWinter() {
+    globalDate.setDate(fallTriEndDate.getDate());
+    dateForward();
+  }
+  function skipToSpring() {
+    globalDate.setDate(wintTriEndDate.getDate());
+    dateForward();
+  }
   function copyDate(date) {
     return new Date(date.getTime());
   }
@@ -1030,6 +1038,9 @@
     width: 100%;
   }
 
+  paper-icon-item {
+    cursor: pointer;
+  }
   .mainheader {
     padding: 0 16px;
     width: initial;
@@ -1048,6 +1059,14 @@
           <div class="image-container">
             <img src="images/epslogo.jpg">
           </div>
+          <!--<paper-icon-item onclick="skipToWinter()">
+            <iron-icon class="drawer-icon" icon="device:brightness-low" item-icon></iron-icon>
+            <span>See winter schedule</span>
+          </paper-icon-item>
+          <paper-icon-item onclick="skipToSpring()">
+            <iron-icon class="drawer-icon" icon="device:brightness-high" item-icon></iron-icon>
+            <span>See spring schedule</span>
+          </paper-icon-item>-->
           <paper-icon-item onclick="signOut()">
             <iron-icon class="drawer-icon" icon="account-circle" item-icon></iron-icon>
             <span>Sign out</span>
@@ -1059,10 +1078,6 @@
           <paper-icon-item onclick="reportBug()">
             <iron-icon class="drawer-icon" icon="bug-report" item-icon></iron-icon>
             <span>Report a bug</span>
-          </paper-icon-item>
-          <paper-icon-item onclick="about()">
-            <iron-icon class="drawer-icon" icon="info" item-icon></iron-icon>
-            <span>About</span>
           </paper-icon-item>
         </div>
       </paper-header-panel>
@@ -1082,7 +1097,6 @@
               </paper-typeahead-input>
             </div>
           </neon-animated-pages>
-          <!-- example of showing avatar in toolbar. could also go in drawer -->
         </paper-toolbar>
         <div id="container" class="container" layout="" vertical="" center="">
           <x-schedule id="mainschedule" show="all"></x-schedule>
@@ -1127,7 +1141,7 @@
   </paper-dialog>
   <paper-toast id="toast" text="" duration=10000></paper-toast>
   <script>
-    <!-- Google Analytics reporting -->
+    // Runs Google Analytics
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
