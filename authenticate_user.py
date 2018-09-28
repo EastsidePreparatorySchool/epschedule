@@ -25,7 +25,7 @@ def get_auth_token():
     page_source = page.read()
     # Providing start and end bounds below (5000 to 6000 chars) makes our search faster
     # If search ever totally breaks, lower our start bound
-    starting_char = page_source.find('authenticity_token" value="', 5000, 6000)
+    starting_char = page_source.find('authenticity_token" value="')
 
     starting_index = starting_char + 27
     ending_index = starting_char + 27
@@ -37,7 +37,9 @@ def get_auth_token():
 
 def auth_user(username, password):
     # The thing in the UTF8 field is the encoded version of the UTF8 checkmark
-    obj = {'authenticity_token' : get_auth_token(), 'pseudonym_session[unique_id]' : username, 'redirect_to_ssl': '1',\
+    auth_token = get_auth_token()
+    print auth_token
+    obj = {'authenticity_token' : auth_token, 'pseudonym_session[unique_id]' : username, 'redirect_to_ssl': '1',\
         'pseudonym_session[password]' : password, 'utf8' : '%E2%9C%93', 'pseudonym_session[remember_me]': '0'}
     logging.info('Sending auth request for %s', username)
 
@@ -50,3 +52,5 @@ def auth_user(username, password):
         notices_pos = html.find('"notices"')
         logging.error(html[notices_pos:])
         return False
+
+print auth_user("guberti@eastsideprep.org", "jenga10S")

@@ -6,6 +6,8 @@ exceptions_file = open('photo_exceptions.json', 'rb')
 exceptions = json.load(exceptions_file)
 
 for image in os.listdir("../teacher_photos"):
+    if ("_" not in image):
+        continue
     print "Cropping " + str(image)
     try:
         with Image(filename=('../teacher_photos/' + str(image))) as img:
@@ -26,9 +28,10 @@ for image in os.listdir("../teacher_photos"):
                     y_except += exception[2]
             print "Calling: img.crop(" + str(cropparams[0] + x_except) + ", " + str(cropparams[1] + y_except) + ", " + str(img.width - cropparams[0] + x_except) + ", " + str(img.height - cropparams[1] + y_except) + ")"
             img.crop(cropparams[0] + x_except, cropparams[1] + y_except, img.width - cropparams[0] + x_except, img.height - cropparams[1] + y_except)
+            img.type = 'grayscale'
             img.convert('jpeg')
 
-            img.save(filename='../96x96_photos/' + os.path.splitext(image)[0] + '.jpg')
+            img.save(filename='../96x96_teachphotos/' + os.path.splitext(image)[0] + '.jpg')
 
     except Exception:
         print "No image found!"

@@ -5,6 +5,10 @@ with open('../data/schedules.json') as data_file:
     data = json.load(data_file)
 
 for student in data:
+	# For teacher photos
+	if student['grade']:
+		continue
+
 	photo_url = "http://four11.eastsideprep.org/system/"
 	if (student["grade"] != None):
 		photo_url += "students"
@@ -23,4 +27,4 @@ for student in data:
 	photo_url += student["lastname"].replace(" ", "_").replace(".", "") + "__" + student["firstname"] + ".jpg"
 	print photo_url
 
-	urllib.urlretrieve(photo_url, "../school_photos/" + student["lastname"].lower().replace(" ", "").replace(".", "") + "_" + student["firstname"].lower() + ".jpg")
+	urllib.urlretrieve(photo_url, "../teacher_photos/" + student["firstname"] + "_" + student["lastname"] + ".jpg")

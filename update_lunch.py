@@ -187,3 +187,5 @@ def place_rating(rating, sid, lunch_id, date, overwrite = True):
     obj.put()
 
     return overwrote
+
+read_lunches()

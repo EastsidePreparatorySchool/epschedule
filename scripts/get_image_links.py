@@ -119,7 +119,7 @@ for teacher in id_table:
         teaches = False
         n = ""
 
-        for clss in teacher['classes']:
+        for clss in teacher['classes'][0]:
             if clss['name'] != "Free Period":
                 n = clss['name']
                 teaches = True

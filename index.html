@@ -367,7 +367,11 @@
     var popupContainer = document.getElementById("popupContainer");
     var email = studentObj.email;
     email = email.toLowerCase();
-    var grade = studentObj.grade + "th Grade";
+    if (studentObj.grade) {
+      var grade = studentObj.grade + "th Grade";
+    } else {
+      var grade = "";
+    }
     popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
@@ -672,21 +676,15 @@
     // Add in the expansion functions to the full schedule
     if (type == "full" || type == "core") {
       scheduleElement.onTeacherTap = function(e) {
-        var orig_name = e.model.item.teacher;
-        var name = orig_name.replace(" ", "_");
-        requestAdditionalData(name, "teacher", renderTeacher);
-        openPopup(orig_name);
+        var orig_names = e.model.item.teacher.split(" ");
+        var username = orig_names[0][0] + orig_names[1];
+        requestAdditionalData(username.toLowerCase(), "student", renderStudent);
+        openPopup(e.model.item.teacher);
       }
       scheduleElement.onStudentTap = function(e) {
         var orig_name = e.model.item.firstname + " " + e.model.item.lastname;
-        var name = e.model.item.firstname + "_" + e.model.item.lastname;
-        name = name.replace(/ /g, '');
-        name = name.toLowerCase();
-        if (e.model.item.grade) { // If they're a student
-          requestAdditionalData(name, "student", renderStudent);
-        } else {
-          requestAdditionalData(name, "teacher", renderTeacher);
-        }
+        var username = e.model.item.email.slice(0, -17);
+        requestAdditionalData(username, "student", renderStudent);
         openPopup(orig_name);
       }
       scheduleElement.onRoomTap = function(e) {

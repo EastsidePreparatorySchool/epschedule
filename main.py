@@ -137,12 +137,10 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
     def get_schedule_data(self):
         return SCHEDULE_INFO
 
-    def gen_photo_url(self, firstname, lastname, folder):
-        input_data = (lastname + "_" + firstname).lower().replace(" ", "")
-
+    def gen_photo_url(self, username, folder):
         photo_hasher = SHA256.new(CRYPTO_KEY)
 
-        photo_hasher.update(bytes(input_data))
+        photo_hasher.update(bytes(username))
         encoded_filename = photo_hasher.hexdigest()
 
         return ('/' + folder + '/' + encoded_filename + '.jpg')
@@ -236,10 +234,18 @@ class LunchIdLoginHandler(BaseHandler):
             self.error(403)
             self.response.write("No ID!")
             return
+
+        if not (authenticate_user.auth_user(username + "@eastsideprep.org", password)): # If four11 authentication failed, return our error
+            self.error(403)
+            self.response.write("Wrong password!")
+            return
             
         schedule = self.get_schedule_for_id(ID)
-        lunch_code = str(schedule["gradyear"]) + str(ID)
-        photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
+        if (schedule['gradyear']):
+            lunch_code = str(schedule["gradyear"]) + str(ID)
+        else:
+            lunch_code = str(10000000 + ID)
+        photo_url = self.gen_photo_url(schedule['username'], '96x96_photos')
 
         self.response.write(json.dumps({"code": lunch_code, "photo": photo_url}))
 
@@ -288,7 +294,7 @@ class ClassHandler(BaseHandler):
                         photo_url = "/images/placeholder_small.png" # Default placeholder
 
                         if email in opted_in:
-                            photo_url = self.gen_photo_url(schedule['firstname'], schedule['lastname'], '96x96_photos')
+                            photo_url = self.gen_photo_url(schedule['username'], '96x96_photos')
 
                         student = {"firstname": schedule['firstname'], \
                                    "lastname": schedule['lastname'], \
@@ -337,7 +343,7 @@ class ClassHandler(BaseHandler):
 
 
 class StudentHandler(BaseHandler):
-    def get(self, student_name):
+    def get(self, username):
         id = self.check_id()
         if id is None:
             self.error(403)
@@ -346,15 +352,10 @@ class StudentHandler(BaseHandler):
         if id == str(DEMO_ID):
             id = GAVIN_ID
 
-        # Split student_name into firstname and lastname
-        student_names = student_name.split("_")
-        firstname = student_names[0].lower()
-        lastname = student_names[1].lower()
-
+        email = username + "@eastsideprep.org"
         show_full_schedule = False
         show_photo = False
         # TODO fix this ##########################################################
-        email = generate_email(firstname)
         user_obj_query = self.query_by_email(email, True)
         user_obj = user_obj_query.get()
 
@@ -362,7 +363,11 @@ class StudentHandler(BaseHandler):
             show_full_schedule = user_obj.share_schedule
             show_photo = user_obj.share_photo
 
-        student_schedule = self.get_schedule_for_name(firstname, lastname)
+        sid = convert_email_to_id(email)
+        student_schedule = self.get_schedule_for_id(sid)
+
+        if is_teacher_schedule(student_schedule):
+            show_photo = True
 
         if not student_schedule:
             self.error(404)
@@ -370,7 +375,7 @@ class StudentHandler(BaseHandler):
 
         user_schedule = self.get_schedule_for_id(id)
 
-        if is_teacher_schedule(user_schedule) or show_full_schedule:
+        if is_teacher_schedule(user_schedule) or show_full_schedule or is_teacher_schedule(student_schedule):
             # If the user is a teacher
             response_schedule = copy.deepcopy(student_schedule)
         else:
@@ -380,7 +385,7 @@ class StudentHandler(BaseHandler):
         response_schedule["email"] = email
 
         if show_photo:
-            response_schedule["photo_url"] = self.gen_photo_url(firstname, lastname, 'school_photos')
+            response_schedule["photo_url"] = self.gen_photo_url(username, 'school_photos')
         else:
             response_schedule["photo_url"] = "/images/placeholder.png"
 
@@ -580,6 +585,8 @@ class TeacherHandler(BaseHandler):
 
         teacher = teacher.lower()
         bio = self.get_bio(teacher)
+        if not bio:
+            bio = ""
         schedule_data = self.get_schedule_data()
         teachernames = string.split(teacher, "_")
         result = None
@@ -649,7 +656,7 @@ class MainHandler(BaseHandler):
               'days': json.dumps(DAYS), \
               'components': self.get_components_filename(), \
               'lunches': json.dumps(lunch_objs), \
-              'self_photo': json.dumps(self.gen_photo_url(schedule["firstname"], schedule["lastname"], "school_photos")), \
+              'self_photo': json.dumps(self.gen_photo_url(schedule["username"], "school_photos")), \
               'show_privacy_dialog': json.dumps(show_privacy_dialog), \
               # Multiply by 1000 to give Unix time in milliseconds
               'fall_end_unix': str(int(time.mktime(FALL_TRI_END.timetuple()))*1000), \
