@@ -502,13 +502,12 @@
         period: "X",
         time: ""
       };
-      console.log(scheduleObj.name);
       LPC_COMMONS_CLASSES = ["Lunch", "Assembly", "US Community"];
       if (LPC_COMMONS_CLASSES.includes(scheduleObj.name)) {
 
         scheduleObj.room = "LPC Commons";
       }
-      if (scheduleObj.name == "Lunch") {
+      if (scheduleObj.name == "Lunch (US)" || scheduleObj.name == "Lunch (MS)") {
         scheduleObj.lunchInfo = lunchInfo;
       }
     }
@@ -770,12 +769,7 @@
 
     input.addEventListener('pt-item-confirmed', function() {
       var obj = input.inputObject;
-      var name = obj.name.replace(" ", "_");
-      if (obj.prefix == "student") {
-        requestAdditionalData(name, "student", renderStudent);
-      } else {
-        requestAdditionalData(name, "teacher", renderTeacher);
-      }
+      requestAdditionalData(obj.username, "student", renderStudent);
       openPopup(obj.name);
     });
   });

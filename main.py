@@ -279,6 +279,7 @@ class ClassHandler(BaseHandler):
                 "students": []}
 
         opted_in = self.gen_opted_in_table()
+        logging.info(str(opted_in))
 
         for schedule in schedules: # Load up each student's schedule
             for classobj in schedule['classes'][term_id]: # For each one of their classes
@@ -300,8 +301,7 @@ class ClassHandler(BaseHandler):
                                    "lastname": schedule['lastname'], \
                                    "grade": schedule['grade'], \
                                    "email": email, \
-                                   "photo_url": photo_url}
-                 
+                                   "photo_url": photo_url}                 
 
                         # Lines below are for creating the demo, but are no longer used
 
@@ -919,18 +919,12 @@ class AvatarHandler(BaseHandler):
         self.redirect(url)
 
 class SearchHandler(BaseHandler):
-    def get_url_prefix(self, grade):
-        if grade:
-            return "student"
-        else:
-            return "teacher"
-
     def get(self, keyword):
         results = []
         for schedule in self.get_schedule_data():
             test_keyword = schedule['firstname'] + " " + schedule['lastname']
             if keyword.lower() in test_keyword.lower():
-                results.append({"name": test_keyword, "prefix": self.get_url_prefix(schedule['grade'])})
+                results.append({"name": test_keyword, "username": schedule['username']})
                 if (len(results) >= 5): # We only display five results
                     break
 
