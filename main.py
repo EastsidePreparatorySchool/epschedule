@@ -145,13 +145,15 @@ class BaseHandler(webapp2.RequestHandler): # All handlers inherit from this hand
 
         return ('/' + folder + '/' + encoded_filename + '.jpg')
 
+    def decrypt_id(self, encoded_id):
+        return aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
+
     def check_id(self):
         encoded_id = self.request.cookies.get("SID")
         if not encoded_id:
             return None
         # TODO add code to check if id is valid
-        id = aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
-        return id
+        return self.decrypt_id(encoded_id)
 
     def check_admin_id(self):
         return self.check_id() == GAVIN_ID
@@ -234,8 +236,8 @@ class LunchIdLoginHandler(BaseHandler):
             self.error(403)
             self.response.write("No ID!")
             return
-
-        if not (authenticate_user.auth_user(username + "@eastsideprep.org", password)): # If four11 authentication failed, return our error
+        # If four11 authentication failed, return our error
+        if not (authenticate_user.auth_user(username + "@eastsideprep.org", password)): 
             self.error(403)
             self.response.write("Wrong password!")
             return
@@ -247,7 +249,22 @@ class LunchIdLoginHandler(BaseHandler):
             lunch_code = str(10000000 + ID)
         photo_url = self.gen_photo_url(schedule['username'], '96x96_photos')
 
-        self.response.write(json.dumps({"code": lunch_code, "photo": photo_url}))
+        obj = {"code": lunch_code, "photo": photo_url, \
+        "updateKey": base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))}
+        
+        self.response.write(json.dumps(obj))
+
+class LunchIdUpdateHandler(BaseHandler):
+    def get(self):
+        #id = decryptData(self.request.get("updateKey"))
+        #if id is None:
+        #    self.error(403)
+        #    return
+        lunches = update_lunch.get_all_future_lunches(datetime.datetime.now())
+        self.response.write(json.dumps(lunches))
+        
+
+
 
 class LogoutHandler(BaseHandler):
     def post(self):
@@ -949,4 +966,5 @@ app = webapp2.WSGIApplication([
     ('/search/(.*)', SearchHandler),
     ('/cron/(\w+)', CronHandler),
     ('/lunchid', LunchIdLoginHandler),
+    ('/lunchupdate', LunchIdUpdateHandler)
 ], debug=True)

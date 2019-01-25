@@ -58,7 +58,10 @@ def sanitize_events(events): # Sanitizes a list of events obtained from parse_ev
     for event in events:
         # Convert the datetime string (e.g. 20151124T233401) to a date object
         # Gets format from global var
-        date = datetime.datetime.strptime(event["DTSTART"], format).date()
+        try:
+            date = datetime.datetime.strptime(event["DTSTART"], format).date()
+        except ValueError:
+            date = datetime.datetime.strptime(event["DTSTART"], "%Y%m%d").date()
 
         # Remove the price and back slashes from the summary
         summary = string.split(event["SUMMARY"], " | ")[0] # Remove the price
@@ -157,6 +160,13 @@ def get_lunch_id_for_date(date):
     else:
         return None
 
+def get_all_future_lunches(date):
+    lunches = Lunch.query(Lunch.day >= date).order(Lunch.day).fetch(5)
+    obj = []
+    for item in lunches:
+        obj.append({"day": str(item.day), "summary": item.summary})
+    return obj
+
 
 def place_rating(rating, sid, lunch_id, date, overwrite = True):
     # Detects if there is already a rating for that student and lunch,
@@ -188,4 +198,4 @@ def place_rating(rating, sid, lunch_id, date, overwrite = True):
 
     return overwrote
 
-read_lunches()
+#read_lunches()
