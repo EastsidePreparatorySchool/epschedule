@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/guberti/epschedule.svg?branch=master)](https://travis-ci.org/guberti/epschedule)
-
 # EPSchedule
 A schedule app for Eastside Preparatory School, built with [Google App Engine](https://cloud.google.com/appengine) and [Polymer](https://polymer-project.org).
 
