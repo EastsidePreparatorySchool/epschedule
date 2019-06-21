@@ -67,6 +67,7 @@ def setup_tests():
 
     # TODO(juberti): clean this up to not have these nested dirs
     sys.path.insert(0, gae_sdk_path + '/google_appengine')
+    print gae_sdk_path + '/google_appengine'
     import dev_appserver
     dev_appserver.fix_sys_path()
     sys.path.append(webtest_path)
