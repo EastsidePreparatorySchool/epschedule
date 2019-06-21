@@ -52,5 +52,3 @@ def auth_user(username, password):
         notices_pos = html.find('"notices"')
         logging.error(html[notices_pos:])
         return False
-
-print auth_user("guberti@eastsideprep.org", "jenga10S")
