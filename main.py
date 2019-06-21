@@ -1,14 +1,6 @@
-import base64
-import copy
-import datetime
-import time
-import jinja2
-import json
-import logging
-import os
-import random
-import string
-import webapp2
+import base64, copy, datetime, time
+import jinja2, json, logging, os
+import random, string, webapp2
 from sets import Set
 
 import authenticate_user
@@ -21,10 +13,7 @@ from google.appengine.ext import vendor
 vendor.add('lib')
 
 # External libraries.
-from py_bcrypt import bcrypt
 from slowaes import aes
-from sendgrid import SendGridClient
-from sendgrid import Mail
 from Crypto.Hash import SHA256
 
 def open_data_file(filename, has_test_data = False):
@@ -42,7 +31,6 @@ DEMO_USER = "demo"
 DEMO_ID = "9999"
 GAVIN_ID = "4093"
 CRYPTO_KEY = load_data_file('crypto.key', True).strip()
-API_KEYS = load_json_file('api_keys.json', True)
 ID_TABLE = load_json_file('id_table.json', True)
 SCHEDULE_INFO = load_json_file('schedules.json', True)
 LAT_LON_COORDS = load_json_file('room_locations.json')
@@ -201,7 +189,11 @@ class LoginHandler (BaseHandler):
 
         username = string.split(email, "@")[0]
 
-        if not (authenticate_user.auth_user(username + "@eastsideprep.org", password)): # If four11 authentication failed, return our error
+        if email == "demo" and password == "demo":
+            id = GAVIN_ID
+            email = "guberti@eastsideprep.org"
+            pass
+        elif not (authenticate_user.auth_user(username + "@eastsideprep.org", password)): # If four11 authentication failed, return our error
             self.response.write(json.dumps({"error":"Your password is incorrect."}))
             return
 
@@ -273,10 +265,10 @@ class LogoutHandler(BaseHandler):
         self.response.write(json.dumps({}))
 
 class ClassHandler(BaseHandler):
-    def gen_opted_in_table(self):
+    def gen_opted_out_table(self):
         table = set()
-        opted_in = db.GqlQuery("SELECT * FROM User WHERE share_photo = TRUE")
-        for student in opted_in:
+        opted_out = db.GqlQuery("SELECT * FROM User WHERE share_photo = FALSE")
+        for student in opted_out:
             table.add(student.email)
 
         return table
@@ -295,8 +287,7 @@ class ClassHandler(BaseHandler):
                 "term_id": term_id, \
                 "students": []}
 
-        opted_in = self.gen_opted_in_table()
-        logging.info(str(opted_in))
+        opted_out = self.gen_opted_out_table()
 
         for schedule in schedules: # Load up each student's schedule
             for classobj in schedule['classes'][term_id]: # For each one of their classes
@@ -309,10 +300,10 @@ class ClassHandler(BaseHandler):
                                       "students": []}
 
                         email = generate_email(schedule['username'])
-                        photo_url = "/images/placeholder_small.png" # Default placeholder
+                        photo_url = self.gen_photo_url(schedule['username'], '96x96_photos')
 
-                        if email in opted_in:
-                            photo_url = self.gen_photo_url(schedule['username'], '96x96_photos')
+                        if email in opted_out:
+                            photo_url = "/images/placeholder_small.png" # Default placeholder
 
                         student = {"firstname": schedule['firstname'], \
                                    "lastname": schedule['lastname'], \
@@ -370,9 +361,8 @@ class StudentHandler(BaseHandler):
             id = GAVIN_ID
 
         email = username + "@eastsideprep.org"
-        show_full_schedule = False
-        show_photo = False
-        # TODO fix this ##########################################################
+        show_full_schedule = True
+        show_photo = True
         user_obj_query = self.query_by_email(email, True)
         user_obj = user_obj_query.get()
 
