@@ -44,11 +44,9 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 FALL_TRI_END = datetime.datetime(2018, 12, 21, 15, 30, 0, 0)
 WINT_TRI_END = datetime.datetime(2019, 3, 22, 15, 30, 0, 0)
 
-class User(db.Model):
+class User(db.Expando):
     email = db.StringProperty(required=True)
-    password = db.StringProperty()
     join_date = db.DateTimeProperty()
-    verified = db.BooleanProperty(required=True)
 
     share_photo = db.BooleanProperty(default=False)
     share_schedule = db.BooleanProperty(default=False)
@@ -866,6 +864,14 @@ class AdminHandler(BaseHandler):
             if "@eastsideprep.org" not in query_result.email:
                 query_result.email += "@eastsideprep.org"
                 query_result.put()
+
+    def remove_outdated_props(self):
+        query = db.GqlQuery("SELECT * FROM User")
+        for query_result in query:
+            for prop in ['password', 'verified']:
+                if hasattr(query_result, prop)
+                    delattr(query_result, prop)
+                    query_result.put()
 
 class CronHandler(BaseHandler):
     def get(self, job): # On url invoke
