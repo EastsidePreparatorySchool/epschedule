@@ -33,7 +33,6 @@ GAVIN_ID = "4093"
 CRYPTO_KEY = load_data_file('crypto.key', True).strip()
 ID_TABLE = load_json_file('id_table.json', True)
 SCHEDULE_INFO = load_json_file('schedules.json', True)
-LAT_LON_COORDS = load_json_file('room_locations.json')
 BIOS = load_json_file('bios.json')
 DAYS = load_json_file('exceptions.json')
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -541,38 +540,6 @@ class PeriodHandler(BaseHandler):
 
         self.response.write(json.dumps(dataobj))
 
-class RoomHandler(BaseHandler):
-    def get(self, room):
-        id = self.check_id()
-        if id is None:
-            self.error(403)
-            return
-        schedules = self.get_schedule_data()
-        room = room.lower()
-        room = room.replace('_', '-');
-        room_schedule = {'name':room, 'classes':[]}
-        for schedule in schedules:
-            for class_obj in schedule['classes'][term_id]:
-                if room == class_obj['room'].lower(): # If the class is in the room
-                    already_there = False
-                    for room_class_obj in room_schedule['classes']:
-                        if class_obj == room_class_obj:
-                            already_there = True
-                    if not already_there:
-                        room_schedule['classes'].append(class_obj)
-
-        for room_obj in LAT_LON_COORDS:
-            if room_obj['name'] == room:
-                room_schedule['latitude'] = room_obj['latitude']
-                room_schedule['longitude'] = room_obj['longitude']
-                break
-
-        if len(room_schedule['classes']) == 0:
-            self.error(404)
-            return
-
-        self.response.write(json.dumps(room_schedule))
-
 class TeacherHandler(BaseHandler):
     def get(self, teacher):
         id = self.check_id()
@@ -925,7 +892,6 @@ app = webapp2.WSGIApplication([
     ('/privacy', PrivacyHandler),
     ('/class/(\w+)', ClassHandler),
     ('/period/(\w+)', PeriodHandler),
-    ('/room/([\w\-]+)', RoomHandler),
     ('/teacher/([\w\-]+)', TeacherHandler),
     ('/student/([\w\-]+)', StudentHandler),
     ('/lunch', LunchRateHandler),
