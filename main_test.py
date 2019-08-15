@@ -15,10 +15,6 @@ from google.appengine.ext import db
 from google.appengine.ext import testbed
 from google.appengine.ext import vendor
 
-vendor.add('lib')
-
-from py_bcrypt import bcrypt
-
 TEST_EMAIL = 'tturtle@eastsideprep.org'
 ADMIN_EMAIL = 'suzwack@eastsideprep.org'
 NON_EPS_EMAIL = 'test@example.org'
@@ -74,23 +70,6 @@ class HandlerTestBase(unittest.TestCase):
         obj = json.loads(response.body)
         self.assertNotEqual(obj['error'], '')
 
-    def addVerifiedUser(self):
-        self.addUser(TEST_EMAIL, TEST_PASSWORD, datetime.datetime.now(), True)
-
-    def addUnverifiedUser(self):
-        self.addUser(TEST_EMAIL, TEST_PASSWORD, datetime.datetime.now(), False)
-
-    def addAdminUser(self):
-        self.addUser(ADMIN_EMAIL, ADMIN_PASSWORD, datetime.datetime.now(), True)
-
-    def addUser(self, email, password, join_date, verified):
-        hashed = bcrypt.hashpw(password, bcrypt.gensalt(1))
-        user = User(email = email,
-                    password = hashed,
-                    join_date = join_date,
-                    verified = verified)
-        user.put()
-
     def queryUsersByEmail(self, email):
         users = []
         query = db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
@@ -108,7 +87,7 @@ class HandlerTestBase(unittest.TestCase):
         return url[slash:]
 
 # These tests are all from before I switched
-# the system to use EPS logins instead of 
+# the system to use EPS logins instead of
 # having people create and verify accounts
 
 # They have been commented out so the tests
