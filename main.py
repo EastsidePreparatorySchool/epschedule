@@ -1,20 +1,27 @@
-import base64, copy, datetime, time
-import jinja2, json, logging, os
-import random, string, webapp2
+import base64
+import copy
+import datetime
+import json
+import logging
+import os
+import random
+import string
+import time
 from sets import Set
 
 import authenticate_user
+import jinja2
 import update_lunch
-
-from google.appengine.ext import db
-from google.appengine.ext import vendor
+import webapp2
+from google.appengine.ext import db, vendor
 
 # Add any libraries installed in the "lib" folder.
-vendor.add('lib')
+vendor.add("lib")
 
 # External libraries.
-from slowaes import aes
 from Crypto.Hash import SHA256
+from slowaes import aes
+
 
 def open_data_file(filename, has_test_data = False):
     if has_test_data and 'EPSCHEDULE_USE_TEST_DATA' in os.environ:
@@ -221,11 +228,11 @@ class LunchIdLoginHandler(BaseHandler):
             self.response.write("No ID!")
             return
         # If four11 authentication failed, return our error
-        if not (authenticate_user.auth_user(username + "@eastsideprep.org", password)): 
+        if not (authenticate_user.auth_user(username + "@eastsideprep.org", password)):
             self.error(403)
             self.response.write("Wrong password!")
             return
-            
+
         schedule = self.get_schedule_for_id(ID)
         if (schedule['gradyear']):
             lunch_code = str(schedule["gradyear"]) + str(ID)
@@ -235,7 +242,7 @@ class LunchIdLoginHandler(BaseHandler):
 
         obj = {"code": lunch_code, "photo": photo_url, \
         "updateKey": base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))}
-        
+
         self.response.write(json.dumps(obj))
 
 class LunchIdUpdateHandler(BaseHandler):
@@ -246,7 +253,7 @@ class LunchIdUpdateHandler(BaseHandler):
         #    return
         lunches = update_lunch.get_all_future_lunches(datetime.datetime.now())
         self.response.write(json.dumps(lunches))
-        
+
 
 
 
@@ -301,7 +308,7 @@ class ClassHandler(BaseHandler):
                                    "lastname": schedule['lastname'], \
                                    "grade": schedule['grade'], \
                                    "email": email, \
-                                   "photo_url": photo_url}                 
+                                   "photo_url": photo_url}
 
                         # Lines below are for creating the demo, but are no longer used
 
@@ -522,7 +529,7 @@ class PeriodHandler(BaseHandler):
                 dataobj['currentclass'] = clss
                 dataobj['classes'].remove(clss)
                 break
-        
+
         if 'currentclass' not in dataobj:
             dataobj['currentclass'] = {'name': "Free Period", 'period': period, 'room': None, 'teacher': None}
 
