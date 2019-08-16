@@ -27,15 +27,25 @@ If you don't already have Python 2 on your computer, (download the latest versio
 
 Now we need to add Python to the local PATH to access it from the command line. Either do this with the GUI or run `setx path "%path%;c:/Python27"` from the command prompt. To test if you've installed Python correctly, run `python --version` from the command line (it should say *Python 2.7.16*).
 
-Lastly, we need to use Python's package manager PIP to install the `pycrypto` library (we use this for computing SHA256 hashes). First, upgrade pip by running `python -m pip install --upgrade pip`. Then, install `pycrypto` with `python -m pip install pycrypto`.
+We also need to use Python's package manager PIP to install the `pycrypto` library (we use this for computing SHA256 hashes). First, upgrade pip by running `python -m pip install --upgrade pip`. Next, install (Microsoft Visual C++ Compiler for Python 2.7)[https://www.microsoft.com/en-us/download/details.aspx?id=44266], which PyCrypto uses for AES encryption/decryption. Lastly, install PyCrypto with `pip install --user pycrypto`.
 
 ### NPM and packages
 NPM is a package manager used by EPSchedule to install `bower` and `grunt`. If you don't already have it installed, download it from https://www.npmjs.com/package/download. It should add itself to the local PATH by default.
 
-Now we can install Bower and Grunt by running
+Now we can install Bower and Grunt by running:
 ```
-npm install bower
-npm install grunt
+npm install bower -g
+npm install grunt -g
+```
+
+The `-g` flag installs them globally, so we can use them from the command line. That's a good thing, because now we'll need to use them. First, we'll install all webcomponent dependencies by running
+```
+bower install
+```
+
+Then, we'll compress those dependencies into a single compressed file by running
+```
+grunt vulcanize
 ```
 
 ### Google App Engine
