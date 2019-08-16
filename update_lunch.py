@@ -2,7 +2,6 @@ import datetime
 import logging
 import re
 import string
-import urllib
 import urllib2
 from HTMLParser import HTMLParser
 

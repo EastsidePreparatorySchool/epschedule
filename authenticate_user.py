@@ -52,7 +52,7 @@ def auth_user(username, password):
     logging.info("Sending auth request for %s", username)
 
     try:
-        res = post(AUTHENTICATION_URL, obj)
+        post(AUTHENTICATION_URL, obj)
         return True
     except urllib2.HTTPError as e:
         logging.error("Auth request returned " + str(e.code))
