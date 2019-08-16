@@ -1,7 +1,7 @@
 import cookielib
-import urllib2
-import urllib
 import logging
+import urllib
+import urllib2
 
 AUTHENTICATION_URL = 'https://eastsideprep.instructure.com/login/ldap'
 

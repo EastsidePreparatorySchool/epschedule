@@ -1,12 +1,12 @@
-import urllib2
-import urllib
-import string
-import string
-import logging
 import datetime
+import logging
 import re
-from google.appengine.ext import ndb
+import string
+import urllib
+import urllib2
 from HTMLParser import HTMLParser
+
+from google.appengine.ext import ndb
 
 # Globals
 format = "%Y%m%dT%H%M%S"
