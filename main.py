@@ -4,7 +4,6 @@ import datetime
 import json
 import logging
 import os
-import random
 import string
 import time
 from sets import Set
@@ -208,7 +207,6 @@ class LoginHandler(BaseHandler):
         if email == "demo" and password == "demo":
             id = GAVIN_ID
             email = "guberti@eastsideprep.org"
-            pass
         elif not (
             authenticate_user.auth_user(username + "@eastsideprep.org", password)
         ):  # If four11 authentication failed, return our error
