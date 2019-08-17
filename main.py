@@ -4,6 +4,7 @@ import datetime
 import json
 import logging
 import os
+from os import path
 import string
 import time
 from sets import Set
@@ -22,20 +23,12 @@ from Crypto.Hash import SHA256
 from slowaes import aes
 
 
-def open_data_file(filename, has_test_data=False):
-    if has_test_data and "EPSCHEDULE_USE_TEST_DATA" in os.environ:
-        fullname = "data/test_" + filename
-    else:
-        fullname = "data/" + filename
-    return open(fullname, "rb")
+def load_data_file(filename):
+    return open(path.join("data", filename), "rb").read()
 
 
-def load_data_file(filename, has_test_data=False):
-    return open_data_file(filename, has_test_data).read()
-
-
-def load_json_file(filename, has_test_data=False):
-    return json.load(open_data_file(filename, has_test_data))
+def load_json_file(filename):
+    return json.load(open(path.join("data", filename), "rb"))
 
 
 DEMO_USER = "demo"
@@ -47,7 +40,7 @@ SCHEDULE_INFO = load_json_file("schedules.json", True)
 BIOS = load_json_file("bios.json")
 DAYS = load_json_file("exceptions.json")
 JINJA_ENVIRONMENT = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+    loader=jinja2.FileSystemLoader(path.dirname(__file__)),
     extensions=["jinja2.ext.autoescape"],
     autoescape=True,
 )
@@ -64,8 +57,13 @@ class User(db.Expando):
     share_schedule = db.BooleanProperty(default=False)
     seen_update_dialog = db.BooleanProperty(default=False)
 
+def email_to_username(email):
+    return string.split(email, "@")[0]
 
-def convert_email_to_id(email):
+def email_to_id(email):
+    return username_to_id(email_to_username(email))
+
+def username_to_id(username):
     email = email.lower()
     pieces = string.split(email, "@")
     username = pieces[0]
@@ -77,21 +75,19 @@ def convert_email_to_id(email):
     return None
 
 
-# TODO merge with id to username function
-def convert_id_to_email(id):
-    email = ""
+def id_to_email(id):
+    username = None
 
     if str(id) == DEMO_ID:
-        email = DEMO_USER
+        return username_to_username = DEMO_USER
 
     for student in ID_TABLE:
         if str(student["id"]) == str(id):
-            email = student["username"]
+            username = student["username"]
 
-    if email == "":
-        return None
-    else:
-        return email + "@eastsideprep.org"
+    if username:
+        return username_to_email(username)
+    # Otherwise, we return None
 
 
 def normalize_name(name):
@@ -113,7 +109,7 @@ def normalize_classname(text):
     return clean_text
 
 
-def generate_email(username):
+def username_to_email(username):
     return username + "@eastsideprep.org"
 
 
@@ -196,7 +192,7 @@ class LoginHandler(BaseHandler):
         email = self.request.get("email").lower()
         password = self.request.get("password")
 
-        id = convert_email_to_id(email)
+        id = email_to_id(email)
 
         if not id:  # If there is no id for the email, don't try to log in
             self.response.write(json.dumps({"error": "That email is not recognized."}))
@@ -207,9 +203,8 @@ class LoginHandler(BaseHandler):
         if email == "demo" and password == "demo":
             id = GAVIN_ID
             email = "guberti@eastsideprep.org"
-        elif not (
-            authenticate_user.auth_user(username + "@eastsideprep.org", password)
-        ):  # If four11 authentication failed, return our error
+        # If four11 authentication failed, return our error
+        elif not (authenticate_user.auth_user(email, password)):
             self.response.write(json.dumps({"error": "Your password is incorrect."}))
             return
 
@@ -217,13 +212,11 @@ class LoginHandler(BaseHandler):
         user_obj_query = self.query_by_email(email)
         if not user_obj_query.get():
             student_obj = User(
-                email=username + "@eastsideprep.org", join_date=datetime.datetime.now()
+                email=email, join_date=datetime.datetime.now()
             )
             student_obj.put()
 
         # If the authentication was successful, give the user an auth token
-
-        id = convert_email_to_id(email)
         if id is not None:
             encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
             expiration_date = datetime.datetime.now()
@@ -247,14 +240,13 @@ class LunchIdLoginHandler(BaseHandler):
         username = self.request.get("username").lower()
         password = self.request.get("password")
 
-        ID = convert_email_to_id(username + "@eastsideprep.org")
-        logging.info(username + "@eastsideprep.org")
+        ID = username_to_id(username)
         if not ID:
             self.error(403)
             self.response.write("No ID!")
             return
         # If four11 authentication failed, return our error
-        if not (authenticate_user.auth_user(username + "@eastsideprep.org", password)):
+        if not (authenticate_user.auth_user(username_to_email(username), password)):
             self.error(403)
             self.response.write("Wrong password!")
             return
@@ -338,7 +330,7 @@ class ClassHandler(BaseHandler):
                                 "students": [],
                             }
 
-                        email = generate_email(schedule["username"])
+                        email = username_to_email(schedule["username"])
                         photo_url = self.gen_photo_url(
                             schedule["username"], "96x96_photos"
                         )
@@ -411,9 +403,9 @@ class StudentHandler(BaseHandler):
         if id == str(DEMO_ID):
             id = GAVIN_ID
 
-        email = username + "@eastsideprep.org"
-        show_full_schedule = True
-        show_photo = True
+        email = username_to_email(username)
+        show_full_schedule, show_photo = True
+
         user_obj_query = self.query_by_email(email)
         user_obj = user_obj_query.get()
 
@@ -421,7 +413,7 @@ class StudentHandler(BaseHandler):
             show_full_schedule = user_obj.share_schedule
             show_photo = user_obj.share_photo
 
-        sid = convert_email_to_id(email)
+        sid = username_to_id(username)
         student_schedule = self.get_schedule_for_id(sid)
 
         if is_teacher_schedule(student_schedule):
@@ -650,7 +642,7 @@ class TeacherHandler(BaseHandler):
                 and schedule["lastname"].lower() == teachernames[1]
             ):
                 result = copy.deepcopy(schedule)
-                result["email"] = generate_email(schedule["username"])
+                result["email"] = username_to_email(schedule["username"])
                 result["bio"] = bio
 
         if not result:
@@ -698,7 +690,7 @@ class MainHandler(BaseHandler):
 
             if self.request.cookies.get("SEENPRIVDIALOG") != "1":
                 if schedule["grade"]:  # If the user is a student
-                    user_obj_query = self.query_by_email(convert_id_to_email(id))
+                    user_obj_query = self.query_by_email(id_to_email(id))
                     obj = user_obj_query.get()
                     if obj:
                         show_privacy_dialog = not obj.seen_update_dialog
@@ -941,7 +933,7 @@ class PrivacyHandler(BaseHandler):  # Change and view privacy settings
         if id is None:
             return None
 
-        email = convert_id_to_email(id)
+        email = id_to_email(id)
         user_obj_query = self.query_by_email(email)
         return user_obj_query.get()
 
