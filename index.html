@@ -142,7 +142,7 @@
         date.setDate(date.getDate() + 1);
     }
 
-    FIRST_DAY = new Date(2018, 8, 12);
+    FIRST_DAY = new Date(2019, 8, 4);
 
     if (date < FIRST_DAY) {
       date = FIRST_DAY;
@@ -325,23 +325,23 @@
   function renderPeriod(periodObj) {
     var popupContainer = document.getElementById("popupContainer");
 
-    popupContainer.innerHTML = 
-    '<div class="period" layout vertical>' + 
-      '<div class="halfwidth periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' + 
-        '<div class="periodheading">Other classes to take:</div>' + 
+    popupContainer.innerHTML =
+    '<div class="period" layout vertical>' +
+      '<div class="halfwidth periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' +
+        '<div class="periodheading">Other classes to take:</div>' +
         '<x-schedule id="altclassesschedule" show="all" swipe-disabled></x-schedule>' +
-      '</paper-material></div>' + 
+      '</paper-material></div>' +
 
       '<div class="halfwidth"><div class="periodbottomspace"><paper-material class="periodsubcontainer periodmediumpadding" elevation="2">' +
         '<div class="periodheading">Empty rooms:</div>' +
-        '<div class="freeroomswarning">These are the classrooms without a class taking place this period.' + 
-        'You may use them to work or study as you choose. Note that there may be other students or teachers already in these rooms.</div>' + 
+        '<div class="freeroomswarning">These are the classrooms without a class taking place this period.' +
+        'You may use them to work or study as you choose. Note that there may be other students or teachers already in these rooms.</div>' +
         '<div>' + stringifyRooms(periodObj['freerooms']) + '</div>' +
       '</paper-material></div>' +
-      '<div class="periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' + 
-        '<div class="periodheading">Current class:</div>' + 
+      '<div class="periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' +
+        '<div class="periodheading">Current class:</div>' +
         '<x-schedule id="currentperiodclassschedule" show="all" swipe-disabled></x-schedule>' +
-      '</paper-material></div></div>' + 
+      '</paper-material></div></div>' +
     '</div>';
 
     // Wait for HTML to be parsed/applied before trying to show the schedule.
@@ -1021,7 +1021,7 @@
   .wide {
     width: 100%;
   }
-  /*CSS below sets the padding our paper-toolbar to 0 
+  /*CSS below sets the padding our paper-toolbar to 0
   so that we don't have to change the element*/
   paper-toolbar ::shadow #topBar {
     padding: 0px;

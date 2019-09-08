@@ -1,108 +1,119 @@
 import requests
 import json
 import datetime
+import time
 
-url = 'https://four11.eastsideprep.org/epsnet/courses/'
-PARSEABLE_PERIODS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-# Properly set up headers with auth key
-with open('../data/four11.key') as key:    
-    four11_key = key.read()
-headers = {"Authorization": "Bearer " + four11_key}
+ENDPOINT_URL = "https://four11.eastsideprep.org/epsnet/courses/"
+PARSEABLE_PERIODS = ["A", "B", "C", "D", "E", "F", "G", "H"]
+FOUR11_KEY_PATH ="../data/four11.key"
+FREE_PERIOD_CLASS = {
+    "room": None,
+    "name": "Free Period",
+    "teacher_full_name": None,
+    "teacher_username": None,
+    "department": None,
+}
 
-# Read the data table from which we'll build our schedules
-with open('../data/id_table.json') as data_file:    
-    data = json.load(data_file)
+with open(FOUR11_KEY_PATH) as key:
+    FOUR11_KEY = key.read()
+AUTH_HEADERS = {"Authorization": "Bearer " + FOUR11_KEY}
 
 def get_full_name(username):
-    for p in data:
+    for p in id_table:
         if p["username"].lower() == username.lower():
             return p["firstname"] + " " + p["lastname"]
     return None
 
-def getinfo(x):
-    print x
-    return x['period']
+# Return the year of the current graduating class
+# I.E. the 2019-2020 school year would return 2020
+def get_current_school_year():
+    now = datetime.datetime.now()
+    end_year = now.year
+    if now.month >= 7 or (now.month >= 6 and now.day >= 10):
+        # Old school year has ended, add one to year
+        end_year += 1
+    return end_year
 
-schedules = []
+def add_free_periods_to_schedule(course_list):
+    for period in PARSEABLE_PERIODS:
+        contains = False
+        for clss in course_list:
+            if clss["period"] == period:
+                contains = True
+                break
 
-# Find what the year will be at the 
-# end of the school year
-now = datetime.datetime.now()
-end_year = now.year
-if now.month >= 7 or (now.month >= 6 and now.day >= 10):
-    # Old school year has ended, add one to year
-    end_year += 1
+        if not contains:
+            course_list.append(FREE_PERIOD_CLASS.copy())
+            course_list[-1]["period"] = period
+    # Modifies course list in place
 
-for item in data:
+def decode_trimester_classes(four11_response):
+    trimester_classes = []
+    trimester = four11_response["sections"]
+    for clss in trimester:
+        if clss["period"] in PARSEABLE_PERIODS:
+            obj = {
+                "period": clss["period"],
+                "room": clss["location"],
+                "name": clss["course"],
+                "teacher_full_name": get_full_name(clss["teacher"]),
+                "teacher_username": clss["teacher"],
+                "department": clss["department"],
+            }
+            trimester_classes.append(obj)
 
-    person = {'classes': []}
+    add_free_periods_to_schedule(trimester_classes)
+    trimester_classes.sort(key=lambda x: x["period"])
+    return trimester_classes
 
-    for term_id in range(1, 4):
-        req = requests.post(url + item['username'], \
-            headers=headers, params={"term_id": str(term_id)})
-        briggs_person = json.loads(req.content)
+def get_json_schedule_data(id_table):
+    schedules = []
+    school_year = get_current_school_year()
 
-        # We now have all personal information that we need
-        # Now, we'll go trimester by trimester and parse schedules
-        trimClasses = []
+    for item in id_table:
+        #if item['username'] == 'amurray':
+        #    continue
+        try:
+            person = {"classes": []}
+            print "Trying to decode classes for " + str(item)
 
-        trimester = json.loads(req.content)['sections']
+            # For each trimester
+            for term_id in range(1, 4):
+                req = requests.post(
+                    ENDPOINT_URL + item["username"], headers=AUTH_HEADERS, params={"term_id": str(term_id)}
+                )
+                #print req.content
+                briggs_person = json.loads(req.content)
+                person["classes"].append(decode_trimester_classes(briggs_person))
 
-        for clss in trimester:
-            if clss['period'] in PARSEABLE_PERIODS:
-                obj = {
-                    'period': clss['period'], \
-                    'room': clss['location'], \
-                    'name': clss['course'], \
-                    'teacher': get_full_name(clss['teacher']), \
-                    'department': clss['department'] \
-                }
-                trimClasses.append(obj)
+            person.update(item)
+            person["sid"] = person.pop("id") # Rename key
+            person["nickname"] = briggs_person["individual"]["nickname"]
 
-        # Now, check to see if we need to add free period(s)
-        for period in PARSEABLE_PERIODS:
-            contains = False
-            for clss in trimClasses:
-                if clss['period'] == period:
-                    contains = True
-                    break
+            # Find advisor
+            person["advisor"] = None
+            for section in briggs_person["sections"]:
+                if "advisory" in section["course"].lower():
+                    person["advisor"] = get_full_name(section["teacher"])
 
-            if not contains:
-                trimClasses.append({
-                    "period": period, \
-                    "room": None, \
-                    "name": "Free Period", \
-                    "teacher": None, \
-                    "department": None
-                })
+            # Convert grade to gradyear
+            person["grade"] = None
+            if person["gradyear"]:
+                person["grade"] = 12 - (person["gradyear"] - school_year)
 
-        # Now sort A-H
-        trimClasses.sort(key=lambda x: x['period'])
-        person['classes'].append(trimClasses)
+            # Now we have finished the person object
+            schedules.append(person)
+            print ("Decoded " + person["username"])
+            time.sleep(5)
 
-    person['firstname'] = item['firstname']
-    person['lastname'] = item['lastname']
-    person['username'] = item['username']
-    person['givenfirst'] = item['givenfirst']
-    print item
-    person['sid'] = item['id']
-    person['gradyear'] = item['gradyear']
-    person['nickname'] = briggs_person['individual']['nickname']
+        except ValueError:
+            print "Got value error for " + str(item)
 
-    # Find advisor
-    person['advisor'] = None
-    for section in briggs_person['sections']:
-        if 'advisory' in section['course'].lower():
-            person['advisor'] = get_full_name(section['teacher'])
+    return json.dumps(schedules, indent=4)
 
-    # Convert grade to gradyear
-    person['grade'] = None
-    if person['gradyear']:
-        person['grade'] = 12 - (person['gradyear'] - end_year)
-
-    # Now we have finished the person object
-    schedules.append(person)
-    #print "Decoded " + person['username']
+# Read the data table from which we'll build our schedules
+with open('../data/id_table.json') as data_file:
+    id_table = json.load(data_file)
 
 file = open('../data/schedules.json', 'w')
-file.write(json.dumps(schedules, indent=4))
+file.write(get_json_schedule_data(id_table))

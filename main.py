@@ -4,58 +4,54 @@ import datetime
 import json
 import logging
 import os
+from os import path
 import string
 import time
 from sets import Set
 
-import authenticate_user
 import jinja2
-import update_lunch
 import webapp2
 from google.appengine.ext import db, vendor
+from google.appengine.ext import ndb
 
 # Add any libraries installed in the "lib" folder.
 vendor.add("lib")
 
-# External libraries.
 from Crypto.Hash import SHA256
 from slowaes import aes
 
-
-def open_data_file(filename, has_test_data=False):
-    if has_test_data and "EPSCHEDULE_USE_TEST_DATA" in os.environ:
-        fullname = "data/test_" + filename
-    else:
-        fullname = "data/" + filename
-    return open(fullname, "rb")
+import authenticate_user
+import update_lunch
 
 
-def load_data_file(filename, has_test_data=False):
-    return open_data_file(filename, has_test_data).read()
+def load_data_file(filename):
+    return open(path.join("data", filename), "rb").read()
 
 
-def load_json_file(filename, has_test_data=False):
-    return json.load(open_data_file(filename, has_test_data))
+def load_json_file(filename):
+    return json.load(open(path.join("data", filename), "rb"))
 
 
 DEMO_USER = "demo"
 DEMO_ID = "9999"
 GAVIN_ID = "4093"
-CRYPTO_KEY = load_data_file("crypto.key", True).strip()
-ID_TABLE = load_json_file("id_table.json", True)
-SCHEDULE_INFO = load_json_file("schedules.json", True)
+CRYPTO_KEY = load_data_file("crypto.key").strip()
+ID_TABLE = load_json_file("id_table.json")
+SCHEDULE_INFO = load_json_file("schedules.json")
 BIOS = load_json_file("bios.json")
 DAYS = load_json_file("exceptions.json")
 JINJA_ENVIRONMENT = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+    loader=jinja2.FileSystemLoader(path.dirname(__file__)),
     extensions=["jinja2.ext.autoescape"],
     autoescape=True,
 )
 
-FALL_TRI_END = datetime.datetime(2018, 12, 21, 15, 30, 0, 0)
-WINT_TRI_END = datetime.datetime(2019, 3, 22, 15, 30, 0, 0)
+FALL_TRI_END = datetime.datetime(2019, 11, 23, 15, 30, 0, 0)
+WINT_TRI_END = datetime.datetime(2020, 3, 7, 15, 30, 0, 0)
 
 
+# When a student logs in to EPSchedule for the first time, we'll
+# make them a User object to store their privacy information
 class User(db.Expando):
     email = db.StringProperty(required=True)
     join_date = db.DateTimeProperty()
@@ -65,10 +61,29 @@ class User(db.Expando):
     seen_update_dialog = db.BooleanProperty(default=False)
 
 
-def convert_email_to_id(email):
-    email = email.lower()
-    pieces = string.split(email, "@")
-    username = pieces[0]
+class SchoolYear(ndb.Model):
+    # The final days of each trimester
+    fall_tri_start = ndb.DateProperty(auto_now_add=True)
+    fall_tri_end = ndb.DateProperty(auto_now_add=True)
+    wint_tri_end = ndb.DateProperty(auto_now_add=True)
+    spri_tri_end = ndb.DateProperty(auto_now_add=True)
+
+    # Blob information
+    # We store all schedules as a single JSON object
+    # because it makes searching and finding nonstudent
+    # schedules much simpler and faster
+    schedules = ndb.JsonProperty()
+    dates = ndb.JsonProperty()
+
+
+def email_to_username(email):
+    return string.split(email, "@")[0]
+
+def email_to_id(email):
+    return username_to_id(email_to_username(email))
+
+def username_to_id(username):
+    username = username.lower()
     if username == DEMO_USER:
         return DEMO_ID
     for student in ID_TABLE:
@@ -77,21 +92,19 @@ def convert_email_to_id(email):
     return None
 
 
-# TODO merge with id to username function
-def convert_id_to_email(id):
-    email = ""
+def id_to_email(id):
+    username = None
 
     if str(id) == DEMO_ID:
-        email = DEMO_USER
+        return username_to_email(DEMO_USER)
 
     for student in ID_TABLE:
         if str(student["id"]) == str(id):
-            email = student["username"]
+            username = student["username"]
 
-    if email == "":
-        return None
-    else:
-        return email + "@eastsideprep.org"
+    if username:
+        return username_to_email(username)
+    # Otherwise, we return None
 
 
 def normalize_name(name):
@@ -113,7 +126,7 @@ def normalize_classname(text):
     return clean_text
 
 
-def generate_email(username):
+def username_to_email(username):
     return username + "@eastsideprep.org"
 
 
@@ -139,7 +152,18 @@ class BaseHandler(webapp2.RequestHandler):  # All handlers inherit from this han
             else:
                 return 2
 
+    def get_school_year_db_obj(self):
+        return db.GqlQuery("SELECT * FROM SchoolYear LIMIT 1").get()
+
+    def update_schedule_data_cache(self):
+        global SCHEDULE_INFO
+        SCHEDULE_INFO = db.GqlQuery("SELECT * FROM SchoolYear LIMIT 1").get().schedules
+
+    # If we don't have student schedules cached, cache them
+    # Otherwise, return the cached values
     def get_schedule_data(self):
+        if not SCHEDULE_INFO:
+            self.update_schedule_data_cache()
         return SCHEDULE_INFO
 
     def gen_photo_url(self, username, folder):
@@ -196,7 +220,7 @@ class LoginHandler(BaseHandler):
         email = self.request.get("email").lower()
         password = self.request.get("password")
 
-        id = convert_email_to_id(email)
+        id = email_to_id(email)
 
         if not id:  # If there is no id for the email, don't try to log in
             self.response.write(json.dumps({"error": "That email is not recognized."}))
@@ -207,9 +231,8 @@ class LoginHandler(BaseHandler):
         if email == "demo" and password == "demo":
             id = GAVIN_ID
             email = "guberti@eastsideprep.org"
-        elif not (
-            authenticate_user.auth_user(username + "@eastsideprep.org", password)
-        ):  # If four11 authentication failed, return our error
+        # If four11 authentication failed, return our error
+        elif not (authenticate_user.auth_user(email, password)):
             self.response.write(json.dumps({"error": "Your password is incorrect."}))
             return
 
@@ -217,13 +240,11 @@ class LoginHandler(BaseHandler):
         user_obj_query = self.query_by_email(email)
         if not user_obj_query.get():
             student_obj = User(
-                email=username + "@eastsideprep.org", join_date=datetime.datetime.now()
+                email=email, join_date=datetime.datetime.now()
             )
             student_obj.put()
 
         # If the authentication was successful, give the user an auth token
-
-        id = convert_email_to_id(email)
         if id is not None:
             encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
             expiration_date = datetime.datetime.now()
@@ -247,14 +268,13 @@ class LunchIdLoginHandler(BaseHandler):
         username = self.request.get("username").lower()
         password = self.request.get("password")
 
-        ID = convert_email_to_id(username + "@eastsideprep.org")
-        logging.info(username + "@eastsideprep.org")
+        ID = username_to_id(username)
         if not ID:
             self.error(403)
             self.response.write("No ID!")
             return
         # If four11 authentication failed, return our error
-        if not (authenticate_user.auth_user(username + "@eastsideprep.org", password)):
+        if not (authenticate_user.auth_user(username_to_email(username), password)):
             self.error(403)
             self.response.write("Wrong password!")
             return
@@ -338,7 +358,7 @@ class ClassHandler(BaseHandler):
                                 "students": [],
                             }
 
-                        email = generate_email(schedule["username"])
+                        email = username_to_email(schedule["username"])
                         photo_url = self.gen_photo_url(
                             schedule["username"], "96x96_photos"
                         )
@@ -411,17 +431,17 @@ class StudentHandler(BaseHandler):
         if id == str(DEMO_ID):
             id = GAVIN_ID
 
-        email = username + "@eastsideprep.org"
+        email = username_to_email(username)
         show_full_schedule = True
         show_photo = True
-        user_obj_query = self.query_by_email(email)
-        user_obj = user_obj_query.get()
+
+        user_obj = self.query_by_email(email).get()
 
         if user_obj:
             show_full_schedule = user_obj.share_schedule
             show_photo = user_obj.share_photo
 
-        sid = convert_email_to_id(email)
+        sid = username_to_id(username)
         student_schedule = self.get_schedule_for_id(sid)
 
         if is_teacher_schedule(student_schedule):
@@ -650,7 +670,7 @@ class TeacherHandler(BaseHandler):
                 and schedule["lastname"].lower() == teachernames[1]
             ):
                 result = copy.deepcopy(schedule)
-                result["email"] = generate_email(schedule["username"])
+                result["email"] = username_to_email(schedule["username"])
                 result["bio"] = bio
 
         if not result:
@@ -698,7 +718,7 @@ class MainHandler(BaseHandler):
 
             if self.request.cookies.get("SEENPRIVDIALOG") != "1":
                 if schedule["grade"]:  # If the user is a student
-                    user_obj_query = self.query_by_email(convert_id_to_email(id))
+                    user_obj_query = self.query_by_email(id_to_email(id))
                     obj = user_obj_query.get()
                     if obj:
                         show_privacy_dialog = not obj.seen_update_dialog
@@ -853,8 +873,8 @@ class AdminHandler(BaseHandler):
           }
         </script>"""
         html += "<button type='button' onclick='sendEmails("
-        html += '"emaildomainadd"'
-        html += ")'>Add domains to emails</button>"
+        html += '"addschoolyear"'
+        html += ")'>Add new school year</button>"
         html += "<button type='button' onclick='sendEmails("
         html += '"cleanup"'
         html += ")'>Clean up duplicates of confirmed users</button>"
@@ -897,6 +917,8 @@ class AdminHandler(BaseHandler):
             self.email_domain_add()
         elif action == "removeoutdated":
             self.remove_outdated_props()
+        elif action == "addschoolyear":
+            self.create_new_year_object()
 
     # Removes and merges duplicates
     def clean_up_db(self):
@@ -927,12 +949,21 @@ class AdminHandler(BaseHandler):
                     query_result.put()
                     logging.info("Removed password from user " + query_result["email"])
 
+    def create_new_year_object(self):
+        year_obj = SchoolYear(
+            schedules={'test': 1}
+        )
+        year_obj.put()
+
 
 class CronHandler(BaseHandler):
     def get(self, job):  # On url invoke
         if job == "lunch":
             update_lunch.read_lunches()
             self.response.write("Success")
+        elif job == "schedules": # Warning - takes a LONG time
+            json_schedules = fetch_schedules_with_api()
+
 
 
 class PrivacyHandler(BaseHandler):  # Change and view privacy settings
@@ -941,7 +972,7 @@ class PrivacyHandler(BaseHandler):  # Change and view privacy settings
         if id is None:
             return None
 
-        email = convert_id_to_email(id)
+        email = id_to_email(id)
         user_obj_query = self.query_by_email(email)
         return user_obj_query.get()
 
