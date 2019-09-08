@@ -68,7 +68,7 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
             date = datetime.datetime.strptime(event["DTSTART"], "%Y%m%d").date()
 
         # Remove the price and back slashes from the summary
-        summary = string.split(event["SUMMARY"], " | ")[0]  # Remove the price
+        summary = string.split(event["SUMMARY"], " | ")[1]  # Remove the price
         summary = summary.replace("\\", "")  # Remove back slashes
         summary = summary.replace("&amp;", "&") #Write ampersands correctly
 
