@@ -161,8 +161,13 @@
     .classemaillink {
       font-weight: bold;
     }
+
+    .period {
+      padding-left: 4.5px;
+    }
   </style>
   <template>
+
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
     <div layout="" vertical="">
       <template is="dom-if" if="{{allDayEvent}}">
@@ -207,6 +212,11 @@
                   <iron-icon icon="hardware:keyboard-arrow-down"></iron-icon>
                   <iron-icon icon="hardware:keyboard-arrow-up"></iron-icon>
                 </iron-pages>
+              </div>
+            </template>
+            <template is="dom-if" if="{{showChevron(item)}}">
+              <div class="period">
+                <h2>{{item:period}}</h2>
               </div>
             </template>
           </div>
@@ -370,7 +380,7 @@
         if (el.classList.contains("selected")) {
           console.log(item);
           var xhr = new XMLHttpRequest();
-          
+
           // Squash all punctuation to underscores
           var cleanedClass = item.name.replace(/[\W]/g, "_");
           var url = "class/" + item.period.toLowerCase() + "?term_id=" + item.termId;
