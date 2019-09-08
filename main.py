@@ -389,7 +389,10 @@ class ClassHandler(BaseHandler):
                         result["students"].append(student)
 
         if result:
-            result["students"].sort(key=lambda s: s["firstname"])
+            result["students"] = sorted(
+                sorted(result["students"], key = lambda s: s["firstname"]), 
+                key = lambda s: bool(s["grade"]))
+            #sorts alphabetically, then sorts teachers from students
         return result
 
     def get(self, period):
