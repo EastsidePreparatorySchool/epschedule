@@ -1,6 +1,8 @@
 # Components
 bower_components
-lib
+#only need lib/slowaes to run tests
+lib/Crypto
+lib/icalendar
 node_modules
 scripts/Crypto
 test_modules
