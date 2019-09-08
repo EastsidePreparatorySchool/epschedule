@@ -378,7 +378,7 @@
         '<img src="' + studentObj.photo_url + '" onerror="if (this.src != \'/images/placeholder.png\') this.src = \'/images/placeholder.png\';">' +
         '<div layout vertical><h3><span class="grade">' + grade + '</span></h3>' +
         '<p><a href="mailto:' + email + '""><iron-icon icon="communication:email"></iron-icon>' +
-        '<span class="email">Email ' + studentObj.firstname + '</span></a></p></div></div></paper-material>' +
+        '<span class="email">Email ' + studentObj.firstname + ` ${studentObj.grade?"":studentObj.lastname}` + '</span></a></p></div></div></paper-material>' +
         '<schedule-lite id="studentschedule"></schedule-lite>' +
         '</div>';
     // Wait for HTML to be parsed/applied before trying to show the schedule.
