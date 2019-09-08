@@ -9,18 +9,19 @@ import string
 import time
 from sets import Set
 
-import authenticate_user
 import jinja2
-import update_lunch
 import webapp2
 from google.appengine.ext import db, vendor
+from google.appengine.ext import ndb
 
 # Add any libraries installed in the "lib" folder.
 vendor.add("lib")
 
-# External libraries.
 from Crypto.Hash import SHA256
 from slowaes import aes
+
+import authenticate_user
+import update_lunch
 
 
 def load_data_file(filename):
@@ -34,9 +35,9 @@ def load_json_file(filename):
 DEMO_USER = "demo"
 DEMO_ID = "9999"
 GAVIN_ID = "4093"
-CRYPTO_KEY = load_data_file("crypto.key", True).strip()
-ID_TABLE = load_json_file("id_table.json", True)
-SCHEDULE_INFO = load_json_file("schedules.json", True)
+CRYPTO_KEY = load_data_file("crypto.key").strip()
+ID_TABLE = load_json_file("id_table.json")
+SCHEDULE_INFO = load_json_file("schedules.json")
 BIOS = load_json_file("bios.json")
 DAYS = load_json_file("exceptions.json")
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -45,10 +46,12 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True,
 )
 
-FALL_TRI_END = datetime.datetime(2018, 12, 21, 15, 30, 0, 0)
-WINT_TRI_END = datetime.datetime(2019, 3, 22, 15, 30, 0, 0)
+FALL_TRI_END = datetime.datetime(2019, 11, 23, 15, 30, 0, 0)
+WINT_TRI_END = datetime.datetime(2020, 3, 7, 15, 30, 0, 0)
 
 
+# When a student logs in to EPSchedule for the first time, we'll
+# make them a User object to store their privacy information
 class User(db.Expando):
     email = db.StringProperty(required=True)
     join_date = db.DateTimeProperty()
@@ -57,6 +60,22 @@ class User(db.Expando):
     share_schedule = db.BooleanProperty(default=False)
     seen_update_dialog = db.BooleanProperty(default=False)
 
+
+class SchoolYear(ndb.Model):
+    # The final days of each trimester
+    fall_tri_start = ndb.DateProperty(auto_now_add=True)
+    fall_tri_end = ndb.DateProperty(auto_now_add=True)
+    wint_tri_end = ndb.DateProperty(auto_now_add=True)
+    spri_tri_end = ndb.DateProperty(auto_now_add=True)
+
+    # Blob information
+    # We store all schedules as a single JSON object
+    # because it makes searching and finding nonstudent
+    # schedules much simpler and faster
+    schedules = ndb.JsonProperty()
+    dates = ndb.JsonProperty()
+
+
 def email_to_username(email):
     return string.split(email, "@")[0]
 
@@ -64,9 +83,7 @@ def email_to_id(email):
     return username_to_id(email_to_username(email))
 
 def username_to_id(username):
-    email = email.lower()
-    pieces = string.split(email, "@")
-    username = pieces[0]
+    username = username.lower()
     if username == DEMO_USER:
         return DEMO_ID
     for student in ID_TABLE:
@@ -79,7 +96,7 @@ def id_to_email(id):
     username = None
 
     if str(id) == DEMO_ID:
-        return username_to_username = DEMO_USER
+        return username_to_email(DEMO_USER)
 
     for student in ID_TABLE:
         if str(student["id"]) == str(id):
@@ -135,7 +152,18 @@ class BaseHandler(webapp2.RequestHandler):  # All handlers inherit from this han
             else:
                 return 2
 
+    def get_school_year_db_obj(self):
+        return db.GqlQuery("SELECT * FROM SchoolYear LIMIT 1").get()
+
+    def update_schedule_data_cache(self):
+        global SCHEDULE_INFO
+        SCHEDULE_INFO = db.GqlQuery("SELECT * FROM SchoolYear LIMIT 1").get().schedules
+
+    # If we don't have student schedules cached, cache them
+    # Otherwise, return the cached values
     def get_schedule_data(self):
+        if not SCHEDULE_INFO:
+            self.update_schedule_data_cache()
         return SCHEDULE_INFO
 
     def gen_photo_url(self, username, folder):
@@ -404,10 +432,10 @@ class StudentHandler(BaseHandler):
             id = GAVIN_ID
 
         email = username_to_email(username)
-        show_full_schedule, show_photo = True
+        show_full_schedule = True
+        show_photo = True
 
-        user_obj_query = self.query_by_email(email)
-        user_obj = user_obj_query.get()
+        user_obj = self.query_by_email(email).get()
 
         if user_obj:
             show_full_schedule = user_obj.share_schedule
@@ -845,8 +873,8 @@ class AdminHandler(BaseHandler):
           }
         </script>"""
         html += "<button type='button' onclick='sendEmails("
-        html += '"emaildomainadd"'
-        html += ")'>Add domains to emails</button>"
+        html += '"addschoolyear"'
+        html += ")'>Add new school year</button>"
         html += "<button type='button' onclick='sendEmails("
         html += '"cleanup"'
         html += ")'>Clean up duplicates of confirmed users</button>"
@@ -889,6 +917,8 @@ class AdminHandler(BaseHandler):
             self.email_domain_add()
         elif action == "removeoutdated":
             self.remove_outdated_props()
+        elif action == "addschoolyear":
+            self.create_new_year_object()
 
     # Removes and merges duplicates
     def clean_up_db(self):
@@ -919,12 +949,21 @@ class AdminHandler(BaseHandler):
                     query_result.put()
                     logging.info("Removed password from user " + query_result["email"])
 
+    def create_new_year_object(self):
+        year_obj = SchoolYear(
+            schedules={'test': 1}
+        )
+        year_obj.put()
+
 
 class CronHandler(BaseHandler):
     def get(self, job):  # On url invoke
         if job == "lunch":
             update_lunch.read_lunches()
             self.response.write("Success")
+        elif job == "schedules": # Warning - takes a LONG time
+            json_schedules = fetch_schedules_with_api()
+
 
 
 class PrivacyHandler(BaseHandler):  # Change and view privacy settings
