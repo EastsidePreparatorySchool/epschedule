@@ -5,7 +5,7 @@ import string
 import urllib2
 from HTMLParser import HTMLParser
 
-#from google.appengine.ext import ndb
+from google.appengine.ext import ndb
 
 # Globals
 format = "%Y%m%dT%H%M%S"
@@ -13,18 +13,18 @@ lunch_url = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/i
 
 # NDB class definitions
 
-'''class Lunch(ndb.Model):
+class Lunch(ndb.Model):
     summary = ndb.StringProperty(required=True)
     # description is a list of lines in the description
     description = ndb.StringProperty(repeated=True)
     day = ndb.DateProperty(required=True)
 
 
-#class LunchRating(ndb.Model):
+class LunchRating(ndb.Model):
     sid = ndb.IntegerProperty(required=True)
     rating = ndb.IntegerProperty(required=True)  # 1-10 star rating
     lunch_id = ndb.IntegerProperty(required=True)  # Which type of lunch its for
-    created = ndb.DateProperty()  # What date the rating was made'''
+    created = ndb.DateProperty()  # What date the rating was made
 
 
 # Functions for parsing iCal files
@@ -82,12 +82,13 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
         no_html_desc = re.sub("<.*?>", "", desc)
         description = string.split(no_html_desc, "\\n")
 
-        print("                                     ")
-        print(summary)
-        print(description)
-        #entry = Lunch(summary=summary, description=description, day=date)
+        # print("                                     ")
+        # print(summary)
+        # print(description)
+        print("I'm being run!")
+        entry = Lunch(summary=summary, description=description, day=date)
 
-        #write_event_to_db(entry)
+        write_event_to_db(entry)
 
 
 def write_event_to_db(entry):  # Places a single entry into the db
@@ -209,4 +210,4 @@ def place_rating(rating, sid, lunch_id, date, overwrite=True):
 
     return overwrote
 
-read_lunches()
+#read_lunches()
