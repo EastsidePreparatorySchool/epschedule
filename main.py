@@ -35,7 +35,7 @@ def load_json_file(filename):
 DEMO_USER = "demo"
 DEMO_ID = "9999"
 GAVIN_ID = "4093"
-CRYPTO_KEY = load_data_file("crypto.key").strip()
+CRYPTO_KEY = load_data_file("test_crypto.key").strip()
 ID_TABLE = load_json_file("id_table.json")
 SCHEDULE_INFO = load_json_file("schedules.json")
 BIOS = load_json_file("bios.json")
