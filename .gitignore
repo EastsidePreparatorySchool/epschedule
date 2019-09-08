@@ -1,70 +1,23 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
-
-# Windows shortcuts
-*.lnk
-
-# =========================
-# Operating System Files
-# =========================
-
-# OSX
-# =========================
-
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-*.pyc
-*.csr
+# Components
 bower_components
-node_modules
-test_modules
-crawler.bat
-schedules
-schedules.json
-id_table.json
-api_keys.json
-teacher_photos
-96x96_photos
 lib
-teacher_icons
-teacher_photos_fullsize
-vulcanized.html
-school_photos
-Crypto
+node_modules
 scripts/Crypto
-*.pdf
-data/user_ids_four11.csv
-data/user_ids_four11_old.csv
+test_modules
+
+# Sensitive photos
+96x96_photos
+school_photos
+
+# Sensitive data files
+data/crypto.key
+data/four11.key
+data/id_table.json
+data/schedules.json
 data/schedules_pretty.json
-*.key
-data/2017-2018
-data/prevSchedules.json
+data/user_ids_four11.csv
+*/old
+
+# Build files
+*.pyc
+vulcanized.html
