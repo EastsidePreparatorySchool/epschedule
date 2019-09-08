@@ -49,7 +49,7 @@ def parse_events(lines):  # lines is a list of all lines of text in the whole fi
                 properties[last_prop_name] += line[1:]
             else:  # If it is the start of a normal line
                 # Sample line: DTSTART;TZID=America/Los_Angeles:20151030T110500
-                colon_separated_values = string.split(line, ":")
+                colon_separated_values = string.split(line, ":", 1)
 
                 # Garbage anything between ; and :
                 last_prop_name = string.split(colon_separated_values[0], ";")[0]
@@ -82,6 +82,7 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
         no_html_desc = re.sub("<.*?>", "", desc)
         description = string.split(no_html_desc, "\\n")
 
+        print("                                     ")
         print(summary)
         print(description)
         #entry = Lunch(summary=summary, description=description, day=date)
