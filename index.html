@@ -195,8 +195,6 @@
   }
   function renderToast(text) {
     toast = document.getElementById("toast");
-    console.log("Displaying toast");
-    console.log(toast);
     toast.setAttribute("text", text);
     toast.show();
   }
@@ -247,7 +245,6 @@
     // Name is the name of the class, teacher, student, etc.
     name = cleanString(name);
     var url = type + "/" + name;
-    console.log("Requesting " + url);
     xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status==200) {
@@ -263,8 +260,6 @@
     // Bug here that causes latitude and longitude of google map tag to not exist
     var popup = document.getElementById("popup");
     var container = document.getElementById("popupContainer");
-    console.log("Latitude = " + roomObj.latitude);
-    console.log("Longitude = " + roomObj.longitude);
     container.innerHTML = '<google-map latitude="47.643455" longitude="-122.198935" id="map" zoom="18" disable-default-ui fit-to-markers>' +
       // '<google-map-marker latitude="' + roomObj.latitude + '" longitude="' + roomObj.longitude + '"' +
       // 'draggable="false" title="' + roomObj.room + '"></google-map-marker>
@@ -351,7 +346,6 @@
       var f = document.getElementById('currentperiodclassschedule');
 
       renderSchedule(copyDate(globalDate), periodObj, "core", e, {}, false);
-      console.log( {'classes': [[periodObj['currentclass']]*3]});
 
       // We have the same item three times to simulate three trimesters
       // That way, no matter what trimester we're in, we'll always pick "currentclass"
@@ -618,7 +612,6 @@
     } else {
       termId = 0;
     }
-    console.log("Converted " + dateObj + " to a term ID of " + termId);
     // Either MS or US
     if (type == "full" || type == "lite") {
       var school = getSchool(schedule.grade);
@@ -1088,7 +1081,7 @@
             </div>
             <div class="headerbarpage searchbackground">
               <paper-icon-button class="grey" icon="arrow-back" onclick="closeSearchBar()"></paper-icon-button>
-              <paper-typeahead-input max-suggestions="5" placeholder="Search people" remote-url="/search/%QUERY" remote-url-wait-ms="100" is-candidates-json display-prop="name">
+              <paper-typeahead-input max-suggestions="5" placeholder="Search students" remote-url="/search/%QUERY" remote-url-wait-ms="100" is-candidates-json display-prop="name">
               </paper-typeahead-input>
             </div>
           </neon-animated-pages>
