@@ -496,11 +496,11 @@
         return null;
       }
     } else { // If it is a special class, such as Lunch, Assembly, or Class Meeting
-
+  
       // Note that 0 Period Instrumental Music does not fall in this category
       scheduleObj = {
         name: period,
-        teacher: "",
+        teacher: schedule["advisor"],
         room: "",
         period: "X",
         time: ""
