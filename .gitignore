@@ -16,7 +16,7 @@ data/id_table.json
 data/schedules.json
 data/schedules_pretty.json
 data/user_ids_four11.csv
-*/old
+*old
 
 # Build files
 *.pyc

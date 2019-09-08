@@ -782,13 +782,6 @@ class LunchRateHandler(BaseHandler):
             self.response.write(json.dumps(ORIG_LUNCH_RATE))
 
 
-class AboutHandler(BaseHandler):
-    def get(self):
-        template_values = {"components": self.get_components_filename()}
-        template = JINJA_ENVIRONMENT.get_template("about.html")
-        self.response.write(template.render(template_values))
-
-
 class AdminHandler(BaseHandler):
     def get(self):
         if not self.check_admin_id():
@@ -1043,7 +1036,6 @@ class SearchHandler(BaseHandler):
 app = webapp2.WSGIApplication(
     [
         ("/", MainHandler),
-        ("/about", AboutHandler),
         ("/avatar/(\w+).jpg", AvatarHandler),
         ("/login", LoginHandler),
         ("/logout", LogoutHandler),
