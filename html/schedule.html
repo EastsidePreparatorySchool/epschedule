@@ -262,8 +262,7 @@
         this.behaviors[0].disabled = true;
       },
       and: function(a, b) {
-        console.log(a);
-        console.log(b);
+        
         return a && b;
       },
       displayClassOptions: function(item) {
@@ -352,13 +351,11 @@
         // if expanding, XHR, and then set model
         var el = e.currentTarget;
 
-        console.log(el);
         el.classList.toggle("selected");
         var item = this.$.entryList.itemForElement(el);
         var collapse = document.getElementById(this.computeCollapseId(item));
         // We need the item.name != "Lunch" because we just
         // want the lunch cards to toggle every time
-        console.log(item.period);
 
         if (item.period == "X") { // Don't expand for non-standard classes
           if (item.name.includes("Lunch")) { // Except for lunch
@@ -368,7 +365,7 @@
         }
 
         if (el.classList.contains("selected")) {
-          console.log(item);
+
           var xhr = new XMLHttpRequest();
           
           // Squash all punctuation to underscores
@@ -386,7 +383,6 @@
               var height = (this.type == "full") ? 48 : 0;
               height += Math.ceil(obj.students.length / 4) * (132);
               height += 8; // Add a little buffer at the bottom
-              console.log("Height is " + height.toString())
               el.querySelector("iron-list").style.height = height.toString() + "px";
 
               if (el.querySelectorAll(".classemaillink").length) {
