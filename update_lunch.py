@@ -13,7 +13,6 @@ lunch_url = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/i
 
 # NDB class definitions
 
-
 class Lunch(ndb.Model):
     summary = ndb.StringProperty(required=True)
     # description is a list of lines in the description
@@ -32,7 +31,6 @@ class LunchRating(ndb.Model):
 
 
 def parse_events(lines):  # lines is a list of all lines of text in the whole file
-
     in_event = False  # Whether the current line is in an event
     properties = {}  # When properties are discovered, they will be stuffed in here
     events = []  # The list of all properties objects
@@ -51,7 +49,7 @@ def parse_events(lines):  # lines is a list of all lines of text in the whole fi
                 properties[last_prop_name] += line[1:]
             else:  # If it is the start of a normal line
                 # Sample line: DTSTART;TZID=America/Los_Angeles:20151030T110500
-                colon_separated_values = string.split(line, ":")
+                colon_separated_values = string.split(line, ":", 1)
 
                 # Garbage anything between ; and :
                 last_prop_name = string.split(colon_separated_values[0], ";")[0]
@@ -70,16 +68,18 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
             date = datetime.datetime.strptime(event["DTSTART"], "%Y%m%d").date()
 
         # Remove the price and back slashes from the summary
-        summary = string.split(event["SUMMARY"], " | ")[0]  # Remove the price
-        summary = summary.replace("\\", "")  # Remove back slashes
+        summary = string.split(event["SUMMARY"], " | ")[1]  # Remove the price
+        summary = HTMLParser().unescape(summary)
 
         # Remove html from the description, and break it up into lines
-        desc = event["DESCRIPTION"]
+        desc = HTMLParser().unescape(event["DESCRIPTION"])
         desc = desc.replace("\,", ",")
         desc = desc.replace("\;", ";")
-        desc = desc.replace("\\r", ";")
         no_html_desc = re.sub("<.*?>", "", desc)
-        description = string.split(no_html_desc, "\\n")
+
+        # To keep things brief (and remove list of allergens), we'll
+        # cap the length at two lines
+        description = string.split(no_html_desc, "\\n")[:2]
 
         entry = Lunch(summary=summary, description=description, day=date)
 
@@ -103,7 +103,6 @@ def write_event_to_db(entry):  # Places a single entry into the db
         return
 
     # If not, log it and put it into the db
-
     logging.info(str(entry))
     entry.put()
 
