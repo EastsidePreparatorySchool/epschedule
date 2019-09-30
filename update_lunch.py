@@ -30,7 +30,7 @@ class LunchRating(ndb.Model):
 # Functions for parsing iCal files
 
 
-def parse_events(lines):  # lines is a list of all lines of text in the whole file 
+def parse_events(lines):  # lines is a list of all lines of text in the whole file
     in_event = False  # Whether the current line is in an event
     properties = {}  # When properties are discovered, they will be stuffed in here
     events = []  # The list of all properties objects
@@ -69,23 +69,18 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
 
         # Remove the price and back slashes from the summary
         summary = string.split(event["SUMMARY"], " | ")[1]  # Remove the price
-        summary = summary.replace("\\", "")  # Remove back slashes
-        summary = summary.replace("&amp;", "&") #Write ampersands correctly
+        summary = HTMLParser().unescape(summary)
 
         # Remove html from the description, and break it up into lines
-        desc = event["DESCRIPTION"]
+        desc = HTMLParser().unescape(event["DESCRIPTION"])
         desc = desc.replace("\,", ",")
         desc = desc.replace("\;", ";")
-        desc = desc.replace("\\r", ";")
-        desc = desc.replace("&amp;", "&")
-
         no_html_desc = re.sub("<.*?>", "", desc)
-        description = string.split(no_html_desc, "\\n")
 
-        # print("                                     ")
-        # print(summary)
-        # print(description)
-        print("I'm being run!")
+        # To keep things brief (and remove list of allergens), we'll
+        # cap the length at two lines
+        description = string.split(no_html_desc, "\\n")[:2]
+
         entry = Lunch(summary=summary, description=description, day=date)
 
         write_event_to_db(entry)
@@ -108,7 +103,6 @@ def write_event_to_db(entry):  # Places a single entry into the db
         return
 
     # If not, log it and put it into the db
-
     logging.info(str(entry))
     entry.put()
 
@@ -209,5 +203,3 @@ def place_rating(rating, sid, lunch_id, date, overwrite=True):
     obj.put()
 
     return overwrote
-
-#read_lunches()

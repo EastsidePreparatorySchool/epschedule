@@ -9,7 +9,7 @@ FOUR11_KEY_PATH ="../data/four11.key"
 FREE_PERIOD_CLASS = {
     "room": None,
     "name": "Free Period",
-    "teacher_full_name": None,
+    "teacher": None,
     "teacher_username": None,
     "department": None,
 }
@@ -56,7 +56,7 @@ def decode_trimester_classes(four11_response):
                 "period": clss["period"],
                 "room": clss["location"],
                 "name": clss["course"],
-                "teacher_full_name": get_full_name(clss["teacher"]),
+                "teacher": get_full_name(clss["teacher"]),
                 "teacher_username": clss["teacher"],
                 "department": clss["department"],
             }
@@ -104,7 +104,7 @@ def get_json_schedule_data(id_table):
             # Now we have finished the person object
             schedules.append(person)
             print ("Decoded " + person["username"])
-            time.sleep(5)
+            time.sleep(1)
 
         except ValueError:
             print "Got value error for " + str(item)
