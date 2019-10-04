@@ -23,21 +23,27 @@ from slowaes import aes
 import authenticate_user
 import update_lunch
 
+def open_data_file(filename, has_test_data=False):
+    if has_test_data and "EPSCHEDULE_USE_TEST_DATA" in os.environ:
+        fullname = "data/test_" + filename
+    else:
+        fullname = "data/" + filename
+    return open(fullname, "rb")
 
-def load_data_file(filename):
-    return open(path.join("data", filename), "rb").read()
+
+def load_data_file(filename, has_test_data=False):
+    return open_data_file(filename, has_test_data).read()
 
 
-def load_json_file(filename):
-    return json.load(open(path.join("data", filename), "rb"))
-
+def load_json_file(filename, has_test_data=False):
+    return json.load(open_data_file(filename, has_test_data))
 
 DEMO_USER = "demo"
 DEMO_ID = "9999"
 GAVIN_ID = "4093"
-CRYPTO_KEY = load_data_file("crypto.key").strip()
-ID_TABLE = load_json_file("id_table.json")
-SCHEDULE_INFO = load_json_file("schedules.json")
+CRYPTO_KEY = load_data_file("crypto.key", True).strip()
+ID_TABLE = load_json_file("id_table.json", True)
+SCHEDULE_INFO = load_json_file("schedules.json", True)
 BIOS = load_json_file("bios.json")
 DAYS = load_json_file("exceptions.json")
 JINJA_ENVIRONMENT = jinja2.Environment(
