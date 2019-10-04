@@ -216,14 +216,7 @@
                 <ul>
                   <li>{{getLineInDesc(item, "0")}}</li>
                   <li>{{getLineInDesc(item, "1")}}</li>
-                  <li>{{getLineInDesc(item, "2")}}</li>
                 </ul>
-                <template is="dom-if" if="{{canRateLunch(item.startTime, isToday)}}">
-                  <div>
-                    <span class="inline">Rate this lunch: </span>
-                    <star-rating class="inline" id="lunchrater" on-tap="ratingThunk"></star-rating>
-                  </div>
-                </template>
               </div>
             </template>
             <template is="dom-if" if="{{displayClassOptions(item)}}">
@@ -233,17 +226,19 @@
                 </div>
               </div>
             </template>
-            <iron-list items="{{item.students}}" grid class="studentgrid" style="height:20vh">
-              <template>
-                <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                  <img class="studentimage" src="{{item.photo_url}}" onerror="if (this.src != '/images/placeholder_small.png') this.src = '/images/placeholder_small.png';">
+            <template is="dom-if" if="{{!isLunchWithDesc(item)}}">
+              <iron-list items="{{item.students}}" grid class="studentgrid" style="height:20vh">
+                <template>
+                  <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
+                    <img class="studentimage" src="{{item.photo_url}}" onerror="if (this.src != '/images/placeholder_small.png') this.src = '/images/placeholder_small.png';">
 
-                  <div class="studentname">
-                    <span>{{item.firstname}} {{item.lastname}}</span>
+                    <div class="studentname">
+                      <span>{{item.firstname}} {{item.lastname}}</span>
+                    </div>
                   </div>
-                </div>
-              </template>
-            </iron-list>
+                </template>
+              </iron-list>
+            </template>
           </iron-collapse>
         </div>
       </template>
@@ -370,7 +365,7 @@
         if (el.classList.contains("selected")) {
           console.log(item);
           var xhr = new XMLHttpRequest();
-          
+
           // Squash all punctuation to underscores
           var cleanedClass = item.name.replace(/[\W]/g, "_");
           var url = "class/" + item.period.toLowerCase() + "?term_id=" + item.termId;

@@ -390,7 +390,7 @@ class ClassHandler(BaseHandler):
 
         if result:
             result["students"] = sorted(
-                sorted(result["students"], key = lambda s: s["firstname"]), 
+                sorted(result["students"], key = lambda s: s["firstname"]),
                 key = lambda s: bool(s["grade"]))
             #sorts alphabetically, then sorts teachers from students
         return result
