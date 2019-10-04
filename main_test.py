@@ -24,10 +24,8 @@ TEST_PASSWORD = 'testtest'
 ADMIN_PASSWORD = 'adminpass'
 BAD_PASSWORD = 'badbadbad'
 TEST_LUNCH_PATH = 'data/test_lunch.ics'
-TEST_LUNCH_DATE = datetime.date(9999, 12, 20)
-TEST_LUNCH_SUMMARY = 'Testy test test test'
-TEST_LUNCH_DESCRIPTION_LENGTH = 3
-TEST_LUNCH_PRICE = 'Price: $7.50'
+TEST_LUNCH_DATE = datetime.date(2019, 8, 29)
+TEST_LUNCH_SUMMARY = 'Cheese Manicotti'
 
 class HandlerTestBase(unittest.TestCase):
     def setUp(self):
@@ -236,8 +234,9 @@ class LunchesTest(HandlerTestBase):
         self.assertEqual(len(lunches), 1)
         lunch = lunches[0]
         self.assertEqual(lunch['summary'], TEST_LUNCH_SUMMARY)
-        self.assertEqual(len(lunch['description']), TEST_LUNCH_DESCRIPTION_LENGTH)
-        self.assertEqual(lunch['description'][2], TEST_LUNCH_PRICE)
+        self.assertEqual(len(lunch['description']), 2)
+        # No funny characters
+        self.assertNotIn("/", TEST_LUNCH_SUMMARY)
 
     def testRateLunch(self):
         update_lunch.test_read_lunches(TEST_LUNCH_PATH)
