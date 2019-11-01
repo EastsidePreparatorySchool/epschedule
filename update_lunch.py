@@ -92,15 +92,9 @@ def write_event_to_db(entry):  # Places a single entry into the db
     lunches_for_date = Lunch.query(Lunch.day == entry.day)
 
     # Check if there is already a lunch for that date (it has already been parsed)
-    has_lunch_for_date = False
     for lunch in lunches_for_date:
-        has_lunch_for_date = True
-        break
-
-    # If it has been parsed
-    if has_lunch_for_date:
         logging.info(str(entry.day) + " is already in the DB")
-        return
+        lunch.key.delete()  # Delete the existing ndb entity
 
     # If not, log it and put it into the db
     logging.info(str(entry))
