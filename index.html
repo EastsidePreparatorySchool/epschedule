@@ -465,7 +465,7 @@
           if (schedule["classes"][k]["teacher"] == null) {
             scheduleObj = { name: schedule["classes"][k]["name"],
               teacher: "",
-              teacherLastName: "",
+              teacherUsername: "",
               room: "",
               period: period,
               time: ""};
@@ -479,7 +479,7 @@
             }
             scheduleObj = { name: schedule["classes"][k]["name"],
               teacher: teacherName,
-              teacherLastName: teacherLast,
+              teacherUsername: schedule["classes"][k]["teacher_username"],
               room: schedule["classes"][k]["room"],
               period: period,
               time: ""};
@@ -548,11 +548,11 @@
     if ((scheduleObj.teacher != "" && userSchedule.grade)|| type == "core" ) {
       if (scheduleObj.name == "Free Period") {
         scheduleObj.avatar = "/images/freeperiod.jpg";
-      } else{
+      } else {
         var sanitized_teacher_name;
         sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
         sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
-        scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
+        scheduleObj.avatar = "/96x96_photos/" + scheduleObj.teacherUsername + ".jpg";
         scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
       }
 
