@@ -569,7 +569,7 @@
 
   function isSharedClass(scheduleObj, termid) {
     var userClasses = userSchedule.classes[termid];
-    for (var i = 0; i < userSchedule.classes.length; i++) {
+    for (var i = 0; i < userClasses.length; i++) {
       if (userClasses[i].period == scheduleObj.period &&
           userClasses[i].name == scheduleObj.name) {
         return true;
