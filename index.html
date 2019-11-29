@@ -470,15 +470,8 @@
               period: period,
               time: ""};
           } else {
-            var teacherName = schedule["classes"][k]["teacher"]; // Teacher's fullname
-            if (teacherName) {
-              var splitNames = teacherName.split(" ");
-              var teacherLast = splitNames[splitNames.length - 1];
-            } else {
-              var teacherLast = null;
-            }
             scheduleObj = { name: schedule["classes"][k]["name"],
-              teacher: teacherName,
+              teacher: schedule["classes"][k]["teacher"],
               teacherUsername: schedule["classes"][k]["teacher_username"],
               room: schedule["classes"][k]["room"],
               period: period,
@@ -527,7 +520,7 @@
     } else if (type == "lite") {
       if (isStandardClass(scheduleObj.period)) { // If it's a class period
         // Determine if the class is shared
-        scheduleObj.shared = isSharedClass(scheduleObj);
+        scheduleObj.shared = isSharedClass(scheduleObj, schedule.termid);
       } else {
         return null; // Skip over lunch, advisory, assembly, etc.
       }
@@ -574,10 +567,11 @@
     scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
   }
 
-  function isSharedClass(scheduleObj) {
+  function isSharedClass(scheduleObj, termid) {
+    var userClasses = userSchedule.classes[termid];
     for (var i = 0; i < userSchedule.classes.length; i++) {
-      if (userSchedule.classes[i].period == scheduleObj.period &&
-          userSchedule.classes[i].name == scheduleObj.name) {
+      if (userClasses[i].period == scheduleObj.period &&
+          userClasses[i].name == scheduleObj.name) {
         return true;
       }
     }
@@ -658,6 +652,7 @@
         // Render the base of the class
         var triSchedule = JSON.parse(JSON.stringify(schedule));
         triSchedule['classes'] = triSchedule['classes'][termId]
+        triSchedule['termid'] = termId;
         var scheduleObj = createClassEntry(triSchedule, school, day, currentSlot, type, lunchInfo);
         if (scheduleObj) { // If scheduleObj is not null
           // To see when scheduleObj might be null, look at createClassEntry()
