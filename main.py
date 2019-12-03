@@ -336,7 +336,7 @@ class ClassHandler(BaseHandler):
             and a["room"] == b["room"]
         )
 
-    def get_class_schedule(self, user_class, term_id):
+    def get_class_schedule(self, user_class, term_id, censor=True):
         schedules = self.get_schedule_data()
         result = {
             "period": user_class["period"],
@@ -345,7 +345,10 @@ class ClassHandler(BaseHandler):
             "students": [],
         }
 
-        opted_out = self.gen_opted_out_table()
+        if censor:
+            opted_out = self.gen_opted_out_table()
+        else:
+            opted_out = set()
 
         for schedule in schedules:  # Load up each student's schedule
             for classobj in schedule["classes"][
@@ -423,7 +426,8 @@ class ClassHandler(BaseHandler):
             )
         )
 
-        result = self.get_class_schedule(clss, term_id)
+        censor = not is_teacher_schedule(user_schedule)
+        result = self.get_class_schedule(clss, term_id, censor=censor)
         if not result:
             self.error(404)
             return
@@ -453,22 +457,18 @@ class StudentHandler(BaseHandler):
 
         sid = username_to_id(username)
         student_schedule = self.get_schedule_for_id(sid)
-
-        if is_teacher_schedule(student_schedule):
-            show_photo = True
-
         if not student_schedule:
             self.error(404)
             return
 
         user_schedule = self.get_schedule_for_id(id)
 
-        if (
-            is_teacher_schedule(user_schedule)
-            or show_full_schedule
-            or is_teacher_schedule(student_schedule)
-        ):
-            # If the user is a teacher
+        if (is_teacher_schedule(user_schedule) or
+            is_teacher_schedule(student_schedule)):
+            show_photo = True
+            show_full_schedule = True
+
+        if show_full_schedule:
             response_schedule = copy.deepcopy(student_schedule)
         else:
             response_schedule = self.sanitize_schedule(student_schedule, user_schedule)

@@ -537,17 +537,12 @@
 
   // Add the images on the left side to full schedules
   function addScheduleImages(scheduleObj, userSchedule, type) {
-    // If the user is a normal user and the class is a normal class, or if it is a core schedule
-    if ((scheduleObj.teacher != "" && userSchedule.grade)|| type == "core" ) {
-      if (scheduleObj.name == "Free Period") {
-        scheduleObj.avatar = "/images/freeperiod.jpg";
-      } else {
-        var sanitized_teacher_name;
-        sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
-        sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
-        scheduleObj.avatar = "/96x96_photos/" + scheduleObj.teacherUsername + ".jpg";
-        scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
-      }
+    if (scheduleObj.teacher != "" || type == "core" ) {
+      var sanitized_teacher_name;
+      sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
+      sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
+      scheduleObj.avatar = "/96x96_photos/" + scheduleObj.teacherUsername + ".jpg";
+      scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
 
     // If class is a special class or free period
     } else if (scheduleObj.period == "X" || scheduleObj.name == "Free Period") {
@@ -557,12 +552,6 @@
       image_name = image_name.replace(/\s/g, '');
       image_name = image_name.replace(/(\(.*?\))/g, ""); // Remove text between parentheses
       scheduleObj.avatar = "/images/" + image_name + ".jpg";
-
-    // If the class is a normal class but the user is a teacher
-    } else {
-      sanitized_teacher_name = userSchedule.firstname + "_" + userSchedule.lastname;
-      sanitized_teacher_name = sanitized_teacher_name.toLowerCase();
-      scheduleObj.avatar = "/96x96_photos/" + sanitized_teacher_name + ".jpg";
     }
     scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
   }
