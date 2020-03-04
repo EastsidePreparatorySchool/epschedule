@@ -8,6 +8,7 @@ from os import path
 import string
 import time
 from sets import Set
+import hashlib
 
 import jinja2
 import webapp2
@@ -17,7 +18,6 @@ from google.appengine.ext import ndb
 # Add any libraries installed in the "lib" folder.
 vendor.add("lib")
 
-from Crypto.Hash import SHA256
 from slowaes import aes
 
 import authenticate_user
@@ -53,7 +53,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 )
 
 FALL_TRI_END = datetime.datetime(2019, 11, 23, 15, 30, 0, 0)
-WINT_TRI_END = datetime.datetime(2020, 3, 7, 15, 30, 0, 0)
+WINT_TRI_END = datetime.datetime(2020, 3, 6, 15, 30, 0, 0)
 
 
 # When a student logs in to EPSchedule for the first time, we'll
@@ -173,7 +173,7 @@ class BaseHandler(webapp2.RequestHandler):  # All handlers inherit from this han
         return SCHEDULE_INFO
 
     def gen_photo_url(self, username, folder):
-        photo_hasher = SHA256.new(CRYPTO_KEY)
+        photo_hasher = hashlib.sha256(CRYPTO_KEY)
 
         photo_hasher.update(bytes(username))
         encoded_filename = photo_hasher.hexdigest()
