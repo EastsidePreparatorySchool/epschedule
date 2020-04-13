@@ -49,7 +49,4 @@ for i in range (delta.days + 1):
 exception_table = [days, schedules]
 
 file = open('../data/exceptions.json', 'w')
-file.write(json.dumps(exception_table))
-
-file = open('../data/exceptions_pretty.json', 'w')
 file.write(json.dumps(exception_table, indent=4))
