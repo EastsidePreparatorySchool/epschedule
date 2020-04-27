@@ -9,6 +9,7 @@ import urllib
 import urllib2
 import zipfile
 
+sys.exit()
 TEST_MODULES_DIR = 'test_modules/'
 GAE_UPDATECHECK_URL = 'https://appengine.google.com/api/updatecheck'
 GAE_SDK_URL = 'https://storage.googleapis.com/appengine-sdks/featured/'
