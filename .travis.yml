@@ -5,6 +5,3 @@ node_js:
 install:
   - pip install pycrypto --user
   - npm install
-
-script:
-  - grunt
