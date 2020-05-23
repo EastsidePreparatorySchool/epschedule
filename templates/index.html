@@ -376,7 +376,7 @@
     popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
         '<paper-material class="header" elevation="2">' +
         '<div layout horizontal center>' +
-        '<img src="' + studentObj.photo_url + '" onerror="if (this.src != \'/images/placeholder.png\') this.src = \'/images/placeholder.png\';">' +
+        '<img src="' + studentObj.photo_url + '" onerror="if (this.src != \'/static/images/placeholder.png\') this.src = \'/static/images/placeholder.png\';">' +
         '<div layout vertical><h3><span class="grade">' + grade + '</span></h3>' +
         '<p><a href="mailto:' + email + '""><iron-icon icon="communication:email"></iron-icon>' +
         '<span class="email">Email ' + name + '</span></a></p></div></div></paper-material>' +
@@ -550,7 +550,7 @@
       image_name = image_name.replace("/", "");
       image_name = image_name.replace(/\s/g, '');
       image_name = image_name.replace(/(\(.*?\))/g, ""); // Remove text between parentheses
-      scheduleObj.avatar = "/images/" + image_name + ".jpg";
+      scheduleObj.avatar = "/static/images/" + image_name + ".jpg";
     }
     scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
   }
@@ -622,7 +622,7 @@
     // If it is a normal day (no all day event)
     if (!day) { // If there is no school
       // Get the data for the imageObj
-      var imageObj = {url: "/images/epslogolarge.png", text: "No School"};
+      var imageObj = {url: "/static/images/epslogolarge.png", text: "No School"};
       scheduleElement.allDayEvent = imageObj;
       scheduleElement.entries = null; // Clear the classes
     } else if (type == "core") {
@@ -654,7 +654,7 @@
       scheduleElement.allDayEvent = null;
     } else if (day.length == 1) { // If it is an all day event
       // Get the data for the imageObj
-      var imageObj = {url: '/images/epslogolarge.png', text: day[0]['period']};
+      var imageObj = {url: '/static/images/epslogolarge.png', text: day[0]['period']};
       scheduleElement.allDayEvent = imageObj;
       scheduleElement.entries = null; // Clear the classes
     }
@@ -1005,7 +1005,7 @@
         </paper-toolbar>
         <div>
           <div class="image-container">
-            <img src="images/epslogo.jpg">
+            <img src="static/images/epslogo.jpg">
           </div>
           <!--<paper-icon-item onclick="skipToWinter()">
             <iron-icon class="drawer-icon" icon="device:brightness-low" item-icon></iron-icon>

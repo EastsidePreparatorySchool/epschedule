@@ -439,7 +439,7 @@ class PeriodHandler(BaseHandler):
         self.response.write(json.dumps(dataobj))'''
 
 def gen_login_response():
-    template = make_response(render_template("login.html", components="static/vulcanized.html"))
+    template = make_response(render_template("login.html", components="static/components.html"))
     # Clear all cookies
     session.pop('username', None)
     template.set_cookie('token', '', expires=0)
@@ -478,7 +478,7 @@ def main():
     response = make_response(render_template("index.html",
         schedule = json.dumps(get_schedule(session['username'])),
         days = json.dumps(DAYS),
-        components = "static/vulcanized.html",
+        components = "static/components.html",
         lunches = "[]",
         fall_end_unix = str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
         wint_end_unix = str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000)
