@@ -1,7 +1,0 @@
-language: node_js
-node_js:
-  - "node"
-
-install:
-  - pip install pycrypto --user
-  - npm install

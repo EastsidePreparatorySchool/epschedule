@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="static/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="{{components}}">
 
   <script>
@@ -126,7 +126,6 @@
   var userSchedule = {{ schedule | safe }};
   var days = {{days | safe }};
   var lunches = {{lunches | safe}};
-  var showPrivacyDialog = {{show_privacy_dialog | safe}};
   // Multiply by 1000 to account for milliseconds
   var fallTriEndDate = new Date({{fall_end_unix | safe}});
   var wintTriEndDate = new Date({{wint_end_unix | safe}});
@@ -761,10 +760,6 @@
     });
   });
 
-  if (showPrivacyDialog) {
-    setTimeout(function(){ document.getElementById("privacydialog").open(); }, 0);
-  }
-
   </script>
 
   <style is="custom-style">
@@ -792,11 +787,6 @@
     text-align: left;
     text-transform: none;
     font-size: 14px;
-  }
-  .privacypopupbutton {
-    color: white;
-    background: #2196f3;
-    text-align: center;
   }
   .settingsbutton {
     color: white;
@@ -901,19 +891,6 @@
   .privacypaneltitle {
     margin-top: 16px;
   }
-  .privacydialogpadding {
-    padding-left: 16px;
-  }
-  .privdialogheading {
-    padding-bottom: 20px;
-  }
-  .privacybuttonpadding {
-    padding-top: 24px;
-    padding-bottom: 8px;
-  }
-  .selfphoto {
-    width: 100%;
-  }
   .underline {
     text-decoration: underline;
     cursor: pointer;
@@ -921,16 +898,8 @@
   .newlinebelow {
     padding-bottom: 8px;
   }
-  .privcollapsepadding {
-    width: 100%;
-    height: 16px;
-  }
   .switchspacing {
     height: 32px;
-  }
-  #privacydialog {
-    margin-top: 8px;
-    margin-bottom: 8px;
   }
   .flex {
     display: flex;
@@ -1101,21 +1070,6 @@
       <div class="inlinesettingsswitch"><span class="leftfloat padleft">Show other EPS students my photo</span><paper-toggle-button checked class="rightfloat" id="sharephototoggle"></paper-toggle-button></div>
       <div class="inlinesettingsswitch"><span class="leftfloat padleft">Show other EPS students my schedule</span><paper-toggle-button checked class="rightfloat" id="sharescheduletoggle"></paper-toggle-button></div>
       <paper-button onclick="submitUpdatePrivacy()" raised class="settingsbutton" id="updatesettings">OK</paper-button>
-    </div>
-  </paper-dialog>
-  <paper-dialog id="privacydialog" modal>
-    <div class="privacydialogpadding">
-      <h2 class="privdialogheading">Welcome to EPSchedule</h2>
-      <!--<img class="selfphoto" src="{{self_photo | safe}}" onerror="this.style.display='none'">-->
-      <div class="newlinebelow"><span>EPSchedule supports school photos!</span></div>
-      <div class="inline"><span>We'd like to allow other students to see your photo and schedule, but</span><br><span>first we need your OK. If you'd like to change these settings, </span><span class="underline" onclick="changePrivacySettings()">click here</span><span>.</span></div>
-      <iron-collapse id="privacydialogcollapse">
-        <div class="privcollapsepadding"></div>
-        <div class="inline switchspacing"><span class="leftfloat padleft">Allow other EPS students to see my photo</span><paper-toggle-button checked class="rightfloat" id="initialsharephototoggle"></paper-toggle-button></div>
-        <div class="inline switchspacing"><span class="leftfloat padleft">Allow other EPS students to see my schedule</span><paper-toggle-button checked class="rightfloat" id="initialsharescheduletoggle"></paper-toggle-button></div>
-      </iron-collapse>
-      <div class="privacybuttonpadding"><paper-button raised class="privacypopupbutton" onclick="closePrivacyDialog()">OK, I UNDERSTAND</paper-button></div>
-      <img src="/images/photos_demo_screenshot.png">
     </div>
   </paper-dialog>
   <paper-toast id="toast" text="" duration=10000></paper-toast>

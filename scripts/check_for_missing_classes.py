@@ -1,7 +1,7 @@
 import string
 import json
 
-with open('../data/schedules_pretty.json') as data_file:    
+with open('../data/schedules.json') as data_file:
     data = json.load(data_file)
 
 for person in data:
@@ -10,7 +10,7 @@ for person in data:
 	# Teacher error repairs
 	if not person['gradyear']: # If they're a teacher
 		continue
-			
+
 	for clss in person['classes']:
 		if clss['name'] == "Free Period":
 			freenum += 1

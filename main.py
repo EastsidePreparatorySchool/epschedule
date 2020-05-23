@@ -7,21 +7,21 @@ import os
 from os import path
 import string
 import time
-from sets import Set
 import hashlib
 
-import jinja2
-import webapp2
-from google.appengine.ext import db, vendor
-from google.appengine.ext import ndb
+from flask import Flask, render_template, request, session, make_response
+from google.auth.transport import requests
+from google.cloud import datastore, secretmanager
+import google.oauth2.id_token
 
-# Add any libraries installed in the "lib" folder.
-vendor.add("lib")
+app = Flask(__name__)
+app.permanent_session_lifetime = datetime.timedelta(days=3650)
 
-from slowaes import aes
 
-import authenticate_user
-import update_lunch
+# Get application secret key
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="epschedule-455d8a10f5ec.json"
+secret_client = secretmanager.SecretManagerServiceClient()
+app.secret_key = secret_client.access_secret_version("projects/epschedule-v2/secrets/session_key/versions/1").payload.data
 
 def open_data_file(filename, has_test_data=False):
     if has_test_data and "EPSCHEDULE_USE_TEST_DATA" in os.environ:
@@ -38,87 +38,13 @@ def load_data_file(filename, has_test_data=False):
 def load_json_file(filename, has_test_data=False):
     return json.load(open_data_file(filename, has_test_data))
 
-DEMO_USER = "demo"
-DEMO_ID = "9999"
-GAVIN_ID = "4093"
 CRYPTO_KEY = load_data_file("crypto.key", True).strip()
 ID_TABLE = load_json_file("id_table.json", True)
 SCHEDULE_INFO = load_json_file("schedules.json", True)
-BIOS = load_json_file("bios.json")
 DAYS = load_json_file("exceptions.json")
-JINJA_ENVIRONMENT = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(path.dirname(__file__)),
-    extensions=["jinja2.ext.autoescape"],
-    autoescape=True,
-)
 
 FALL_TRI_END = datetime.datetime(2019, 11, 23, 15, 30, 0, 0)
 WINT_TRI_END = datetime.datetime(2020, 3, 6, 15, 30, 0, 0)
-
-
-# When a student logs in to EPSchedule for the first time, we'll
-# make them a User object to store their privacy information
-class User(db.Expando):
-    email = db.StringProperty(required=True)
-    join_date = db.DateTimeProperty()
-
-    share_photo = db.BooleanProperty(default=False)
-    share_schedule = db.BooleanProperty(default=False)
-    seen_update_dialog = db.BooleanProperty(default=False)
-
-
-class SchoolYear(ndb.Model):
-    # The final days of each trimester
-    fall_tri_start = ndb.DateProperty(auto_now_add=True)
-    fall_tri_end = ndb.DateProperty(auto_now_add=True)
-    wint_tri_end = ndb.DateProperty(auto_now_add=True)
-    spri_tri_end = ndb.DateProperty(auto_now_add=True)
-
-    # Blob information
-    # We store all schedules as a single JSON object
-    # because it makes searching and finding nonstudent
-    # schedules much simpler and faster
-    schedules = ndb.JsonProperty()
-    dates = ndb.JsonProperty()
-
-
-def email_to_username(email):
-    return string.split(email, "@")[0]
-
-def email_to_id(email):
-    return username_to_id(email_to_username(email))
-
-def username_to_id(username):
-    username = username.lower()
-    if username == DEMO_USER:
-        return DEMO_ID
-    for student in ID_TABLE:
-        if student["username"] == username:
-            return student["id"]
-    return None
-
-
-def id_to_email(id):
-    username = None
-
-    if str(id) == DEMO_ID:
-        return username_to_email(DEMO_USER)
-
-    for student in ID_TABLE:
-        if str(student["id"]) == str(id):
-            username = student["username"]
-
-    if username:
-        return username_to_email(username)
-    # Otherwise, we return None
-
-
-def normalize_name(name):
-    name = name.lower()
-    name = name.replace(" ", "")
-    name = name.replace(".", "")
-    return name
-
 
 def normalize_classname(text):
     text = text.lower()
@@ -131,195 +57,52 @@ def normalize_classname(text):
             clean_text += "_"
     return clean_text
 
-
 def username_to_email(username):
     return username + "@eastsideprep.org"
-
 
 def is_teacher_schedule(schedule):
     return not schedule["grade"]
 
-
 def create_error_obj(error_message):
     return json.dumps({"error": error_message})
 
+def get_term_id(self):
+    now = datetime.datetime.now()
+    if now < FALL_TRI_END:
+        default = 0
+    elif now < WINT_TRI_END:
+        default = 1
+    else:
+        default = 2
+    return request.form.get('input_name', default)
 
-class BaseHandler(webapp2.RequestHandler):  # All handlers inherit from this handler
-    def get_term_id(self):
-        tid = self.request.get("term_id")
-        if tid and int(tid) <= 2 and int(tid) >= 0:
-            return int(tid)
-        else:
-            now = datetime.datetime.now()
-            if now < FALL_TRI_END:
-                return 0
-            elif now < WINT_TRI_END:
-                return 1
-            else:
-                return 2
+def get_schedule_data():
+    return SCHEDULE_INFO
 
-    def get_school_year_db_obj(self):
-        return db.GqlQuery("SELECT * FROM SchoolYear LIMIT 1").get()
+def gen_photo_url(self, username, folder):
+    photo_hasher = hashlib.sha256(CRYPTO_KEY)
+    photo_hasher.update(bytes(username))
+    encoded_filename = photo_hasher.hexdigest()
+    return "/" + folder + "/" + encoded_filename + ".jpg"
 
-    def update_schedule_data_cache(self):
-        global SCHEDULE_INFO
-        SCHEDULE_INFO = db.GqlQuery("SELECT * FROM SchoolYear LIMIT 1").get().schedules
+def query_by_email(self, email):
+    return db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
 
-    # If we don't have student schedules cached, cache them
-    # Otherwise, return the cached values
-    def get_schedule_data(self):
-        if not SCHEDULE_INFO:
-            self.update_schedule_data_cache()
-        return SCHEDULE_INFO
+def get_components_filename(self):
+    if self.request.get("vulcanize", "1") == "0":
+        filename = "components.html"
+    else:
+        filename = "vulcanized.html"
+    return filename
 
-    def gen_photo_url(self, username, folder):
-        photo_hasher = hashlib.sha256(CRYPTO_KEY)
-
-        photo_hasher.update(bytes(username))
-        encoded_filename = photo_hasher.hexdigest()
-
-        return "/" + folder + "/" + encoded_filename + ".jpg"
-
-    def decrypt_id(self, encoded_id):
-        return aes.decryptData(CRYPTO_KEY, base64.b64decode(encoded_id))
-
-    def check_id(self):
-        encoded_id = self.request.cookies.get("SID")
-        if not encoded_id:
-            return None
-        # TODO add code to check if id is valid
-        return self.decrypt_id(encoded_id)
-
-    def check_admin_id(self):
-        return self.check_id() == GAVIN_ID
-
-    def query_by_email(self, email):
-        return db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
-
-    def get_schedule_for_name(self, firstname, lastname):
-        schedule_data = self.get_schedule_data()
-        for schedule in schedule_data:
-            if (
-                normalize_name(schedule["firstname"]) == firstname.lower()
-                and normalize_name(schedule["lastname"]) == lastname.lower()
-            ):  # If the schedule is the requested schedule
-                return schedule
-        return None
-
-    def get_schedule_for_id(self, id):
-        schedule_data = self.get_schedule_data()
-        for schedule in schedule_data:
-            if schedule["sid"] == int(id):  # If the schedule is the user's schedule
-                return schedule
-        return None
-
-    def get_components_filename(self):
-        if self.request.get("vulcanize", "1") == "0":
-            filename = "components.html"
-        else:
-            filename = "vulcanized.html"
-        return filename
-
-
-class LoginHandler(BaseHandler):
-    def post(self):
-        email = self.request.get("email").lower()
-        password = self.request.get("password")
-
-        id = email_to_id(email)
-
-        if not id:  # If there is no id for the email, don't try to log in
-            self.response.write(json.dumps({"error": "That email is not recognized."}))
-            return
-
-        username = string.split(email, "@")[0]
-
-        if email == "demo" and password == "demo":
-            id = GAVIN_ID
-            email = "guberti@eastsideprep.org"
-        # If four11 authentication failed, return our error
-        elif not (authenticate_user.auth_user(email, password)):
-            self.response.write(json.dumps({"error": "Your password is incorrect."}))
-            return
-
-        # If authentication was successful, check to see if the person has an EPSchedule account
-        user_obj_query = self.query_by_email(email)
-        if not user_obj_query.get():
-            student_obj = User(
-                email=email, join_date=datetime.datetime.now()
-            )
-            student_obj.put()
-
-        # If the authentication was successful, give the user an auth token
-        if id is not None:
-            self.write_auth_cookie(id)
-        else:
-            self.response.write(
-                create_error_obj(
-                    "Something went wrong! "
-                    + email
-                    + " is in the password database, but it is not in schedules.json. Please contact the administrators."
-                )
-            )
-
-    def write_auth_cookie(self, id):
-        encoded_id = base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id)))
-        expiration_date = datetime.datetime.now()
-        expiration_date += datetime.timedelta(3650)
-        self.response.set_cookie("SID", encoded_id, expires=expiration_date)
-        self.response.write(create_error_obj(""))
-
-
-class LunchIdLoginHandler(BaseHandler):
-    def post(self):
-        username = self.request.get("username").lower()
-        password = self.request.get("password")
-
-        ID = username_to_id(username)
-        if not ID:
-            self.error(403)
-            self.response.write("No ID!")
-            return
-        # If four11 authentication failed, return our error
-        if not (authenticate_user.auth_user(username_to_email(username), password)):
-            self.error(403)
-            self.response.write("Wrong password!")
-            return
-
-        schedule = self.get_schedule_for_id(ID)
-        if schedule["gradyear"]:
-            lunch_code = str(schedule["gradyear"]) + str(ID)
-        else:
-            lunch_code = str(10000000 + ID)
-        photo_url = self.gen_photo_url(schedule["username"], "96x96_photos")
-
-        obj = {
-            "code": lunch_code,
-            "photo": photo_url,
-            "updateKey": base64.b64encode(aes.encryptData(CRYPTO_KEY, str(id))),
-        }
-
-        self.response.write(json.dumps(obj))
-
-
-class LunchIdUpdateHandler(BaseHandler):
-    def get(self):
-        # id = decryptData(self.request.get("updateKey"))
-        # if id is None:
-        #    self.error(403)
-        #    return
-        lunches = update_lunch.get_all_future_lunches(datetime.datetime.now())
-        self.response.write(json.dumps(lunches))
-
-
-class LogoutHandler(BaseHandler):
+@app.route('/logout')
+class LogoutHandler():
     def post(self):
         self.response.delete_cookie("SID")
-        self.response.delete_cookie("SEENPRIVDIALOG")
         self.response.write(json.dumps({}))
 
-
-class ClassHandler(BaseHandler):
+'''@app.route('/class/<period>')
+class ClassHandler():
     def gen_opted_out_table(self):
         table = set()
         opted_out = db.GqlQuery("SELECT * FROM User WHERE share_photo = FALSE")
@@ -434,7 +217,7 @@ class ClassHandler(BaseHandler):
 
         self.response.write(json.dumps(result))
 
-
+@app.route('/student/<username>')
 class StudentHandler(BaseHandler):
     def get(self, username):
         id = self.check_id()
@@ -512,7 +295,7 @@ class StudentHandler(BaseHandler):
 
         return class_obj  # Return the class object
 
-
+@app.route('/period/<period>')
 class PeriodHandler(BaseHandler):
     def get(self, period):
         id = self.check_id()
@@ -527,8 +310,8 @@ class PeriodHandler(BaseHandler):
         # which rooms are free, what class you currently have then,
         # and what classes you could take then
         dataobj = {"classes": []}
-        altperiods = Set()
-        freerooms = Set()
+        altperiods = set()
+        freerooms = set()
 
         if id == DEMO_ID:  # If this is the demo account
             id = GAVIN_ID
@@ -653,146 +436,107 @@ class PeriodHandler(BaseHandler):
         dataobj["classes"] = [None, None, None]
         dataobj["classes"][term_id] = classes_for_trimester
 
-        self.response.write(json.dumps(dataobj))
+        self.response.write(json.dumps(dataobj))'''
+
+def gen_login_response():
+    template = make_response(render_template("login.html", components="static/vulcanized.html"))
+    # Clear all cookies
+    session.pop('username', None)
+    template.set_cookie('token', '', expires=0)
+    return template
+
+def get_schedule(username):
+    schedule_data = get_schedule_data()
+    for schedule in schedule_data:
+        if schedule["username"] == username:  # If the schedule is the user's schedule
+            return schedule
+    return None
 
 
-class TeacherHandler(BaseHandler):
-    def get(self, teacher):
-        id = self.check_id()
-        if id is None:
-            self.error(403)
-            return
+firebase_request_adapter = requests.Request()
 
-        if id == DEMO_ID:  # If this is the demo account
-            id = GAVIN_ID
+@app.route('/')
+def main():
+    # Tokens are used during login, but after that we use our own system
+    # If they have a token, we should always eat it and give them either
+    # a proper auth cookie or the login page
 
-        teacher = teacher.lower()
-        bio = self.get_bio(teacher)
-        if not bio:
-            bio = ""
-        schedule_data = self.get_schedule_data()
-        teachernames = string.split(teacher, "_")
-        result = None
+    token = request.cookies.get("token")
+    if token:
+        try:
+            claims = google.oauth2.id_token.verify_firebase_token(
+                token, firebase_request_adapter)
+            session.permanent = True
+            session['username'] = claims['email'].split("@")[0]
+        except ValueError as exc:
+            return gen_login_response()
 
-        for schedule in schedule_data:
-            if (
-                schedule["firstname"].lower() == teachernames[0]
-                and schedule["lastname"].lower() == teachernames[1]
-            ):
-                result = copy.deepcopy(schedule)
-                result["email"] = username_to_email(schedule["username"])
-                result["bio"] = bio
+    elif not session['username']:
+        return gen_login_response()
 
-        if not result:
-            self.error(404)
-            return
+    # Handler for how to serialize date objs into json
+    response = make_response(render_template("index.html",
+        schedule = json.dumps(get_schedule(session['username'])),
+        days = json.dumps(DAYS),
+        components = "static/vulcanized.html",
+        lunches = "[]",
+        fall_end_unix = str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
+        wint_end_unix = str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000)
+    ))
+    response.set_cookie('token', '', expires=0)
+    return response
 
-        self.response.write(json.dumps(result))
+def get(self):
+    # Get the cookie
+    id = self.check_id()
+    if id is None:
+        self.send_login_response()
+        return
 
-    def get_bio(self, teacher):
-        for bio in BIOS:
-            if bio["name"] == teacher:
-                return bio["bio"]
+    # schedule = self.get_schedule(self.request.get('id'))
+    schedule = self.get_schedule(id)
+    lunch_objs = update_lunch.getLunchForDate(datetime.date.today())
 
+    if schedule is not None:
 
-class MainHandler(BaseHandler):
-    # def __init__(self):
-    def get_schedule(self, id):
-        schedules = self.get_schedule_data()
-        for schedule in schedules:
-            if schedule["sid"] == int(id):
-                return schedule
-        return None
+        show_privacy_dialog = False
 
-    def send_login_response(self):
-        template_values = {"components": self.get_components_filename()}
-        template = JINJA_ENVIRONMENT.get_template("login.html")
+        if self.request.cookies.get("SEENPRIVDIALOG") != "1":
+            if schedule["grade"]:  # If the user is a student
+                user_obj_query = self.query_by_email(id_to_email(id))
+                obj = user_obj_query.get()
+                if obj:
+                    show_privacy_dialog = not obj.seen_update_dialog
+            if not show_privacy_dialog:
+                expiration_date = datetime.datetime.now()
+                expiration_date += datetime.timedelta(
+                    3650
+                )  # Set expiration date 10 years in the future
+                self.response.set_cookie(
+                    "SEENPRIVDIALOG", "1", expires=expiration_date
+                )
+
+        # Handler for how to serialize date objs into json
+        template_values = {
+            "schedule": json.dumps(schedule),
+            "days": json.dumps(DAYS),
+            "components": self.get_components_filename(),
+            "lunches": json.dumps(lunch_objs),
+            "self_photo": json.dumps(
+                self.gen_photo_url(schedule["username"], "school_photos")
+            ),
+            "show_privacy_dialog": json.dumps(show_privacy_dialog),
+            # Multiply by 1000 to give Unix time in milliseconds
+            "fall_end_unix": str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
+            "wint_end_unix": str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000),
+        }
+
+        template = JINJA_ENVIRONMENT.get_template("index.html")
         self.response.write(template.render(template_values))
+    else:
+        self.response.write("No schedule for id " + id)
 
-    def get(self):
-        # Get the cookie
-        id = self.check_id()
-        if id is None:
-            self.send_login_response()
-            return
-
-        if id == DEMO_ID:  # If this is the demo account
-            id = GAVIN_ID
-        # schedule = self.get_schedule(self.request.get('id'))
-        schedule = self.get_schedule(id)
-        lunch_objs = update_lunch.getLunchForDate(datetime.date.today())
-
-        if schedule is not None:
-
-            show_privacy_dialog = False
-
-            if self.request.cookies.get("SEENPRIVDIALOG") != "1":
-                if schedule["grade"]:  # If the user is a student
-                    user_obj_query = self.query_by_email(id_to_email(id))
-                    obj = user_obj_query.get()
-                    if obj:
-                        show_privacy_dialog = not obj.seen_update_dialog
-                if not show_privacy_dialog:
-                    expiration_date = datetime.datetime.now()
-                    expiration_date += datetime.timedelta(
-                        3650
-                    )  # Set expiration date 10 years in the future
-                    self.response.set_cookie(
-                        "SEENPRIVDIALOG", "1", expires=expiration_date
-                    )
-
-            # Handler for how to serialize date objs into json
-            template_values = {
-                "schedule": json.dumps(schedule),
-                "days": json.dumps(DAYS),
-                "components": self.get_components_filename(),
-                "lunches": json.dumps(lunch_objs),
-                "self_photo": json.dumps(
-                    self.gen_photo_url(schedule["username"], "school_photos")
-                ),
-                "show_privacy_dialog": json.dumps(show_privacy_dialog),
-                # Multiply by 1000 to give Unix time in milliseconds
-                "fall_end_unix": str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
-                "wint_end_unix": str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000),
-            }
-
-            template = JINJA_ENVIRONMENT.get_template("index.html")
-            self.response.write(template.render(template_values))
-        else:
-            self.response.write("No schedule for id " + id)
-
-
-ERR_NO_LUNCH_TO_RATE = {"error": "You cannot rate today's lunch"}
-
-ORIG_LUNCH_RATE = {"error": "Your vote has been recorded"}
-
-LUNCH_RATE_OVERWRITE = {"error": "Your vote has been updated"}
-
-
-class LunchRateHandler(BaseHandler):
-    def post(self):
-        id = int(self.check_id())
-        if id is None:
-            self.error(403)
-            return
-
-        date = datetime.datetime.now()
-
-        lunch_id = update_lunch.get_lunch_id_for_date(date)
-
-        if not lunch_id:  # If there is no lunch for the date
-            self.response.write(json.dumps(ERR_NO_LUNCH_TO_RATE))
-            return
-
-        rating = int(self.request.get("rating"))
-        overwrote = update_lunch.place_rating(rating, id, lunch_id, date)
-        if overwrote:
-            self.response.write(json.dumps(LUNCH_RATE_OVERWRITE))
-        else:
-            self.response.write(json.dumps(ORIG_LUNCH_RATE))
-
-
-class AdminHandler(BaseHandler):
+'''class AdminHandler(BaseHandler):
     def get(self):
         if not self.check_admin_id():
             self.error(403)
@@ -957,19 +701,21 @@ class AdminHandler(BaseHandler):
             schedules={'test': 1}
         )
         year_obj.put()
-
-
-class CronHandler(BaseHandler):
+'''
+'''@app.route('/cron/<job>')
+class CronHandler():
     def get(self, job):  # On url invoke
         if job == "lunch":
             update_lunch.read_lunches()
             self.response.write("Success")
         elif job == "schedules": # Warning - takes a LONG time
-            json_schedules = fetch_schedules_with_api()
+            json_schedules = fetch_schedules_with_api()'''
 
 
 
-class PrivacyHandler(BaseHandler):  # Change and view privacy settings
+'''# Change and view privacy settings
+@app.route('/settings')
+class SettingsHandler():
     def load_obj(self):
         id = self.check_id()
         if id is None:
@@ -1019,17 +765,7 @@ class PrivacyHandler(BaseHandler):  # Change and view privacy settings
         user_obj.put()
         self.response.write(json.dumps({}))
 
-
-class AvatarHandler(BaseHandler):
-    def get(self, user):
-        if not self.check_admin_id():
-            self.error(403)
-            return
-        args = string.split(user, "_")
-        url = self.gen_photo_url(args[1], args[0], "school_photos")
-        self.redirect(url)
-
-
+@app.route('/search/<keyword>')
 class SearchHandler(BaseHandler):
     def get(self, keyword):
         results = []
@@ -1040,27 +776,16 @@ class SearchHandler(BaseHandler):
                 if len(results) >= 5:  # We only display five results
                     break
 
-        self.response.write(json.dumps(results))
+        self.response.write(json.dumps(results))'''
 
+if __name__ == '__main__':
+    # Only used for running locally
 
-app = webapp2.WSGIApplication(
-    [
-        ("/", MainHandler),
-        ("/avatar/(\w+).jpg", AvatarHandler),
-        ("/login", LoginHandler),
-        ("/logout", LogoutHandler),
-        ("/privacy", PrivacyHandler),
-        ("/class/(\w+)", ClassHandler),
-        ("/period/(\w+)", PeriodHandler),
-        ("/teacher/([\w\-]+)", TeacherHandler),
-        ("/student/([\w\-]+)", StudentHandler),
-        ("/lunch", LunchRateHandler),
-        ("/admin", AdminHandler),
-        ("/admin/(\w+)", AdminHandler),
-        ("/search/(.*)", SearchHandler),
-        ("/cron/(\w+)", CronHandler),
-        ("/lunchid", LunchIdLoginHandler),
-        ("/lunchupdate", LunchIdUpdateHandler),
-    ],
-    debug=True,
-)
+    # This is used when running locally only. When deploying to Google App
+    # Engine, a webserver process such as Gunicorn will serve the app. This
+    # can be configured by adding an `entrypoint` to app.yaml.
+    # Flask's development server will automatically serve static files in
+    # the "static" directory. See:
+    # http://flask.pocoo.org/docs/1.0/quickstart/#static-files. Once deployed,
+    # App Engine itself will serve those files as configured in app.yaml.
+    app.run(host='127.0.0.1', port=8080, debug=True)
