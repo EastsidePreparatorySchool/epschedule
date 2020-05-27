@@ -471,7 +471,7 @@ def main():
         except ValueError as exc:
             return gen_login_response()
 
-    elif not session['username']:
+    elif 'username' not in session:
         return gen_login_response()
 
     # Handler for how to serialize date objs into json

@@ -2,7 +2,6 @@ import hashlib
 import hmac
 import json
 import os
-import tempfile
 import time
 from io import BytesIO
 
@@ -84,16 +83,21 @@ def upload_photo(bucket, filename, photo):
 
 
 # Takes about three minutes for ~450 photos
-def crawl_photos(key):
+def crawl_photos(event):
+
+    # Prepare our secret
+    start = time.time()
+    secret_client = secretmanager.SecretManagerServiceClient()
+    key = secret_client.access_secret_version(
+        "projects/epschedule-v2/secrets/session_key/versions/1"
+    ).payload.data
+
     # Open the bucket
     storage_client = storage.Client()
     avatar_bucket = storage_client.bucket("epschedule-avatars")
     data_bucket = storage_client.bucket("epschedule-data")
     schedule_blob = data_bucket.blob("schedules.json")
     schedules = json.loads(schedule_blob.download_as_string())
-
-    rawdir = tempfile.mkdtemp()
-    croppeddir = tempfile.mkdtemp()
 
     for schedule in schedules:
         photo = download_photo(schedule)
@@ -112,16 +116,9 @@ def crawl_photos(key):
             grayscale = cropped.convert("L")
             upload_photo(avatar_bucket, schedule["username"] + ".jpg", grayscale)
 
+    print("Operation took {:.2f} seconds".format(time.time() - start))
+
 
 if __name__ == "__main__":
-    # Prepare our secret
-    start = time.time()
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../epschedule-455d8a10f5ec.json"
-    secret_client = secretmanager.SecretManagerServiceClient()
-    hash_key = secret_client.access_secret_version(
-        "projects/epschedule-v2/secrets/session_key/versions/1"
-    ).payload.data
-
-    # Crawl photos
-    crawl_photos(hash_key)
-    print("Operation took {:.2f} seconds".format(time.time() - start))
+    crawl_photos()
