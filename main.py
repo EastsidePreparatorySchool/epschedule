@@ -11,36 +11,28 @@ import hashlib
 
 from flask import Flask, render_template, request, session, make_response
 from google.auth.transport import requests
-from google.cloud import datastore, secretmanager
+from google.cloud import storage, secretmanager
 import google.oauth2.id_token
 
 app = Flask(__name__)
 app.permanent_session_lifetime = datetime.timedelta(days=3650)
 
 
-# Get application secret key
+# Authenticate ourselves
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="epschedule-455d8a10f5ec.json"
+
+# Get application secret key
 secret_client = secretmanager.SecretManagerServiceClient()
 app.secret_key = secret_client.access_secret_version("projects/epschedule-v2/secrets/session_key/versions/1").payload.data
 
-def open_data_file(filename, has_test_data=False):
-    if has_test_data and "EPSCHEDULE_USE_TEST_DATA" in os.environ:
-        fullname = "data/test_" + filename
-    else:
-        fullname = "data/" + filename
-    return open(fullname, "rb")
+storage_client = storage.Client()
+data_bucket = storage_client.bucket("epschedule-data")
 
+def load_json_file(filename):
+    blob = data_bucket.blob(filename)
+    return json.loads(blob.download_as_string())
 
-def load_data_file(filename, has_test_data=False):
-    return open_data_file(filename, has_test_data).read()
-
-
-def load_json_file(filename, has_test_data=False):
-    return json.load(open_data_file(filename, has_test_data))
-
-CRYPTO_KEY = load_data_file("crypto.key", True).strip()
-ID_TABLE = load_json_file("id_table.json", True)
-SCHEDULE_INFO = load_json_file("schedules.json", True)
+SCHEDULE_INFO = load_json_file("schedules.json")
 DAYS = load_json_file("exceptions.json")
 
 FALL_TRI_END = datetime.datetime(2019, 11, 23, 15, 30, 0, 0)
@@ -80,7 +72,7 @@ def get_schedule_data():
     return SCHEDULE_INFO
 
 def gen_photo_url(self, username, folder):
-    photo_hasher = hashlib.sha256(CRYPTO_KEY)
+    photo_hasher = hashlib.sha256(app.secret_key)
     photo_hasher.update(bytes(username))
     encoded_filename = photo_hasher.hexdigest()
     return "/" + folder + "/" + encoded_filename + ".jpg"

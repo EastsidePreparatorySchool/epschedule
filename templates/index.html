@@ -553,13 +553,15 @@
     return scheduleObj;
   }
 
+  IMAGE_CDN = "https://epschedule-avatars.storage.googleapis.com/"
+
   // Add the images on the left side to full schedules
   function addScheduleImages(scheduleObj, userSchedule, type) {
     if (scheduleObj.teacher != "" || type == "core" ) {
       var sanitized_teacher_name;
       sanitized_teacher_name = scheduleObj.teacher.toLowerCase();
       sanitized_teacher_name = sanitized_teacher_name.replace(/ /g,"_");
-      scheduleObj.avatar = "/96x96_photos/" + scheduleObj.teacherUsername + ".jpg";
+      scheduleObj.avatar = IMAGE_CDN + scheduleObj.teacherUsername + ".jpg";
       scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
 
     // If class is a special class or free period
