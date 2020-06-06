@@ -14,8 +14,12 @@ from google.auth.transport import requests
 from google.cloud import storage, secretmanager
 import google.oauth2.id_token
 
+from cron.photos import hash_username
+
 app = Flask(__name__)
 app.permanent_session_lifetime = datetime.timedelta(days=3650)
+# Used to authenticate auth tokens
+firebase_request_adapter = requests.Request()
 
 
 # Authenticate ourselves
@@ -27,6 +31,7 @@ app.secret_key = secret_client.access_secret_version("projects/epschedule-v2/sec
 
 storage_client = storage.Client()
 data_bucket = storage_client.bucket("epschedule-data")
+photo_bucket_endpoint = "https://epschedule-avatars.storage.googleapis.com/{}"
 
 def load_json_file(filename):
     blob = data_bucket.blob(filename)
@@ -71,144 +76,20 @@ def get_term_id(self):
 def get_schedule_data():
     return SCHEDULE_INFO
 
-def gen_photo_url(self, username, folder):
-    photo_hasher = hashlib.sha256(app.secret_key)
-    photo_hasher.update(bytes(username))
-    encoded_filename = photo_hasher.hexdigest()
-    return "/" + folder + "/" + encoded_filename + ".jpg"
-
-def query_by_email(self, email):
+def query_by_email(email):
     return db.GqlQuery("SELECT * FROM User WHERE email = :1", email)
 
-def get_components_filename(self):
+def get_components_filename():
     if self.request.get("vulcanize", "1") == "0":
         filename = "components.html"
     else:
         filename = "vulcanized.html"
     return filename
 
-@app.route('/logout')
-class LogoutHandler():
-    def post(self):
-        self.response.delete_cookie("SID")
-        self.response.write(json.dumps({}))
+def gen_photo_url(username, icon=False):
+    return photo_bucket_endpoint.format(hash_username(app.secret_key, username, icon))
 
-'''@app.route('/class/<period>')
-class ClassHandler():
-    def gen_opted_out_table(self):
-        table = set()
-        opted_out = db.GqlQuery("SELECT * FROM User WHERE share_photo = FALSE")
-        for student in opted_out:
-            table.add(student.email)
-
-        return table
-
-    def is_same_class(self, a, b):
-        return (
-            normalize_classname(a["name"]) == normalize_classname(b["name"])
-            and a["period"] == b["period"]
-            and a["teacher"] == b["teacher"]
-            and a["room"] == b["room"]
-        )
-
-    def get_class_schedule(self, user_class, term_id, censor=True):
-        schedules = self.get_schedule_data()
-        result = {
-            "period": user_class["period"],
-            "teacher": user_class["teacher"],
-            "term_id": term_id,
-            "students": [],
-        }
-
-        if censor:
-            opted_out = self.gen_opted_out_table()
-        else:
-            opted_out = set()
-
-        for schedule in schedules:  # Load up each student's schedule
-            for classobj in schedule["classes"][
-                term_id
-            ]:  # For each one of their classes
-                if self.is_same_class(
-                    user_class, classobj
-                ):  # Check class name and period match
-
-                    if (
-                        schedule["gradyear"] or classobj["name"] == "Free Period"
-                    ):  # If they are a student or it is a free period
-                        if not result:
-                            result = {
-                                "period": classobj["period"],
-                                "teacher": classobj["teacher"],
-                                "students": [],
-                            }
-
-                        email = username_to_email(schedule["username"])
-                        photo_url = self.gen_photo_url(
-                            schedule["username"], "96x96_photos"
-                        )
-
-                        if email in opted_out:
-                            photo_url = (
-                                "/images/placeholder_small.png"
-                            )  # Default placeholder
-
-                        student = {
-                            "firstname": schedule["firstname"],
-                            "lastname": schedule["lastname"],
-                            "grade": schedule["grade"],
-                            "email": email,
-                            "photo_url": photo_url,
-                        }
-
-                        # Lines below are for creating the demo, but are no longer used
-
-                        # teacher_schedule = self.get_teacher_photo(random.randint(1, 40))
-                        # logging.info("Is this null? Firstname is: " + teacher_schedule['firstname'])
-
-                        # student = {"firstname": teacher_schedule['firstname'], \
-                        #           "lastname": teacher_schedule['lastname'], \
-                        #           "email": email,
-                        #           "photo_url": "/96x96_photos/" + teacher_schedule["firstname"] + "_" + teacher_schedule["lastname"] + ".jpg"}
-
-                        result["students"].append(student)
-
-        if result:
-            result["students"] = sorted(
-                sorted(result["students"], key = lambda s: s["firstname"]),
-                key = lambda s: bool(s["grade"]))
-            #sorts alphabetically, then sorts teachers from students
-        return result
-
-    def get(self, period):
-        # Get the cookie
-        id = self.check_id()
-        if id is None:
-            self.error(403)
-            return
-
-        if id == DEMO_ID:
-            id = GAVIN_ID
-
-        term_id = self.get_term_id()
-        user_schedule = self.get_schedule_for_id(id)
-
-        clss = next(
-            (
-                c
-                for c in user_schedule["classes"][term_id]
-                if c["period"].lower() == period
-            )
-        )
-
-        censor = not is_teacher_schedule(user_schedule)
-        result = self.get_class_schedule(clss, term_id, censor=censor)
-        if not result:
-            self.error(404)
-            return
-
-        self.response.write(json.dumps(result))
-
+'''
 @app.route('/student/<username>')
 class StudentHandler(BaseHandler):
     def get(self, username):
@@ -444,9 +325,6 @@ def get_schedule(username):
             return schedule
     return None
 
-
-firebase_request_adapter = requests.Request()
-
 @app.route('/')
 def main():
     # Tokens are used during login, but after that we use our own system
@@ -478,55 +356,74 @@ def main():
     response.set_cookie('token', '', expires=0)
     return response
 
-def get(self):
-    # Get the cookie
-    id = self.check_id()
-    if id is None:
-        self.send_login_response()
-        return
+@app.route('/class/<period>')
+def handle_class(period):
+    if 'username' not in session:
+        return gen_login_response()
 
-    # schedule = self.get_schedule(self.request.get('id'))
-    schedule = self.get_schedule(id)
-    lunch_objs = update_lunch.getLunchForDate(datetime.date.today())
+    schedule = get_schedule(session['username'])
+    term = int(request.args.get('term_id'))
 
-    if schedule is not None:
+    class_name = next(
+        (
+            c for c in schedule["classes"][term]
+            if c["period"].lower() == period
+        )
+    )
 
-        show_privacy_dialog = False
+    censor = not is_teacher_schedule(schedule)
+    class_schedule = get_class_schedule(class_name, term, censor=censor)
+    return json.dumps(class_schedule)
 
-        if self.request.cookies.get("SEENPRIVDIALOG") != "1":
-            if schedule["grade"]:  # If the user is a student
-                user_obj_query = self.query_by_email(id_to_email(id))
-                obj = user_obj_query.get()
-                if obj:
-                    show_privacy_dialog = not obj.seen_update_dialog
-            if not show_privacy_dialog:
-                expiration_date = datetime.datetime.now()
-                expiration_date += datetime.timedelta(
-                    3650
-                )  # Set expiration date 10 years in the future
-                self.response.set_cookie(
-                    "SEENPRIVDIALOG", "1", expires=expiration_date
-                )
+### Functions to generate and censor class schedules
 
-        # Handler for how to serialize date objs into json
-        template_values = {
-            "schedule": json.dumps(schedule),
-            "days": json.dumps(DAYS),
-            "components": self.get_components_filename(),
-            "lunches": json.dumps(lunch_objs),
-            "self_photo": json.dumps(
-                self.gen_photo_url(schedule["username"], "school_photos")
-            ),
-            "show_privacy_dialog": json.dumps(show_privacy_dialog),
-            # Multiply by 1000 to give Unix time in milliseconds
-            "fall_end_unix": str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
-            "wint_end_unix": str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000),
-        }
+def gen_opted_out_table():
+    # TODO add this later
+    return set()
 
-        template = JINJA_ENVIRONMENT.get_template("index.html")
-        self.response.write(template.render(template_values))
-    else:
-        self.response.write("No schedule for id " + id)
+def is_same_class(a, b):
+    return (
+        normalize_classname(a["name"]) == normalize_classname(b["name"])
+        and a["period"] == b["period"]
+        and a["teacher"] == b["teacher"]
+        and a["room"] == b["room"]
+    )
+
+def get_class_schedule(user_class, term_id, censor=True):
+    schedules = get_schedule_data()
+    result = {
+        "period": user_class["period"],
+        "teacher": user_class["teacher"],
+        "term_id": term_id,
+        "students": [],
+    }
+
+    opted_out = set()
+
+    for schedule in schedules:  # Load up each student's schedule
+        for classobj in schedule["classes"][term_id]:
+            if is_same_class(user_class, classobj):
+                # We only include teacher schedules in free periods
+                if (not is_teacher_schedule(schedule)) or classobj["name"] == "Free Period":
+
+                    if schedule["username"] not in opted_out:
+                        photo_url = gen_photo_url(schedule["username"], True)
+                    else:
+                        photo_url = "/static/images/placeholder_small.png"
+                    student = {
+                        "firstname": schedule["firstname"],
+                        "lastname": schedule["lastname"],
+                        "grade": schedule["grade"],
+                        "email": username_to_email(schedule["username"]),
+                        "photo_url": photo_url,
+                    }
+                    result["students"].append(student)
+
+    # Sorts alphabetically, then sorts teachers from students
+    result["students"] = sorted(
+        sorted(result["students"], key = lambda s: s["firstname"]),
+        key = lambda s: s["grade"])
+    return result
 
 '''class AdminHandler(BaseHandler):
     def get(self):
