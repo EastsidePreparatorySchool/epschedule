@@ -90,84 +90,6 @@ def gen_photo_url(username, icon=False):
     return photo_bucket_endpoint.format(hash_username(app.secret_key, username, icon))
 
 '''
-@app.route('/student/<username>')
-class StudentHandler(BaseHandler):
-    def get(self, username):
-        id = self.check_id()
-        if id is None:
-            self.error(403)
-            return
-
-        if id == str(DEMO_ID):
-            id = GAVIN_ID
-
-        email = username_to_email(username)
-        show_full_schedule = True
-        show_photo = True
-
-        user_obj = self.query_by_email(email).get()
-
-        if user_obj:
-            show_full_schedule = user_obj.share_schedule
-            show_photo = user_obj.share_photo
-
-        sid = username_to_id(username)
-        student_schedule = self.get_schedule_for_id(sid)
-        if not student_schedule:
-            self.error(404)
-            return
-
-        user_schedule = self.get_schedule_for_id(id)
-
-        if (is_teacher_schedule(user_schedule) or
-            is_teacher_schedule(student_schedule)):
-            show_photo = True
-            show_full_schedule = True
-
-        if show_full_schedule:
-            response_schedule = copy.deepcopy(student_schedule)
-        else:
-            response_schedule = self.sanitize_schedule(student_schedule, user_schedule)
-
-        # Generate email address
-        response_schedule["email"] = email
-
-        if show_photo:
-            response_schedule["photo_url"] = self.gen_photo_url(
-                username, "school_photos"
-            )
-        else:
-            response_schedule["photo_url"] = "/images/placeholder.png"
-
-        self.response.write(json.dumps(response_schedule))
-
-    def sanitize_schedule(self, orig_schedule, user_schedule):
-        schedule = copy.deepcopy(orig_schedule)
-        for i in range(0, len(schedule["classes"])):
-            for k in range(0, len(schedule["classes"][i])):
-                # If the class is not shared among the user and student
-                if not schedule["classes"][i][k] in user_schedule["classes"][i]:
-                    # Sanitize the class
-                    schedule["classes"][i][k] = self.sanitize_class(
-                        schedule["classes"][i][k]
-                    )
-
-        return schedule
-
-    def sanitize_class(self, orig_class_obj):
-        class_obj = orig_class_obj.copy()
-        study_halls = ["Study Hall", "GSH", "Free Period"]
-
-        if class_obj["name"] in study_halls:
-            class_obj["name"] = "Free Period"
-        else:
-            class_obj["name"] = "Hidden"
-
-        class_obj["teacher"] = ""
-        class_obj["room"] = ""
-
-        return class_obj  # Return the class object
-
 @app.route('/period/<period>')
 class PeriodHandler(BaseHandler):
     def get(self, period):
@@ -377,8 +299,9 @@ def handle_class(period):
 
 ### Functions to generate and censor class schedules
 
+# List of people who opted out of photo sharing
 def gen_opted_out_table():
-    # TODO add this later
+    # TODO write this
     return set()
 
 def is_same_class(a, b):
@@ -424,6 +347,65 @@ def get_class_schedule(user_class, term_id, censor=True):
         sorted(result["students"], key = lambda s: s["firstname"]),
         key = lambda s: s["grade"])
     return result
+
+
+# TODO rename this to /user since it's for students and teachers
+@app.route('/student/<target_user>')
+def handle_user(target_user):
+    if 'username' not in session:
+        return gen_login_response()
+
+    # TODO finish privacy logic
+    user_schedule = get_schedule(session['username'])
+    target_schedule = get_schedule(target_user)
+
+    if is_teacher_schedule(user_schedule) or is_teacher_schedule(target_schedule):
+        show_full_schedule = True
+        show_photo = True
+    else:
+        # TODO finish privacy logic
+        show_full_schedule = True
+        show_photo = True
+
+    if not show_full_schedule:
+        target_schedule = sanitize_schedule(target_schedule, user_schedule)
+
+    # Generate email address
+    target_schedule["email"] = username_to_email(target_user)
+
+    if show_photo:
+        target_schedule["photo_url"] = gen_photo_url(target_user, False)
+    else:
+        target_schedule["photo_url"] = "/images/placeholder.png"
+
+    return json.dumps(target_schedule)
+
+def sanitize_schedule(self, orig_schedule, user_schedule):
+    schedule = copy.deepcopy(orig_schedule)
+    for i in range(0, len(schedule["classes"])):
+        for k in range(0, len(schedule["classes"][i])):
+            # If the class is not shared among the user and student
+            if not schedule["classes"][i][k] in user_schedule["classes"][i]:
+                # Sanitize the class
+                schedule["classes"][i][k] = self.sanitize_class(
+                    schedule["classes"][i][k]
+                )
+
+    return schedule
+
+def sanitize_class(self, orig_class_obj):
+    class_obj = orig_class_obj.copy()
+    study_halls = ["Study Hall", "GSH", "Free Period"]
+
+    if class_obj["name"] in study_halls:
+        class_obj["name"] = "Free Period"
+    else:
+        class_obj["name"] = "Hidden"
+
+    class_obj["teacher"] = ""
+    class_obj["room"] = ""
+
+    return class_obj  # Return the class object
 
 '''class AdminHandler(BaseHandler):
     def get(self):
