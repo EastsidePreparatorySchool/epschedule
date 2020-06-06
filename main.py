@@ -634,20 +634,18 @@ class SettingsHandler():
         )
         user_obj.seen_update_dialog = True
         user_obj.put()
-        self.response.write(json.dumps({}))
+        self.response.write(json.dumps({}))'''
 
 @app.route('/search/<keyword>')
-class SearchHandler(BaseHandler):
-    def get(self, keyword):
-        results = []
-        for schedule in self.get_schedule_data():
-            test_keyword = schedule["firstname"] + " " + schedule["lastname"]
-            if keyword.lower() in test_keyword.lower():
-                results.append({"name": test_keyword, "username": schedule["username"]})
-                if len(results) >= 5:  # We only display five results
-                    break
-
-        self.response.write(json.dumps(results))'''
+def handle_search(keyword):
+    results = []
+    for schedule in get_schedule_data():
+        test_keyword = schedule["firstname"] + " " + schedule["lastname"]
+        if keyword.lower() in test_keyword.lower():
+            results.append({"name": test_keyword, "username": schedule["username"]})
+            if len(results) >= 5:  # We only display five results
+                break
+    return json.dumps(results)
 
 if __name__ == '__main__':
     # Only used for running locally
