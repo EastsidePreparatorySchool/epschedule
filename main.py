@@ -70,150 +70,6 @@ def get_components_filename():
 def gen_photo_url(username, icon=False):
     return photo_bucket_endpoint.format(hash_username(app.secret_key, username, icon))
 
-'''
-@app.route('/period/<period>')
-class PeriodHandler(BaseHandler):
-    def get(self, period):
-        id = self.check_id()
-        if id is None:
-            self.error(403)
-            return
-
-        if id == DEMO_ID:  # If this is the demo account
-            id = GAVIN_ID
-
-        # Should return back which of your teachers are free,
-        # which rooms are free, what class you currently have then,
-        # and what classes you could take then
-        dataobj = {"classes": []}
-        altperiods = set()
-        freerooms = set()
-
-        if id == DEMO_ID:  # If this is the demo account
-            id = GAVIN_ID
-        schedule_data = self.get_schedule_data()
-        user_schedule = None
-        user_class = None
-        term_id = self.get_term_id()
-
-        period = period.upper()
-
-        # Get user's schedule
-        for schedule in schedule_data:
-            if schedule["sid"] == int(id):
-                user_schedule = schedule
-                break
-
-        for class_obj in user_schedule["classes"][
-            term_id
-        ]:  # Find out which class the user has then
-            if class_obj["period"] == period:
-                user_class = class_obj
-                break
-
-        for schedule in schedule_data:
-            if schedule["grade"] == user_schedule["grade"]:
-                # For each person in the user's grade:
-
-                # Get what class they have in the period in question
-                testclass = {}
-                for clss in schedule["classes"][term_id]:
-                    if clss["period"] == period and clss["name"] != "Free Period":
-                        testclass = clss
-                        break
-
-                if testclass:
-                    # Test if we already have an appropriate object
-                    newobjectneeded = True
-
-                    for clss in dataobj["classes"]:
-                        if (
-                            clss["name"] == testclass["name"]
-                            and clss["period"] == testclass["period"]
-                        ):
-                            newobjectneeded = False
-                            break
-
-                    if newobjectneeded:
-                        if not user_schedule["grade"]:
-                            testclass = copy.copy(testclass)
-                            testclass["teacher"] = (
-                                schedule["firstname"] + " " + schedule["lastname"]
-                            )
-
-                        dataobj["classes"].append(testclass)
-
-                        dataobj["classes"][-1]["students"] = 0
-
-            for class_obj in schedule["classes"][term_id]:
-
-                # For each class, add its room to our room set
-                freerooms.add(class_obj["room"])
-
-                # For each class, if it's the same class that
-                # we have that period but in a different period,
-                # add that to "other periods" list
-                if class_obj["name"] == user_class["name"]:
-                    altperiods.add(class_obj["period"])
-
-        for schedule in schedule_data:  # Find out which rooms are free
-            if not schedule["grade"]:
-                continue
-            for clss in schedule["classes"][term_id]:
-                if clss["period"] == period:
-                    for test_class in dataobj["classes"]:
-
-                        if normalize_classname(
-                            test_class["name"]
-                        ) == normalize_classname(clss["name"]):
-                            test_class["students"] += 1
-
-                    freerooms.discard(clss["room"])
-
-        # List comprehension to remove duplicate classes
-        # While it would also be possible to do this with a for loop,
-        # the fastest way is list comprehension
-        dataobj["classes"] = map(
-            dict,
-            set(tuple(sorted(potclass.items())) for potclass in dataobj["classes"]),
-        )
-
-        for clss in reversed(dataobj["classes"]):
-            if not clss["room"]:
-                dataobj["classes"].remove(clss)
-
-        for clss in dataobj["classes"]:
-            # We already know periods are the same
-            if (
-                clss["name"] == user_class["name"]
-                and clss["room"] == user_class["room"]
-            ):
-                dataobj["currentclass"] = clss
-                dataobj["classes"].remove(clss)
-                break
-
-        if "currentclass" not in dataobj:
-            dataobj["currentclass"] = {
-                "name": "Free Period",
-                "period": period,
-                "room": None,
-                "teacher": None,
-            }
-
-        altperiods.remove(user_class["period"])
-
-        dataobj["period"] = period
-        dataobj["freerooms"] = sorted(list(freerooms))
-        dataobj["classes"].sort(key=lambda x: x["name"])
-        dataobj["altperiods"] = sorted(list(altperiods))
-        dataobj["term_id"] = term_id
-
-        classes_for_trimester = dataobj["classes"]
-        dataobj["classes"] = [None, None, None]
-        dataobj["classes"][term_id] = classes_for_trimester
-
-        self.response.write(json.dumps(dataobj))'''
-
 def gen_login_response():
     template = make_response(render_template("login.html", components="static/components.html"))
     # Clear all cookies
@@ -222,8 +78,7 @@ def gen_login_response():
     return template
 
 def get_schedule(username):
-    schedule_data = get_schedule_data()
-    for schedule in schedule_data:
+    for schedule in get_schedule_data():
         if schedule["username"] == username:  # If the schedule is the user's schedule
             return schedule
     return None
@@ -287,10 +142,8 @@ def gen_opted_out_table():
 
 def is_same_class(a, b):
     return (
-        normalize_classname(a["name"]) == normalize_classname(b["name"])
+        a["teacher_username"] == b["teacher_username"]
         and a["period"] == b["period"]
-        and a["teacher"] == b["teacher"]
-        and a["room"] == b["room"]
     )
 
 def get_class_schedule(user_class, term_id, censor=True):
@@ -388,172 +241,81 @@ def sanitize_class(self, orig_class_obj):
 
     return class_obj  # Return the class object
 
-'''class AdminHandler(BaseHandler):
-    def get(self):
-        if not self.check_admin_id():
-            self.error(403)
-            return
+@app.route('/period/<period>')
+def handle_period(period):
+    if 'username' not in session:
+        return gen_login_response()
 
-        data = self.read_db()
+    # TODO read this as a URL parameter
+    term = get_term_id()
+    schedule = get_schedule(session['username'])
+    grade_range = get_grade_range(schedule["grade"])
+    available = get_available(period, term, grade_range)
+    current_class = pop_current_class(available, schedule, term, period)
 
-        html = "<h1>Stats</h1>"
+    return json.dumps({
+        "period": period.upper(),
+        "term_id": term,
+        "freerooms": get_free_rooms(period, term),
+        "classes": [available] * 3, # TODO add support for other terms
+        "currentclass": current_class,
+        "altperiods": None # TODO add this in UI
+    })
 
-        html += "<h2>" + str(len(data))
-        html += " unique emails entered</h2>"
+### Functions to generate period information
 
-        num_four11 = len({k: v for (k, v) in data.iteritems() if not v.get("password")})
-        num_seen_dialog = len(
-            {k: v for (k, v) in data.iteritems() if v.get("seen_update_dialog")}
-        )
-        num_share_photo = len(
-            {k: v for (k, v) in data.iteritems() if v.get("share_photo")}
-        )
-        num_share_schedule = len(
-            {k: v for (k, v) in data.iteritems() if v.get("share_schedule")}
-        )
+def get_free_rooms(period, term):
+    free = set()
+    occupied = set()
+    for schedule in get_schedule_data():
+        if is_teacher_schedule(schedule):
+            continue
+        for clss in schedule["classes"][term]:
+            if clss["period"] == period.upper():
+                occupied.add(clss["room"])
+            else:
+                free.add(clss["room"])
+    print(occupied)
+    return list(free - occupied)
 
-        percent_seen_dialog = 0
-        percent_share_photo = 0
-        percent_share_schedule = 0
-        if len(data) > 0:
-            percent_seen_dialog = num_seen_dialog * 100 / len(data)
-        if num_seen_dialog > 0:
-            percent_share_photo = num_share_photo * 100 / num_seen_dialog
-            percent_share_schedule = num_share_schedule * 100 / num_seen_dialog
+def get_grade_range(grade):
+    if not grade:
+        return None
+    elif grade <= 8: # Middle school
+        return range(5, 9)
+    else:
+        return range(9, 13)
 
-        # html += "<h3>" + str(len(only_verified_list)) + " emails in good condition</h3>"
-        # for email in only_verified_list:
-        #    html += email + "<br>"
-        html += (
-            str(num_seen_dialog)
-            + " ("
-            + str(percent_seen_dialog)
-            + "%) have seen privacy dialog<br>"
-        )
-        html += (
-            str(num_share_photo)
-            + " ("
-            + str(percent_share_photo)
-            + "%) sharing their photo<br>"
-        )
-        html += (
-            str(num_share_schedule)
-            + " ("
-            + str(percent_share_schedule)
-            + "%) sharing their schedule</h4>"
-        )
+def get_available(period, term, grades):
+    # We index available by teacher username, since
+    # two of the same class could happen at once
+    available = {}
+    for schedule in get_schedule_data():
+        c = get_class_by_period(schedule["classes"][term], period)
+        key = c["teacher_username"]
+        if not key: # Skip free periods
+            continue
+        if key in available and not is_teacher_schedule(schedule):
+            available[key]["students"] += 1
+        elif schedule["grade"] in grades:
+            available[key] = copy.copy(c)
+            available[key]["students"] = 1
+    return list(available.values())
 
-        multiple_entities = sorted([k for k, v in data.iteritems() if len(v) > 1])
-        # If there are ever any entries in multiple_verified, the DB is in a very bad state
-        if multiple_entities:
-            html += (
-                "<h3>Attention! There are "
-                + str(len(multiple_entities))
-                + " emails with more than one record. The DB is REALLY messed up!</h3>"
-            )
-            for email in multiple_entities:
-                html += email + "<br>"
+# Modifies 'available' in place by removing and returning
+# the desired item
+def pop_current_class(available, schedule, term, period):
+    current_class = get_class_by_period(schedule["classes"][term], period)
+    for c in available:
+        if c["teacher_username"] == current_class["teacher_username"]:
+            available.remove(c)
+            return c
 
-        html += """
-        <script>
-          function sendEmails(action) {
-            window.alert("Performing " + action + ", press OK to continue");
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-              if (xhr.readyState == 4 && xhr.status == 200) {
-                setTimeout(reloadPage, 3000);
-              }
-            }
-            xhr.open('POST', 'admin/' + action, true);
-            xhr.send();
-          }
-          function reloadPage() {
-            location.reload();
-          }
-        </script>"""
-        html += "<button type='button' onclick='sendEmails("
-        html += '"addschoolyear"'
-        html += ")'>Add new school year</button>"
-        html += "<button type='button' onclick='sendEmails("
-        html += '"cleanup"'
-        html += ")'>Clean up duplicates of confirmed users</button>"
-        html += "<button type='button' onclick='sendEmails("
-        html += '"removeoutdated"'
-        html += ")'>Remove outdated columns</button>"
-        self.response.write(html)
+def get_class_by_period(schedule, period):
+    for c in schedule:
+        if c["period"].lower() == period.lower():
+            return c
 
-    # Returns the entire database as a dictionary
-    def read_db(self):
-        data = {}
-        query = db.GqlQuery("SELECT * FROM User ORDER BY join_date ASC")
-        for query_result in query:
-            if not query_result.email in data:
-                data[query_result.email] = {
-                    "seen_update_dialog": False,
-                    "share_photo": False,
-                    "share_schedule": False,
-                    "hits": [],
-                }
-
-            data[query_result.email]["hits"].append(query_result)
-            if query_result.seen_update_dialog:
-                data[query_result.email]["seen_update_dialog"] = True
-            if query_result.share_photo:
-                data[query_result.email]["share_photo"] = True
-            if query_result.share_schedule:
-                data[query_result.email]["share_schedule"] = True
-
-        return data
-
-    def post(self, action):
-        if not self.check_admin_id():
-            self.error(403)
-            return
-
-        if action == "cleanup":
-            self.clean_up_db()
-        elif action == "emaildomainadd":
-            self.email_domain_add()
-        elif action == "removeoutdated":
-            self.remove_outdated_props()
-        elif action == "addschoolyear":
-            self.create_new_year_object()
-
-    # Removes and merges duplicates
-    def clean_up_db(self):
-        data = self.read_db()
-        for email, obj in data.iteritems():
-            # Update the main object
-            obj["hits"][0].seen_update_dialog = obj["seen_update_dialog"]
-            obj["hits"][0].share_photo = obj["share_photo"]
-            obj["hits"][0].share_schedule = obj["share_schedule"]
-            obj["hits"][0].put()
-
-            for i in range(1, len(obj["hits"])):
-                obj["hits"][i].delete()
-
-    def email_domain_add(self):
-        query = db.GqlQuery("SELECT * FROM User")
-        for query_result in query:
-            if "@eastsideprep.org" not in query_result.email:
-                query_result.email += "@eastsideprep.org"
-                query_result.put()
-
-    def remove_outdated_props(self):
-        query = db.GqlQuery("SELECT * FROM User WHERE verified = True")
-        for query_result in query:
-            for prop in ["password", "verified"]:
-                if hasattr(query_result, prop):
-                    delattr(query_result, prop)
-                    query_result.put()
-                    logging.info("Removed password from user " + query_result["email"])
-
-    def create_new_year_object(self):
-        year_obj = SchoolYear(
-            schedules={'test': 1}
-        )
-        year_obj.put()
-'''
 '''@app.route('/cron/<job>')
 class CronHandler():
     def get(self, job):  # On url invoke
