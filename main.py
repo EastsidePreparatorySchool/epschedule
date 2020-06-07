@@ -1,13 +1,8 @@
-import base64
 import copy
 import datetime
 import json
-import logging
 import os
-from os import path
-import string
 import time
-import hashlib
 
 from flask import Flask, render_template, request, session, make_response
 from google.auth.transport import requests
@@ -43,27 +38,13 @@ DAYS = load_json_file("exceptions.json")
 FALL_TRI_END = datetime.datetime(2019, 11, 23, 15, 30, 0, 0)
 WINT_TRI_END = datetime.datetime(2020, 3, 6, 15, 30, 0, 0)
 
-def normalize_classname(text):
-    text = text.lower()
-    punctuation = set(string.punctuation + " ")
-    clean_text = ""
-    for character in text:
-        if character not in punctuation:
-            clean_text += character
-        else:
-            clean_text += "_"
-    return clean_text
-
 def username_to_email(username):
     return username + "@eastsideprep.org"
 
 def is_teacher_schedule(schedule):
     return not schedule["grade"]
 
-def create_error_obj(error_message):
-    return json.dumps({"error": error_message})
-
-def get_term_id(self):
+def get_term_id():
     now = datetime.datetime.now()
     if now < FALL_TRI_END:
         default = 0
