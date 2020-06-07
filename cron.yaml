@@ -1,4 +1,0 @@
-cron:
-- description: Add new lunches to database
-  url: /cron/lunch
-  schedule: every 1 hours
