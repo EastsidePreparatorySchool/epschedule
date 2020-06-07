@@ -1,12 +1,12 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-material/paper-material.html">
-<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../bower_components/iron-icons/communication-icons.html">
-<link rel="import" href="../bower_components/iron-icons/hardware-icons.html">
-<link rel="import" href="../bower_components/iron-image/iron-image.html">
-<link rel="import" href="../bower_components/iron-list/iron-list.html">
-<link rel="import" href="../bower_components/star-rating/star-rating.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/polymer/polymer.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/paper-material/paper-material.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/hardware-icons.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-image/iron-image.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-list/iron-list.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/star-rating/star-rating.html">
 <link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="x-schedule">
@@ -174,7 +174,7 @@
       <template is="dom-repeat" id="entryList" items="{{entries}}">
         <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
           <div class="card-header" layout="" horizontal="" center="">
-            <img src="{{item.avatar}}" onerror="if (this.src != '/images/placeholder_small.png') this.src = '/images/placeholder_small.png';">
+            <img src="{{item.avatar}}" onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';">
             <div class="card-mid" layout="" vertical="">
               <p item="time">
                 <template is="dom-if" if="{{!isCore()}}">
@@ -230,7 +230,7 @@
               <iron-list items="{{item.students}}" grid class="studentgrid" style="height:20vh">
                 <template>
                   <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                    <img class="studentimage" src="{{item.photo_url}}" onerror="if (this.src != '/images/placeholder_small.png') this.src = '/images/placeholder_small.png';">
+                    <img class="studentimage" src="{{item.photo_url}}" onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';">
 
                     <div class="studentname">
                       <span>{{item.firstname}} {{item.lastname}}</span>

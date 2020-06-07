@@ -1,0 +1,120 @@
+<html>
+  <head>
+  <title>Sign in to EPSchedule</title>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
+  <script src="https://epschedule-static.storage.googleapis.com/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/polymer/polymer.html">
+  <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/font-roboto/roboto.html">
+  <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/paper-button/paper-button.html">
+  <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/paper-toast/paper-toast.html">
+  <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/paper-typeahead-input/paper-typeahead-input.html">
+  </head>
+  <body unresolved>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #0d47a1;
+      padding: 20px;
+      text-align: center;
+    }
+    .card {
+      background: white;
+      max-width: 360px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 2px;
+    }
+    .image-container {
+      margin-bottom: 0px;
+    }
+    .copy {
+      font-size: 16;
+      margin-bottom: 0px;
+    }
+    paper-input {
+      text-align: left;
+    }
+    .link {
+      text-decoration: none;
+    }
+    paper-button {
+      margin: 12px auto;
+      width: 100%;
+      color: white;
+      background: #2196f3;
+    }
+    #loginButton {
+      display: block;
+      background-color: #2196F3
+    }
+    #registerButton {
+      display: none;
+      background-color: #2196F3
+    }
+    #loginText {
+      display: none;
+    }
+    #registerText {
+      display: block;
+    }
+    #toast {
+      text-align: left;
+    }
+  </style>
+
+	<paper-material class="card" elevation="2">
+	<div class="image-container">
+    <img src="static/images/epslogo.jpg">
+  </div>
+	<h1>EPSchedule</h1>
+	<p class="copy">The easiest way to keep track of your classes and classmates.</p>
+  <paper-button onclick="microsoftLogin()" raised id="loginButton">SIGN IN</paper-button>
+  <p class="copy" id="loginText"><a href="#" id="toggle" class="link" onclick="switchToLogin()">Sign in</a></p>
+  </paper-material>
+
+  <paper-toast id="toast" text="" duration=10000>
+  </paper-toast>
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-auth.js"></script>
+  <script>
+  // These API keys are public information
+  var firebaseConfig = {
+    apiKey: "AIzaSyAz-4KWzckatftOp7Ws9sAebnmIQjc_5Ac",
+    authDomain: "epschedule-v2.firebaseapp.com",
+    databaseURL: "https://epschedule-v2.firebaseio.com",
+    projectId: "epschedule-v2",
+    storageBucket: "epschedule-v2.appspot.com",
+    messagingSenderId: "795697214579",
+    appId: "1:795697214579:web:29da422869841b742d2606"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  function microsoftLogin(postAction) {
+    var provider = new firebase.auth.OAuthProvider('microsoft.com');
+    provider.setCustomParameters({
+      domain_hint: 'eastsideprep.org'
+    });
+    firebase.auth().signInWithPopup(provider)
+    .then(function(result) {
+      console.log(result);
+      result.user.getIdToken().then(function (token) {
+        document.cookie = "token=" + token;
+        displayToast("Signing you in...");
+        location.reload();
+      });
+    })
+    .catch(function(error) {
+      console.log(error);
+      displayToast("There was a problem signing you in");
+    });
+  }
+
+  function displayToast(text) {
+    toast = document.getElementById("toast");
+    toast.text = text;
+    toast.show();
+  }
+  </script>
+</body></html>
