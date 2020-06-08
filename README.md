@@ -1,7 +1,7 @@
 <h1 align="center">EPSchedule</h2>
 
 <p align="center">
-<a href="https://travis-ci.org/guberti/epschedule"><img alt="Build Status" src="https://travis-ci.org/guberti/epschedule.svg?branch=master"></a>
+<a href="https://github.com/guberti/epschedule/actions"><img alt="Test Status" src="https://github.com/guberti/epschedule/workflows/tests/badge.svg?branch=master"></a>
 <a href="https://stats.uptimerobot.com/6m9K2UoPpz"><img alt="Uptime Robot ratio (30 days)" src="https://img.shields.io/uptimerobot/ratio/m783284473-f52bd1a250d8d4f68453f24d"></a>
 <a href="https://github.com/guberti/epschedule/blob/master/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
