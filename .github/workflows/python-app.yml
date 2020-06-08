@@ -24,8 +24,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        echo "${{ secrets.GCP_SERVICE_ACCOUNT }}" >> epschedule-455d8a10f5ec.json
     - name: Test main
+      env:
+        SERVICE_ACCOUNT: ${{secrets.GCP_SERVICE_ACCOUNT}}
       run: |
-        echo "${{ secrets.GCP_SERVICE_ACCOUNT }}" >> epschedule-455d8a10f5ec.json
+        echo '$SERVICE_ACCOUNT' >> epschedule-455d8a10f5ec.json
         python main_test.py
