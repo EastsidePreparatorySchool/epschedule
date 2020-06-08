@@ -28,5 +28,5 @@ jobs:
       env:
         SERVICE_ACCOUNT: ${{secrets.GCP_SERVICE_ACCOUNT}}
       run: |
-        echo '$SERVICE_ACCOUNT' >> epschedule-455d8a10f5ec.json
+        echo '$SERVICE_ACCOUNT' >> service_account.json
         python main_test.py
