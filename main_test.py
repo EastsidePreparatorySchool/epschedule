@@ -5,14 +5,6 @@ import requests
 
 from PIL import Image
 
-with open('service_account.json') as json_file:
-    data = json_file.readlines()
-    print(data)
-
-with open('service_account.json') as json_file:
-    data = json.load(json_file)
-    print(data["project_id"])
-
 from main import app
 
 ''' Note - these tests run entirely on PRODUCTION data, so
