@@ -4,7 +4,7 @@ import json
 import os
 import time
 
-from flask import Flask, render_template, request, session, make_response
+from flask import Flask, abort, render_template, request, session, make_response
 from google.auth.transport import requests
 from google.cloud import storage, secretmanager
 import google.oauth2.id_token
@@ -117,7 +117,7 @@ def main():
 @app.route('/class/<period>')
 def handle_class(period):
     if 'username' not in session:
-        return gen_login_response()
+        abort(403)
 
     schedule = get_schedule(session['username'])
     term = int(request.args.get('term_id'))
@@ -187,7 +187,7 @@ def get_class_schedule(user_class, term_id, censor=True):
 @app.route('/student/<target_user>')
 def handle_user(target_user):
     if 'username' not in session:
-        return gen_login_response()
+        abort(403)
 
     # TODO finish privacy logic
     user_schedule = get_schedule(session['username'])
@@ -244,7 +244,7 @@ def sanitize_class(self, orig_class_obj):
 @app.route('/period/<period>')
 def handle_period(period):
     if 'username' not in session:
-        return gen_login_response()
+        abort(403)
 
     # TODO read this as a URL parameter
     term = get_term_id()
@@ -381,6 +381,9 @@ class SettingsHandler():
 
 @app.route('/search/<keyword>')
 def handle_search(keyword):
+    if 'username' not in session:
+        abort(403)
+
     results = []
     for schedule in get_schedule_data():
         test_keyword = schedule["firstname"] + " " + schedule["lastname"]
