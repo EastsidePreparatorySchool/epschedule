@@ -16,9 +16,8 @@ app.permanent_session_lifetime = datetime.timedelta(days=3650)
 # Used to authenticate auth tokens
 firebase_request_adapter = requests.Request()
 
-
 # Authenticate ourselves
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="epschedule-455d8a10f5ec.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="service_account.json"
 
 # Get application secret key
 secret_client = secretmanager.SecretManagerServiceClient()

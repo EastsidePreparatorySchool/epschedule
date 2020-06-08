@@ -5,6 +5,14 @@ import requests
 
 from PIL import Image
 
+with open('service_account.json') as json_file:
+    data = json_file.readlines()
+    print(data)
+
+with open('service_account.json') as json_file:
+    data = json.load(json_file)
+    print(data["project_id"])
+
 from main import app
 
 ''' Note - these tests run entirely on PRODUCTION data, so
@@ -94,6 +102,17 @@ class TestStudentEndpoint(AuthenticatedTest):
         self.assertGreater(photo.width, 96)
         self.assertGreater(photo.height, 96)
 
+TEST_SEARCH = "HeN"
+
+class TestSearchEndpoint(AuthenticatedTest):
+    def test_search_endpoint(self):
+        response = self.client.get('/search/{}'.format(TEST_SEARCH))
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.data)
+
+        self.assertEqual(len(results), 5)
+        for result in results:
+            self.assertIn(TEST_SEARCH.lower(), result["name"].lower())
 
 if __name__ == "__main__":
     unittest.main()
