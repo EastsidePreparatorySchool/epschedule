@@ -121,4 +121,4 @@ def crawl_photos(event):
 
 if __name__ == "__main__":
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
-    crawl_photos()
+    crawl_photos(None)
