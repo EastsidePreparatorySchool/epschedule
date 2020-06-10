@@ -6,7 +6,7 @@ import time
 
 from flask import Flask, abort, render_template, request, session, make_response
 from google.auth.transport import requests
-from google.cloud import storage, secretmanager
+from google.cloud import datastore, storage, secretmanager
 import google.oauth2.id_token
 
 from cron.photos import hash_username
@@ -26,6 +26,9 @@ app.secret_key = secret_client.access_secret_version("projects/epschedule-v2/sec
 storage_client = storage.Client()
 data_bucket = storage_client.bucket("epschedule-data")
 photo_bucket_endpoint = "https://epschedule-avatars.storage.googleapis.com/{}"
+
+datastore_client = datastore.Client()
+
 
 def load_json_file(filename):
     blob = data_bucket.blob(filename)
@@ -82,6 +85,16 @@ def get_schedule(username):
             return schedule
     return None
 
+def get_user_key(username):
+    return datastore_client.key('user', username)
+
+def get_database_entry(username):
+    return datastore_client.get(get_user_key(username))
+
+def get_database_entries(usernames):
+    keys = [get_user_key(x) for x in usernames]
+    return datastore_client.get_multi(keys)
+
 @app.route('/')
 def main():
     # Tokens are used during login, but after that we use our own system
@@ -95,6 +108,18 @@ def main():
                 token, firebase_request_adapter)
             session.permanent = True
             session['username'] = claims['email'].split("@")[0]
+
+            # Make them a privacy object if it doesn't exist
+            key = get_user_key(session['username'])
+            if not datastore_client.get(key):
+                user = datastore.Entity(key=key)
+                user.update({
+                    'joined': datetime.datetime.utcnow(),
+                    'share_photo': True,
+                    'share_schedule': True
+                })
+                datastore_client.put(user)
+
         except ValueError as exc:
             return gen_login_response()
 
@@ -161,24 +186,29 @@ def get_class_schedule(user_class, term_id, censor=True):
             if is_same_class(user_class, classobj):
                 # We only include teacher schedules in free periods
                 if (not is_teacher_schedule(schedule)) or classobj["name"] == "Free Period":
-
-                    if schedule["username"] not in opted_out:
-                        photo_url = gen_photo_url(schedule["username"], True)
-                    else:
-                        photo_url = "/static/images/placeholder_small.png"
                     student = {
                         "firstname": schedule["firstname"],
                         "lastname": schedule["lastname"],
                         "grade": schedule["grade"],
+                        "username": schedule["username"],
                         "email": username_to_email(schedule["username"]),
-                        "photo_url": photo_url,
+                        "photo_url": gen_photo_url(schedule["username"], True),
                     }
                     result["students"].append(student)
 
     # Sorts alphabetically, then sorts teachers from students
     result["students"] = sorted(
         sorted(result["students"], key = lambda s: s["firstname"]),
-        key = lambda s: s["grade"])
+        key = lambda s: str(s["grade"]))
+
+    # Censor photos if desired
+    if censor:
+        privacy_settings = get_database_entries([x["username"] for x in result["students"]])
+        opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
+        for student in result["students"]:
+            if student["username"] in opted_out:
+                student["photo_url"] = "/static/images/placeholder_small.png"
+
     return result
 
 
@@ -192,41 +222,39 @@ def handle_user(target_user):
     user_schedule = get_schedule(session['username'])
     target_schedule = get_schedule(target_user)
 
-    if is_teacher_schedule(user_schedule) or is_teacher_schedule(target_schedule):
-        show_full_schedule = True
-        show_photo = True
-    else:
-        # TODO finish privacy logic
-        show_full_schedule = True
-        show_photo = True
+    priv_settings = {"share_photo": True, "share_schedule": True}
+    # Teachers don't see and can't set privacy settings
+    if ((not is_teacher_schedule(user_schedule)) and
+        (not is_teacher_schedule(target_schedule))):
+        priv_obj = get_database_entry(target_user)
+        if priv_obj:
+            priv_settings = dict(priv_obj.items())
+            print(priv_settings)
 
-    if not show_full_schedule:
+    if not priv_settings["share_schedule"]:
         target_schedule = sanitize_schedule(target_schedule, user_schedule)
 
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
 
-    if show_photo:
+    if priv_settings["share_photo"]:
         target_schedule["photo_url"] = gen_photo_url(target_user, False)
     else:
         target_schedule["photo_url"] = "/images/placeholder.png"
 
     return json.dumps(target_schedule)
 
-def sanitize_schedule(self, orig_schedule, user_schedule):
+def sanitize_schedule(orig_schedule, user_schedule):
     schedule = copy.deepcopy(orig_schedule)
     for i in range(0, len(schedule["classes"])):
         for k in range(0, len(schedule["classes"][i])):
-            # If the class is not shared among the user and student
+            # If the class is not shared
             if not schedule["classes"][i][k] in user_schedule["classes"][i]:
-                # Sanitize the class
-                schedule["classes"][i][k] = self.sanitize_class(
-                    schedule["classes"][i][k]
-                )
+                schedule["classes"][i][k] = sanitize_class(schedule["classes"][i][k])
 
     return schedule
 
-def sanitize_class(self, orig_class_obj):
+def sanitize_class(orig_class_obj):
     class_obj = orig_class_obj.copy()
     study_halls = ["Study Hall", "GSH", "Free Period"]
 
@@ -324,59 +352,25 @@ class CronHandler():
         elif job == "schedules": # Warning - takes a LONG time
             json_schedules = fetch_schedules_with_api()'''
 
+# Change and view privacy settings
+@app.route('/privacy', methods=['GET', 'POST'])
+def handle_settings():
+    if 'username' not in session:
+        abort(403)
+    user = get_database_entry(session["username"])
 
+    if request.method == 'GET':
+        return json.dumps(dict(user.items()))
 
-'''# Change and view privacy settings
-@app.route('/settings')
-class SettingsHandler():
-    def load_obj(self):
-        id = self.check_id()
-        if id is None:
-            return None
+    elif request.method == 'POST':
+        print(request.args.get('share_photo'))
 
-        email = id_to_email(id)
-        user_obj_query = self.query_by_email(email)
-        return user_obj_query.get()
-
-    def string_to_boolean(self, string):
-        if string == "true":
-            return True
-        elif string == "false":
-            return False
-        return None
-
-    def get(self):
-        user_obj = self.load_obj()
-        if user_obj is None:
-            self.error(403)
-            return
-
-        response = {
-            "share_photo": user_obj.share_photo,
-            "share_schedule": user_obj.share_schedule,
-        }
-
-        expiration_date = datetime.datetime.now()
-        expiration_date += datetime.timedelta(
-            3650
-        )  # Set expiration date 10 years in the future
-        self.response.set_cookie("SEENPRIVDIALOG", "1", expires=expiration_date)
-
-        self.response.write(json.dumps(response))
-
-    def post(self):
-        user_obj = self.load_obj()
-        if user_obj is None:
-            self.error(403)
-            return
-
-        user_obj.share_photo = self.string_to_boolean(self.request.get("share_photo"))
-        user_obj.share_schedule = self.string_to_boolean(
-            self.request.get("share_schedule")
-        )
-        user_obj.seen_update_dialog = True
-        user_obj.put()
-        self.response.write(json.dumps({}))'''
+        user.update({
+            "share_photo": request.form['share_photo'] == "true",
+            "share_schedule": request.form['share_schedule'] == "true"
+        })
+        datastore_client.put(user)
+        return json.dumps({})
 
 @app.route('/search/<keyword>')
 def handle_search(keyword):
