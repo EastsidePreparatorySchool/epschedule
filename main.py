@@ -37,8 +37,8 @@ def load_json_file(filename):
 SCHEDULE_INFO = load_json_file("schedules.json")
 DAYS = load_json_file("exceptions.json")
 
-FALL_TRI_END = datetime.datetime(2019, 11, 23, 15, 30, 0, 0)
-WINT_TRI_END = datetime.datetime(2020, 3, 6, 15, 30, 0, 0)
+FALL_TRI_END = datetime.datetime(2020, 11, 23, 15, 30, 0, 0)
+WINT_TRI_END = datetime.datetime(2021, 3, 6, 15, 30, 0, 0)
 
 def username_to_email(username):
     return username + "@eastsideprep.org"
@@ -80,10 +80,11 @@ def gen_login_response():
     return template
 
 def get_schedule(username):
-    for schedule in get_schedule_data():
-        if schedule["username"] == username:  # If the schedule is the user's schedule
-            return schedule
-    return None
+    schedules = get_schedule_data()
+    if username in schedules:
+        return schedules[username]
+    else:
+        return None
 
 def get_user_key(username):
     return datastore_client.key('user', username)
@@ -108,6 +109,7 @@ def main():
                 token, firebase_request_adapter)
             session.permanent = True
             session['username'] = claims['email'].split("@")[0]
+            session['username'] = 'kuberti'
 
             # Make them a privacy object if it doesn't exist
             key = get_user_key(session['username'])
@@ -171,21 +173,25 @@ def is_same_class(a, b):
     )
 
 def get_class_schedule(user_class, term_id, censor=True):
-    schedules = get_schedule_data()
+    print(user_class)
     result = {
         "period": user_class["period"],
-        "teacher": user_class["teacher"],
+        "teacher": user_class["teacher_username"],
         "term_id": term_id,
         "students": [],
     }
 
     opted_out = set()
 
-    for schedule in schedules:  # Load up each student's schedule
+    for schedule in get_schedule_data().values():
         for classobj in schedule["classes"][term_id]:
             if is_same_class(user_class, classobj):
+                print("Found same class")
+                print(schedule)
+                print(is_teacher_schedule(schedule))
                 # We only include teacher schedules in free periods
                 if (not is_teacher_schedule(schedule)) or classobj["name"] == "Free Period":
+                    print("Appending")
                     student = {
                         "firstname": schedule["firstname"],
                         "lastname": schedule["lastname"],
@@ -202,12 +208,12 @@ def get_class_schedule(user_class, term_id, censor=True):
         key = lambda s: str(s["grade"]))
 
     # Censor photos if desired
-    if censor:
-        privacy_settings = get_database_entries([x["username"] for x in result["students"]])
-        opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
-        for student in result["students"]:
-            if student["username"] in opted_out:
-                student["photo_url"] = "/static/images/placeholder_small.png"
+    #if censor:
+    #    privacy_settings = get_database_entries([x["username"] for x in result["students"]])
+    #    opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
+    #    for student in result["students"]:
+    #        if student["username"] in opted_out:
+    #            student["photo_url"] = "/static/images/placeholder_small.png"
 
     return result
 
@@ -294,7 +300,7 @@ def handle_period(period):
 def get_free_rooms(period, term):
     free = set()
     occupied = set()
-    for schedule in get_schedule_data():
+    for schedule in get_schedule_data().values():
         if is_teacher_schedule(schedule):
             continue
         for clss in schedule["classes"][term]:
@@ -317,7 +323,7 @@ def get_available(period, term, grades):
     # We index available by teacher username, since
     # two of the same class could happen at once
     available = {}
-    for schedule in get_schedule_data():
+    for schedule in get_schedule_data().values():
         c = get_class_by_period(schedule["classes"][term], period)
         key = c["teacher_username"]
         if not key: # Skip free periods
@@ -378,7 +384,7 @@ def handle_search(keyword):
         abort(403)
 
     results = []
-    for schedule in get_schedule_data():
+    for schedule in get_schedule_data.values():
         test_keyword = schedule["firstname"] + " " + schedule["lastname"]
         if keyword.lower() in test_keyword.lower():
             results.append({"name": test_keyword, "username": schedule["username"]})

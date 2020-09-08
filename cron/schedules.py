@@ -81,8 +81,7 @@ def download_schedule(api_key, username, year):
     person["nickname"] = individual["nickname"]
     person["firstname"] = individual["firstname"]
     person["lastname"] = individual["lastname"]
-    person["gradyear"] = getattr(individual, "gradyear", None)
-
+    person["gradyear"] = individual["gradyear"]
     # Recompute the username, don't just stuff the one we were passed
     person["username"] = individual["email"].split("@")[0]
 
@@ -95,7 +94,7 @@ def download_schedule(api_key, username, year):
     # Convert grade to gradyear
     person["grade"] = None
     if person["gradyear"]:
-        person["grade"] = 12 - (person["gradyear"] - school_year)
+        person["grade"] = 12 - (person["gradyear"] - year)
 
     print ("Decoded " + person["username"])
     return(person)
