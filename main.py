@@ -384,7 +384,7 @@ def handle_search(keyword):
         abort(403)
 
     results = []
-    for schedule in get_schedule_data.values():
+    for schedule in get_schedule_data().values():
         test_keyword = schedule["firstname"] + " " + schedule["lastname"]
         if keyword.lower() in test_keyword.lower():
             results.append({"name": test_keyword, "username": schedule["username"]})
