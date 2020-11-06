@@ -23,3 +23,5 @@ data/user_ids_four11.csv
 # Build files
 *.pyc
 vulcanized.html
+service_account.json
+desktop.ini
