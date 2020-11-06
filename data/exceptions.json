@@ -45,7 +45,8 @@
     "2020-11-06": "Remote E-H_Rem",
     "2020-11-09": "Remote A-D_Rem",
     "2020-11-10": "Remote E-H_Rem",
-    "2020-11-11": "Remote A-D",
+    "2020-11-11": "Short A-D",
+    "2020-11-18": "Short E-H",
     "2020-11-12": "Remote E-H_Rem",
     "2020-11-13": "Remote A-D_Rem",
     "2020-11-16": "Remote E-H_Rem",
@@ -352,6 +353,50 @@
         "times": "08:00-03:15"
       }
     ],
+      "Short A-D" : [
+            {
+                "period": "O",
+                "times": "07:00-07:45"
+            },
+            {
+                "period": "A",
+                "times": "08:30-09:15"
+            },
+            {
+                "period": "B",
+                "times": "09:30-10:15"
+            },
+            {
+                "period": "C",
+                "times": "10:30-11:15"
+            },
+            {
+                "period": "D",
+                "times": "11:30-12:15"
+            }
+        ],
+      "Short E-H" : [
+            {
+                "period": "O",
+                "times": "07:00-07:45"
+            },
+            {
+                "period": "E",
+                "times": "08:30-09:15"
+            },
+            {
+                "period": "F",
+                "times": "09:30-10:15"
+            },
+            {
+                "period": "G",
+                "times": "10:30-11:15"
+            },
+            {
+                "period": "H",
+                "times": "11:30-12:15"
+            }
+        ],
     "Winter Break": [
       {
         "period": "Winter Break",
