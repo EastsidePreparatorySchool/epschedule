@@ -14,15 +14,14 @@ ICON_SIZE = 96  # 96x96 pixels
 
 
 def download_photo_bytes(url):
-    if requests.get("share_photo") = True:
+   # if requests.get("share_photo") = True:
         r = requests.get(url, stream=True)
-        return Image.open(BytesIO(r.content))
-    else:
+       # return Image.open(BytesIO(r.content))
+  #  else:
         return Image.open("/images/placeholder.png")
 
 
-    
-    #not accounting for the case where user has chosen not to show the picture
+    #does this work?
 
 
 def download_photo(user):
