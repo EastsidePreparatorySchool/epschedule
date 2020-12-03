@@ -246,7 +246,7 @@ def handle_user(target_user):
     if priv_settings["share_photo"]:
         target_schedule["photo_url"] = gen_photo_url(target_user, False)
     else:
-        target_schedule["photo_url"] = "/images/placeholder.png"
+        target_schedule["photo_url"] = "/static/images/placeholder.png"
 
     return json.dumps(target_schedule)
 
