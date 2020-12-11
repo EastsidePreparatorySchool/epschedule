@@ -126,16 +126,11 @@ class TestClassEndpoint(AuthenticatedTest):
         students = results["students"]
         found_student = None
         for student in students: 
-            print(student["username"])
             if student["username"] == STUDENT_NO_PIC:
                 found_student = student
         self.assertNotEqual(found_student, None)
         self.assertEqual(found_student["photo_url"], "/static/images/placeholder_small.png")
         
-
-        #self.assertEqual(len(results), 5)
-        #for result in results:
-        #    self.assertIn(TEST_SEARCH.lower(), result["name"].lower())
 
 if __name__ == "__main__":
     unittest.main()
