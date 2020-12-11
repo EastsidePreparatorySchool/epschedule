@@ -207,13 +207,7 @@ def get_class_schedule(user_class, term_id, censor=True):
         sorted(result["students"], key = lambda s: s["firstname"]),
         key = lambda s: str(s["grade"]))
 
-
-    # for student in result["students"]:
-    #     if student["photo_url"]:
-    #         photo_url = student["photo_url"]
-    #         print (photo_url)
-
-    # Censor photos if desired
+    # Censor photos 
     if censor:
         privacy_settings = get_database_entries([x["username"] for x in result["students"]])
         opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
