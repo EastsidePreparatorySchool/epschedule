@@ -56,6 +56,7 @@ class AuthenticatedTest(unittest.TestCase):
 
 TEST_TEACHER = "jbriggs"
 TEST_STUDENT = "auberti"
+STUDENT_NO_PIC = "nricker"
 
 class TestStudentEndpoint(AuthenticatedTest):
     def check_username(self, username):
@@ -94,6 +95,10 @@ class TestStudentEndpoint(AuthenticatedTest):
         self.assertGreater(photo.width, 96)
         self.assertGreater(photo.height, 96)
 
+    def test_urls_showing_up(self):
+        student_obj = self.check_username(STUDENT_NO_PIC)
+        self.assertEqual(student_obj["photo_url"], "/static/images/placeholder.png")
+        
 TEST_SEARCH = "HeN"
 
 class TestSearchEndpoint(AuthenticatedTest):
@@ -105,6 +110,32 @@ class TestSearchEndpoint(AuthenticatedTest):
         self.assertEqual(len(results), 5)
         for result in results:
             self.assertIn(TEST_SEARCH.lower(), result["name"].lower())
+
+
+
+class TestClassEndpoint(AuthenticatedTest):
+    def test_class_endpoint(self):
+        response = self.client.get('/class/a?term_id=1')
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.data)
+        #print(results)
+
+    def test_urls_inclass(self):
+        response = self.client.get('/class/h?term_id=1')
+        results = json.loads(response.data)
+        students = results["students"]
+        found_student = None
+        for student in students: 
+            print(student["username"])
+            if student["username"] == STUDENT_NO_PIC:
+                found_student = student
+        self.assertNotEqual(found_student, None)
+        self.assertEqual(found_student["photo_url"], "/static/images/placeholder_small.png")
+        
+
+        #self.assertEqual(len(results), 5)
+        #for result in results:
+        #    self.assertIn(TEST_SEARCH.lower(), result["name"].lower())
 
 if __name__ == "__main__":
     unittest.main()
