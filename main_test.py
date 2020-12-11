@@ -56,7 +56,7 @@ class AuthenticatedTest(unittest.TestCase):
 
 TEST_TEACHER = "jbriggs"
 TEST_STUDENT = "auberti"
-STUDENT_NO_PIC = "nricker"
+STUDENT_NO_PIC = "aspatz"
 
 class TestStudentEndpoint(AuthenticatedTest):
     def check_username(self, username):
