@@ -10,6 +10,7 @@ from google.cloud import secretmanager, storage
 
 
 ENDPOINT_URL = "https://four11.eastsideprep.org/epsnet/courses/{}"
+SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"}
 PARSEABLE_PERIODS = ["A", "B", "C", "D", "E", "F", "G", "H"]
 FREE_PERIOD_CLASS = {
     "room": None,
@@ -103,9 +104,9 @@ def crawl_schedules(event):
     start = time.time()
     # Load access key
     secret_client = secretmanager.SecretManagerServiceClient()
-    key = secret_client.access_secret_version(
-        "projects/epschedule-v2/secrets/four11_key/versions/1"
-    ).payload.data.decode('UTF-8')
+    secret_response = secret_client.access_secret_version(request=SECRET_REQUEST)
+    key = secret_response.payload.data.decode('UTF-8')
+
     school_year = get_current_school_year()
 
     # Open the bucket
