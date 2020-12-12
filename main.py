@@ -21,7 +21,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="service_account.json"
 
 # Get application secret key
 secret_client = secretmanager.SecretManagerServiceClient()
-app.secret_key = secret_client.access_secret_version("projects/epschedule-v2/secrets/session_key/versions/1").payload.data
+app.secret_key = secret_client.access_secret_version(request={"name": "projects/epschedule-v2/secrets/session_key/versions/1"}).payload.data
 
 storage_client = storage.Client()
 data_bucket = storage_client.bucket("epschedule-data")
