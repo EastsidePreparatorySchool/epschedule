@@ -1,27 +1,7 @@
-# Components
-bower_components
-#only need lib/slowaes to run tests
-lib/Crypto
-lib/icalendar
-node_modules
-scripts/Crypto
-test_modules
-
-# Sensitive photos
-96x96_photos
-school_photos
-
-# Sensitive data files
-data/crypto.key
-data/four11.key
-data/id_table.json
-data/schedules.json
-data/schedules_pretty.json
-data/user_ids_four11.csv
-*old
-
 # Build files
 *.pyc
 vulcanized.html
+
+# Service account
 epschedule-455d8a10f5ec.json
 service_account.json
