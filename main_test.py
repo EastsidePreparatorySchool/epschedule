@@ -106,5 +106,29 @@ class TestSearchEndpoint(AuthenticatedTest):
         for result in results:
             self.assertIn(TEST_SEARCH.lower(), result["name"].lower())
 
+
+class TestClassEndpoint(AuthenticatedTest):
+    def test_class_endpoint(self):
+        response = self.client.get('/class/a?term_id=1')
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.data)
+        #print(results)
+
+    def test_urls_inclass(self):
+        response = self.client.get('/class/h?term_id=1')
+        results = json.loads(response.data)
+        students = results["students"]
+        found_student = None
+        for student in students: 
+            if student["username"] == STUDENT_NO_PIC:
+                found_student = student
+        self.assertNotEqual(found_student, None)
+        self.assertEqual(found_student["photo_url"], "/static/images/placeholder_small.png")
+
+    def test_correct_username(self):
+        response = self.client.get('/')
+        print(response.data)
+       # self.assertEqual(student["username"], session['username'])
+        
 if __name__ == "__main__":
     unittest.main()
