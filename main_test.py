@@ -56,6 +56,7 @@ class AuthenticatedTest(unittest.TestCase):
 
 TEST_TEACHER = "jbriggs"
 TEST_STUDENT = "auberti"
+STUDENT_NO_PIC = "aspatz"
 
 class TestStudentEndpoint(AuthenticatedTest):
     def check_username(self, username):
@@ -94,6 +95,10 @@ class TestStudentEndpoint(AuthenticatedTest):
         self.assertGreater(photo.width, 96)
         self.assertGreater(photo.height, 96)
 
+    def test_urls_showing_up(self):
+        student_obj = self.check_username(STUDENT_NO_PIC)
+        self.assertEqual(student_obj["photo_url"], "/static/images/placeholder.png")
+        
 TEST_SEARCH = "HeN"
 
 class TestSearchEndpoint(AuthenticatedTest):
@@ -105,6 +110,7 @@ class TestSearchEndpoint(AuthenticatedTest):
         self.assertEqual(len(results), 5)
         for result in results:
             self.assertIn(TEST_SEARCH.lower(), result["name"].lower())
+
 
 
 class TestClassEndpoint(AuthenticatedTest):
@@ -125,10 +131,12 @@ class TestClassEndpoint(AuthenticatedTest):
         self.assertNotEqual(found_student, None)
         self.assertEqual(found_student["photo_url"], "/static/images/placeholder_small.png")
 
+
     def test_correct_username(self):
         response = self.client.get('/')
         print(response.data)
        # self.assertEqual(student["username"], session['username'])
         
+
 if __name__ == "__main__":
     unittest.main()

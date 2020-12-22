@@ -11,6 +11,7 @@ from google.cloud import secretmanager, storage
 from PIL import Image
 
 ICON_SIZE = 96  # 96x96 pixels
+SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"}
 
 
 def download_photo_bytes(url):
@@ -88,9 +89,8 @@ def crawl_photos(event):
     # Prepare our secret
     start = time.time()
     secret_client = secretmanager.SecretManagerServiceClient()
-    key = secret_client.access_secret_version(
-        "projects/epschedule-v2/secrets/session_key/versions/1"
-    ).payload.data
+    secret_response = secret_client.access_secret_version(request=SECRET_REQUEST)
+    key = secret_response.payload.data.decode('UTF-8')
 
     # Open the bucket
     storage_client = storage.Client()

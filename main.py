@@ -21,7 +21,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="service_account.json"
 
 # Get application secret key
 secret_client = secretmanager.SecretManagerServiceClient()
-app.secret_key = secret_client.access_secret_version("projects/epschedule-v2/secrets/session_key/versions/1").payload.data
+app.secret_key = secret_client.access_secret_version(request={"name": "projects/epschedule-v2/secrets/session_key/versions/1"}).payload.data
 
 storage_client = storage.Client()
 data_bucket = storage_client.bucket("epschedule-data")
@@ -173,7 +173,7 @@ def is_same_class(a, b):
     )
 
 def get_class_schedule(user_class, term_id, censor=True):
-    print(user_class)
+    #print(user_class)
     result = {
         "period": user_class["period"],
         "teacher": user_class["teacher_username"],
@@ -186,12 +186,12 @@ def get_class_schedule(user_class, term_id, censor=True):
     for schedule in get_schedule_data().values():
         for classobj in schedule["classes"][term_id]:
             if is_same_class(user_class, classobj):
-                print("Found same class")
-                print(schedule)
-                print(is_teacher_schedule(schedule))
+                #print("Found same class")
+                #print(schedule)
+                #print(is_teacher_schedule(schedule))
                 # We only include teacher schedules in free periods
                 if (not is_teacher_schedule(schedule)) or classobj["name"] == "Free Period":
-                    print("Appending")
+                    #print("Appending")
                     student = {
                         "firstname": schedule["firstname"],
                         "lastname": schedule["lastname"],
@@ -200,20 +200,20 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "email": username_to_email(schedule["username"]),
                         "photo_url": gen_photo_url(schedule["username"], True),
                     }
-                    result["students"].append(student)
+                    result["students"].append(student)            
 
     # Sorts alphabetically, then sorts teachers from students
     result["students"] = sorted(
         sorted(result["students"], key = lambda s: s["firstname"]),
         key = lambda s: str(s["grade"]))
 
-    # Censor photos if desired
-    #if censor:
-    #    privacy_settings = get_database_entries([x["username"] for x in result["students"]])
-    #    opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
-    #    for student in result["students"]:
-    #        if student["username"] in opted_out:
-    #            student["photo_url"] = "/static/images/placeholder_small.png"
+    # Censor photos 
+    if censor:
+        privacy_settings = get_database_entries([x["username"] for x in result["students"]])
+        opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
+        for student in result["students"]:
+            if student["username"] in opted_out:
+                student["photo_url"] = "/static/images/placeholder_small.png"
 
     return result
 
@@ -235,7 +235,7 @@ def handle_user(target_user):
         priv_obj = get_database_entry(target_user)
         if priv_obj:
             priv_settings = dict(priv_obj.items())
-            print(priv_settings)
+            #print(priv_settings)
 
     if not priv_settings["share_schedule"]:
         target_schedule = sanitize_schedule(target_schedule, user_schedule)
@@ -246,7 +246,7 @@ def handle_user(target_user):
     if priv_settings["share_photo"]:
         target_schedule["photo_url"] = gen_photo_url(target_user, False)
     else:
-        target_schedule["photo_url"] = "/images/placeholder.png"
+        target_schedule["photo_url"] = "/static/images/placeholder.png"
 
     return json.dumps(target_schedule)
 
