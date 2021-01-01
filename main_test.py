@@ -133,9 +133,9 @@ class TestClassEndpoint(AuthenticatedTest):
 
 
     def test_correct_username(self):
-        response = self.client.get('/')
-        print(response.data)
-       # self.assertEqual(student["username"], session['username'])
+       # response = self.client.get('/')
+        sess = self.client.session_transaction()
+        print(sess['username'])
         
 
 if __name__ == "__main__":
