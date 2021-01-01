@@ -1,0 +1,362 @@
+[
+  {
+    "2020-09-09": "Remote A-D_Rem",
+    "2020-09-10": "Remote E-H_Rem",
+    "2020-09-11": "Remote A-D_Rem",
+    "2020-09-14": "Remote E-H_Rem",
+    "2020-09-15": "Remote A-D_Rem",
+    "2020-09-16": "Remote E-H_Rem",
+    "2020-09-17": "Remote A-D_Rem",
+    "2020-09-18": "Remote E-H_Rem",
+    "2020-09-21": "Remote A-D_Rem",
+    "2020-09-22": "Remote E-H_Rem",
+    "2020-09-23": "Remote A-D_Rem",
+    "2020-09-24": "Remote E-H_Rem",
+    "2020-09-25": "Remote A-D_Rem",
+    "2020-09-28": "Fall Break",
+    "2020-09-29": "Remote E-H_Rem",
+    "2020-09-30": "Remote A-D_Rem",
+    "2020-10-01": "Remote E-H_Rem",
+    "2020-10-02": "Remote A-D_Rem",
+    "2020-10-05": "Remote E-H_Rem",
+    "2020-10-06": "Remote A-D_Rem",
+    "2020-10-07": "Remote E-H_Rem",
+    "2020-10-08": "Remote A-D_Rem",
+    "2020-10-09": "Remote E-H_Rem",
+    "2020-10-12": "Remote A-D_Rem",
+    "2020-10-13": "Remote E-H_Rem",
+    "2020-10-14": "PDD",
+    "2020-10-15": "Remote A-D_Rem",
+    "2020-10-16": "Remote E-H_Rem",
+    "2020-10-19": "Remote A-D_Rem",
+    "2020-10-20": "Remote E-H_Rem",
+    "2020-10-21": "Remote A-D_Rem",
+    "2020-10-22": "Remote E-H_Rem",
+    "2020-10-23": "Conferences",
+    "2020-10-26": "Remote A-D_Rem",
+    "2020-10-27": "Remote E-H_Rem",
+    "2020-10-28": "Remote A-D_Rem",
+    "2020-10-29": "Remote E-H_Rem",
+    "2020-10-30": "Remote A-D_Rem",
+    "2020-11-02": "Remote E-H_Rem",
+    "2020-11-03": "Remote A-D_Rem",
+    "2020-11-04": "Remote E-H_Rem",
+    "2020-11-05": "Remote A-D_Rem",
+    "2020-11-06": "Remote E-H_Rem",
+    "2020-11-09": "Remote A-D_Rem",
+    "2020-11-10": "Remote E-H_Rem",
+    "2020-11-11": "Remote A-D",
+    "2020-11-12": "Remote E-H_Rem",
+    "2020-11-13": "Remote A-D_Rem",
+    "2020-11-16": "Remote E-H_Rem",
+    "2020-11-17": "Remote A-D_Rem",
+    "2020-11-18": "Remote E-H_Rem",
+    "2020-11-19": "Remote A-D_Rem",
+    "2020-11-20": "Remote E-H_Rem",
+    "2020-11-23": "Thanksgiving Break",
+    "2020-11-24": "Thanksgiving Break",
+    "2020-11-25": "Thanksgiving Break",
+    "2020-11-26": "Thanksgiving Break",
+    "2020-11-27": "Thanksgiving Break",
+    "2020-11-30": "PDD",
+    "2020-12-01": "Remote A-D_Rem",
+    "2020-12-02": "Remote E-H_Rem",
+    "2020-12-03": "Remote A-D_Rem",
+    "2020-12-04": "Remote E-H_Rem",
+    "2020-12-07": "Remote A-D_Rem",
+    "2020-12-08": "Remote E-H_Rem",
+    "2020-12-09": "Remote A-D_Rem",
+    "2020-12-10": "Remote E-H_Rem",
+    "2020-12-11": "Remote A-D_Rem",
+    "2020-12-14": "Remote E-H_Rem",
+    "2020-12-15": "Remote A-D_Rem",
+    "2020-12-16": "Remote E-H_Rem",
+    "2020-12-17": "Remote O,A-H",
+    "2020-12-18": "PDD",
+    "2020-12-21": "Winter Break",
+    "2020-12-22": "Winter Break",
+    "2020-12-23": "Winter Break",
+    "2020-12-24": "Winter Break",
+    "2020-12-25": "Winter Break",
+    "2020-12-28": "Winter Break",
+    "2020-12-29": "Winter Break",
+    "2020-12-30": "Winter Break",
+    "2020-12-31": "Winter Break",
+    "2021-01-01": "Winter Break",
+    "2021-01-04": "PDD",
+    "2021-01-05": null,
+    "2021-01-06": null,
+    "2021-01-07": null,
+    "2021-01-08": null,
+    "2021-01-11": null,
+    "2021-01-12": null,
+    "2021-01-13": null,
+    "2021-01-14": null,
+    "2021-01-15": null,
+    "2021-01-18": null,
+    "2021-01-19": null,
+    "2021-01-20": null,
+    "2021-01-21": null,
+    "2021-01-22": null,
+    "2021-01-25": null,
+    "2021-01-26": null,
+    "2021-01-27": null,
+    "2021-01-28": null,
+    "2021-01-29": null,
+    "2021-02-01": null,
+    "2021-02-02": null,
+    "2021-02-03": null,
+    "2021-02-04": null,
+    "2021-02-05": null,
+    "2021-02-08": null,
+    "2021-02-09": null,
+    "2021-02-10": null,
+    "2021-02-11": null,
+    "2021-02-12": null,
+    "2021-02-15": null,
+    "2021-02-16": null,
+    "2021-02-17": null,
+    "2021-02-18": null,
+    "2021-02-19": null,
+    "2021-02-22": null,
+    "2021-02-23": null,
+    "2021-02-24": null,
+    "2021-02-25": null,
+    "2021-02-26": null,
+    "2021-03-01": null,
+    "2021-03-02": null,
+    "2021-03-03": null,
+    "2021-03-04": null,
+    "2021-03-05": null,
+    "2021-03-08": null,
+    "2021-03-09": null,
+    "2021-03-10": null,
+    "2021-03-11": null,
+    "2021-03-12": null,
+    "2021-03-15": null,
+    "2021-03-16": null,
+    "2021-03-17": null,
+    "2021-03-18": null,
+    "2021-03-19": null,
+    "2021-03-22": null,
+    "2021-03-23": null,
+    "2021-03-24": null,
+    "2021-03-25": null,
+    "2021-03-26": null,
+    "2021-03-29": null,
+    "2021-03-30": null,
+    "2021-03-31": null,
+    "2021-04-01": null,
+    "2021-04-02": null,
+    "2021-04-05": null,
+    "2021-04-06": null,
+    "2021-04-07": null,
+    "2021-04-08": null,
+    "2021-04-09": null,
+    "2021-04-12": null,
+    "2021-04-13": null,
+    "2021-04-14": null,
+    "2021-04-15": null,
+    "2021-04-16": null,
+    "2021-04-19": null,
+    "2021-04-20": null,
+    "2021-04-21": null,
+    "2021-04-22": null,
+    "2021-04-23": null,
+    "2021-04-26": null,
+    "2021-04-27": null,
+    "2021-04-28": null,
+    "2021-04-29": null,
+    "2021-04-30": null,
+    "2021-05-03": null,
+    "2021-05-04": null,
+    "2021-05-05": null,
+    "2021-05-06": null,
+    "2021-05-07": null,
+    "2021-05-10": null,
+    "2021-05-11": null,
+    "2021-05-12": null,
+    "2021-05-13": null,
+    "2021-05-14": null,
+    "2021-05-17": null,
+    "2021-05-18": null,
+    "2021-05-19": null,
+    "2021-05-20": null,
+    "2021-05-21": null,
+    "2021-05-24": null,
+    "2021-05-25": null,
+    "2021-05-26": null,
+    "2021-05-27": null,
+    "2021-05-28": null,
+    "2021-05-31": null,
+    "2021-06-01": null,
+    "2021-06-02": null,
+    "2021-06-03": null,
+    "2021-06-04": null,
+    "2021-06-07": null,
+    "2021-06-08": null,
+    "2021-06-09": null,
+    "2021-06-10": null,
+    "2021-06-11": null,
+    "2021-06-14": null,
+    "2021-06-15": null,
+    "2021-06-16": null,
+    "2021-06-17": null,
+    "2021-06-18": null,
+    "2021-06-21": null,
+    "2021-06-22": null,
+    "2021-06-23": null,
+    "2021-06-24": null,
+    "2021-06-25": null,
+    "2021-06-28": null,
+    "2021-06-29": null
+  },
+  {
+    "Conferences": [
+      {
+        "period": "Conferences",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Fall Break": [
+      {
+        "period": "Fall Break",
+        "times": "08:00-03:15"
+      }
+    ],
+    "PDD": [
+      {
+        "period": "PDD",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Remote A-D": [
+      {
+        "period": "O",
+        "times": "07:30-08:20"
+      },
+      {
+        "period": "A",
+        "times": "08:30-09:30"
+      },
+      {
+        "period": "B",
+        "times": "10:00-11:00"
+      },
+      {
+        "period": "C",
+        "times": "12:30-01:30"
+      },
+      {
+        "period": "D",
+        "times": "02:00-03:00"
+      }
+    ],
+    "Remote A-D_Rem": [
+      {
+        "period": "O",
+        "times": "07:30-08:20"
+      },
+      {
+        "period": "A",
+        "times": "08:30-09:30"
+      },
+      {
+        "period": "B",
+        "times": "10:00-11:00"
+      },
+      {
+        "period": "Seminars / Office Hours",
+        "times": "11:30-12:30"
+      },
+      {
+        "period": "C",
+        "times": "12:30-01:30"
+      },
+      {
+        "period": "D",
+        "times": "02:00-03:00"
+      }
+    ],
+    "Remote E-H_Rem": [
+      {
+        "period": "O",
+        "times": "07:30-08:20"
+      },
+      {
+        "period": "E",
+        "times": "08:30-09:30"
+      },
+      {
+        "period": "F",
+        "times": "10:00-11:00"
+      },
+      {
+        "period": "Clubs/Activites - MS",
+        "times": "11:00-11:30"
+      },
+      {
+        "period": "Clubs/Activites - US",
+        "times": "11:00-11:30"
+      },
+      {
+        "period": "G",
+        "times": "12:30-01:30"
+      },
+      {
+        "period": "H",
+        "times": "02:00-03:00"
+      }
+    ],
+    "Remote O,A-H": [
+      {
+        "period": "O",
+        "times": "07:30-08:20"
+      },
+      {
+        "period": "A",
+        "times": "08:30-09:00"
+      },
+      {
+        "period": "B",
+        "times": "09:15-09:45"
+      },
+      {
+        "period": "C",
+        "times": "10:00-10:30"
+      },
+      {
+        "period": "D",
+        "times": "10:45-11:15"
+      },
+      {
+        "period": "E",
+        "times": "12:15-12:45"
+      },
+      {
+        "period": "F",
+        "times": "01:00-01:30"
+      },
+      {
+        "period": "G",
+        "times": "01:45-02:15"
+      },
+      {
+        "period": "H",
+        "times": "02:30-03:00"
+      }
+    ],
+    "Thanksgiving Break": [
+      {
+        "period": "Thanksgiving Break",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Winter Break": [
+      {
+        "period": "Winter Break",
+        "times": "08:00-03:15"
+      }
+    ]
+  }
+]

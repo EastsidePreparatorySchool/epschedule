@@ -35,7 +35,7 @@ def load_json_file(filename):
     return json.loads(blob.download_as_string())
 
 SCHEDULE_INFO = load_json_file("schedules.json")
-DAYS = load_json_file("exceptions.json")
+DAYS = load_json_file("master_schedule.json")
 
 FALL_TRI_END = datetime.datetime(2020, 11, 23, 15, 30, 0, 0)
 WINT_TRI_END = datetime.datetime(2021, 3, 6, 15, 30, 0, 0)
