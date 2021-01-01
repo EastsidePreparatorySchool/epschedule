@@ -130,7 +130,6 @@ class TestClassEndpoint(AuthenticatedTest):
                 found_student = student
         self.assertNotEqual(found_student, None)
         self.assertEqual(found_student["photo_url"], "/static/images/placeholder_small.png")
-        
 
 if __name__ == "__main__":
     unittest.main()
