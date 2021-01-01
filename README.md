@@ -32,3 +32,6 @@ We try to follow the Google [Python](https://google-styleguide.googlecode.com/sv
 
 ### Contributing a patch
 From your fork of the epschedule repo, submit a pull request. Be sure that all tests pass, and you have followed the code style guides mentioned above.
+
+### Getting the schedule from 411 into Epschedule
+Under Scripts in the epschedule folder, simply click on the date_schedule.py application. This will put all of the current data about the schedules for certain days into the master_schedule.json document. Committing this to Github will finalize the changes (and put them into google cloud).
