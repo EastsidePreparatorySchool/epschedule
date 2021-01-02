@@ -5,14 +5,7 @@ import requests
 
 from PIL import Image
 
-from main import app
-
-''' Note - these tests run entirely on PRODUCTION data, so
-service account credentials are needed for them to pass.
-This stems from my belief that tests not using fake data
-are less scientifically valid (i.e. drug testing on humans
-is more valid than testing on mice) and from a desire to
-not have production and test versions of each dataset'''
+from app import app, init_app
 
 API_ENDPOINTS = [
     "/student/guberti",
@@ -20,6 +13,77 @@ API_ENDPOINTS = [
     "/period/a",
     "/search/guberti"
 ]
+
+TEST_SCHEDULES = {
+    "aaardvark": {
+        "classes": [
+            [
+                { "period": "A", "room": "TALI-206", "name": "Advanced Spanish: Literature", "teacher_username": "kviolette", "department": "Spanish"},
+                { "period": "B","room": "TMAC-300", "name": "PE: Customized Training to Maximize Performance (US)", "teacher_username": "mhayes", "department": "Physical Education" },
+                { "period": "C", "room": "TMAC-103", "name": "Advanced Chemistry", "teacher_username": "aduffy", "department": "Science" }, 
+                { "period": "D", "room": None, "name": "Free Period", "teacher": None, "teacher_username": None, "department": None, },   
+                { "period": "E", "room": "TALI-202A", "name": "American Literature", "teacher_username": "jlarner-lewis", "department": "English" },
+                { "period": "F", "room": "TALI-207", "name": "United States History: The American Question", "teacher_username": "cmclane", "department": "History/Social Science" },
+                { "period": "G", "room": "TALI-305", "name": "Physics", "teacher_username": "akruger", "department": "Science" },
+                { "period": "H", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" }           
+            ], 
+            [
+                { "period": "A", "room": "TALI-206", "name": "Advanced Spanish: Literature", "teacher_username": "kviolette", "department": "Spanish"  }, 
+                { "period": "B", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" },
+                { "period": "C", "room": "TMAC-103", "name": "Advanced Chemistry", "teacher_username": "aduffy", "department": "Science" },
+                { "room": None, "name": "Free Period", "teacher": None, "teacher_username": None, "department": None, "period": "D" },
+                { "period": "E", "room": "TALI-202A", "name": "American Literature", "teacher_username": "jlarner-lewis", "department": "English" },
+                { "period": "F", "room": "TALI-207", "name": "United States History: The American Question", "teacher_username": "cmclane", "department": "History/Social Science" },  
+                { "period": "G", "room": "TALI-305", "name": "Physics", "teacher_username": "akruger", "department": "Science" }, 
+                { "period": "H", "room": "TMAC-300", "name": "PE: Customized Training to Maximize Performance (US)", "teacher_username": "mhayes", "department": "Physical Education" },
+                { "period": "H", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics"               }
+            ],
+            [
+                { "period": "A", "room": "TALI-206", "name": "Advanced Spanish: Literature", "teacher_username": "kviolette", "department": "Spanish" },
+                { "period": "B", "room": "MS-101", "name": "Advanced Programming: Topics in Computer Science", "teacher_username": "gmein", "department": "Technology" },
+                { "period": "C", "room": "TMAC-103", "name": "Advanced Chemistry", "teacher_username": "aduffy", "department": "Science" }, 
+                { "room": None, "name": "Free Period", "teacher": None, "teacher_username": None, "department": None, "period": "D" },
+                { "period": "E", "room": "TALI-202A", "name": "American Literature", "teacher_username": "jlarner-lewis", "department": "English" },
+                { "period": "F", "room": "TALI-207", "name": "United States History: The American Question", "teacher_username": "cmclane", "department": "History/Social Science" },
+                { "period": "G", "room": "TALI-305", "name": "Physics", "teacher_username": "akruger", "department": "Science" },
+                { "period": "H", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" }
+            ]
+        ],
+        "sid": 1000,
+        "nickname": None,
+        "firstname": "Anthony",
+        "lastname": "Aardvark",
+        "gradyear": 2022,
+        "username": "aaardvark",
+        "advisor": "zzebra",
+        "grade": 11
+    },
+}
+
+TEST_MASTER_SCHEDULE = [{
+    "2020-09-09": "Remote A-D_Rem",
+}]
+
+class FakeEntity:
+    def __init__(self, key):
+        self.key = key
+    def get(self, prop):
+        return True
+
+class FakeDatastore:
+    def key(self, a, b):
+        return b
+    def get_multi(self, keys):
+        return [FakeEntity(key) for key in keys]
+
+TEST_CONFIG = {
+    'TESTING': True,
+    'SECRET_KEY': bytearray('test-key', 'ascii'),
+    'TOKEN': 'test-token',
+    'SCHEDULES': TEST_SCHEDULES,
+    'MASTER_SCHEDULE': TEST_MASTER_SCHEDULE,
+    'DATASTORE': FakeDatastore()
+}
 
 
 def download_photo(url):
@@ -29,7 +93,7 @@ def download_photo(url):
 class NoAuthTests(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        app.config['TESTING'] = True
+        init_app(TEST_CONFIG)
         self.client = app.test_client()
 
     def test_main_login_response(self):
@@ -43,19 +107,18 @@ class NoAuthTests(unittest.TestCase):
             response = self.client.get(endpoint)
             self.assertEqual(response.status_code, 403)
 
-# TODO fix this not to break when auberti graduates
-AUTHENTICATED_USER = "auberti"
+AUTHENTICATED_USER = "aaardvark"
 
 class AuthenticatedTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        app.config['TESTING'] = True
+        init_app(TEST_CONFIG)
         self.client = app.test_client()
         with self.client.session_transaction() as sess:
             sess["username"] = AUTHENTICATED_USER
 
 TEST_TEACHER = "jbriggs"
-TEST_STUDENT = "auberti"
+TEST_STUDENT = "aaardvark"
 STUDENT_NO_PIC = "aspatz"
 
 class TestStudentEndpoint(AuthenticatedTest):

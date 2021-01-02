@@ -1,6 +1,0 @@
-{
-  "sendgrid" : {
-    "username": "sguser",
-    "password": "sgpass"
-  }
-}
