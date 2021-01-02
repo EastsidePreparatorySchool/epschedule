@@ -32,3 +32,7 @@ We try to follow the Google [Python](https://google-styleguide.googlecode.com/sv
 
 ### Contributing a patch
 From your fork of the epschedule repo, submit a pull request. Be sure that all tests pass, and you have followed the code style guides mentioned above.
+
+### Updating the master schedule
+To recrawl or manually adjust the master period schedule (master_schedule.json), follow the instructions at [this link](https://github.com/guberti/epschedule/wiki/How-to-Crawl-schedules).
+
