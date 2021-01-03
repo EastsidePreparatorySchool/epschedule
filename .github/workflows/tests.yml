@@ -27,6 +27,9 @@ jobs:
     - name: Run pylint
       run: |
         pylint **/*.py
-    - name: Run pytest
+    - name: Test main
+      env:
+        SERVICE_ACCOUNT: ${{secrets.GCP_SERVICE_ACCOUNT}}
       run: |
+        echo '${{secrets.GCP_SERVICE_ACCOUNT}}' > service_account.json
         python main_test.py
