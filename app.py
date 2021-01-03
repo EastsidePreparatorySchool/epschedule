@@ -32,14 +32,20 @@ def init_app(test_config=None):
 
         # Get application secret key
         secret_client = secretmanager.SecretManagerServiceClient()
-        app.secret_key = secret_client.access_secret_version(request={"name": "projects/epschedule-v2/secrets/session_key/versions/1"}).payload.data
+        app.secret_key = secret_client.access_secret_version(request={
+            "name": "projects/epschedule-v2/secrets/session_key/versions/1"
+        }).payload.data
 
-        verify_firebase_token = lambda token: google.oauth2.id_token.verify_firebase_token(token, requests.Request())
+        verify_firebase_token = lambda token: \
+            google.oauth2.id_token.verify_firebase_token(
+                token, requests.Request())
 
         storage_client = storage.Client()
         data_bucket = storage_client.bucket("epschedule-data")    
-        SCHEDULE_INFO = json.loads(data_bucket.blob("schedules.json").download_as_string())
-        DAYS = json.loads(data_bucket.blob("exceptions.json").download_as_string())
+        SCHEDULE_INFO = json.loads(
+            data_bucket.blob("schedules.json").download_as_string())
+        DAYS = json.loads(
+            data_bucket.blob("exceptions.json").download_as_string())
 
         datastore_client = datastore.Client()
     else:
@@ -69,11 +75,12 @@ def get_schedule_data():
     return SCHEDULE_INFO
 
 def gen_photo_url(username, icon=False):
-    photo_bucket_endpoint = "https://epschedule-avatars.storage.googleapis.com/{}"
-    return photo_bucket_endpoint.format(hash_username(app.secret_key, username, icon))
+    return "https://epschedule-avatars.storage.googleapis.com/{}".format(
+        hash_username(app.secret_key, username, icon))
 
 def gen_login_response():
-    template = make_response(render_template("login.html", components="static/components.html"))
+    template = make_response(
+        render_template("login.html", components="static/components.html"))
     # Clear all cookies
     session.pop('username', None)
     template.set_cookie('token', '', expires=0)

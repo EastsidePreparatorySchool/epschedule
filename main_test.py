@@ -281,7 +281,7 @@ class TestSearchEndpoint(AuthenticatedTest):
             self.assertIn(TEST_SEARCH.lower(), result["name"].lower())
 
 
-"""Tests for the /class endpoiont."""
+"""Tests for the /class endpoint."""
 class TestClassEndpoint(AuthenticatedTest):
     # Test that we can get the fall A period class for the test user.
     def test_class_endpoint(self):
