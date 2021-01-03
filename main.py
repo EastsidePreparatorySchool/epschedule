@@ -109,7 +109,6 @@ def main():
                 token, firebase_request_adapter)
             session.permanent = True
             session['username'] = claims['email'].split("@")[0]
-            session['username'] = 'kuberti'
 
             # Make them a privacy object if it doesn't exist
             key = get_user_key(session['username'])
@@ -200,14 +199,14 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "email": username_to_email(schedule["username"]),
                         "photo_url": gen_photo_url(schedule["username"], True),
                     }
-                    result["students"].append(student)            
+                    result["students"].append(student)
 
     # Sorts alphabetically, then sorts teachers from students
     result["students"] = sorted(
         sorted(result["students"], key = lambda s: s["firstname"]),
         key = lambda s: str(s["grade"]))
 
-    # Censor photos 
+    # Censor photos
     if censor:
         privacy_settings = get_database_entries([x["username"] for x in result["students"]])
         opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
