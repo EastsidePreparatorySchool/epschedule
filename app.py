@@ -41,7 +41,7 @@ def init_app(test_config=None):
                 token, requests.Request())
 
         storage_client = storage.Client()
-        data_bucket = storage_client.bucket("epschedule-data")    
+        data_bucket = storage_client.bucket("epschedule-data")
         SCHEDULE_INFO = json.loads(
             data_bucket.blob("schedules.json").download_as_string())
         DAYS = json.loads(
@@ -63,7 +63,7 @@ def is_teacher_schedule(schedule):
 
 def get_term_id():
     now = datetime.datetime.now()
-    if now < FALL_TRI_END: 
+    if now < FALL_TRI_END:
         default = 0
     elif now < WINT_TRI_END:
         default = 1
@@ -115,7 +115,6 @@ def main():
             claims = verify_firebase_token(token)
             session.permanent = True
             session['username'] = claims['email'].split("@")[0]
-            session['username'] = 'kuberti'
 
             # Make them a privacy object if it doesn't exist
             key = get_user_key(session['username'])
@@ -206,14 +205,14 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "email": username_to_email(schedule["username"]),
                         "photo_url": gen_photo_url(schedule["username"], True),
                     }
-                    result["students"].append(student)            
+                    result["students"].append(student)
 
     # Sorts alphabetically, then sorts teachers from students
     result["students"] = sorted(
         sorted(result["students"], key = lambda s: s["firstname"]),
         key = lambda s: str(s["grade"]))
 
-    # Censor photos 
+    # Censor photos
     if censor:
         privacy_settings = get_database_entries([x["username"] for x in result["students"]])
         opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
@@ -398,14 +397,3 @@ def handle_search(keyword):
                 break
     return json.dumps(results)
 
-if __name__ == '__main__':
-    # Only used for running locally
-
-    # This is used when running locally only. When deploying to Google App
-    # Engine, a webserver process such as Gunicorn will serve the app. This
-    # can be configured by adding an `entrypoint` to app.yaml.
-    # Flask's development server will automatically serve static files in
-    # the "static" directory. See:
-    # http://flask.pocoo.org/docs/1.0/quickstart/#static-files. Once deployed,
-    # App Engine itself will serve those files as configured in app.yaml.
-    app.run(host='127.0.0.1', port=8080, debug=True)
