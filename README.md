@@ -30,6 +30,13 @@ and navigate to http://localhost:8080/, where a local version of EPSchedule will
 ### Code style
 We try to follow the Google [Python](https://google-styleguide.googlecode.com/svn/trunk/pyguide.html) and [JavaScript](https://google.github.io/styleguide/javascriptguide.xml) style guides.
 
+### Running unit tests
+We use the [pytest](https://docs.pytest.org/en/stable/index.html) framework to test our Python code, and tests are run against all pull requests. To run the tests locally, simply run 
+
+```pytest```
+
+from the command line.
+
 ### Contributing a patch
 From your fork of the epschedule repo, submit a pull request. Be sure that all tests pass, and you have followed the code style guides mentioned above.
 
