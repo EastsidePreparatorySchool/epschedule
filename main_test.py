@@ -209,6 +209,7 @@ class NoAuthTests(unittest.TestCase):
             response = self.client.get(endpoint)
             self.assertEqual(response.status_code, 403)
 
+    #test that username being set from cookies is what we want
     def test_login(self):
         self.client.set_cookie('localhost', 'token', '{"email": "aaardvark@eastsideprep.org"}')
         test_username = "aaardvark"
@@ -219,9 +220,6 @@ class NoAuthTests(unittest.TestCase):
                 del sess["username"]
         
         self.assertEqual(response.status_code, 200)
-
-       
-
 
 
 AUTHENTICATED_USER = "aaardvark"
