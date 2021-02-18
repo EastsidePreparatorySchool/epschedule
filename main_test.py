@@ -1,3 +1,4 @@
+import flask
 from io import BytesIO
 import json
 import unittest
@@ -208,6 +209,20 @@ class NoAuthTests(unittest.TestCase):
             response = self.client.get(endpoint)
             self.assertEqual(response.status_code, 403)
 
+    def test_login(self):
+        self.client.set_cookie('localhost', 'token', '{"email": "aaardvark@eastsideprep.org"}')
+        test_username = "aaardvark"
+        with self.client as c:
+            response = c.get('/')
+            self.assertEqual(flask.session["username"], test_username)
+            with c.session_transaction() as sess: 
+                del sess["username"]
+        
+        self.assertEqual(response.status_code, 200)
+
+       
+
+
 
 AUTHENTICATED_USER = "aaardvark"
 
@@ -221,7 +236,6 @@ class AuthenticatedTest(unittest.TestCase):
 
     def check_photo_url(self, url):
         self.assertTrue(url.startswith("https://epschedule-avatars.storage.googleapis.com/"))
-
 
 
 """Tests for the /search endpoint."""        
