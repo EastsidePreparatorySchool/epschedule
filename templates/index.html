@@ -175,6 +175,12 @@
     adjustDate(globalDate, 1);
     updateMainSchedule();
   }
+
+  function selectDate(){
+    let dateElement = document.getElementById("calendar");
+    globalDate = new Date(dateElement.value);
+    updateMainSchedule();
+  }
   function skipToWinter() {
     globalDate.setDate(fallTriEndDate.getDate());
     dateForward();
@@ -1060,6 +1066,7 @@
             <div class="headerbarpage mainheader">
               <paper-icon-button class="" icon="menu" paper-drawer-toggle></paper-icon-button>
               <span class="title" id="day">Today</span>
+              <input type="date" id="calendar" onchange="selectDate()">
               <paper-icon-button class="rightfloat" icon="arrow-back" onclick="dateBack()"></paper-icon-button>
               <paper-icon-button class="rightfloat" icon="arrow-forward" onclick="dateForward()"></paper-icon-button>
               <paper-icon-button class="rightfloat" icon="search" onclick="openSearchBar()"></paper-icon-button>
