@@ -215,9 +215,11 @@ class NoAuthTests(unittest.TestCase):
         test_username = "aaardvark"
         with self.client as c:
             response = c.get('/')
+            #get username from created cookie and compare it to actual one
             self.assertEqual(flask.session["username"], test_username)
-            with c.session_transaction() as sess: 
+            with c.session_transaction() as sess:
                 del sess["username"]
+                  #return it to a not logged in state for other tests
         
         self.assertEqual(response.status_code, 200)
 
