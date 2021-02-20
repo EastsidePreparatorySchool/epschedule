@@ -209,17 +209,18 @@ class NoAuthTests(unittest.TestCase):
             response = self.client.get(endpoint)
             self.assertEqual(response.status_code, 403)
 
-    #test that username being set from cookies is what we want
+    # Test that username being set from cookies is what we want
     def test_login(self):
         self.client.set_cookie('localhost', 'token', '{"email": "aaardvark@eastsideprep.org"}')
         test_username = "aaardvark"
         with self.client as c:
             response = c.get('/')
-            #get username from created cookie and compare it to actual one
-            self.assertEqual(flask.session["username"], test_username)
+            # Get username from session and compare it to actual one
             with c.session_transaction() as sess:
+                self.assertEqual(sess["username"], test_username)
+                # Return it to a not logged in state for other tests
                 del sess["username"]
-                  #return it to a not logged in state for other tests
+                
         
         self.assertEqual(response.status_code, 200)
 
