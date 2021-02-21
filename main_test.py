@@ -7,7 +7,7 @@ from PIL import Image
 
 from app import app, init_app
 
-TEST_SCHEDULES = json.load('data/test_schedule.json')
+TEST_SCHEDULES = json.load(open('data/test_schedule.json'))
 
 TEST_MASTER_SCHEDULE = [{
     "2020-09-09": "Remote A-D_Rem",

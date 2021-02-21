@@ -48,7 +48,7 @@
                 { "period": "A", "room": "TALI-206", "name": "Advanced Spanish: Literature", "teacher_username": "kviolette", "department": "Spanish"},
                 { "period": "B","room": "TMAC-300", "name": "PE: Customized Training to Maximize Performance (US)", "teacher_username": "mhayes", "department": "Physical Education" },
                 { "period": "C", "room": "TMAC-103", "name": "Advanced Chemistry", "teacher_username": "aduffy", "department": "Science" }, 
-                { "period": "D", "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, },   
+                { "period": "D", "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null },   
                 { "period": "E", "room": "TALI-202A", "name": "American Literature", "teacher_username": "jlarner-lewis", "department": "English" },
                 { "period": "F", "room": "TALI-207", "name": "United States History: The American Question", "teacher_username": "cmclane", "department": "History/Social Science" },
                 { "period": "G", "room": "TALI-305", "name": "Physics", "teacher_username": "akruger", "department": "Science" },
@@ -126,5 +126,5 @@
         "username": "jbriggs",
         "advisor": null,
         "grade": null
-    },
+    }
 }
