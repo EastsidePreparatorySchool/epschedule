@@ -1,6 +1,7 @@
-from app import app, init_app
+from app import app, 
+import argparse
 
-init_app()
+init_app(enable_impersonation=True)
 
 if __name__ == '__main__':
     # Only used for running locally. When running on production, it will

@@ -20,12 +20,14 @@ DAYS = None
 FALL_TRI_END = datetime.datetime(2020, 11, 23, 15, 30, 0, 0)
 WINT_TRI_END = datetime.datetime(2021, 3, 6, 15, 30, 0, 0)
 
-def init_app(test_config=None):
+def init_app(test_config=None, enable_impersonation=False):
     global verify_firebase_token
     global datastore_client
     global SCHEDULE_INFO
     global DAYS
+    global enable_impersonation
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
+    enable_impersonation = enable_impersonation
     if test_config is None:
         # Authenticate ourselves
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
@@ -107,8 +109,7 @@ def get_database_entries(usernames):
 def main():
     # Tokens are used during login, but after that we use our own system
     # If they have a token, we should always eat it and give them either
-    # a proper auth cookie or the login page
-
+    # a proper auth cookie or the login page.
     token = request.cookies.get("token")
     if token:
         try:
@@ -130,6 +131,13 @@ def main():
         except ValueError as exc:
             return gen_login_response()
 
+    # For debugging, the local server allows one to impersonate a specific
+    # user by using the u= URL parameter. Use this with discretion;
+    # respect the privacy of others.
+    elif enable_impersonation and 'u' in request.args:
+        session['username'] = request.args['u']
+
+    # If we still don't know who you are, return the login page.
     elif 'username' not in session:
         return gen_login_response()
 
