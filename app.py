@@ -19,6 +19,7 @@ SCHEDULE_INFO = None
 DAYS = None
 FALL_TRI_END = datetime.datetime(2020, 11, 23, 15, 30, 0, 0)
 WINT_TRI_END = datetime.datetime(2021, 3, 6, 15, 30, 0, 0)
+enable_impersonation = False
 
 def init_app(test_config=None, enable_impersonation=False):
     global verify_firebase_token
