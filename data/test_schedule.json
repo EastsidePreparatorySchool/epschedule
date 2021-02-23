@@ -1,0 +1,130 @@
+{
+    "aaardvark": {
+        "classes": [  
+            [          
+                { "period": "A", "room": "TALI-206", "name": "Advanced Spanish: Literature", "teacher_username": "kviolette", "department": "Spanish"},
+                { "period": "B","room": "TMAC-300", "name": "PE: Customized Training to Maximize Performance (US)", "teacher_username": "mhayes", "department": "Physical Education" },
+                { "period": "C", "room": "TMAC-103", "name": "Advanced Chemistry", "teacher_username": "aduffy", "department": "Science" }, 
+                { "period": "D", "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null },   
+                { "period": "E", "room": "TALI-202A", "name": "American Literature", "teacher_username": "jlarner-lewis", "department": "English" },
+                { "period": "F", "room": "TALI-207", "name": "United States History: The American Question", "teacher_username": "cmclane", "department": "History/Social Science" },
+                { "period": "G", "room": "TALI-305", "name": "Physics", "teacher_username": "akruger", "department": "Science" },
+                { "period": "H", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" }
+            ],
+            [
+                { "period": "A", "room": "TALI-206", "name": "Advanced Spanish: Literature", "teacher_username": "kviolette", "department": "Spanish" },
+                { "period": "B", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" },
+                { "period": "C", "room": "TMAC-103", "name": "Advanced Chemistry", "teacher_username": "aduffy", "department": "Science" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "D" },
+                { "period": "E", "room": "TALI-202A", "name": "American Literature", "teacher_username": "jlarner-lewis", "department": "English" },
+                { "period": "F", "room": "TALI-207", "name": "United States History: The American Question", "teacher_username": "cmclane", "department": "History/Social Science" },  
+                { "period": "G", "room": "TALI-305", "name": "Physics", "teacher_username": "akruger", "department": "Science" }, 
+                { "period": "H", "room": "TMAC-300", "name": "PE: Customized Training to Maximize Performance (US)", "teacher_username": "mhayes", "department": "Physical Education" },
+                { "period": "H", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" }
+            ],
+            [
+                { "period": "A", "room": "TALI-206", "name": "Advanced Spanish: Literature", "teacher_username": "kviolette", "department": "Spanish" },
+                { "period": "B", "room": "MS-101", "name": "Advanced Programming: Topics in Computer Science", "teacher_username": "gmein", "department": "Technology" },
+                { "period": "C", "room": "TMAC-103", "name": "Advanced Chemistry", "teacher_username": "aduffy", "department": "Science" }, 
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "D" },
+                { "period": "E", "room": "TALI-202A", "name": "American Literature", "teacher_username": "jlarner-lewis", "department": "English" },
+                { "period": "F", "room": "TALI-207", "name": "United States History: The American Question", "teacher_username": "cmclane", "department": "History/Social Science" },
+                { "period": "G", "room": "TALI-305", "name": "Physics", "teacher_username": "akruger", "department": "Science" },
+                { "period": "H", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" }
+            ]
+        ],
+        "sid": 1,
+        "nickname": null,
+        "firstname": "Anthony",
+        "lastname": "Aardvark",
+        "gradyear": 2022,
+        "username": "aaardvark",
+        "advisor": "zzebra",
+        "grade": 11
+    },
+    "bbison": {
+        "classes": [
+            [
+                { "period": "A", "room": "TALI-206", "name": "Advanced Spanish: Literature", "teacher_username": "kviolette", "department": "Spanish"},
+                { "period": "B","room": "TMAC-300", "name": "PE: Customized Training to Maximize Performance (US)", "teacher_username": "mhayes", "department": "Physical Education" },
+                { "period": "C", "room": "TMAC-103", "name": "Advanced Chemistry", "teacher_username": "aduffy", "department": "Science" }, 
+                { "period": "D", "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null },   
+                { "period": "E", "room": "TALI-202A", "name": "American Literature", "teacher_username": "jlarner-lewis", "department": "English" },
+                { "period": "F", "room": "TALI-207", "name": "United States History: The American Question", "teacher_username": "cmclane", "department": "History/Social Science" },
+                { "period": "G", "room": "TALI-305", "name": "Physics", "teacher_username": "akruger", "department": "Science" },
+                { "period": "H", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" }
+            ], 
+            [
+                { "period": "A", "room": "TALI-206", "name": "Advanced Spanish: Literature", "teacher_username": "kviolette", "department": "Spanish"  }, 
+                { "period": "B", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" },
+                { "period": "C", "room": "TMAC-103", "name": "Advanced Chemistry", "teacher_username": "aduffy", "department": "Science" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "D" },
+                { "period": "E", "room": "TALI-202A", "name": "American Literature", "teacher_username": "jlarner-lewis", "department": "English" },
+                { "period": "F", "room": "TALI-207", "name": "United States History: The American Question", "teacher_username": "cmclane", "department": "History/Social Science" },  
+                { "period": "G", "room": "TALI-305", "name": "Physics", "teacher_username": "akruger", "department": "Science" }, 
+                { "period": "H", "room": "TMAC-300", "name": "PE: Customized Training to Maximize Performance (US)", "teacher_username": "mhayes", "department": "Physical Education" },
+                { "period": "H", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" }
+            ],
+            [
+                { "period": "A", "room": "TALI-206", "name": "Advanced Spanish: Literature", "teacher_username": "kviolette", "department": "Spanish" },
+                { "period": "B", "room": "MS-101", "name": "Advanced Programming: Topics in Computer Science", "teacher_username": "gmein", "department": "Technology" },
+                { "period": "C", "room": "TMAC-103", "name": "Advanced Chemistry", "teacher_username": "aduffy", "department": "Science" }, 
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "D" },
+                { "period": "E", "room": "TALI-202A", "name": "American Literature", "teacher_username": "jlarner-lewis", "department": "English" },
+                { "period": "F", "room": "TALI-207", "name": "United States History: The American Question", "teacher_username": "cmclane", "department": "History/Social Science" },
+                { "period": "G", "room": "TALI-305", "name": "Physics", "teacher_username": "akruger", "department": "Science" },
+                { "period": "H", "room": "FG-202", "name": "Advanced Calculus", "teacher_username": "jkaminsky", "department": "Mathematics" }
+            ]
+        ],
+        "sid": 2,
+        "nickname": null,
+        "firstname": "Billy",
+        "lastname": "Bison",
+        "gradyear": 2023,
+        "username": "bbison",
+        "advisor": "zzebra",
+        "grade": 10
+    },
+    "jbriggs": {
+        "classes": [
+            [
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "A" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "B" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "C" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "D" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "E" },
+                { "period": "F", "room": "TMAC-205A", "name": "Calculus", "teacher_username": "sfassino", "department": "Mathematics" }, 
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "G" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "H" }
+            ],
+            [
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "A" },
+                { "period": "B", "room": "TMAC-007", "name": "Evolution of Society: Economics & Technology", "teacher_username": "mdelaney", "department": "Interdisciplinary Electives" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "C" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "D" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "E" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "F" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "G" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "H" }
+            ],
+            [
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "A" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "B" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "C" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "D" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "E" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "F" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "G" },
+                { "room": null, "name": "Free Period", "teacher": null, "teacher_username": null, "department": null, "period": "H" }
+            ]
+        ],
+        "sid": 106,
+        "nickname": null,
+        "firstname": "Jonathan",
+        "lastname": "Briggs",
+        "gradyear": null,
+        "username": "jbriggs",
+        "advisor": null,
+        "grade": null
+    }
+}
