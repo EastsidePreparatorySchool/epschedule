@@ -1,0 +1,49 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  background: #0d47a1;
+  padding: 20px;
+  text-align: center;
+}
+.card {
+  background: white;
+  max-width: 360px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 2px;
+}
+.image-container {
+  margin-bottom: 0px;
+}
+.copy {
+  font-size: 16;
+  margin-bottom: 0px;
+}
+paper-input {
+  text-align: left;
+}
+.link {
+  text-decoration: none;
+}
+paper-button {
+  margin: 12px auto;
+  width: 100%;
+  color: white;
+  background: #2196f3;
+}
+#loginButton {
+  display: block;
+  background-color: #2196F3
+}
+#registerButton {
+  display: none;
+  background-color: #2196F3
+}
+#loginText {
+  display: none;
+}
+#registerText {
+  display: block;
+}
+#toast {
+  text-align: left;
+}
