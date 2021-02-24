@@ -29,6 +29,14 @@
   <link rel="import" href="static/html/schedule.html">
   <link rel="import" href="static/html/schedule_lite.html">
   <link rel="stylesheet" href="static/css/index.css">
+  <script>
+    var userSchedule = {{ schedule | safe }};
+    var days = {{days | safe }};
+    var lunches = {{lunches | safe}};
+    // Multiply by 1000 to account for milliseconds
+    var fallTriEndDate = new Date({{fall_end_unix | safe}});
+    var wintTriEndDate = new Date({{wint_end_unix | safe}});
+  </script>
   <script src="static/js/index.js"></script>
 </head>
 <body unresolved="">
