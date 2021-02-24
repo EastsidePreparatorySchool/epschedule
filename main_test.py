@@ -195,6 +195,12 @@ class NoAuthTests(unittest.TestCase):
         init_app(TEST_CONFIG)
         self.client = app.test_client()
 
+    # tearDown method is called after each test - we need it so that 
+    # after login tests the user is still "unauthorized"
+    @classmethod
+    def tearDown(self):
+        self.client.cookie_jar.clear() 
+
     # Test that when not logged in, we're given a sign-in page.
     def test_main_login_response(self):
         response = self.client.get('/')
@@ -218,7 +224,6 @@ class NoAuthTests(unittest.TestCase):
             with c.session_transaction() as sess:
                 self.assertEqual(sess["username"], test_username)
                 # Return it to a not logged in state for other tests
-                del sess["username"]
                 
         
         self.assertEqual(response.status_code, 200)
