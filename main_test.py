@@ -93,9 +93,7 @@ class NoAuthTests(unittest.TestCase):
             response = c.get('/')
             # Get username from session and compare it to actual one
             with c.session_transaction() as sess:
-                self.assertEqual(sess["username"], test_username)
-                # Return it to a not logged in state for other tests
-                
+                self.assertEqual(sess["username"], test_username)                
         
         self.assertEqual(response.status_code, 200)
 
