@@ -144,6 +144,11 @@ function dateForward() {
   adjustDate(globalDate, 1);
   updateMainSchedule();
 }
+function selectDate() {
+  let dateElement = document.getElementById("calendar");
+  globalDate = new Date(dateElement.value);
+  updateMainSchedule();
+}
 function skipToWinter() {
   globalDate.setDate(fallTriEndDate.getDate());
   dateForward();
