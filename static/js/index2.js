@@ -111,12 +111,6 @@ function scheduleSwiped(evt) {
   }
 }
 
-var userSchedule = {{ schedule | safe }};
-var days = {{days | safe }};
-var lunches = {{lunches | safe}};
-// Multiply by 1000 to account for milliseconds
-var fallTriEndDate = new Date({{fall_end_unix | safe}});
-var wintTriEndDate = new Date({{wint_end_unix | safe}});
 var globalDate = getInitialDate();
 
 function getInitialDate() {
