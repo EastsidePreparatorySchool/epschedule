@@ -139,8 +139,10 @@ function dateForward() {
   updateMainSchedule();
 }
 function selectDate() {
-  let dateElement = document.getElementById("calendar");
-  globalDate = new Date(dateElement.value);
+  let dateElement = document.getElementById("date");
+  splitDate = dateElement.value.split("-");
+  globalDate = new Date(splitDate[0], splitDate[1] - 1, splitDate[2]);
+  console.log(globalDate);
   updateMainSchedule();
 }
 function skipToWinter() {
@@ -166,7 +168,7 @@ function adjustDate(date, delta) {
 }
 function dayOfWeekToString(day) {
   // No Sunday or Saturday, since no school...
-  var DAYS = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", ""];
+  var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   return DAYS[day];
 }
 function dateToString(date) {
