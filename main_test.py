@@ -66,6 +66,12 @@ class NoAuthTests(unittest.TestCase):
         init_app(TEST_CONFIG)
         self.client = app.test_client()
 
+    # tearDown method is called after each test - we need it so that 
+    # after login tests the user is still "unauthorized"
+    @classmethod
+    def tearDown(self):
+        self.client.cookie_jar.clear() 
+
     # Test that when not logged in, we're given a sign-in page.
     def test_main_login_response(self):
         response = self.client.get('/')
@@ -78,6 +84,18 @@ class NoAuthTests(unittest.TestCase):
         for endpoint in API_ENDPOINTS:
             response = self.client.get(endpoint)
             self.assertEqual(response.status_code, 403)
+
+    # Test that username being set from cookies is what we want
+    def test_login(self):
+        self.client.set_cookie('localhost', 'token', '{"email": "aaardvark@eastsideprep.org"}')
+        test_username = "aaardvark"
+        with self.client as c:
+            response = c.get('/')
+            # Get username from session and compare it to actual one
+            with c.session_transaction() as sess:
+                self.assertEqual(sess["username"], test_username)                
+        
+        self.assertEqual(response.status_code, 200)
 
 
 AUTHENTICATED_USER = "aaardvark"
@@ -92,7 +110,6 @@ class AuthenticatedTest(unittest.TestCase):
 
     def check_photo_url(self, url):
         self.assertTrue(url.startswith("https://epschedule-avatars.storage.googleapis.com/"))
-
 
 
 """Tests for the /search endpoint."""        
