@@ -50,7 +50,7 @@ def init_app(test_config=None):
         datastore_client = datastore.Client()
     else:
         app.config.from_mapping(test_config)
-        verify_firebase_token = lambda token: token == app.config['TOKEN']
+        verify_firebase_token = lambda token: json.loads(token)
         datastore_client = app.config['DATASTORE']
         SCHEDULE_INFO = app.config['SCHEDULES']
         DAYS = app.config['MASTER_SCHEDULE']
