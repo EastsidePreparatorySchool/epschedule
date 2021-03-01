@@ -91,9 +91,15 @@
               <paper-icon-button class="" icon="menu" paper-drawer-toggle>
               </paper-icon-button>
               <span class="title" id="day">Today</span>
-              <input type="date" id="date" onchange="selectDate()">
-              <paper-icon-button class="rightfloat" icon="action:calendar" onclick="selectDate()">
-              </paper-icon-button>
+
+              <!-- Draw our calendar icon on top of the native picker -->
+              <span class="datepicker-toggle">
+                <span class="datepicker-toggle-button">
+                  <iron-icon icon="action:calendar">
+                </span>
+                <input class="datepicker-input" type="date" id="date" onchange="selectDate()">
+              </span>
+
               <paper-icon-button class="rightfloat" icon="arrow-back"
                onclick="dateBack()">
               </paper-icon-button>
