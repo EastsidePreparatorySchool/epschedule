@@ -167,7 +167,6 @@ function adjustDate(date, delta) {
   }
 }
 function dayOfWeekToString(day) {
-  // No Sunday or Saturday, since no school...
   var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   return DAYS[day];
 }
