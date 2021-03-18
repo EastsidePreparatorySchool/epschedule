@@ -233,6 +233,7 @@ function requestAdditionalData(name, type, funct) {
   // Type is the type of data being requested - [class, teacher, student, room, period]
   // Name is the name of the class, teacher, student, etc.
   name = cleanString(name);
+  console.log("name=" + name);
   var url = type + "/" + name;
   console.log("Requesting " + url);
   xhr = new XMLHttpRequest();
@@ -655,8 +656,12 @@ function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, ex
   // Add in the expansion functions to the full schedule
   if (type == "full" || type == "core") {
     scheduleElement.onTeacherTap = function(e) {
-      var orig_names = e.model.item.teacher.split(" ");
-      var username = orig_names[0][0] + orig_names[orig_names.length-1];
+      //var orig_names = e.model.item.teacherUsername.split(" ");
+      //console.log(e.model.item.teacherUsername);
+      //console.log(orig_names);
+      var username = e.model.item.teacherUsername;
+      //console.log(orig_names[0][0]);
+      //console.log(username);
       requestAdditionalData(username.toLowerCase(), "student", renderStudent);
       openPopup(e.model.item.teacher);
     }
