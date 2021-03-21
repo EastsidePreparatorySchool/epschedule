@@ -188,7 +188,14 @@ class TestClassEndpoint(AuthenticatedTest):
                 found_student = student
         self.assertNotEqual(found_student, None)
         self.assertEqual(found_student["photo_url"], "/static/images/placeholder_small.png")
-        
+
+class TestLogout(AuthenticatedTest):
+    def test_logout(self):
+        response = self.client.post('/logout')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Sign in to EPSchedule", str(response.data))
 
 if __name__ == "__main__":
     unittest.main()
