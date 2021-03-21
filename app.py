@@ -185,7 +185,7 @@ def get_class_schedule(user_class, term_id, censor=True):
         "term_id": term_id,
         "students": [],
     }
-    
+
     opted_out = set()
 
     for schedule in get_schedule_data().values():
