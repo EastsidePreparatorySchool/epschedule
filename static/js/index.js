@@ -655,9 +655,8 @@ function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, ex
   // Add in the expansion functions to the full schedule
   if (type == "full" || type == "core") {
     scheduleElement.onTeacherTap = function(e) {
-      var orig_names = e.model.item.teacher.split(" ");
-      var username = orig_names[0][0] + orig_names[orig_names.length-1];
-      requestAdditionalData(username.toLowerCase(), "student", renderStudent);
+      var username = e.model.item.teacherUsername;  
+      requestAdditionalData(username, "student", renderStudent);
       openPopup(e.model.item.teacher);
     }
     scheduleElement.onStudentTap = function(e) {
