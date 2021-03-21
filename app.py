@@ -397,3 +397,8 @@ def handle_search(keyword):
                 break
     return json.dumps(results)
 
+# This is a post because it changes things
+@app.route('/logout', methods=['POST'])
+def handle_sign_out():
+    session.clear()
+    return json.dumps({})
