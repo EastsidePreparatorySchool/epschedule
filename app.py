@@ -178,7 +178,6 @@ def is_same_class(a, b):
     )
 
 def get_class_schedule(user_class, term_id, censor=True):
-    #print(user_class)
     result = {
         "period": user_class["period"],
         "teacher": user_class["teacher_username"],
@@ -191,12 +190,8 @@ def get_class_schedule(user_class, term_id, censor=True):
     for schedule in get_schedule_data().values():
         for classobj in schedule["classes"][term_id]:
             if is_same_class(user_class, classobj):
-                #print("Found same class")
-                #print(schedule)
-                #print(is_teacher_schedule(schedule))
                 # We only include teacher schedules in free periods
                 if (not is_teacher_schedule(schedule)) or classobj["name"] == "Free Period":
-                    #print("Appending")
                     student = {
                         "firstname": schedule["firstname"],
                         "lastname": schedule["lastname"],
@@ -240,7 +235,6 @@ def handle_user(target_user):
         priv_obj = get_database_entry(target_user)
         if priv_obj:
             priv_settings = dict(priv_obj.items())
-            #print(priv_settings)
 
     if not priv_settings["share_schedule"]:
         target_schedule = sanitize_schedule(target_schedule, user_schedule)
@@ -313,7 +307,6 @@ def get_free_rooms(period, term):
                 occupied.add(clss["room"])
             else:
                 free.add(clss["room"])
-    print(occupied)
     return list(free - occupied)
 
 def get_grade_range(grade):
@@ -374,8 +367,6 @@ def handle_settings():
         return json.dumps(dict(user.items()))
 
     elif request.method == 'POST':
-        print(request.args.get('share_photo'))
-
         user.update({
             "share_photo": request.form['share_photo'] == "true",
             "share_schedule": request.form['share_schedule'] == "true"
