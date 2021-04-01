@@ -79,8 +79,7 @@ def gen_photo_url(username, icon=False):
         hash_username(app.secret_key, username, icon))
 
 def gen_login_response():
-    template = make_response(
-        render_template("login.html", components="static/components.html"))
+    template = make_response(render_template("login.html"))
     # Clear all cookies
     session.pop('username', None)
     template.set_cookie('token', '', expires=0)
