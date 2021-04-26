@@ -42,12 +42,6 @@
     .status {
       width: 100%;
     }
-    .hybrid {
-      margin: 0px;
-      width: 100%;
-      padding: 8px;
-      font-size: 1.2rem;
-    }
     .status img {
       width: 100%;
       position: absolute;
@@ -60,6 +54,17 @@
       margin: 0px;
       color: white;
       font-size: 1.5rem;
+    }
+    .hybrid {
+      margin: 0px;
+      width: 100%;
+      font-size: 1.2rem;
+      background-color: #F0B300;
+    }
+    .hybrid p {
+      position: relative;
+      font-size: 1.4rem;
+      margin: 8px;
     }
 
     .card {
@@ -178,11 +183,8 @@
         </div>
       </template>
       <div class="hybrid">
-        <template is="dom-if" if="{{isOnCampus}}">
-          <p>On Campus</p>
-        </template>
-        <template is="dom-if" if="{{!isOnCampus}}">
-          <p>Remote</p>
+        <template is="dom-if" if="{{!allDayEvent}}">
+          <p>{{getHeaderText(isOnCampus)}}</p>
         </template>
       </div>
       <template is="dom-repeat" id="entryList" items="{{entries}}">
@@ -280,6 +282,14 @@
       },
       isLunchWithDesc: function(item) {
         return Boolean(item.lunchInfo);
+      },
+
+      getHeaderText: function(isOnCampus) {
+        if (isOnCampus) {
+          return "🏫 On Campus"
+        } else {
+          return "💻 Remote"
+        }
       },
       getLineInDesc: function(item, linenum) {
         if (item.lunchInfo) {
