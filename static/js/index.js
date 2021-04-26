@@ -531,6 +531,7 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
   return scheduleObj;
 }
 
+// Grades on campus or each day
 SPRING_2021_SCHEDULE = { 
   "2021-04-27": [5, 6], 
   "2021-04-28": [5, 6], 
