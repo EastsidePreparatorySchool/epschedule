@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-import urllib
+from urllib import request
 import json
 
 BASE_URL = "https://four11.eastsideprep.org/epsnet/schedule_for_date?date="
@@ -17,12 +17,12 @@ def make_url(d):
 
 def download_json(d):
 	url = make_url(d)
-	response = urllib.urlopen(url)
+	response = request.urlopen(url)
 	return json.loads(response.read())
 
 for i in range (delta.days + 1):
 	d = START_DATE + timedelta(days=i)
-	print "Fetching " + str(d)
+	print("Fetching " + str(d))
 
 	if d.weekday() >= 5: # If day is a weekend
 		# We don't write weekends to database, so skip it
@@ -48,5 +48,5 @@ for i in range (delta.days + 1):
 
 exception_table = [days, schedules]
 
-file = open('../data/exceptions.json', 'w')
-file.write(json.dumps(exception_table, indent=4))
+file = open('../data/master_schedule.json', 'w')
+file.write(json.dumps(exception_table, indent=4, sort_keys=True))

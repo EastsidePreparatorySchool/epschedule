@@ -5,5 +5,5 @@ requests
 google-cloud-secret-manager
 google-cloud-storage
 Pillow
+pytest
 pylint
-
