@@ -411,11 +411,16 @@ function toTwoDig(num) {
     return s;
   }
 }
+function makeDateKey(dateObj){
+  var datekey = dateObj.getFullYear() + "-" + 
+      toTwoDig(dateObj.getMonth() + 1) + "-" + 
+      toTwoDig(dateObj.getDate());
+  return datekey;
+}
 // Handles exceptions, also handles special weekend schedules
 function getScheduleTypeForDate(dateObj, exceptions) {
-
-  var s = dateObj.getFullYear() + "-" + toTwoDig(dateObj.getMonth() + 1) + "-" + toTwoDig(dateObj.getDate());
-  var day = exceptions[0][s];
+  var datekey = makeDateKey(dateObj);
+  var day = exceptions[0][datekey];
   return exceptions[1][day];
 }
 
@@ -524,6 +529,43 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
     scheduleObj.endTime = times[1].trim();
   }
   return scheduleObj;
+}
+
+// Grades on campus or each day
+SPRING_2021_SCHEDULE = { 
+  "2021-04-27": [5, 6], 
+  "2021-04-28": [5, 6], 
+  "2021-04-29": [7, 8],
+  "2021-04-30": [7, 8],
+  "2021-05-03": [9, 10],
+  "2021-05-04": [9, 10],
+  "2021-05-05": [11, 12],
+  "2021-05-06": [11, 12],
+  "2021-05-07": [5, 6, 7, 8], 
+  "2021-05-10": [5, 6, 7, 8], 
+  "2021-05-11": [5, 6, 7, 8], 
+  "2021-05-12": [5, 6, 7, 8], 
+  "2021-05-13": [9, 10, 11, 12], 
+  "2021-05-14": [9, 10, 11, 12], 
+  "2021-05-17": [9, 10, 11, 12], 
+  "2021-05-18": [9, 10, 11, 12], 
+  "2021-05-19": [5, 6, 7, 8], 
+  "2021-05-20": [5, 6, 7, 8], 
+  "2021-05-24": [5, 6, 7, 8], 
+  "2021-05-25": [5, 6, 7, 8], 
+  "2021-05-26": [9, 10, 11, 12], 
+  "2021-05-27": [9, 10, 11, 12], 
+  "2021-05-28": [9, 10, 11, 12], 
+  "2021-06-01": [9, 10, 11, 12], 
+}
+function isOnCampus(grade, dateObj) {
+  datekey = makeDateKey(dateObj);
+  ourDate = SPRING_2021_SCHEDULE[datekey];
+  if (ourDate) { 
+    return ourDate.includes(grade);
+  } else {
+    return false;
+  }
 }
 
 IMAGE_CDN = "https://epschedule-avatars.storage.googleapis.com/"
@@ -646,6 +688,7 @@ function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, ex
     scheduleElement.entries = todaySchedule;
     // Tell the element that it is not an all day event
     scheduleElement.allDayEvent = null;
+    scheduleElement.isOnCampus = isOnCampus(schedule.grade, dateObj);
   } else if (day.length == 1) { // If it is an all day event
     // Get the data for the imageObj
     var imageObj = {url: '/static/images/epslogolarge.png', text: day[0]['period']};
