@@ -4,7 +4,7 @@ import re
 from html.parser import HTMLParser
 from urllib import request
 
-from google.appengine.ext import ndb
+#from google.appengine.ext import ndb
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"

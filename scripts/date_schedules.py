@@ -20,33 +20,37 @@ def download_json(d):
     response = request.urlopen(url)
     return json.loads(response.read())
 
-for i in range(delta.days + 1):
-    d = START_DATE + timedelta(days=i)
-    print("Fetching " + str(d))
+def download_exceptions():
+    for i in range (delta.days + 1):
+        d = START_DATE + timedelta(days=i)
+        print("Fetching " + str(d))
 
-    if d.weekday() >= 5: # If day is a weekend
-        # We don't write weekends to database, so skip it
-        continue
+        if d.weekday() >= 5: # If day is a weekend
+            # We don't write weekends to database, so skip it
+            continue
 
-    data = download_json(d)
+        data = download_json(d)
 
-    # On days without school
-    if not 'schedule_day' in data:
-        days[str(d)] = None
-        continue
+        # On days without school
+        if not 'schedule_day' in data:
+            days[str(d)] = None
+            continue
 
-    name = data['schedule_day']
-    # Yes, we need both these lines
-    if 'activity_day' in data:
-        if data['activity_day']:
-            name += "_" + data['activity_day'][:3]
+        name = data['schedule_day']
+        # Yes, we need both these lines
+        if 'activity_day' in data:
+            if data['activity_day']:
+                name += "_" + data['activity_day'][:3]
 
-    if not name in schedules:
-        schedules[name] = data['periods']
+        if not name in schedules:
+            schedules[name] = data['periods']
 
-    days[str(d)] = name
+        days[str(d)] = name
 
-exception_table = [days, schedules]
+    exception_table = [days, schedules]
 
-file = open('../data/master_schedule.json', 'w')
-file.write(json.dumps(exception_table, indent=4, sort_keys=True))
+    file = open('../data/master_schedule.json', 'w')
+    file.write(json.dumps(exception_table, indent=4, sort_keys=True))
+
+if __name__ == "__main__":
+    download_exceptions()
