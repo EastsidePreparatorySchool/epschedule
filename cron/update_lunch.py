@@ -9,7 +9,7 @@ from google.appengine.ext import ndb
 
 # Globals
 time_format = "%Y%m%dT%H%M%S"
-lunch_url = "http://www.eastsideprep.org" +
+lunch_url = "http://www.eastsideprep.org" +\
     "/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
 
 # NDB class definitions

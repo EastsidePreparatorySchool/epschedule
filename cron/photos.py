@@ -15,8 +15,8 @@ SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"
 
 
 def download_photo_bytes(url):
-    r = requests.get(url, stream=True)
-    return Image.open(BytesIO(r.content))
+    req = requests.get(url, stream=True)
+    return Image.open(BytesIO(req.content))
 
 
 def download_photo(user):
@@ -53,6 +53,7 @@ def download_photo(user):
     except PIL.UnidentifiedImageError:
         print("UNABLE to download " + user["username"])
         # Some students don't have photos if they never went for picture day
+    return None
 
 
 def crop_image(img):
@@ -65,8 +66,7 @@ def crop_image(img):
         border = (img.height - ICON_SIZE) // 2
         cropparams = (0, border)
     return img.crop(
-        (*cropparams, img.width - cropparams[0], img.height - cropparams[1])
-    )
+        (*cropparams, img.width - cropparams[0], img.height - cropparams[1]))
 
 
 def hash_username(key, username, icon=False):
