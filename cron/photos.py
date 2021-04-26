@@ -15,8 +15,8 @@ SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"
 
 
 def download_photo_bytes(url):
-    req = requests.get(url, stream=True)
-    return Image.open(BytesIO(req.content))
+    response = requests.get(url, stream=True)
+    return Image.open(BytesIO(response.content))
 
 
 def download_photo(user):

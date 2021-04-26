@@ -1,15 +1,14 @@
 import datetime
 import logging
 import re
-import string
+from html.parser import HTMLParser
 from urllib import request
-from HTMLParser import HTMLParser
 
 from google.appengine.ext import ndb
 
 # Globals
-time_format = "%Y%m%dT%H%M%S"
-lunch_url = "http://www.eastsideprep.org" +\
+TIME_FORMAT = "%Y%m%dT%H%M%S"
+LUNCH_URL = "http://www.eastsideprep.org" +\
     "/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
 
 # NDB class definitions
@@ -64,7 +63,7 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
         # Convert the datetime string (e.g. 20151124T233401) to a date object
         # Gets format from global var
         try:
-            date = datetime.datetime.strptime(event["DTSTART"], time_format).date()
+            date = datetime.datetime.strptime(event["DTSTART"], TIME_FORMAT).date()
         except ValueError:
             date = datetime.datetime.strptime(event["DTSTART"], "%Y%m%d").date()
 
@@ -124,7 +123,7 @@ def test_read_lunches(fakepath):  # Will be called by unit tests
 
 def read_lunches():  # Update the database with new lunches
     # lunch_url is a global var
-    mainresponse = request.urlopen(lunch_url)
+    mainresponse = request.urlopen(LUNCH_URL)
     add_events(mainresponse)
 
 
