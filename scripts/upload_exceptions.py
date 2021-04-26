@@ -19,7 +19,7 @@ def upload_exceptions():
     # Sanity check to make sure exceptions.json is valid
     with open(EXCEPTIONS_PATH) as file:
         try:
-            data = json.load(file)
+            json.load(file)
         except json.decoder.JSONDecodeError:
             print("exceptions.json is invalid, cancelling upload")
             sys.exit(1)

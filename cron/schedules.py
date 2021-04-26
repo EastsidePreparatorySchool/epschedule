@@ -1,13 +1,10 @@
 import datetime
-import hashlib
 import json
 import time
 import os
 
-
 import requests
 from google.cloud import secretmanager, storage
-
 
 ENDPOINT_URL = "https://four11.eastsideprep.org/epsnet/courses/{}"
 SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"}
@@ -70,7 +67,9 @@ def download_schedule(api_key, username, year):
     # For each trimester
     for term_id in range(1, 4):
         req = requests.post(
-            ENDPOINT_URL.format(username), headers=gen_auth_header(api_key), params={"term_id": str(term_id)}
+            ENDPOINT_URL.format(username),
+                headers=gen_auth_header(api_key),
+                params={"term_id": str(term_id)}
         )
         if req.status_code == 500:
             raise NameError("Student {} not found in four11 database".format(username))
@@ -97,10 +96,10 @@ def download_schedule(api_key, username, year):
     if person["gradyear"]:
         person["grade"] = 12 - (person["gradyear"] - year)
 
-    print ("Decoded " + person["username"])
-    return(person)
+    print("Decoded " + person["username"])
+    return person
 
-def crawl_schedules(event):
+def crawl_schedules():
     start = time.time()
     # Load access key
     secret_client = secretmanager.SecretManagerServiceClient()
@@ -141,4 +140,4 @@ def crawl_schedules(event):
 
 if __name__ == "__main__":
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
-    crawl_schedules(None)
+    crawl_schedules()

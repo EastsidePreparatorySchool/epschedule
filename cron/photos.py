@@ -21,7 +21,7 @@ def download_photo_bytes(url):
 
 def download_photo(user):
     photo_url = "http://four11.eastsideprep.org/system/"
-    if user["grade"] != None:
+    if user["grade"]:
         photo_url += "students"
     else:
         photo_url += "teachers"
@@ -84,8 +84,7 @@ def upload_photo(bucket, filename, photo):
 
 
 # Takes about three minutes for ~450 photos
-def crawl_photos(event):
-
+def crawl_photos():
     # Prepare our secret
     start = time.time()
     secret_client = secretmanager.SecretManagerServiceClient()
@@ -121,4 +120,4 @@ def crawl_photos(event):
 
 if __name__ == "__main__":
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
-    crawl_photos(None)
+    crawl_photos()
