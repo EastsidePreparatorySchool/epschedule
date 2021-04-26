@@ -275,19 +275,18 @@
         console.log(b);
         return a && b;
       },
-      displayClassOptions: function(item) {
-        return this.type != "core" && !Boolean(item.lunchInfo);
-      },
-      isLunchWithDesc: function(item) {
-        return Boolean(item.lunchInfo);
-      },
-
       getHeaderText: function(isOnCampus) {
         if (isOnCampus) {
           return "🏫 On Campus"
         } else {
           return "💻 Remote"
         }
+      },
+      displayClassOptions: function(item) {
+        return this.type != "core" && !Boolean(item.lunchInfo);
+      },
+      isLunchWithDesc: function(item) {
+        return Boolean(item.lunchInfo);
       },
       getLineInDesc: function(item, linenum) {
         if (item.lunchInfo) {
