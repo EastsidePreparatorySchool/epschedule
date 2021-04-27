@@ -4,7 +4,7 @@ import re
 from html.parser import HTMLParser
 from urllib import request
 
-#from google.appengine.ext import ndb
+from google.appengine.ext import ndb
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
@@ -13,26 +13,18 @@ LUNCH_URL = "http://www.eastsideprep.org" +\
 
 # NDB class definitions
 
-class Lunch(): #ndb.Model):
-    summary = "" # ndb.StringProperty(required=True)
+class Lunch(ndb.Model):
+    summary = ndb.StringProperty(required=True)
     # description is a list of lines in the description
-    description = "" #ndb.StringProperty(repeated=True)
-    day = 0 # ndb.DateProperty(required=True)
-
-    def query():
-        pass
+    description = ndb.StringProperty(repeated=True)
+    day = ndb.DateProperty(required=True)
 
 
-class LunchRating(): #ndb.Model):
-    sid = 0 #ndb.IntegerProperty(required=True)
-    rating = 0 #ndb.IntegerProperty(required=True)  # 1-10 star rating
-    lunch_id = 0 #ndb.IntegerProperty(required=True)  # Which type of lunch its for
-    created = 0 #ndb.DateProperty()  # What date the rating was made
-
-    def query():
-        pass
-    def put():
-        pass
+class LunchRating(ndb.Model):
+    sid = ndb.IntegerProperty(required=True)
+    rating = ndb.IntegerProperty(required=True)  # 1-10 star rating
+    lunch_id = ndb.IntegerProperty(required=True)  # Which type of lunch its for
+    created = ndb.DateProperty()  # What date the rating was made
 
 
 # Functions for parsing iCal files
@@ -101,7 +93,7 @@ def write_event_to_db(entry):  # Places a single entry into the db
 
     # Check if there is already a lunch for that date (it has already been parsed)
     for lunch in lunches_for_date:
-        # W1201 logging.info(str(entry.day) + " is already in the DB")
+        logging.info(str(entry.day) + " is already in the DB")
         lunch.key.delete()  # Delete the existing ndb entity
 
     # If not, log it and put it into the db
@@ -125,14 +117,14 @@ def add_events(response):
 
 def test_read_lunches(fakepath):  # Will be called by unit tests
     # Adds two fake lunch objects to db with dates 12/20/9999 and 12/21/9999
-    with open(fakepath) as response:
-        add_events(response)
+    mainresponse = open(fakepath)
+    add_events(mainresponse)
 
 
 def read_lunches():  # Update the database with new lunches
     # lunch_url is a global var
-    with request.urlopen(LUNCH_URL) as response:
-        add_events(response)
+    mainresponse = request.urlopen(LUNCH_URL)
+    add_events(mainresponse)
 
 
 # Returns lunches to be displayed in a schedule
