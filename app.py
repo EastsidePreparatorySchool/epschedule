@@ -87,10 +87,9 @@ def gen_login_response():
 
 def get_schedule(username):
     schedules = get_schedule_data()
-    if username in schedules:
-        return schedules[username]
-
-    return None
+    if username not in schedules:
+        return None
+    return schedules[username]
 
 def get_user_key(username):
     return datastore_client.key('user', username)
@@ -126,7 +125,7 @@ def main():
                 })
                 datastore_client.put(user)
 
-        except ValueError as exc:
+        except ValueError:
             return gen_login_response()
 
     elif 'username' not in session:
@@ -341,14 +340,10 @@ def pop_current_class(available, schedule, term, period):
             available.remove(c)
             return c
 
-    return None
-
 def get_class_by_period(schedule, period):
     for c in schedule:
         if c["period"].lower() == period.lower():
             return c
-
-    return None
 
 #@app.route('/cron/<job>')
 #class CronHandler():
