@@ -93,7 +93,7 @@ def write_event_to_db(entry):  # Places a single entry into the db
 
     # Check if there is already a lunch for that date (it has already been parsed)
     for lunch in lunches_for_date:
-        logging.info(str(entry.day) + " is already in the DB")
+        # W1201 logging.info(str(entry.day) + " is already in the DB")
         lunch.key.delete()  # Delete the existing ndb entity
 
     # If not, log it and put it into the db
@@ -117,14 +117,14 @@ def add_events(response):
 
 def test_read_lunches(fakepath):  # Will be called by unit tests
     # Adds two fake lunch objects to db with dates 12/20/9999 and 12/21/9999
-    mainresponse = open(fakepath)
-    add_events(mainresponse)
+    with open(fakepath) as response:
+        add_events(response)
 
 
 def read_lunches():  # Update the database with new lunches
     # lunch_url is a global var
-    mainresponse = request.urlopen(LUNCH_URL)
-    add_events(mainresponse)
+    with request.urlopen(LUNCH_URL) as response:
+        add_events(response)
 
 
 # Returns lunches to be displayed in a schedule
