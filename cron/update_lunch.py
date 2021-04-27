@@ -19,12 +19,20 @@ class Lunch(): #ndb.Model):
     description = "" #ndb.StringProperty(repeated=True)
     day = 0 # ndb.DateProperty(required=True)
 
+    def query():
+        pass
+
 
 class LunchRating(): #ndb.Model):
     sid = 0 #ndb.IntegerProperty(required=True)
     rating = 0 #ndb.IntegerProperty(required=True)  # 1-10 star rating
     lunch_id = 0 #ndb.IntegerProperty(required=True)  # Which type of lunch its for
     created = 0 #ndb.DateProperty()  # What date the rating was made
+
+    def query():
+        pass
+    def put():
+        pass
 
 
 # Functions for parsing iCal files
