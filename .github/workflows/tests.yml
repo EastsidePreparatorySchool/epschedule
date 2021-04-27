@@ -26,7 +26,7 @@ jobs:
         pip install -r requirements.txt
     - name: Run pylint
       run: |
-        pylint --disable=C0103,C0114,C0115,C0116,R0201,R0903,W0511,W0603,W0613 *.py
+        pylint --disable=C0103,C0114,C0115,C0116,R0201,R0903,W0108,W0511,W0603,W0613 *.py
         pylint --disable=C0114,C0115,C0116,R0903,W0613 **/*.py
     - name: Test main
       env:

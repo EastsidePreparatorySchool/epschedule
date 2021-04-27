@@ -89,8 +89,8 @@ def get_schedule(username):
     schedules = get_schedule_data()
     if username in schedules:
         return schedules[username]
-    else:
-        return None
+
+    return None
 
 def get_user_key(username):
     return datastore_client.key('user', username)
@@ -341,19 +341,23 @@ def pop_current_class(available, schedule, term, period):
             available.remove(c)
             return c
 
+    return None
+
 def get_class_by_period(schedule, period):
     for c in schedule:
         if c["period"].lower() == period.lower():
             return c
 
-'''@app.route('/cron/<job>')
-class CronHandler():
-    def get(self, job):  # On url invoke
-        if job == "lunch":
-            update_lunch.read_lunches()
-            self.response.write("Success")
-        elif job == "schedules": # Warning - takes a LONG time
-            json_schedules = fetch_schedules_with_api()'''
+    return None
+
+#@app.route('/cron/<job>')
+#class CronHandler():
+#    def get(self, job):  # On url invoke
+#        if job == "lunch":
+#            update_lunch.read_lunches()
+#            self.response.write("Success")
+#        elif job == "schedules": # Warning - takes a LONG time
+#            json_schedules = fetch_schedules_with_api()'''
 
 # Change and view privacy settings
 @app.route('/privacy', methods=['GET', 'POST'])

@@ -1,5 +1,4 @@
 import json
-import requests
 import unittest
 
 from app import app, init_app
@@ -99,10 +98,10 @@ AUTHENTICATED_USER = "aaardvark"
 
 class AuthenticatedTest(unittest.TestCase):
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         init_app(TEST_CONFIG)
-        self.client = app.test_client()
-        with self.client.session_transaction() as sess:
+        cls.client = app.test_client()
+        with cls.client.session_transaction() as sess:
             sess["username"] = AUTHENTICATED_USER
 
     def check_photo_url(self, url):
@@ -171,7 +170,7 @@ class TestClassEndpoint(AuthenticatedTest):
     def test_class_endpoint(self):
         response = self.client.get('/class/a?term_id=1')
         self.assertEqual(response.status_code, 200)
-        results = json.loads(response.data)
+        json.loads(response.data)
 
     # Test that any students who aren't sharing their pics return placeholders.
     def test_urls_inclass(self):
