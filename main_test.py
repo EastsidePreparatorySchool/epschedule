@@ -1,9 +1,6 @@
-from io import BytesIO
 import json
-import unittest
 import requests
-
-from PIL import Image
+import unittest
 
 from app import app, init_app
 
@@ -62,15 +59,15 @@ API_ENDPOINTS = [
 
 class NoAuthTests(unittest.TestCase):
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         init_app(TEST_CONFIG)
-        self.client = app.test_client()
+        cls.client = app.test_client()
 
-    # tearDown method is called after each test - we need it so that 
+    # tearDown method is called after each test - we need it so that
     # after login tests the user is still "unauthorized"
     @classmethod
-    def tearDown(self):
-        self.client.cookie_jar.clear() 
+    def tearDown(cls):
+        cls.client.cookie_jar.clear()
 
     # Test that when not logged in, we're given a sign-in page.
     def test_main_login_response(self):
@@ -93,8 +90,8 @@ class NoAuthTests(unittest.TestCase):
             response = c.get('/')
             # Get username from session and compare it to actual one
             with c.session_transaction() as sess:
-                self.assertEqual(sess["username"], test_username)                
-        
+                self.assertEqual(sess["username"], test_username)
+
         self.assertEqual(response.status_code, 200)
 
 
@@ -112,9 +109,8 @@ class AuthenticatedTest(unittest.TestCase):
         self.assertTrue(url.startswith("https://epschedule-avatars.storage.googleapis.com/"))
 
 
-"""Tests for the /search endpoint."""        
-
 class TestStudentEndpoint(AuthenticatedTest):
+    """Tests for the /student endpoint."""
     def check_username(self, username):
         response = self.client.get('/student/{}'.format(username))
         self.assertEqual(response.status_code, 200)
@@ -155,10 +151,10 @@ class TestStudentEndpoint(AuthenticatedTest):
         self.assertEqual(student_obj["photo_url"], "/static/images/placeholder.png")
 
 
-"""Tests for the /search endpoint."""        
 TEST_SEARCH = "b"
 
 class TestSearchEndpoint(AuthenticatedTest):
+    """Tests for the /search endpoint."""
     def test_search_endpoint(self):
         response = self.client.get('/search/{}'.format(TEST_SEARCH))
         self.assertEqual(response.status_code, 200)
@@ -169,8 +165,8 @@ class TestSearchEndpoint(AuthenticatedTest):
             self.assertIn(TEST_SEARCH.lower(), result["name"].lower())
 
 
-"""Tests for the /class endpoint."""
 class TestClassEndpoint(AuthenticatedTest):
+    """Tests for the /class endpoint."""
     # Test that we can get the fall A period class for the test user.
     def test_class_endpoint(self):
         response = self.client.get('/class/a?term_id=1')
@@ -183,7 +179,7 @@ class TestClassEndpoint(AuthenticatedTest):
         results = json.loads(response.data)
         students = results["students"]
         found_student = None
-        for student in students: 
+        for student in students:
             if student["username"] == TEST_STUDENT_NO_PIC:
                 found_student = student
         self.assertNotEqual(found_student, None)
