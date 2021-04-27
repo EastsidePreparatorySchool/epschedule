@@ -13,18 +13,18 @@ LUNCH_URL = "http://www.eastsideprep.org" +\
 
 # NDB class definitions
 
-class Lunch(ndb.Model):
-    summary = ndb.StringProperty(required=True)
-    # description is a list of lines in the description
-    description = ndb.StringProperty(repeated=True)
-    day = ndb.DateProperty(required=True)
+# class Lunch(ndb.Model):
+#     summary = ndb.StringProperty(required=True)
+#     # description is a list of lines in the description
+#     description = ndb.StringProperty(repeated=True)
+#     day = ndb.DateProperty(required=True)
 
 
-class LunchRating(ndb.Model):
-    sid = ndb.IntegerProperty(required=True)
-    rating = ndb.IntegerProperty(required=True)  # 1-10 star rating
-    lunch_id = ndb.IntegerProperty(required=True)  # Which type of lunch its for
-    created = ndb.DateProperty()  # What date the rating was made
+# class LunchRating(ndb.Model):
+#     sid = ndb.IntegerProperty(required=True)
+#     rating = ndb.IntegerProperty(required=True)  # 1-10 star rating
+#     lunch_id = ndb.IntegerProperty(required=True)  # Which type of lunch its for
+#     created = ndb.DateProperty()  # What date the rating was made
 
 
 # Functions for parsing iCal files

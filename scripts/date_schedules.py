@@ -12,28 +12,28 @@ schedules = {}
 days = {}
 
 
-def make_url(date):
-    return BASE_URL + str(date)
+def make_url(day):
+    return BASE_URL + str(day)
 
-def download_json(date):
-    url = make_url(date)
+def download_json(day):
+    url = make_url(day)
     with request.urlopen(url) as response:
         return json.loads(response.read())
 
 def download_exceptions():
     for i in range (delta.days + 1):
-        date = START_DATE + timedelta(days=i)
-        print("Fetching " + str(date))
+        day = START_DATE + timedelta(days=i)
+        print("Fetching " + str(day))
 
-        if date.weekday() >= 5: # If day is a weekend
+        if day.weekday() >= 5: # If day is a weekend
             # We don't write weekends to database, so skip it
             continue
 
-        data = download_json(date)
+        data = download_json(day)
 
         # On days without school
         if not 'schedule_day' in data:
-            days[str(date)] = None
+            days[str(day)] = None
             continue
 
         name = data['schedule_day']
@@ -45,12 +45,12 @@ def download_exceptions():
         if not name in schedules:
             schedules[name] = data['periods']
 
-        days[str(date)] = name
+        days[str(day)] = name
 
     exception_table = [days, schedules]
 
     with open('../data/master_schedule.json', 'w') as file:
-      file.write(json.dumps(exception_table, indent=4, sort_keys=True))
+        file.write(json.dumps(exception_table, indent=4, sort_keys=True))
 
 if __name__ == "__main__":
     download_exceptions()
