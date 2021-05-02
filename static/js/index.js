@@ -453,21 +453,22 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
   // If it is a normal period
   if (isStandardClass(period)) {
     for (var k = 0; k < schedule["classes"].length; k++) {
-      if (schedule["classes"][k]["period"] == period) {
-        if (schedule["classes"][k]["teacher_username"]) {
+      var clazz = schedule["classes"][k];
+      if (clazz["period"] == period) {
+        if (clazz["teacher_username"]) {
           // TODO remove shitty hack
-          var tu = schedule["classes"][k]["teacher_username"]
+          var tu = clazz["teacher_username"]
           var teacher = tu.charAt(1).toUpperCase() + tu.slice(2);
 
-          scheduleObj = { name: schedule["classes"][k]["name"],
+          scheduleObj = { name: clazz["name"],
             teacher: teacher,
-            teacherUsername: schedule["classes"][k]["teacher_username"],
-            room: schedule["classes"][k]["room"],
+            teacherUsername: clazz["teacher_username"],
+            room: clazz["room"],
             period: period,
             time: ""};
 
           if (type == "core") {
-            scheduleObj['studentCount'] = schedule["classes"][k]["students"].toString();
+            scheduleObj['studentCount'] = clazz["students"].toString();
           }
         } else {
           scheduleObj = { name: schedule["classes"][k]["name"],
