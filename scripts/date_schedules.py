@@ -4,8 +4,8 @@ import json
 
 BASE_URL = "https://four11.eastsideprep.org/epsnet/schedule_for_date?date="
 
-START_DATE = date(2020, 9, 1)
-END_DATE = date(2021, 6, 29)
+START_DATE = date(2021, 9, 8)
+END_DATE = date(2021, 11, 21 )
 
 delta = END_DATE - START_DATE
 schedules = {}
@@ -14,6 +14,14 @@ days = {}
 
 def make_url(d):
 	return BASE_URL + str(d)
+
+def download_json_with_retry(d):
+	for i in range (3): 
+		try:
+			return download_json(d)
+		except urllib.error.HTTPError as e:
+			print(e)
+
 
 def download_json(d):
 	url = make_url(d)
@@ -28,7 +36,7 @@ for i in range (delta.days + 1):
 		# We don't write weekends to database, so skip it
 		continue
 
-	data = download_json(d)
+	data = download_json_with_retry(d)
 
 	# On days without school
 	if not 'schedule_day' in data:
@@ -47,6 +55,7 @@ for i in range (delta.days + 1):
 	days[str(d)] = name
 
 exception_table = [days, schedules]
+print(exception_table)
 
 file = open('../data/master_schedule.json', 'w')
 file.write(json.dumps(exception_table, indent=4, sort_keys=True))
