@@ -22,7 +22,7 @@ def download_json_with_retry(d):
 		try:
 			return download_json(d)
 		except HTTPError as e:
-			print(e) #reciving error e, retrying
+		#reciving error e, retrying
 			time.sleep(1)
 
 
@@ -40,7 +40,6 @@ for i in range (delta.days + 1):
 		continue
 
 	data = download_json_with_retry(d)
-	print(d, data)
 
 	# On days without school
 	if not 'schedule_day' in data:
@@ -63,7 +62,6 @@ for i in range (delta.days + 1):
 	days[str(d)] = name
 
 exception_table = [days, schedules]
-print(exception_table)
 
 file = open('../data/master_schedule.json', 'w')
 file.write(json.dumps(exception_table, indent=4, sort_keys=True))
