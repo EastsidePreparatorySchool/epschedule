@@ -1,11 +1,13 @@
 from datetime import date, timedelta
 from urllib import request
+from urllib.error import HTTPError
 import json
+import time
 
 BASE_URL = "https://four11.eastsideprep.org/epsnet/schedule_for_date?date="
 
 START_DATE = date(2021, 9, 1)
-END_DATE = date(2021, 9,  10)
+END_DATE = date(2022, 6,  10)
 
 delta = END_DATE - START_DATE
 schedules = {}
@@ -19,8 +21,9 @@ def download_json_with_retry(d):
 	for i in range (3): 
 		try:
 			return download_json(d)
-		except urllib.error.HTTPError as e:
-			print(e)
+		except HTTPError as e:
+			print(e) #reciving error e, retrying
+			time.sleep(1)
 
 
 def download_json(d):
@@ -47,7 +50,9 @@ for i in range (delta.days + 1):
 	name = data['schedule_day']
 	if name is None:
 		continue
+
 	# Yes, we need both these lines
+	#take this out at some point!
 	if 'activity_day' in data:
 		if data['activity_day']:
 			name += "_" + data['activity_day'][:3]
