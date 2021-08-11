@@ -587,7 +587,7 @@ function addScheduleImages(scheduleObj, userSchedule, type) {
     image_name = image_name.replace("/", "");
     image_name = image_name.replace(/\s/g, '');
     image_name = image_name.replace(/(\(.*?\))/g, ""); // Remove text between parentheses
-    scheduleObj.avatar = "/static/images/" + image_name + ".jpg";
+    scheduleObj.avatar = "/static/images/" + image_name + ".svg";
   }
   scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
 }
