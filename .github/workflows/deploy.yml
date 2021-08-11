@@ -17,7 +17,7 @@ jobs:
           python-version: 3.8
 
       # Setup and configure gcloud CLI
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - uses: google-github-actions/setup-gcloud@master
         with:
           version: '290.0.1'
           project_id: epschedule-v2
@@ -35,7 +35,11 @@ jobs:
         run: python main_test.py
 
       - name: Upload master_schedule.json
-        run: python3 scripts/upload_master_schedule.py
+        run: python scripts/upload_master_schedule.py
 
       - name: Deploy to App Engine
-        run: gcloud app deploy --quiet
+        uses: google-github-actions/deploy-appengine@v0.2.0
+        with:
+          deliverables: app.yaml
+          project_id: ${{ secrets.GCP_PROJECT }}
+          credentials: ${{ secrets.GCP_SA_KEY }}
