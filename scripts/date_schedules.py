@@ -1,11 +1,13 @@
 from datetime import date, timedelta
 from urllib import request
+from urllib.error import HTTPError
 import json
+import time
 
 BASE_URL = "https://four11.eastsideprep.org/epsnet/schedule_for_date?date="
 
-START_DATE = date(2020, 9, 1)
-END_DATE = date(2021, 6, 29)
+START_DATE = date(2021, 9, 1)
+END_DATE = date(2022, 6,  10)
 
 delta = END_DATE - START_DATE
 schedules = {}
@@ -15,6 +17,17 @@ days = {}
 def make_url(d):
 	return BASE_URL + str(d)
 
+def download_json_with_retry(d):
+	for i in range (3): 
+		try:
+			return download_json(d)
+		except HTTPError as e:
+			print("Error: " + e + ", retrying") 
+			if i != 2:
+				time.sleep(1)
+			else:
+				raise e
+			
 def download_json(d):
 	url = make_url(d)
 	response = request.urlopen(url)
@@ -28,7 +41,7 @@ for i in range (delta.days + 1):
 		# We don't write weekends to database, so skip it
 		continue
 
-	data = download_json(d)
+	data = download_json_with_retry(d)
 
 	# On days without school
 	if not 'schedule_day' in data:
@@ -36,7 +49,11 @@ for i in range (delta.days + 1):
 		continue
 
 	name = data['schedule_day']
+	if name is None:
+		continue
+
 	# Yes, we need both these lines
+	# take this out at some point!
 	if 'activity_day' in data:
 		if data['activity_day']:
 			name += "_" + data['activity_day'][:3]
