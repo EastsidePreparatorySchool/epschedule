@@ -22,10 +22,12 @@ def download_json_with_retry(d):
 		try:
 			return download_json(d)
 		except HTTPError as e:
-		#reciving error e, retrying
-			time.sleep(1)
-
-
+			print("Error: " + e + ", retrying") 
+			if i != 2:
+				time.sleep(1)
+			else:
+				raise e
+			
 def download_json(d):
 	url = make_url(d)
 	response = request.urlopen(url)
