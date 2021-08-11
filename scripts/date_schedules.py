@@ -4,8 +4,8 @@ import json
 
 BASE_URL = "https://four11.eastsideprep.org/epsnet/schedule_for_date?date="
 
-START_DATE = date(2021, 9, 8)
-END_DATE = date(2021, 11, 21 )
+START_DATE = date(2021, 9, 1)
+END_DATE = date(2021, 9,  10)
 
 delta = END_DATE - START_DATE
 schedules = {}
@@ -37,6 +37,7 @@ for i in range (delta.days + 1):
 		continue
 
 	data = download_json_with_retry(d)
+	print(d, data)
 
 	# On days without school
 	if not 'schedule_day' in data:
@@ -44,6 +45,8 @@ for i in range (delta.days + 1):
 		continue
 
 	name = data['schedule_day']
+	if name is None:
+		continue
 	# Yes, we need both these lines
 	if 'activity_day' in data:
 		if data['activity_day']:
