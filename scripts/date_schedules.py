@@ -53,7 +53,7 @@ for i in range (delta.days + 1):
 		continue
 
 	# Yes, we need both these lines
-	#take this out at some point!
+	# take this out at some point!
 	if 'activity_day' in data:
 		if data['activity_day']:
 			name += "_" + data['activity_day'][:3]
