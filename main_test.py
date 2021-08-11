@@ -45,7 +45,7 @@ class FakeDatastore:
 
 TEST_CONFIG = {
     'TESTING': True,
-    'SECRET_KEY': bytearray('test-key', 'ascii'),
+    'SECRET_KEY': bytes('test-key', 'ascii'),
     'TOKEN': 'test-token',
     'SCHEDULES': TEST_SCHEDULES,
     'MASTER_SCHEDULE': TEST_MASTER_SCHEDULE,
