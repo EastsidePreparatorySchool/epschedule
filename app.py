@@ -17,8 +17,8 @@ verify_firebase_token = None
 datastore_client = None
 SCHEDULE_INFO = None
 DAYS = None
-FALL_TRI_END = datetime.datetime(2020, 11, 23, 15, 30, 0, 0)
-WINT_TRI_END = datetime.datetime(2021, 3, 6, 15, 30, 0, 0)
+FALL_TRI_END = datetime.datetime(2021, 11, 23, 15, 30, 0, 0)
+WINT_TRI_END = datetime.datetime(2022, 3, 6, 15, 30, 0, 0)
 
 def init_app(test_config=None):
     global verify_firebase_token
