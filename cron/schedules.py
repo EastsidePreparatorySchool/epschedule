@@ -100,16 +100,16 @@ def download_schedule(api_key, username, year):
     print ("Decoded " + person["username"])
     return(person)
 
-def download_schedules_with_retry(api_key, username, year):
+def download_schedule_with_retry(api_key, username, year):
     for i in range (3): 
-            try:
-                return download_schedule(api_key, username, year)
-            except HTTPError as e:
-                print("Error: " + e + ", retrying") 
-                if i != 2:
-                    time.sleep(1)
-                else:
-                    raise e
+        try:
+            return download_schedule(api_key, username, year)
+        except HTTPError as e:
+            print("Error: " + str(e) + ", retrying") 
+            if i != 2:
+                time.sleep(1)
+            else:
+                raise e
 
 def crawl_schedules(event):
     start = time.time()
@@ -132,7 +132,7 @@ def crawl_schedules(event):
 
     for username in usernames:
         try:
-            schedules[username] = download_schedules_with_retry(key, username, school_year)
+            schedules[username] = download_schedule_with_retry(key, username, school_year)
         except NameError:
             errors += 1
             print("Could not crawl user {}".format(username))
