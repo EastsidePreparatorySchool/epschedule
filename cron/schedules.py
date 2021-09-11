@@ -72,8 +72,9 @@ def download_schedule(api_key, username, year):
         req = requests.get(
             ENDPOINT_URL.format(username), headers=gen_auth_header(api_key), params={"term_id": str(term_id)}
         )
-        if req.status_code == 500:
-            raise NameError("Student {} not found in four11 database".format(username))
+        if req.status_code != 200:
+            print(username, req.status_code, req.reason)
+            raise requests.HTTPError("Student {} not found in four11 database".format(username))
         briggs_person = json.loads(req.content)
         person["classes"].append(decode_trimester_classes(briggs_person))
 
@@ -104,10 +105,10 @@ def download_schedule_with_retry(api_key, username, year):
     for i in range (3): 
         try:
             return download_schedule(api_key, username, year)
-        except HTTPError as e:
+        except requests.HTTPError as e:
             print("Error: " + str(e) + ", retrying") 
             if i != 2:
-                time.sleep(1)
+                time.sleep(5)
             else:
                 raise e
 
@@ -131,11 +132,12 @@ def crawl_schedules(event):
     errors = 0
 
     for username in usernames:
-        try:
+        #try:
             schedules[username] = download_schedule_with_retry(key, username, school_year)
-        except NameError:
-            errors += 1
-            print("Could not crawl user {}".format(username))
+        #except NameError:
+        #    errors += 1
+        #    print("Could not crawl user {}".format(username))
+        #    print(Error)
     # First, do some sanity checks
     assert len(schedules) + errors == len(usernames)
     for username, schedule in schedules.items():
