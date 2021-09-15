@@ -10,6 +10,7 @@ from google.cloud import datastore, storage, secretmanager
 import google.oauth2.id_token
 
 from cron.photos import hash_username
+from cron.schedules import crawl_schedules
 
 app = Flask(__name__)
 
@@ -392,3 +393,8 @@ def handle_search(keyword):
 def handle_sign_out():
     session.clear()
     return json.dumps({})
+
+@app.route('/tasks/schedules') #methods=['POST'])
+def handle_update_schedules():
+    crawl_schedules(None)
+    return "OK"
