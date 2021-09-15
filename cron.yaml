@@ -2,3 +2,4 @@ cron:
 - description: update schedules
   url: /cron/schedules
   schedule: every 24 hours
+  
