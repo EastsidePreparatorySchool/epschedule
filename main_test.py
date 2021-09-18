@@ -1,11 +1,12 @@
+from io import BytesIO
 import json
 import unittest
-from io import BytesIO
 
-import requests
 from PIL import Image
+import requests
 
-from app import app, init_app
+from app import app
+from app import init_app
 
 with open('data/test_schedule.json', 'r') as f:
     TEST_SCHEDULES = json.load(f)

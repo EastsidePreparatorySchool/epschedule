@@ -4,8 +4,9 @@ import json
 import os
 import time
 
+from google.cloud import secretmanager
+from google.cloud import storage
 import requests
-from google.cloud import secretmanager, storage
 
 ENDPOINT_URL = "https://four11.eastsideprep.org/epsnet/courses/{}"
 SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"}
