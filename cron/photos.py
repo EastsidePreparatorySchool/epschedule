@@ -42,7 +42,6 @@ def download_photo(user):
     print(primary_url)
     backup_url = photo_url + last + "_" + first + "_" + sid + ".jpg"
 
-    start = time.time()
 
     # Now try each url - I'm unsure why we sometimes need to fall back to
     # the secondary URL, but it is necessary
@@ -89,6 +88,7 @@ def upload_photo(bucket, filename, photo):
 def crawl_photos(event):
 
     # Prepare our secret
+    start = time.time()
     secret_client = secretmanager.SecretManagerServiceClient()
     secret_response = secret_client.access_secret_version(request=SECRET_REQUEST)
     key = secret_response.payload.data
