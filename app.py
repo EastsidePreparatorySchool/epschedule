@@ -392,7 +392,7 @@ def handle_cron_schedules():
     return "OK"
 
 @app.route('/cron/photos')
-def handle_cron_schedules():
+def handle_cron_photos():
     crawl_photos(None)
     return "OK"
 
