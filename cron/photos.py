@@ -26,7 +26,6 @@ def download_photo(user):
     else:
         photo_url += "teachers"
     photo_url += "/idphotos/000/00"
-
     sid = str(user["sid"])
 
     if len(sid) == 3:
@@ -40,7 +39,10 @@ def download_photo(user):
     first = user["firstname"].replace(" ", "_").replace(".", "")
 
     primary_url = photo_url + last + "__" + first + ".jpg"
+    print(primary_url)
     backup_url = photo_url + last + "_" + first + "_" + sid + ".jpg"
+
+    start = time.time()
 
     # Now try each url - I'm unsure why we sometimes need to fall back to
     # the secondary URL, but it is necessary
@@ -87,10 +89,9 @@ def upload_photo(bucket, filename, photo):
 def crawl_photos(event):
 
     # Prepare our secret
-    start = time.time()
     secret_client = secretmanager.SecretManagerServiceClient()
     secret_response = secret_client.access_secret_version(request=SECRET_REQUEST)
-    key = secret_response.payload.data.decode('UTF-8')
+    key = secret_response.payload.data
 
     # Open the bucket
     storage_client = storage.Client()
@@ -99,22 +100,23 @@ def crawl_photos(event):
     schedule_blob = data_bucket.blob("schedules.json")
     schedules = json.loads(schedule_blob.download_as_string())
 
-    for schedule in schedules:
-        photo = download_photo(schedule)
+    for username in schedules:
+        student_schedule = schedules[username]
+        photo = download_photo(student_schedule)
         if photo is None:
             continue
-        fullsize_filename = hash_username(key, schedule["username"])
+        fullsize_filename = hash_username(key, username)
         upload_photo(avatar_bucket, fullsize_filename, photo)
 
         # Now crop photo
         cropped = crop_image(photo)
-        icon_filename = hash_username(key, schedule["username"], icon=True)
+        icon_filename = hash_username(key, username, icon=True)
         upload_photo(avatar_bucket, icon_filename, cropped)
 
         # For teachers, upload an unhashed grayscale photo
-        if not schedule["grade"]:
+        if not student_schedule["grade"]:
             grayscale = cropped.convert("L")
-            upload_photo(avatar_bucket, schedule["username"] + ".jpg", grayscale)
+            upload_photo(avatar_bucket, username + ".jpg", grayscale)
 
     print("Operation took {:.2f} seconds".format(time.time() - start))
 
