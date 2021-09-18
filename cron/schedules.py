@@ -1,13 +1,11 @@
 import datetime
 import hashlib
 import json
-import time
 import os
-
+import time
 
 import requests
 from google.cloud import secretmanager, storage
-
 
 ENDPOINT_URL = "https://four11.eastsideprep.org/epsnet/courses/{}"
 SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"}

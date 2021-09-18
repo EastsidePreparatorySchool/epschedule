@@ -2,10 +2,10 @@ import datetime
 import logging
 import re
 import string
-import urllib2
-from HTMLParser import HTMLParser
 
+import urllib2
 from google.appengine.ext import ndb
+from HTMLParser import HTMLParser
 
 # Globals
 format = "%Y%m%dT%H%M%S"

@@ -1,8 +1,8 @@
-from io import BytesIO
 import json
 import unittest
-import requests
+from io import BytesIO
 
+import requests
 from PIL import Image
 
 from app import app, init_app

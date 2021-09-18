@@ -1,8 +1,8 @@
+import json
+import time
 from datetime import date, timedelta
 from urllib import request
 from urllib.error import HTTPError
-import json
-import time
 
 BASE_URL = "https://four11.eastsideprep.org/epsnet/schedule_for_date?date="
 
