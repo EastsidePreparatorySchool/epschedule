@@ -39,7 +39,6 @@ def download_photo(user):
     first = user["firstname"].replace(" ", "_").replace(".", "")
 
     primary_url = photo_url + last + "__" + first + ".jpg"
-    print(primary_url)
     backup_url = photo_url + last + "_" + first + "_" + sid + ".jpg"
 
 
