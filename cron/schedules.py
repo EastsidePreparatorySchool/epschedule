@@ -5,6 +5,7 @@ import os
 
 import requests
 from google.cloud import secretmanager, storage
+from requests.models import HTTPError
 
 ENDPOINT_URL = "https://four11.eastsideprep.org/epsnet/courses/{}"
 SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"}
@@ -66,10 +67,8 @@ def download_schedule(api_key, username, year):
 
     # For each trimester
     for term_id in range(1, 4):
-        req = requests.post(
-            ENDPOINT_URL.format(username),
-                headers=gen_auth_header(api_key),
-                params={"term_id": str(term_id)}
+        req = requests.get(
+            ENDPOINT_URL.format(username), headers=gen_auth_header(api_key), params={"term_id": str(term_id)}
         )
         if req.status_code == 500:
             raise NameError("Student {} not found in four11 database".format(username))
@@ -99,7 +98,18 @@ def download_schedule(api_key, username, year):
     print("Decoded " + person["username"])
     return person
 
-def crawl_schedules():
+def download_schedule_with_retry(api_key, username, year):
+    for i in range (3): 
+        try:
+            return download_schedule(api_key, username, year)
+        except HTTPError as e:
+            print("Error: " + str(e) + ", retrying") 
+            if i != 2:
+                time.sleep(1)
+            else:
+                raise e
+
+def crawl_schedules(event):
     start = time.time()
     # Load access key
     secret_client = secretmanager.SecretManagerServiceClient()
@@ -120,7 +130,7 @@ def crawl_schedules():
 
     for username in usernames:
         try:
-            schedules[username] = download_schedule(key, username, school_year)
+            schedules[username] = download_schedule_with_retry(key, username, school_year)
         except NameError:
             errors += 1
             print("Could not crawl user {}".format(username))

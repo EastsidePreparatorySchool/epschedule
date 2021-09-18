@@ -9,7 +9,8 @@ from google.auth.transport import requests
 from google.cloud import datastore, storage, secretmanager
 import google.oauth2.id_token
 
-from cron.photos import hash_username
+from cron.photos import crawl_photos, hash_username
+from cron.schedules import crawl_schedules
 
 app = Flask(__name__)
 
@@ -17,8 +18,8 @@ verify_firebase_token = None
 datastore_client = None
 SCHEDULE_INFO = None
 DAYS = None
-FALL_TRI_END = datetime.datetime(2020, 11, 23, 15, 30, 0, 0)
-WINT_TRI_END = datetime.datetime(2021, 3, 6, 15, 30, 0, 0)
+FALL_TRI_END = datetime.datetime(2021, 11, 23, 15, 30, 0, 0)
+WINT_TRI_END = datetime.datetime(2022, 3, 6, 15, 30, 0, 0)
 
 def init_app(test_config=None):
     global verify_firebase_token
@@ -345,15 +346,6 @@ def get_class_by_period(schedule, period):
         if c["period"].lower() == period.lower():
             return c
 
-#@app.route('/cron/<job>')
-#class CronHandler():
-#    def get(self, job):  # On url invoke
-#        if job == "lunch":
-#            update_lunch.read_lunches()
-#            self.response.write("Success")
-#        elif job == "schedules": # Warning - takes a LONG time
-#            json_schedules = fetch_schedules_with_api()'''
-
 # Change and view privacy settings
 @app.route('/privacy', methods=['GET', 'POST'])
 def handle_settings():
@@ -390,4 +382,20 @@ def handle_search(keyword):
 @app.route('/logout', methods=['POST'])
 def handle_sign_out():
     session.clear()
-    return json.dumps({})
+    return json.dumps({})    
+
+# Cron tasks
+@app.route('/cron/schedules')
+def handle_cron_schedules():
+    crawl_schedules(None)
+    return "OK"
+
+@app.route('/cron/photos')
+def handle_cron_photos():
+    crawl_photos(None)
+    return "OK"
+
+@app.route('/cron/lunches')
+def handle_cron_lunches():
+    #update_lunch.read_lunches()
+    return "OK"

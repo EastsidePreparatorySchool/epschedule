@@ -19,7 +19,7 @@ cd epschedule
 pip install -r requirements.txt
 ```
 
-You'll then need to get service account credentials to access sensitive user data, like schedules, photos, and crypto keys. Email Mr. Briggs or Gavin Uberti (gavin.uberti@gmail.com) and we'll send you a file - `epschedule-455d8a10f5ec.json` - to put in your `epschedule` folder. Then, just run
+You'll then need to get service account credentials to access sensitive user data, like schedules, photos, and crypto keys. Email Kalie Uberti (kalie.c.uberti@gmail.com) and we'll send you a file - `epschedule-455d8a10f5ec.json` - to put in your `epschedule` folder. Then, just run
 
 ```python main.py```
 
