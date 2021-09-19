@@ -1,4 +1,5 @@
-from flask import abort, request, redirect, session
+from flask import abort, redirect, request, session
+
 from app import app, init_app
 
 init_app()
