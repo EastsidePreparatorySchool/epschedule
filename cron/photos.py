@@ -15,13 +15,13 @@ SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"
 
 
 def download_photo_bytes(url):
-    r = requests.get(url, stream=True)
-    return Image.open(BytesIO(r.content))
+    response = requests.get(url, stream=True)
+    return Image.open(BytesIO(response.content))
 
 
 def download_photo(user):
     photo_url = "http://four11.eastsideprep.org/system/"
-    if user["grade"] != None:
+    if user["grade"]:
         photo_url += "students"
     else:
         photo_url += "teachers"
@@ -53,6 +53,7 @@ def download_photo(user):
     except PIL.UnidentifiedImageError:
         print("UNABLE to download " + user["username"])
         # Some students don't have photos if they never went for picture day
+    return None
 
 
 def crop_image(img):
@@ -65,8 +66,7 @@ def crop_image(img):
         border = (img.height - ICON_SIZE) // 2
         cropparams = (0, border)
     return img.crop(
-        (*cropparams, img.width - cropparams[0], img.height - cropparams[1])
-    )
+        (*cropparams, img.width - cropparams[0], img.height - cropparams[1]))
 
 
 def hash_username(key, username, icon=False):
@@ -84,8 +84,7 @@ def upload_photo(bucket, filename, photo):
 
 
 # Takes about three minutes for ~450 photos
-def crawl_photos(event):
-
+def crawl_photos():
     # Prepare our secret
     start = time.time()
     secret_client = secretmanager.SecretManagerServiceClient()
@@ -122,4 +121,4 @@ def crawl_photos(event):
 
 if __name__ == "__main__":
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
-    crawl_photos(None)
+    crawl_photos()

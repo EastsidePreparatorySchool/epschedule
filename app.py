@@ -88,10 +88,9 @@ def gen_login_response():
 
 def get_schedule(username):
     schedules = get_schedule_data()
-    if username in schedules:
-        return schedules[username]
-    else:
+    if username not in schedules:
         return None
+    return schedules[username]
 
 def get_user_key(username):
     return datastore_client.key('user', username)
@@ -127,7 +126,7 @@ def main():
                 })
                 datastore_client.put(user)
 
-        except ValueError as exc:
+        except ValueError:
             return gen_login_response()
 
     elif 'username' not in session:
@@ -388,12 +387,12 @@ def handle_sign_out():
 # Cron tasks
 @app.route('/cron/schedules')
 def handle_cron_schedules():
-    crawl_schedules(None)
+    crawl_schedules()
     return "OK"
 
 @app.route('/cron/photos')
 def handle_cron_photos():
-    crawl_photos(None)
+    crawl_photos()
     return "OK"
 
 @app.route('/cron/lunches')

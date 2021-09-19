@@ -1,15 +1,15 @@
 import datetime
 import logging
 import re
-import string
-import urllib2
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
+from urllib import request
 
 from google.appengine.ext import ndb
 
 # Globals
-format = "%Y%m%dT%H%M%S"
-lunch_url = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
+TIME_FORMAT = "%Y%m%dT%H%M%S"
+LUNCH_URL = "http://www.eastsideprep.org" +\
+    "/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
 
 # NDB class definitions
 
@@ -49,10 +49,10 @@ def parse_events(lines):  # lines is a list of all lines of text in the whole fi
                 properties[last_prop_name] += line[1:]
             else:  # If it is the start of a normal line
                 # Sample line: DTSTART;TZID=America/Los_Angeles:20151030T110500
-                colon_separated_values = string.split(line, ":", 1)
+                colon_separated_values = line.split(":", 1)
 
                 # Garbage anything between ; and :
-                last_prop_name = string.split(colon_separated_values[0], ";")[0]
+                last_prop_name = colon_separated_values[0].split(";")[0]
 
                 properties[last_prop_name] = colon_separated_values[1]
     return events
@@ -63,23 +63,23 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
         # Convert the datetime string (e.g. 20151124T233401) to a date object
         # Gets format from global var
         try:
-            date = datetime.datetime.strptime(event["DTSTART"], format).date()
+            date = datetime.datetime.strptime(event["DTSTART"], TIME_FORMAT).date()
         except ValueError:
             date = datetime.datetime.strptime(event["DTSTART"], "%Y%m%d").date()
 
         # Remove the price and back slashes from the summary
-        summary = string.split(event["SUMMARY"], " | ")[1]  # Remove the price
+        summary = event["SUMMARY"].split(" | ")[1]  # Remove the price
         summary = HTMLParser().unescape(summary)
 
         # Remove html from the description, and break it up into lines
         desc = HTMLParser().unescape(event["DESCRIPTION"])
-        desc = desc.replace("\,", ",")
-        desc = desc.replace("\;", ";")
+        desc = desc.replace("\\,", ",")
+        desc = desc.replace("\\;", ";")
         no_html_desc = re.sub("<.*?>", "", desc)
 
         # To keep things brief (and remove list of allergens), we'll
         # cap the length at two lines
-        description = string.split(no_html_desc, "\\n")[:2]
+        description = no_html_desc.split("\\n")[:2]
 
         entry = Lunch(summary=summary, description=description, day=date)
 
@@ -123,12 +123,12 @@ def test_read_lunches(fakepath):  # Will be called by unit tests
 
 def read_lunches():  # Update the database with new lunches
     # lunch_url is a global var
-    mainresponse = urllib2.urlopen(lunch_url)
+    mainresponse = request.urlopen(LUNCH_URL)
     add_events(mainresponse)
 
 
 # Returns lunches to be displayed in a schedule
-def getLunchForDate(current_date, days_into_past=28):
+def get_lunch_for_date(current_date, days_into_past=28):
     # days_into_past is the number of days into the past to go
     earliest_lunch = current_date - datetime.timedelta(days_into_past)
     query = Lunch.query(Lunch.day >= earliest_lunch)
@@ -161,8 +161,8 @@ def get_lunch_id_for_date(date):
     lunches = Lunch.query(Lunch.day == date).fetch(1)
     if lunches:  # If there is a lunch for the date
         return lunches[0].key.id()
-    else:
-        return None
+
+    return None
 
 
 def get_all_future_lunches(date):
@@ -184,12 +184,12 @@ def place_rating(rating, sid, lunch_id, date, overwrite=True):
         LunchRating.sid == sid and LunchRating.lunch_id == lunch_id
     )
 
-    for foo in current_rating:  # If there is already a rating
+    for entity in current_rating:  # If there is already a rating
         if not overwrite:  # If not set to overwrite
             return overwrote  # To not make any changes
 
         # Otherwise, if we should overwrite,
-        foo.key.delete()  # Delete the existing ndb entity
+        entity.key.delete()  # Delete the existing ndb entity
         overwrote = True  # Record that something was overwritten
 
     # Place a new rating
