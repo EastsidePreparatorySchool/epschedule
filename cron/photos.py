@@ -1,15 +1,14 @@
 import hashlib
 import hmac
-from io import BytesIO
 import json
 import os
 import time
+from io import BytesIO
 
-from google.cloud import secretmanager
-from google.cloud import storage
 import PIL
-from PIL import Image
 import requests
+from google.cloud import secretmanager, storage
+from PIL import Image
 
 ICON_SIZE = 96  # 96x96 pixels
 SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"}

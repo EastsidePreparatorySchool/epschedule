@@ -4,17 +4,11 @@ import json
 import os
 import time
 
-from flask import abort
-from flask import Flask
-from flask import make_response
-from flask import render_template
-from flask import request
-from flask import session
-from google.auth.transport import requests
-from google.cloud import datastore
-from google.cloud import secretmanager
-from google.cloud import storage
 import google.oauth2.id_token
+from flask import (Flask, abort, make_response, render_template, request,
+                   session)
+from google.auth.transport import requests
+from google.cloud import datastore, secretmanager, storage
 
 from cron.photos import hash_username
 
