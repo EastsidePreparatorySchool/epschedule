@@ -387,12 +387,12 @@ def handle_sign_out():
 # Cron tasks
 @app.route('/cron/schedules')
 def handle_cron_schedules():
-    crawl_schedules(None)
+    crawl_schedules()
     return "OK"
 
 @app.route('/cron/photos')
 def handle_cron_photos():
-    crawl_photos(None)
+    crawl_photos()
     return "OK"
 
 @app.route('/cron/lunches')
