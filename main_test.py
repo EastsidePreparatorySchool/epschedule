@@ -3,12 +3,14 @@ import unittest
 
 from app import app, init_app
 
-with open('data/test_schedule.json', 'r') as f:
+with open("data/test_schedule.json", "r") as f:
     TEST_SCHEDULES = json.load(f)
 
-TEST_MASTER_SCHEDULE = [{
-    "2020-09-09": "Remote A-D_Rem",
-}]
+TEST_MASTER_SCHEDULE = [
+    {
+        "2020-09-09": "Remote A-D_Rem",
+    }
+]
 
 
 TEST_TEACHER = "jbriggs"
@@ -24,37 +26,37 @@ class FakeKey:
 class FakeEntity:
     def __init__(self, key):
         self.key = key
+
     def get(self, prop):
         return self.key.name != TEST_STUDENT_NO_PIC
+
     def items(self):
-        return { x: self.get(x) for x in ['share_photo', 'share_schedule']}
+        return {x: self.get(x) for x in ["share_photo", "share_schedule"]}
 
 
 class FakeDatastore:
     def key(self, a, b):
         return FakeKey(b)
+
     def get(self, key):
         return FakeEntity(key)
+
     def get_multi(self, keys):
         return [FakeEntity(key) for key in keys]
 
 
 TEST_CONFIG = {
-    'TESTING': True,
-    'SECRET_KEY': bytes('test-key', 'ascii'),
-    'TOKEN': 'test-token',
-    'SCHEDULES': TEST_SCHEDULES,
-    'MASTER_SCHEDULE': TEST_MASTER_SCHEDULE,
-    'DATASTORE': FakeDatastore()
+    "TESTING": True,
+    "SECRET_KEY": bytes("test-key", "ascii"),
+    "TOKEN": "test-token",
+    "SCHEDULES": TEST_SCHEDULES,
+    "MASTER_SCHEDULE": TEST_MASTER_SCHEDULE,
+    "DATASTORE": FakeDatastore(),
 }
 
 
-API_ENDPOINTS = [
-    "/student/aaardvark",
-    "/class/a",
-    "/period/a",
-    "/search/aaardvark"
-]
+API_ENDPOINTS = ["/student/aaardvark", "/class/a", "/period/a", "/search/aaardvark"]
+
 
 class NoAuthTests(unittest.TestCase):
     @classmethod
@@ -70,7 +72,7 @@ class NoAuthTests(unittest.TestCase):
 
     # Test that when not logged in, we're given a sign-in page.
     def test_main_login_response(self):
-        response = self.client.get('/')
+        response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         # TODO kinda fragile
         self.assertIn("Sign in to EPSchedule", str(response.data))
@@ -83,10 +85,12 @@ class NoAuthTests(unittest.TestCase):
 
     # Test that username being set from cookies is what we want
     def test_login(self):
-        self.client.set_cookie('localhost', 'token', '{"email": "aaardvark@eastsideprep.org"}')
+        self.client.set_cookie(
+            "localhost", "token", '{"email": "aaardvark@eastsideprep.org"}'
+        )
         test_username = "aaardvark"
         with self.client as c:
-            response = c.get('/')
+            response = c.get("/")
             # Get username from session and compare it to actual one
             with c.session_transaction() as sess:
                 self.assertEqual(sess["username"], test_username)
@@ -95,6 +99,7 @@ class NoAuthTests(unittest.TestCase):
 
 
 AUTHENTICATED_USER = "aaardvark"
+
 
 class AuthenticatedTest(unittest.TestCase):
     @classmethod
@@ -105,13 +110,16 @@ class AuthenticatedTest(unittest.TestCase):
             sess["username"] = AUTHENTICATED_USER
 
     def check_photo_url(self, url):
-        self.assertTrue(url.startswith("https://epschedule-avatars.storage.googleapis.com/"))
+        self.assertTrue(
+            url.startswith("https://epschedule-avatars.storage.googleapis.com/")
+        )
 
 
 class TestStudentEndpoint(AuthenticatedTest):
     """Tests for the /student endpoint."""
+
     def check_username(self, username):
-        response = self.client.get('/student/{}'.format(username))
+        response = self.client.get("/student/{}".format(username))
         self.assertEqual(response.status_code, 200)
 
         obj = json.loads(response.data)
@@ -152,10 +160,12 @@ class TestStudentEndpoint(AuthenticatedTest):
 
 TEST_SEARCH = "b"
 
+
 class TestSearchEndpoint(AuthenticatedTest):
     """Tests for the /search endpoint."""
+
     def test_search_endpoint(self):
-        response = self.client.get('/search/{}'.format(TEST_SEARCH))
+        response = self.client.get("/search/{}".format(TEST_SEARCH))
         self.assertEqual(response.status_code, 200)
         results = json.loads(response.data)
 
@@ -166,15 +176,16 @@ class TestSearchEndpoint(AuthenticatedTest):
 
 class TestClassEndpoint(AuthenticatedTest):
     """Tests for the /class endpoint."""
+
     # Test that we can get the fall A period class for the test user.
     def test_class_endpoint(self):
-        response = self.client.get('/class/a?term_id=1')
+        response = self.client.get("/class/a?term_id=1")
         self.assertEqual(response.status_code, 200)
         json.loads(response.data)
 
     # Test that any students who aren't sharing their pics return placeholders.
     def test_urls_inclass(self):
-        response = self.client.get('/class/h?term_id=1')
+        response = self.client.get("/class/h?term_id=1")
         results = json.loads(response.data)
         students = results["students"]
         found_student = None
@@ -182,15 +193,19 @@ class TestClassEndpoint(AuthenticatedTest):
             if student["username"] == TEST_STUDENT_NO_PIC:
                 found_student = student
         self.assertNotEqual(found_student, None)
-        self.assertEqual(found_student["photo_url"], "/static/images/placeholder_small.png")
+        self.assertEqual(
+            found_student["photo_url"], "/static/images/placeholder_small.png"
+        )
+
 
 class TestLogout(AuthenticatedTest):
     def test_logout(self):
-        response = self.client.post('/logout')
+        response = self.client.post("/logout")
         self.assertEqual(response.status_code, 200)
-        response = self.client.get('/')
+        response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Sign in to EPSchedule", str(response.data))
+
 
 if __name__ == "__main__":
     unittest.main()

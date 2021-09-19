@@ -17,8 +17,10 @@ FREE_PERIOD_CLASS = {
     "department": None,
 }
 
+
 def gen_auth_header(api_key):
     return {"Authorization": "Bearer {}".format(api_key)}
+
 
 # Return the year of the current graduating class
 # I.E. the 2019-2020 school year would return 2020
@@ -29,6 +31,7 @@ def get_current_school_year():
         # Old school year has ended, add one to year
         end_year += 1
     return end_year
+
 
 def add_free_periods_to_schedule(course_list):
     for period in PARSEABLE_PERIODS:
@@ -42,6 +45,7 @@ def add_free_periods_to_schedule(course_list):
             course_list.append(FREE_PERIOD_CLASS.copy())
             course_list[-1]["period"] = period
     # Modifies course list in place
+
 
 def decode_trimester_classes(four11_response):
     trimester_classes = []
@@ -61,13 +65,16 @@ def decode_trimester_classes(four11_response):
     trimester_classes.sort(key=lambda x: x["period"])
     return trimester_classes
 
+
 def download_schedule(api_key, username, year):
     person = {"classes": []}
 
     # For each trimester
     for term_id in range(1, 4):
         req = requests.get(
-            ENDPOINT_URL.format(username), headers=gen_auth_header(api_key), params={"term_id": str(term_id)}
+            ENDPOINT_URL.format(username),
+            headers=gen_auth_header(api_key),
+            params={"term_id": str(term_id)},
         )
         if req.status_code == 500:
             raise NameError("Student {} not found in four11 database".format(username))
@@ -97,23 +104,25 @@ def download_schedule(api_key, username, year):
     print("Decoded " + person["username"])
     return person
 
+
 def download_schedule_with_retry(api_key, username, year):
-    for i in range (3): 
+    for i in range(3):
         try:
             return download_schedule(api_key, username, year)
         except HTTPError as e:
-            print("Error: " + str(e) + ", retrying") 
+            print("Error: " + str(e) + ", retrying")
             if i != 2:
                 time.sleep(1)
             else:
                 raise e
+
 
 def crawl_schedules():
     start = time.time()
     # Load access key
     secret_client = secretmanager.SecretManagerServiceClient()
     secret_response = secret_client.access_secret_version(request=SECRET_REQUEST)
-    key = secret_response.payload.data.decode('UTF-8')
+    key = secret_response.payload.data.decode("UTF-8")
 
     school_year = get_current_school_year()
 
@@ -129,7 +138,9 @@ def crawl_schedules():
 
     for username in usernames:
         try:
-            schedules[username] = download_schedule_with_retry(key, username, school_year)
+            schedules[username] = download_schedule_with_retry(
+                key, username, school_year
+            )
         except NameError:
             errors += 1
             print("Could not crawl user {}".format(username))
