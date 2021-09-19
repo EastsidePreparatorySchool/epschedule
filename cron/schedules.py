@@ -109,7 +109,7 @@ def download_schedule_with_retry(api_key, username, year):
             else:
                 raise e
 
-def crawl_schedules(event):
+def crawl_schedules():
     start = time.time()
     # Load access key
     secret_client = secretmanager.SecretManagerServiceClient()
