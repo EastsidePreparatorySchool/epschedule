@@ -10,7 +10,8 @@ from flask import (Flask, abort, make_response, render_template, request,
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
 
-from cron.photos import hash_username
+from cron.photos import crawl_photos, hash_username
+from cron.schedules import crawl_schedules
 
 app = Flask(__name__)
 
@@ -88,10 +89,9 @@ def gen_login_response():
 
 def get_schedule(username):
     schedules = get_schedule_data()
-    if username in schedules:
-        return schedules[username]
-    else:
+    if username not in schedules:
         return None
+    return schedules[username]
 
 def get_user_key(username):
     return datastore_client.key('user', username)
@@ -127,7 +127,7 @@ def main():
                 })
                 datastore_client.put(user)
 
-        except ValueError as exc:
+        except ValueError:
             return gen_login_response()
 
     elif 'username' not in session:
@@ -347,15 +347,6 @@ def get_class_by_period(schedule, period):
         if c["period"].lower() == period.lower():
             return c
 
-'''@app.route('/cron/<job>')
-class CronHandler():
-    def get(self, job):  # On url invoke
-        if job == "lunch":
-            update_lunch.read_lunches()
-            self.response.write("Success")
-        elif job == "schedules": # Warning - takes a LONG time
-            json_schedules = fetch_schedules_with_api()'''
-
 # Change and view privacy settings
 @app.route('/privacy', methods=['GET', 'POST'])
 def handle_settings():
@@ -392,4 +383,20 @@ def handle_search(keyword):
 @app.route('/logout', methods=['POST'])
 def handle_sign_out():
     session.clear()
-    return json.dumps({})
+    return json.dumps({})    
+
+# Cron tasks
+@app.route('/cron/schedules')
+def handle_cron_schedules():
+    crawl_schedules()
+    return "OK"
+
+@app.route('/cron/photos')
+def handle_cron_photos():
+    crawl_photos()
+    return "OK"
+
+@app.route('/cron/lunches')
+def handle_cron_lunches():
+    #update_lunch.read_lunches()
+    return "OK"

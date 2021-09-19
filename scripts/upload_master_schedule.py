@@ -19,7 +19,7 @@ def upload_master_schedule():
     # Sanity check to make sure exceptions.json is valid
     with open(MASTER_SCHEDULE_PATH) as file:
         try:
-            data = json.load(file)
+            json.load(file)
         except json.decoder.JSONDecodeError:
             print("master_schedule.json is invalid, cancelling upload")
             sys.exit(1)
