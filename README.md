@@ -28,7 +28,7 @@ and navigate to http://localhost:8080/, where a local version of EPSchedule will
 ## Development
 
 ### Code style
-We try to follow the Google [Python](https://google-styleguide.googlecode.com/svn/trunk/pyguide.html) and [JavaScript](https://google.github.io/styleguide/javascriptguide.xml) style guides.
+We try to follow the Black [Python](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html) and Google [JavaScript](https://google.github.io/styleguide/javascriptguide.xml) style guides.
 
 ### Running unit tests
 We use the [pytest](https://docs.pytest.org/en/stable/index.html) framework to test our Python code, and tests are run against all pull requests. To run the tests locally, simply run 
@@ -42,4 +42,7 @@ From your fork of the epschedule repo, submit a pull request. Be sure that all t
 
 ### Updating the master schedule
 To recrawl or manually adjust the master period schedule (master_schedule.json), follow the instructions at [this link](https://github.com/guberti/epschedule/wiki/How-to-Crawl-schedules).
+
+### More details
+For more details, see the EPSchedule [wiki](https://github.com/guberti/epschedule/wiki).
 
