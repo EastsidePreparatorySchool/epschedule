@@ -11,7 +11,7 @@ A schedule app for Eastside Preparatory School, built with [Google App Engine](h
 
 ## Running EPSchedule locally
 
-EPSchedule is designed to be *extremely* easy to get running locally - all you need are `git` and Python 3.7+. To set it up, just run:
+EPSchedule is designed to be *extremely* easy to get running locally - all you need are `git`, Python 3.7+, and `pip`. To set it up, just run:
 
 ```
 git clone https://github.com/guberti/epschedule.git
@@ -19,7 +19,7 @@ cd epschedule
 pip install -r requirements.txt
 ```
 
-You'll then need to get service account credentials to access sensitive user data, like schedules, photos, and crypto keys. Email Kalie Uberti (kalie.c.uberti@gmail.com) and we'll send you a file - `epschedule-455d8a10f5ec.json` - to put in your `epschedule` folder. Then, just run
+You'll then need to get service account credentials to access sensitive user data, like schedules, photos, and crypto keys. Email Kalie Uberti (kalie.c.uberti@gmail.com) and we'll send you a file - `epschedule-v2-xxxx.json` - which should be renamed to `service_account.json` and put in your `epschedule` folder. Then, just run
 
 ```python main.py```
 
