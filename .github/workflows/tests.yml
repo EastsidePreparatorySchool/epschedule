@@ -27,7 +27,7 @@ jobs:
     - name: Check style
       run: |
         black . --check
-        isort . --check
+        isort . --check --profile black
     - name: Test main
       env:
         SERVICE_ACCOUNT: ${{secrets.GCP_SERVICE_ACCOUNT}}
