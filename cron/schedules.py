@@ -1,6 +1,5 @@
 import datetime
 import json
-import time
 import os
 
 import requests

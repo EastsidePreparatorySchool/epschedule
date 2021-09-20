@@ -4,10 +4,10 @@ import json
 import os
 import time
 
-from flask import Flask, abort, render_template, request, session, make_response
-from google.auth.transport import requests
-from google.cloud import datastore, storage, secretmanager
 import google.oauth2.id_token
+from flask import Flask, abort, make_response, render_template, request, session
+from google.auth.transport import requests
+from google.cloud import datastore, secretmanager, storage
 
 from cron.photos import crawl_photos, hash_username
 from cron.schedules import crawl_schedules
