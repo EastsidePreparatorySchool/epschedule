@@ -41,7 +41,6 @@ def download_photo(user):
     primary_url = photo_url + last + "__" + first + ".jpg"
     backup_url = photo_url + last + "_" + first + "_" + sid + ".jpg"
 
-
     # Now try each url - I'm unsure why we sometimes need to fall back to
     # the secondary URL, but it is necessary
     try:
@@ -66,7 +65,8 @@ def crop_image(img):
         border = (img.height - ICON_SIZE) // 2
         cropparams = (0, border)
     return img.crop(
-        (*cropparams, img.width - cropparams[0], img.height - cropparams[1]))
+        (*cropparams, img.width - cropparams[0], img.height - cropparams[1])
+    )
 
 
 def hash_username(key, username, icon=False):

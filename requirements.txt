@@ -7,3 +7,6 @@ google-cloud-storage
 Pillow
 pytest
 pylint
+isort
+black
+
