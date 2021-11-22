@@ -28,7 +28,11 @@ and navigate to http://localhost:8080/, where a local version of EPSchedule will
 ## Development
 
 ### Code style
-We try to follow the Black [Python](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html) and Google [JavaScript](https://google.github.io/styleguide/javascriptguide.xml) style guides.
+We try to follow the Black [Python](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html) and Google [JavaScript](https://google.github.io/styleguide/javascriptguide.xml) style guides. To auto-format your Python code, run
+
+```black .```
+
+from the command line.
 
 ### Running unit tests
 We use the [pytest](https://docs.pytest.org/en/stable/index.html) framework to test our Python code, and tests are run against all pull requests. To run the tests locally, simply run 
