@@ -67,12 +67,12 @@ def decode_trimester_classes(four11_response):
     return trimester_classes
 
 
-def download_schedule(api_key, username, year):
+def download_schedule(session, api_key, username, year):
     person = {"classes": []}
 
     # For each trimester
     for term_id in range(1, 4):
-        req = requests.get(
+        req = session.get(
             ENDPOINT_URL.format(username),
             headers=gen_auth_header(api_key),
             params={"term_id": str(term_id)},
@@ -106,10 +106,10 @@ def download_schedule(api_key, username, year):
     return person
 
 
-def download_schedule_with_retry(api_key, username, year):
+def download_schedule_with_retry(session, api_key, username, year):
     for i in range(3):
         try:
-            return download_schedule(api_key, username, year)
+            return download_schedule(session, api_key, username, year)
         except HTTPError as e:
             print("Error: " + str(e) + ", retrying")
             if i != 2:
@@ -137,10 +137,12 @@ def crawl_schedules():
     schedules = {}
     errors = 0
 
+    session = requests.Session()
+
     for username in usernames:
         try:
             schedules[username] = download_schedule_with_retry(
-                key, username, school_year
+                session, key, username, school_year
             )
         except NameError:
             errors += 1
