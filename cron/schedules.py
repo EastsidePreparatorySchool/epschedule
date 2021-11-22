@@ -144,7 +144,10 @@ def crawl_schedules():
             )
         except NameError:
             errors += 1
-            print("Could not crawl user {}".format(username))
+            print("Could not crawl user {}".format(username))            
+            
+    print(f"Schedule crawl completed, {len(schedules)} downloaded, {errors} errors")
+    
     # First, do some sanity checks
     assert len(schedules) + errors == len(usernames)
     for username, schedule in schedules.items():
@@ -152,6 +155,8 @@ def crawl_schedules():
         for trimester in schedule["classes"]:
             assert len(trimester) == 8 or len(trimester) == 9
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
+    
+    print("Schedules passed sanity check")
 
     # Now do the upload
     schedule_blob = data_bucket.blob("schedules.json")
