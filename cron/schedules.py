@@ -79,10 +79,7 @@ def download_schedule(session, api_key, username, year):
         )
         if req.status_code == 500:
             raise NameError("Student {} not found in four11 database".format(username))
-        try:
-            briggs_person = json.loads(req.content)
-        except JSONDecodeError as e:
-            print(e, f'"{req.content}"')
+        briggs_person = json.loads(req.content)
         person["classes"].append(decode_trimester_classes(briggs_person))
 
     individual = briggs_person["individual"]
@@ -113,7 +110,7 @@ def download_schedule_with_retry(session, api_key, username, year):
     for i in range(3):
         try:
             return download_schedule(session, api_key, username, year)
-        except HTTPError as e:
+        except (HTTPError, ValueError) as e:  # catches HTTP and JSON errors
             print("Error: " + str(e) + ", retrying")
             if i != 2:
                 time.sleep(1)
