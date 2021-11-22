@@ -79,7 +79,10 @@ def download_schedule(api_key, username, year):
         )
         if req.status_code == 500:
             raise NameError("Student {} not found in four11 database".format(username))
-        briggs_person = json.loads(req.content)
+        try:
+            briggs_person = json.loads(req.content)
+        except JSONDecodeError as e:
+            print(e, f'"{req.content}"')
         person["classes"].append(decode_trimester_classes(briggs_person))
 
     individual = briggs_person["individual"]
@@ -154,8 +157,8 @@ def crawl_schedules():
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
 
     # Now do the upload
-    schedule_blob = data_bucket.blob("schedules.json")
-    schedule_blob.upload_from_string(json.dumps(schedules))
+    #schedule_blob = data_bucket.blob("schedules.json")
+    #schedule_blob.upload_from_string(json.dumps(schedules))
     print("Schedule crawl took {:.2f} seconds".format(time.time() - start))
 
 
