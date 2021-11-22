@@ -111,7 +111,7 @@ def download_schedule_with_retry(session, api_key, username, year):
         try:
             return download_schedule(session, api_key, username, year)
         except (HTTPError, ValueError) as e:  # catches HTTP and JSON errors
-            print("Error: " + str(e) + ", retrying")
+            print(f"Error for {username}: {e}, retrying")
             if i != 2:
                 time.sleep(1)
             else:
@@ -161,8 +161,8 @@ def crawl_schedules():
     print("Schedules passed sanity check")
 
     # Now do the upload
-    #schedule_blob = data_bucket.blob("schedules.json")
-    #schedule_blob.upload_from_string(json.dumps(schedules))
+    schedule_blob = data_bucket.blob("schedules.json")
+    schedule_blob.upload_from_string(json.dumps(schedules))
     print("Schedule crawl took {:.2f} seconds".format(time.time() - start))
 
 
