@@ -67,12 +67,12 @@ def decode_trimester_classes(four11_response):
     return trimester_classes
 
 
-def download_schedule(api_key, username, year):
+def download_schedule(session, api_key, username, year):
     person = {"classes": []}
 
     # For each trimester
     for term_id in range(1, 4):
-        req = requests.get(
+        req = session.get(
             ENDPOINT_URL.format(username),
             headers=gen_auth_header(api_key),
             params={"term_id": str(term_id)},
@@ -109,10 +109,10 @@ def download_schedule(api_key, username, year):
     return person
 
 
-def download_schedule_with_retry(api_key, username, year):
+def download_schedule_with_retry(session, api_key, username, year):
     for i in range(3):
         try:
-            return download_schedule(api_key, username, year)
+            return download_schedule(session, api_key, username, year)
         except HTTPError as e:
             print("Error: " + str(e) + ", retrying")
             if i != 2:
@@ -140,14 +140,19 @@ def crawl_schedules():
     schedules = {}
     errors = 0
 
+    session = requests.Session()
+
     for username in usernames:
         try:
             schedules[username] = download_schedule_with_retry(
-                key, username, school_year
+                session, key, username, school_year
             )
         except NameError:
             errors += 1
             print("Could not crawl user {}".format(username))
+
+    print(f"Schedule crawl completed, {len(schedules)} downloaded, {errors} errors")
+
     # First, do some sanity checks
     assert len(schedules) + errors == len(usernames)
     for username, schedule in schedules.items():
@@ -155,6 +160,8 @@ def crawl_schedules():
         for trimester in schedule["classes"]:
             assert len(trimester) == 8 or len(trimester) == 9
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
+
+    print("Schedules passed sanity check")
 
     # Now do the upload
     #schedule_blob = data_bucket.blob("schedules.json")
