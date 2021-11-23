@@ -110,8 +110,8 @@ def download_schedule_with_retry(session, api_key, username, year):
     for i in range(3):
         try:
             return download_schedule(session, api_key, username, year)
-        except HTTPError as e:
-            print("Error: " + str(e) + ", retrying")
+        except (HTTPError, ValueError) as e:  # catches HTTP and JSON errors
+            print(f"Error for {username}: {e}, retrying")
             if i != 2:
                 time.sleep(1)
             else:
