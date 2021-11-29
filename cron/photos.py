@@ -4,6 +4,7 @@ import json
 import os
 import time
 from io import BytesIO
+import csv 
 
 import PIL
 import requests
@@ -54,6 +55,33 @@ def download_photo(user):
         # Some students don't have photos if they never went for picture day
     return None
 
+    def download_photo(url):
+        try:
+            return download_photo_bytes(url)
+        except PIL.UnidentifiedImageError:
+            print("Unable to download {} with primary url")
+        try:
+            return download_photo_bytes(url)
+        except PIL.UnidentifiedImageError:
+            print("UNABLE to download " )
+            # If there is another issue 
+        return None
+
+    
+
+    def read_csv_as_dict():
+        photoids = {}
+        if 'idphotos_2021.csv':
+            with open('idphotos_2021.csv', newline='') as csvfile:
+                csvreader = csv.reader(csvfile, delimiter=' ', quotechar = '|')
+                for row in csvreader:
+                    url = row[4]
+                    urlparts = url.split("/")
+                    studentid = urlparts[6:8]
+                    photoids[studentid] = url
+
+        return photoids           
+
 
 def crop_image(img):
     if img.width > img.height:
@@ -97,6 +125,7 @@ def crawl_photos():
     data_bucket = storage_client.bucket("epschedule-data")
     schedule_blob = data_bucket.blob("schedules.json")
     schedules = json.loads(schedule_blob.download_as_string())
+    photoids{} = read_csv_as_dict()
 
     for username in schedules:
         student_schedule = schedules[username]
