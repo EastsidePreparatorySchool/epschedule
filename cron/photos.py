@@ -55,32 +55,32 @@ def download_photo(user):
         # Some students don't have photos if they never went for picture day
     return None
 
-    def download_photo_from_url(url):
-        try:
-            return download_photo_bytes(url)
-        except PIL.UnidentifiedImageError:
-            print("Unable to download {} with primary url")
-        try:
-            return download_photo_bytes(url)
-        except PIL.UnidentifiedImageError:
-            print("UNABLE to download " )
-            # If there is another issue 
-        return None
+def download_photo_from_url(url):
+    try:
+        return download_photo_bytes(url)
+    except PIL.UnidentifiedImageError:
+        print("Unable to download {} with primary url")
+    try:
+        return download_photo_bytes(url)
+    except PIL.UnidentifiedImageError:
+        print("UNABLE to download " )
+        # If there is another issue 
+    return None
 
     
 
-    def read_csv_as_dict():
-        photoids = {}
-        with open('idphotos_2021.csv') as csvfile:
-            csvreader = csv.reader(csvfile)
-            for row in csvreader:
-                url = row[4]
-                urlparts = url.split("/")
-                studentid = urlparts[6:8]
-                joinedid = studentid.join()
-                photoids[joinedid] = url
+def read_csv_as_dict():
+    photoids = {}
+    with open('idphotos_2021.csv') as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            url = row[4]
+            urlparts = url.split("/")
+            studentid = urlparts[6:8]
+            joinedid = studentid.join()
+            photoids[joinedid] = url
 
-        return photoids           
+    return photoids           
 
 
 def crop_image(img):
@@ -125,7 +125,7 @@ def crawl_photos():
     data_bucket = storage_client.bucket("epschedule-data")
     schedule_blob = data_bucket.blob("schedules.json")
     schedules = json.loads(schedule_blob.download_as_string())
-    photo_ids{} = read_csv_as_dict()
+    photo_ids = read_csv_as_dict()
 
     for username in schedules:
         #student_schedule = schedules[username]
