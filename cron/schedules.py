@@ -155,7 +155,10 @@ def crawl_schedules():
     for username, schedule in schedules.items():
         assert len(schedule["classes"]) == 3
         for trimester in schedule["classes"]:
-            assert len(trimester) == 8 or len(trimester) == 9
+            if len(trimester) != 8 and len(trimester) != 9:
+                print("Schedule was messed up for {}".format(username))
+                schedules[username] = []
+            #assert len(trimester) == 8 or len(trimester) == 9
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
 
     print("Schedules passed sanity check")
