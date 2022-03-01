@@ -133,6 +133,7 @@ def crawl_schedules():
 
     username_blob = data_bucket.blob("usernames.json")
     usernames = json.loads(username_blob.download_as_string())
+    usernames.remove("dyezbick")
 
     schedules = {}
     errors = 0
@@ -155,8 +156,7 @@ def crawl_schedules():
     for username, schedule in schedules.items():
         assert len(schedule["classes"]) == 3
         for trimester in schedule["classes"]:
-            if len(trimester) != 8 and len(trimester) != 9:
-                assert len(trimester) == 8 or len(trimester) == 9
+            assert len(trimester) == 8 or len(trimester) == 9
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
 
     print("Schedules passed sanity check")
