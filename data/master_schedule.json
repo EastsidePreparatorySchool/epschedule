@@ -1050,21 +1050,50 @@
                 "times": "07:30-08:15"
             },
             {
-                "period": "Lunch (MS)",
-                "times": "11:10-11:40"
+                "period": "A",
+                "times": "08:30-9:05"
             },
             {
-                "period": "Advisory - US",
+                "period": "B",
+                "times": "09:15-9:50"
+            },
+            {
+                "period": "C",
+                "times": "10:00-10:35"
+            },
+            {
+                "period": "D",
+                "times": "10:45-10:20"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:30-12:05"
+            },
+            {
+                "period": "US E Period",
                 "times": "11:10-11:45"
             },
             {
-                "period": "Class Meeting / Assembly - MS",
-                "times": "11:45-12:20"
+                "period": "MS E Period",
+                "times": "12:15-12:50"
             },
             {
                 "period": "Lunch (US)",
-                "times": "11:50-12:20"
+                "times": "12:15-12:50"
+            },
+            {
+                "period": "F",
+                "times": "01:00-01:35"
+            },
+            {
+                "period": "G",
+                "times": "01:45-02:20"
+            },
+            {
+                "period": "H",
+                "times": "02:30-03:05"
             }
+           
         ],
         "PDD": [
             {
