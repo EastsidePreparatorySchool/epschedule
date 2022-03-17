@@ -1,5 +1,6 @@
 import datetime
 import logging
+
 import requests
 
 # Globals
