@@ -1063,18 +1063,18 @@
             },
             {
                 "period": "D",
-                "times": "10:45-10:20"
+                "times": "10:45-11:20"
             },
             {
                 "period": "Lunch (MS)",
                 "times": "11:30-12:05"
             },
             {
-                "period": "US E Period",
-                "times": "11:10-11:45"
+                "period": "E (US)",
+                "times": "11:30-11:45"
             },
             {
-                "period": "MS E Period",
+                "period": "E (MS)",
                 "times": "12:15-12:50"
             },
             {
