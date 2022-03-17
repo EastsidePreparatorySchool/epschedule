@@ -211,15 +211,30 @@ def get_class_schedule(user_class, term_id, censor=True):
                 if (not is_teacher_schedule(schedule)) or classobj[
                     "name"
                 ] == "Free Period":
-                    student = {
-                        "firstname": schedule["firstname"],
-                        "lastname": schedule["lastname"],
-                        "grade": schedule["grade"],
-                        "username": schedule["username"],
-                        "email": username_to_email(schedule["username"]),
-                        "photo_url": gen_photo_url(schedule["username"], True),
-                    }
-                    result["students"].append(student)
+                    if schedule["username"] == "esanders":
+                        otherstudent={
+                            "firstname": "Xander",
+                            "lastname": schedule["lastname"],
+                            "grade": schedule["grade"],
+                            "username": schedule["username"],
+                            "email": username_to_email(schedule["username"]),
+                            "photo_url": gen_photo_url(schedule["username"], True),
+                        }
+                        result["students"].append(otherstudent)
+                    else:
+                        student = {
+                            "firstname": schedule["firstname"],
+                            "lastname": schedule["lastname"],
+                            "grade": schedule["grade"],
+                            "username": schedule["username"],
+                            "email": username_to_email(schedule["username"]),
+                            "photo_url": gen_photo_url(schedule["username"], True),
+                        }
+                        result["students"].append(student)
+                    
+
+                    
+                    
 
     # Sorts alphabetically, then sorts teachers from students
     result["students"] = sorted(
@@ -410,7 +425,10 @@ def handle_search(keyword):
 
     results = []
     for schedule in get_schedule_data().values():
-        test_keyword = schedule["firstname"] + " " + schedule["lastname"]
+        if not schedule["username"] == "esanders":
+            test_keyword = schedule["firstname"] + " " + schedule["lastname"]
+        else:
+            test_keyword = "Xander Sanders" 
         if keyword.lower() in test_keyword.lower():
             results.append({"name": test_keyword, "username": schedule["username"]})
             if len(results) >= 5:  # We only display five results
