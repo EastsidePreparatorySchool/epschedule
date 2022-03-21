@@ -1,10 +1,10 @@
+import csv
 import hashlib
 import hmac
 import json
 import os
 import time
 from io import BytesIO
-import csv
 
 import PIL
 import requests
