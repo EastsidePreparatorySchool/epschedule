@@ -1,12 +1,7 @@
 import datetime
 import logging
-import re
-from html.parser import HTMLParser
-from urllib import request
 
-import urllib2
-from google.appengine.ext import ndb
-from HTMLParser import HTMLParser
+import requests
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
@@ -17,7 +12,7 @@ LUNCH_URL = (
 
 # NDB class definitions
 
-
+"""
 class Lunch(ndb.Model):
     summary = ndb.StringProperty(required=True)
     # description is a list of lines in the description
@@ -30,7 +25,7 @@ class LunchRating(ndb.Model):
     rating = ndb.IntegerProperty(required=True)  # 1-10 star rating
     lunch_id = ndb.IntegerProperty(required=True)  # Which type of lunch its for
     created = ndb.DateProperty()  # What date the rating was made
-
+"""
 
 # Functions for parsing iCal files
 
@@ -72,23 +67,23 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
         except ValueError:
             date = datetime.datetime.strptime(event["DTSTART"], "%Y%m%d").date()
 
-        # Remove the price and back slashes from the summary
-        summary = event["SUMMARY"].split(" | ")[1]  # Remove the price
-        summary = HTMLParser().unescape(summary)
+        summary = event["SUMMARY"]
 
-        # Remove html from the description, and break it up into lines
-        desc = HTMLParser().unescape(event["DESCRIPTION"])
-        desc = desc.replace("\\,", ",")
-        desc = desc.replace("\\;", ";")
-        no_html_desc = re.sub("<.*?>", "", desc)
+        # Remove formatting from the description, and break it up into lines
+        desc = event["DESCRIPTION"]
+        start = desc.find("[text_output]")
+        end = desc.find("[/text_output]")
+        desc = desc[start + 13 : end]
 
-        # To keep things brief (and remove list of allergens), we'll
-        # cap the length at two lines
-        description = no_html_desc.split("\\n")[:2]
+        # To keep things brief, we'll cap the length at two lines
+        description = desc.split("\\n")[:2]
 
-        entry = Lunch(summary=summary, description=description, day=date)
-
-        write_event_to_db(entry)
+        print(date, summary)
+        for line in description:
+            print("  ", line)
+        print("")
+        # entry = Lunch(summary=summary, description=description, day=date)
+        # write_event_to_db(entry)
 
 
 def write_event_to_db(entry):  # Places a single entry into the db
@@ -107,7 +102,7 @@ def write_event_to_db(entry):  # Places a single entry into the db
 
 
 def add_events(response):
-    text = response.read()
+    text = response.text
     lines = text.splitlines()
     events = parse_events(lines)
 
@@ -128,10 +123,11 @@ def test_read_lunches(fakepath):  # Will be called by unit tests
 
 def read_lunches():  # Update the database with new lunches
     # lunch_url is a global var
-    mainresponse = request.urlopen(LUNCH_URL)
+    mainresponse = requests.get(LUNCH_URL)
     add_events(mainresponse)
 
 
+"""
 # Returns lunches to be displayed in a schedule
 def get_lunch_for_date(current_date, days_into_past=28):
     # days_into_past is the number of days into the past to go
@@ -202,3 +198,6 @@ def place_rating(rating, sid, lunch_id, date, overwrite=True):
     obj.put()
 
     return overwrote
+"""
+if __name__ == "__main__":
+    read_lunches()
