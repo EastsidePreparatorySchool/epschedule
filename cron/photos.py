@@ -4,7 +4,7 @@ import json
 import os
 import time
 from io import BytesIO
-import csv 
+import csv
 
 import PIL
 import requests
@@ -55,6 +55,7 @@ def download_photo(user):
         # Some students don't have photos if they never went for picture day
     return None
 
+
 def download_photo_from_url(url):
     try:
         return download_photo_bytes(url)
@@ -63,15 +64,14 @@ def download_photo_from_url(url):
     try:
         return download_photo_bytes(url)
     except PIL.UnidentifiedImageError:
-        print("UNABLE to download " )
-        # If there is another issue 
+        print("UNABLE to download ")
+        # If there is another issue
     return None
 
-    
 
 def read_csv_as_dict():
     photoids = {}
-    with open('idphotos_2021.csv') as csvfile:
+    with open("idphotos_2021.csv") as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
             url = row[4]
@@ -80,7 +80,7 @@ def read_csv_as_dict():
             joinedid = studentid.join()
             photoids[joinedid] = url
 
-    return photoids           
+    return photoids
 
 
 def crop_image(img):
@@ -128,7 +128,7 @@ def crawl_photos():
     photo_ids = read_csv_as_dict()
 
     for username in schedules:
-        #student_schedule = schedules[username]
+        # student_schedule = schedules[username]
         student_id = schedules[sid]
         target_url = photo_ids[studentid]
         photo = download_photo_from_url(target_url)
