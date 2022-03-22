@@ -245,6 +245,12 @@ function requestAdditionalData(name, type, funct) {
   xhr.open("GET", url, true);
   xhr.send();
 }
+
+function getPreferredNames(){
+  names = json.loads(data_bucket.blob("preferred_names.json").download_as_string())
+
+}
+
 function renderRoom(roomObj) {
   /*renderToast("Please allow EPSchedule to use your current location"); // TODO check to see if browser allows geolocation by default*/
   // Bug here that causes latitude and longitude of google map tag to not exist

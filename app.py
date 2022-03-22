@@ -18,6 +18,7 @@ verify_firebase_token = None
 datastore_client = None
 SCHEDULE_INFO = None
 DAYS = None
+NAMES = None
 FALL_TRI_END = datetime.datetime(2021, 11, 23, 15, 30, 0, 0)
 WINT_TRI_END = datetime.datetime(2022, 3, 11, 15, 30, 0, 0)
 
@@ -27,6 +28,7 @@ def init_app(test_config=None):
     global datastore_client
     global SCHEDULE_INFO
     global DAYS
+    global NAMES
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -49,6 +51,7 @@ def init_app(test_config=None):
         SCHEDULE_INFO = json.loads(
             data_bucket.blob("schedules.json").download_as_string()
         )
+        NAMES = json.loads(data_bucket.blob("preferred_names.json").download_as_string())
         DAYS = json.loads(data_bucket.blob("master_schedule.json").download_as_string())
 
         datastore_client = datastore.Client()
@@ -58,6 +61,7 @@ def init_app(test_config=None):
         datastore_client = app.config["DATASTORE"]
         SCHEDULE_INFO = app.config["SCHEDULES"]
         DAYS = app.config["MASTER_SCHEDULE"]
+        NAMES = {}
 
 
 def username_to_email(username):
@@ -66,6 +70,12 @@ def username_to_email(username):
 
 def is_teacher_schedule(schedule):
     return not schedule["grade"]
+
+def get_preferred_name(username):
+    if username in NAMES:
+        return NAMES[username]
+    else:
+        return None
 
 
 def get_term_id():
@@ -102,8 +112,9 @@ def get_schedule(username):
     if username not in schedules:
         return None
     pfschedule = copy.copy(schedules[username])
-    if pfschedule["username"] == "esanders":
-        pfschedule["firstname"] = "Xander"
+    real_name = get_preferred_name(username)
+    if real_name != None:
+        pfschedule["firstname"] = get_preferred_name(username)
     return pfschedule
 
 
