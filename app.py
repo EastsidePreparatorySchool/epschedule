@@ -101,10 +101,7 @@ def get_schedule(username):
     schedules = get_schedule_data()
     if username not in schedules:
         return None
-    pfschedule = copy.copy(schedules[username])
-    if pfschedule["username"] == "esanders":
-        pfschedule["firstname"] = "Xander"
-    return pfschedule
+    return schedules[username]
 
 
 def get_user_key(username):
