@@ -30,7 +30,12 @@ function sendPostMessage(location, successFunction, data) {
   }
 }
 function reportBug() {
-  window.open("https://github.com/guberti/epschedule/issues");
+  window.open("https://forms.office.com/r/rwmhK8xw44");
+  // Old URL =  window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
+}
+function reportBugOld()
+{
+  window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
 function about() {
   window.open("about");
@@ -187,6 +192,7 @@ function renderToast(text) {
   toast.setAttribute("text", text);
   toast.show();
 }
+// Wait why are we doing this
 function getGpsSuccess(position, roomObj) {
   var radius = 6371000; // Radius of the earth
   var phi1 = position.coords.latitude * (Math.PI / 180);
@@ -456,7 +462,8 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
       var clazz = schedule["classes"][k];
       if (clazz["period"] == period) {
         if (clazz["teacher_username"]) {
-          // TODO remove shitty hack
+          // TODO remove garbage hack
+          // we cant curse smh
           var tu = clazz["teacher_username"]
           var teacher = tu.charAt(1).toUpperCase() + tu.slice(2);
 
