@@ -82,6 +82,12 @@
             </iron-icon>
             <span>Report a bug</span>
           </paper-icon-item>
+          <paper-icon-item onclick="about()">
+            <iron-icon class="drawer-icon" icon="info" item-icon>
+            </iron-icon>
+            <span>About</span>
+          </paper-icon-item>
+          </paper-icon-item>
         </div>
       </paper-header-panel>
       <paper-header-panel id="mainheader" main>
@@ -144,6 +150,19 @@
     </div>
     </paper-header-panel>
   </neon-animated-pages>
+
+  <paper-dialog id="about">
+    <div id="aboutpanel">
+      <h2 class="abouttitle">About</h2>
+      <div class="aboutdividerline"></div>
+      <div class="kalieuberti-title">Kalie Uberti: 
+        <a href="mailto: kuberti@eastsideprep.org">kuberti@eastsideprep.org</a>
+      </div>
+      <div class="privacypaneltitle">Angad Josan: </div>
+      <div class="privacypaneltitle">Ryan Li: </div>
+    </div>
+  </paper-dialog>
+
   <paper-dialog id="dialog">
     <div id="settingspanel">
       <h2 class="settingstitle">Settings</h2>
