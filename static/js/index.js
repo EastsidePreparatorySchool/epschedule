@@ -32,9 +32,12 @@ function sendPostMessage(location, successFunction, data) {
 function reportBug() {
   window.open("https://github.com/guberti/epschedule/issues");
 }
+
 function about() {
-  window.open("about");
+  var about = document.getElementById("about");
+  about.open();
 }
+
 function openSettings() {
   var dialog = document.getElementById("dialog");
   dialog.open();
