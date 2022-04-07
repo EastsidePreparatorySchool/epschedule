@@ -37,9 +37,12 @@ function reportBugOld()
 {
   window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
+
 function about() {
-  window.open("about");
+  var about = document.getElementById("about");
+  about.open();
 }
+
 function openSettings() {
   var dialog = document.getElementById("dialog");
   dialog.open();
