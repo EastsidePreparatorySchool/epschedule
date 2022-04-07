@@ -17,7 +17,7 @@ jobs:
           python-version: 3.8
 
       # Setup and configure gcloud CLI
-      - uses: google-github-actions/setup-gcloud@master
+      - uses: google-github-actions/setup-gcloud@v0
         with:
           version: '290.0.1'
           project_id: epschedule-v2
