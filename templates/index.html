@@ -82,6 +82,18 @@
             </iron-icon>
             <span>Report a bug</span>
           </paper-icon-item>
+
+
+          
+          <!-- go down to around line 160, then format your name like kalie's -->
+          <paper-icon-item onclick="about()">
+            <iron-icon class="drawer-icon" icon="info" item-icon>
+            </iron-icon>
+            <span>About</span>
+          </paper-icon-item>
+
+
+
         </div>
       </paper-header-panel>
       <paper-header-panel id="mainheader" main>
@@ -144,6 +156,47 @@
     </div>
     </paper-header-panel>
   </neon-animated-pages>
+
+
+
+
+  <paper-dialog id="about">
+    <div id="aboutpanel">
+      <h2>About</h2>
+      <div>EPSchedule Club: 
+        <p>---A club designated to maintain this website and add changes</p>
+        <p>---We meet in TMAC-007, every Thursday during Middle Band</p>
+      </div>
+      <div>Club Leader: Kalie Uberti: 
+        <a href="mailto:kuberti@eastsideprep.org">kuberti@eastsideprep.org</a>
+        <p>---Club leader and manager of this project</p>
+      </div>
+      <div>Angad Josan: 
+        <a href="mailto:ajosan25@eastsideprep.org">ajosan25@eastsideprep.org</a>
+        <p>---</p>
+      </div>
+      <div>Ryan Li: 
+        <a href="mailto:rli@eastsideprep.org">rli@eastsideprep.org</a>
+        <p>---Created this about page</p>
+      </div>
+      <div>Andrei Espelien: 
+        <a href="mailto:aespelien@eastsideprep.org">aespelien@eastsideprep.org</a>
+        <p>---Mediocre competitive programmer</p>
+      </div>
+      <div>Seamus Fu: 
+        <a href="mailto:sfu@eastsideprep.org">sfu@eastsideprep.org</a>
+        <p>---</p>
+      </div>
+      <div>Alina Uberti: 
+        <a href="mailto:auberti@eastsideprep.org">auberti@eastsideprep.org</a>
+        <p>---</p>
+      </div>
+    </div>
+  </paper-dialog>
+
+
+
+
   <paper-dialog id="dialog">
     <div id="settingspanel">
       <h2 class="settingstitle">Settings</h2>

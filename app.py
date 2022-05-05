@@ -116,6 +116,7 @@ def get_schedule(username):
     return pfschedule
 
 
+
 def get_user_key(username):
     return datastore_client.key("user", username)
 
@@ -223,19 +224,15 @@ def get_class_schedule(user_class, term_id, censor=True):
                 if (not is_teacher_schedule(schedule)) or classobj[
                     "name"
                 ] == "Free Period":
-                        student = {
-                            "firstname": schedule["firstname"],
-                            "lastname": schedule["lastname"],
-                            "grade": schedule["grade"],
-                            "username": schedule["username"],
-                            "email": username_to_email(schedule["username"]),
-                            "photo_url": gen_photo_url(schedule["username"], True),
-                        }
-                        result["students"].append(student)
-                    
-
-                    
-                    
+                    student = {
+                        "firstname": schedule["firstname"],
+                        "lastname": schedule["lastname"],
+                        "grade": schedule["grade"],
+                        "username": schedule["username"],
+                        "email": username_to_email(schedule["username"]),
+                        "photo_url": gen_photo_url(schedule["username"], True),
+                    }
+                    result["students"].append(student)
 
     # Sorts alphabetically, then sorts teachers from students
     result["students"] = sorted(
@@ -426,10 +423,7 @@ def handle_search(keyword):
 
     results = []
     for schedule in get_schedule_data().values():
-        if not schedule["username"] == "esanders":
-            test_keyword = schedule["firstname"] + " " + schedule["lastname"]
-        else:
-            test_keyword = "Xander Sanders" 
+        test_keyword = schedule["firstname"] + " " + schedule["lastname"]
         if keyword.lower() in test_keyword.lower():
             results.append({"name": test_keyword, "username": schedule["username"]})
             if len(results) >= 5:  # We only display five results
