@@ -225,17 +225,6 @@ def get_class_schedule(user_class, term_id, censor=True):
                 if (not is_teacher_schedule(schedule)) or classobj[
                     "name"
                 ] == "Free Period":
-                    if schedule["username"] == "esanders":
-                        otherstudent={
-                            "firstname": "Xander",
-                            "lastname": schedule["lastname"],
-                            "grade": schedule["grade"],
-                            "username": schedule["username"],
-                            "email": username_to_email(schedule["username"]),
-                            "photo_url": gen_photo_url(schedule["username"], True),
-                        }
-                        result["students"].append(otherstudent)
-                    else:
                         student = {
                             "firstname": schedule["firstname"],
                             "lastname": schedule["lastname"],
