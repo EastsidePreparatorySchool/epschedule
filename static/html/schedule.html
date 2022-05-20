@@ -1,3 +1,5 @@
+<!-- THIS IS THE SCRIPT THAT RENDERS ALL THE CLASSES-->
+
 <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/polymer/polymer.html">
 <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/paper-material/paper-material.html">
 <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-collapse/iron-collapse.html">
@@ -222,6 +224,7 @@
             </template>
           </div>
           <iron-collapse id="{{computeCollapseId(item)}}">
+            
             <template is="dom-if" if="{{isLunchWithDesc(item)}}" style="height:auto">
               <div layout vertical class="lunch">
                 <ul>
@@ -230,13 +233,15 @@
                 </ul>
               </div>
             </template>
+            
             <template is="dom-if" if="{{displayClassOptions(item)}}">
               <div class="altclassescontainer">
-                <div class="inline classinfosubcontainer" item="{{item}}">
+                <div class="inline classinfosubcontainer" item="{{item}}" id ="EmailAndPeriod">
                   <a class="classemaillink" item="link" on-tap="removeThunk" href="#">EMAIL CLASS</a>    |    <span on-tap="periodThunk"> PERIOD INFO </span>
                 </div>
               </div>
             </template>
+
             <template is="dom-if" if="{{!isLunchWithDesc(item)}}">
               <iron-list items="{{item.students}}" grid class="studentgrid" style="height:20vh">
                 <template>
@@ -250,6 +255,7 @@
                 </template>
               </iron-list>
             </template>
+
           </iron-collapse>
         </div>
       </template>
@@ -257,6 +263,17 @@
     </paper-material>
   </template>
   <script>
+
+    // controls and hides the email stuff for the lunches
+    var hide = function() {
+        var x = document.getElementById("EmailAndPeriod");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+        return false;
+    }
 
     Polymer({
       is: 'x-schedule',
