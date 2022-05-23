@@ -143,13 +143,21 @@ def get_lunch_for_date(current_date, days_into_past=28):
         query = Lunch.query(Lunch.day >= earliest_lunch)
         lunch_objs = []
         for lunch_obj in query:
+
+            cleaned_description = [] #the desc after it is cleaned of escape characters and new lines
+            for description_section in lunch_obj.description:
+                if not (description_section == "" or description_section == " " or description_section == False): #eliminates a section if it is empty or just a space
+                    cleaned_description.append(description_section.replace("\,", ",").replace("\n", ""))
+            #this for loop destroyed all escape characters and new lines in the description
+            #at least that's whats supposed to happen, new lines still error for some reason
+
             obj = {
-                "summary": lunch_obj.summary,
-                "description": lunch_obj.description,
+                "summary": lunch_obj.summary.replace("\,", ","), #deletes all annoying escape character backslashes
+                "description": cleaned_description,
                 "day": lunch_obj.day.day,
                 "month": lunch_obj.day.month,
                 "year": lunch_obj.day.year,
-            }
+            }   
             lunch_objs.append(obj)
     return lunch_objs
 
@@ -207,6 +215,7 @@ def place_rating(rating, sid, lunch_id, date, overwrite=True):
 
     return overwrote
 """
+
 if __name__ == "__main__":
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
     read_lunches()
