@@ -33,10 +33,13 @@ function reportBug() {
   window.open("https://forms.office.com/r/rwmhK8xw44");
   // Old URL =  window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
+<<<<<<< Updated upstream
 function reportBugOld()
 {
   window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
+=======
+>>>>>>> Stashed changes
 
 function about() {
   var about = document.getElementById("about");
@@ -622,7 +625,7 @@ function getLunchForDate(lunch_list, date) {
     // all lunch date months are stored 1-12
     if (
       date.getDate() == lunch["day"] &&
-      date.getMonth() + 1 == lunch["month"] &&
+      date.getMonth() + 1 == lunch[ "month"] &&
       date.getFullYear() == lunch["year"]
       ) {
       return lunch;
