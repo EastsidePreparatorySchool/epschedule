@@ -1,15 +1,11 @@
 import datetime
 import logging
 import os
-
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
-
+import requests
 from google.cloud import ndb
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
 client = ndb.Client()
-
-import requests
-
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
