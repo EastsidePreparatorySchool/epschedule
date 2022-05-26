@@ -194,8 +194,8 @@
         "2022-05-27": "PDD",
         "2022-05-30": "Memorial Day",
         "2022-05-31": "O, A-H_Tue",
-        "2022-06-01": "A-D_Wed",
-        "2022-06-02": "E-H_Thu",
+        "2022-06-01": "US Reading Day/MS Finals",
+        "2022-06-02": "US Reading Day/MS Finals",
         "2022-06-03": "US Finals / MS Field day",
         "2022-06-06": "US Finals",
         "2022-06-07": "US Finals",
@@ -1148,6 +1148,14 @@
                 "period": "Winter Break",
                 "times": "08:00-03:15"
             }
+        ],
+        "US Reading Day/MS Finals": [
+            {
+                "period": "US Reading Day/MS Finals",
+                "times": "08:30-03:00"
+
+            }
+
         ]
     }
 ]
