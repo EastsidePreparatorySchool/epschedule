@@ -1,18 +1,18 @@
 import datetime
 import logging
 import os
+import os.path
 
+import anvil
 import requests
 from google.cloud import ndb
-import os.path
-import anvil
 
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
 json_file_path = "service_account.json"
 
 if not os.path.exists(json_file_path):
-  with open(json_file_path, "w") as f:
-    f.write(anvil.secrets.get_secret("google_creds"))
+    with open(json_file_path, "w") as f:
+        f.write(anvil.secrets.get_secret("google_creds"))
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = json_file_path
 
