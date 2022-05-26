@@ -5,7 +5,8 @@ import os
 import time
 
 import google.oauth2.id_token
-from flask import Flask, abort, make_response, render_template, request, session
+from flask import (Flask, abort, make_response, render_template, request,
+                   session)
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
 

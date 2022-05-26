@@ -3,10 +3,9 @@ import logging
 import os
 
 import requests
-from google.cloud import ndb
+from google.cloud import ndb, secretmanager
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
-client = ndb.Client()
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
@@ -93,6 +92,7 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
 
 def write_event_to_db(entry):  # Places a single entry into the db
     # this enables using NDB
+    client = ndb.Client()
     with client.context():
         # Check how many lunches there are already for that date (always 1 or 0)
         lunches_for_date = Lunch.query(Lunch.day == entry.day)
@@ -135,6 +135,7 @@ def read_lunches():  # Update the database with new lunches
 
 # Returns lunches to be displayed in a schedule
 def get_lunch_for_date(current_date, days_into_past=28):
+    client = ndb.Client()
     with client.context():
         # days_into_past is the number of days into the past to go
         earliest_lunch = current_date - datetime.timedelta(days_into_past)
