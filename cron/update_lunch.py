@@ -6,6 +6,7 @@ import requests
 from google.cloud import ndb, secretmanager
 
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
@@ -153,14 +154,14 @@ def get_lunch_for_date(current_date, days_into_past=28):
                     or description_section == False
                 ):  # eliminates a section if it is empty or just a space
                     cleaned_description.append(
-                        description_section.replace("\,", ",").replace("\n", "")
+                        description_section.replace("\\,", ",").replace("\n", "")
                     )
             # this for loop destroyed all escape characters and new lines in the description
             # at least that's whats supposed to happen, new lines still error for some reason
 
             obj = {
                 "summary": lunch_obj.summary.replace(
-                    "\,", ","
+                    "\\,", ","
                 ),  # deletes all annoying escape character backslashes
                 "description": cleaned_description,
                 "day": lunch_obj.day.day,
@@ -227,5 +228,4 @@ def place_rating(rating, sid, lunch_id, date, overwrite=True):
 """
 
 if __name__ == "__main__":
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
     read_lunches()
