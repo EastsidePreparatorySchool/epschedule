@@ -3,10 +3,18 @@ import logging
 import os
 
 import requests
-from google.cloud import ndb, secretmanager
+from google.cloud import ndb
+import os.path
+import anvil
 
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+json_file_path = "service_account.json"
+
+if not os.path.exists(json_file_path):
+  with open(json_file_path, "w") as f:
+    f.write(anvil.secrets.get_secret("google_creds"))
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = json_file_path
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
