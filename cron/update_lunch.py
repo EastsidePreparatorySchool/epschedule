@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os
+
 import requests
 from google.cloud import ndb
 

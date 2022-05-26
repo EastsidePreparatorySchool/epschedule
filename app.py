@@ -11,7 +11,7 @@ from google.cloud import datastore, secretmanager, storage
 
 from cron.photos import crawl_photos, hash_username
 from cron.schedules import crawl_schedules
-from cron.update_lunch import read_lunches, get_lunch_for_date
+from cron.update_lunch import get_lunch_for_date, read_lunches
 
 app = Flask(__name__)
 
