@@ -2,9 +2,11 @@ import datetime
 import logging
 
 import os
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="service_account.json"
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
 
 from google.cloud import ndb
+
 client = ndb.Client()
 
 import requests
@@ -12,9 +14,7 @@ import requests
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
-LUNCH_URL = (
-    "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
-)
+LUNCH_URL = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
 
 # NDB class definitions
 
@@ -25,8 +25,6 @@ class Lunch(ndb.Model):
     description = ndb.StringProperty(repeated=True)
     day = ndb.DateProperty(required=True)
 
-    
-
 
 class LunchRating(ndb.Model):
     sid = ndb.IntegerProperty(required=True)
@@ -36,6 +34,7 @@ class LunchRating(ndb.Model):
 
 
 # Functions for parsing iCal files
+
 
 def parse_events(lines):  # lines is a list of all lines of text in the whole file
     in_event = False  # Whether the current line is in an event
@@ -57,15 +56,16 @@ def parse_events(lines):  # lines is a list of all lines of text in the whole fi
             else:  # If it is the start of a normal line
                 # Sample line: DTSTART;TZID=America/Los_Angeles:20151030T110500
                 colon_separated_values = line.split(":", 1)
-                #this ends up with [DTSTART;TZID=America/Los_Angeles, 20151030T110500]
+                # this ends up with [DTSTART;TZID=America/Los_Angeles, 20151030T110500]
 
                 # Garbage anything between ; and :
                 last_prop_name = colon_separated_values[0].split(";")[0]
-                #this ends up with DTSTART
+                # this ends up with DTSTART
 
-                #equivalent with properties[DTSTART] = 20151030T110500 and places within the dict
+                # equivalent with properties[DTSTART] = 20151030T110500 and places within the dict
                 properties[last_prop_name] = colon_separated_values[1]
     return events
+
 
 def sanitize_events(events):  # Sanitizes a list of events obtained from parse_events
     for event in events:
@@ -94,8 +94,9 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
         entry = Lunch(summary=summary, description=description, day=date)
         write_event_to_db(entry)
 
+
 def write_event_to_db(entry):  # Places a single entry into the db
-    #this enables using NDB
+    # this enables using NDB
     with client.context():
         # Check how many lunches there are already for that date (always 1 or 0)
         lunches_for_date = Lunch.query(Lunch.day == entry.day)
@@ -108,6 +109,7 @@ def write_event_to_db(entry):  # Places a single entry into the db
         # If not, log it and put it into the db
         logging.info(str(entry))
         entry.put()
+
 
 def add_events(response):
     text = response.text
@@ -144,22 +146,33 @@ def get_lunch_for_date(current_date, days_into_past=28):
         lunch_objs = []
         for lunch_obj in query:
 
-            cleaned_description = [] #the desc after it is cleaned of escape characters and new lines
+            cleaned_description = (
+                []
+            )  # the desc after it is cleaned of escape characters and new lines
             for description_section in lunch_obj.description:
-                if not (description_section == "" or description_section == " " or description_section == False): #eliminates a section if it is empty or just a space
-                    cleaned_description.append(description_section.replace("\,", ",").replace("\n", ""))
-            #this for loop destroyed all escape characters and new lines in the description
-            #at least that's whats supposed to happen, new lines still error for some reason
+                if not (
+                    description_section == ""
+                    or description_section == " "
+                    or description_section == False
+                ):  # eliminates a section if it is empty or just a space
+                    cleaned_description.append(
+                        description_section.replace("\,", ",").replace("\n", "")
+                    )
+            # this for loop destroyed all escape characters and new lines in the description
+            # at least that's whats supposed to happen, new lines still error for some reason
 
             obj = {
-                "summary": lunch_obj.summary.replace("\,", ","), #deletes all annoying escape character backslashes
+                "summary": lunch_obj.summary.replace(
+                    "\,", ","
+                ),  # deletes all annoying escape character backslashes
                 "description": cleaned_description,
                 "day": lunch_obj.day.day,
                 "month": lunch_obj.day.month,
                 "year": lunch_obj.day.year,
-            }   
+            }
             lunch_objs.append(obj)
     return lunch_objs
+
 
 """
 def calc_lunch_rating(lunch_id):  # Uses mean, returns a float
