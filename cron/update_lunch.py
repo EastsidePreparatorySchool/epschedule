@@ -22,6 +22,10 @@ class Lunch(ndb.Model):
     # description is a list of lines in the description
     description = ndb.StringProperty(repeated=True)
     day = ndb.DateProperty(required=True)
+    
+    @classmethod
+    def queryWithTimeConstraint(cls, earliest_lunch):
+        return cls.query().filter(Lunch.day >= earliest_lunch)
 
 
 class LunchRating(ndb.Model):
@@ -140,13 +144,10 @@ def get_lunch_for_date(current_date, days_into_past=28):
     with client.context():
         # days_into_past is the number of days into the past to go
         earliest_lunch = current_date - datetime.timedelta(days_into_past)
-        query = Lunch.query(Lunch.day >= earliest_lunch)
         lunch_objs = []
-        for lunch_obj in query:
-
-            cleaned_description = (
-                []
-            )  # the desc after it is cleaned of escape characters and new lines
+        '''
+        for lunch_obj in Lunch.queryWithTimeConstraint(earliest_lunch):
+            cleaned_description = []  # the desc after it is cleaned of escape characters and new lines
             for description_section in lunch_obj.description:
                 if not (
                     description_section == ""
@@ -157,7 +158,6 @@ def get_lunch_for_date(current_date, days_into_past=28):
                         description_section.replace("\,", ",").replace("\n", "")
                     )
             # this for loop destroyed all escape characters and new lines in the description
-            # at least that's whats supposed to happen, new lines still error for some reason
 
             obj = {
                 "summary": lunch_obj.summary.replace(
@@ -168,7 +168,7 @@ def get_lunch_for_date(current_date, days_into_past=28):
                 "month": lunch_obj.day.month,
                 "year": lunch_obj.day.year,
             }
-            lunch_objs.append(obj)
+            lunch_objs.append(obj)'''
     return lunch_objs
 
 

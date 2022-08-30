@@ -5,8 +5,7 @@ import os
 import time
 
 import google.oauth2.id_token
-from flask import (Flask, abort, make_response, render_template, request,
-                   session)
+from flask import Flask, abort, make_response, render_template, request, session
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
 
@@ -439,9 +438,10 @@ def handle_cron_photos():
     crawl_photos()
     return "OK"
 
-
+"""
 @app.route("/cron/update_lunch")
 def handle_cron_lunches():
     read_lunches()
     print("running")
     return "OK"
+"""
