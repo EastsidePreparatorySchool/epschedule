@@ -412,7 +412,7 @@
         ],
         "Continuation": [
             {
-                "period": "Continuation",
+                "period": "Continuation|12th grade grades due in four11",
                 "times": "08:00-03:15"
             }
         ],
@@ -1148,7 +1148,7 @@
         ],
         "Senior Dinner": [
             {
-                "period": "Senior Dinner",
+                "period": "Senior Dinner|8th grade grades due in four11",
                 "times": "08:00-03:15"
             }
         ],
