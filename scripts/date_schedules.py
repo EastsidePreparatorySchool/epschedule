@@ -6,8 +6,8 @@ from urllib.error import HTTPError
 
 BASE_URL = "https://four11.eastsideprep.org/epsnet/schedule_for_date?date="
 
-START_DATE = date(2021, 9, 1)
-END_DATE = date(2022, 6, 10)
+START_DATE = date(2022, 8, 30)
+END_DATE = date(2023, 6, 10)
 
 delta = END_DATE - START_DATE
 schedules = {}
@@ -45,7 +45,7 @@ def download_exceptions():
             # We don't write weekends to database, so skip it
             continue
 
-        data = download_json_with_retry(d)
+        data = download_json_with_retry(day)
 
         # On days without school
         if not "schedule_day" in data:
