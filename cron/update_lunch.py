@@ -1,18 +1,28 @@
 import datetime
 import logging
+import os
+import os.path
 
+import anvil
 import requests
+from google.cloud import ndb
+
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+json_file_path = "service_account.json"
+
+if not os.path.exists(json_file_path):
+    with open(json_file_path, "w") as f:
+        f.write(anvil.secrets.get_secret("google_creds"))
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = json_file_path
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
-LUNCH_URL = (
-    "http://www.eastsideprep.org"
-    + "/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
-)
+LUNCH_URL = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
 
 # NDB class definitions
 
-"""
+
 class Lunch(ndb.Model):
     summary = ndb.StringProperty(required=True)
     # description is a list of lines in the description
@@ -25,7 +35,7 @@ class LunchRating(ndb.Model):
     rating = ndb.IntegerProperty(required=True)  # 1-10 star rating
     lunch_id = ndb.IntegerProperty(required=True)  # Which type of lunch its for
     created = ndb.DateProperty()  # What date the rating was made
-"""
+
 
 # Functions for parsing iCal files
 
@@ -50,10 +60,13 @@ def parse_events(lines):  # lines is a list of all lines of text in the whole fi
             else:  # If it is the start of a normal line
                 # Sample line: DTSTART;TZID=America/Los_Angeles:20151030T110500
                 colon_separated_values = line.split(":", 1)
+                # this ends up with [DTSTART;TZID=America/Los_Angeles, 20151030T110500]
 
                 # Garbage anything between ; and :
                 last_prop_name = colon_separated_values[0].split(";")[0]
+                # this ends up with DTSTART
 
+                # equivalent with properties[DTSTART] = 20151030T110500 and places within the dict
                 properties[last_prop_name] = colon_separated_values[1]
     return events
 
@@ -82,23 +95,25 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
         for line in description:
             print("  ", line)
         print("")
-        # entry = Lunch(summary=summary, description=description, day=date)
-        # write_event_to_db(entry)
+        entry = Lunch(summary=summary, description=description, day=date)
+        write_event_to_db(entry)
 
 
 def write_event_to_db(entry):  # Places a single entry into the db
+    # this enables using NDB
+    client = ndb.Client()
+    with client.context():
+        # Check how many lunches there are already for that date (always 1 or 0)
+        lunches_for_date = Lunch.query(Lunch.day == entry.day)
 
-    # Check how many lunches there are already for that date (always 1 or 0)
-    lunches_for_date = Lunch.query(Lunch.day == entry.day)
+        # Check if there is already a lunch for that date (it has already been parsed)
+        for lunch in lunches_for_date:
+            logging.info(str(entry.day) + " is already in the DB")
+            lunch.key.delete()  # Delete the existing ndb entity
 
-    # Check if there is already a lunch for that date (it has already been parsed)
-    for lunch in lunches_for_date:
-        logging.info(str(entry.day) + " is already in the DB")
-        lunch.key.delete()  # Delete the existing ndb entity
-
-    # If not, log it and put it into the db
-    logging.info(str(entry))
-    entry.put()
+        # If not, log it and put it into the db
+        logging.info(str(entry))
+        entry.put()
 
 
 def add_events(response):
@@ -127,25 +142,45 @@ def read_lunches():  # Update the database with new lunches
     add_events(mainresponse)
 
 
-"""
 # Returns lunches to be displayed in a schedule
 def get_lunch_for_date(current_date, days_into_past=28):
-    # days_into_past is the number of days into the past to go
-    earliest_lunch = current_date - datetime.timedelta(days_into_past)
-    query = Lunch.query(Lunch.day >= earliest_lunch)
-    lunch_objs = []
-    for lunch_obj in query:
-        obj = {
-            "summary": lunch_obj.summary,
-            "description": lunch_obj.description,
-            "day": lunch_obj.day.day,
-            "month": lunch_obj.day.month,
-            "year": lunch_obj.day.year,
-        }
-        lunch_objs.append(obj)
+    client = ndb.Client()
+    with client.context():
+        # days_into_past is the number of days into the past to go
+        earliest_lunch = current_date - datetime.timedelta(days_into_past)
+        query = Lunch.query(Lunch.day >= earliest_lunch)
+        lunch_objs = []
+        for lunch_obj in query:
+
+            cleaned_description = (
+                []
+            )  # the desc after it is cleaned of escape characters and new lines
+            for description_section in lunch_obj.description:
+                if not (
+                    description_section == ""
+                    or description_section == " "
+                    or description_section == False
+                ):  # eliminates a section if it is empty or just a space
+                    cleaned_description.append(
+                        description_section.replace("\\,", ",").replace("\n", "")
+                    )
+            # this for loop destroyed all escape characters and new lines in the description
+            # at least that's whats supposed to happen, new lines still error for some reason
+
+            obj = {
+                "summary": lunch_obj.summary.replace(
+                    "\\,", ","
+                ),  # deletes all annoying escape character backslashes
+                "description": cleaned_description,
+                "day": lunch_obj.day.day,
+                "month": lunch_obj.day.month,
+                "year": lunch_obj.day.year,
+            }
+            lunch_objs.append(obj)
     return lunch_objs
 
 
+"""
 def calc_lunch_rating(lunch_id):  # Uses mean, returns a float
     rating_sum = 0
     rating_num = 0
@@ -199,5 +234,6 @@ def place_rating(rating, sid, lunch_id, date, overwrite=True):
 
     return overwrote
 """
+
 if __name__ == "__main__":
     read_lunches()

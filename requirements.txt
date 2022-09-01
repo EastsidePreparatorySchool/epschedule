@@ -1,9 +1,11 @@
+anvil
 Flask
 google-cloud-datastore
 google-auth
 requests
 google-cloud-secret-manager
 google-cloud-storage
+google-cloud-ndb
 Pillow
 pytest
 pylint
