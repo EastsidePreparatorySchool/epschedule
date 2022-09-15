@@ -2,8 +2,6 @@ import datetime
 import logging
 import os
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/service_account.json"
-
 from google.cloud import ndb
 
 client = ndb.Client()
