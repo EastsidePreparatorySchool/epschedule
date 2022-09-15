@@ -5,11 +5,11 @@ import os
 
 from google.cloud import ndb
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./service_account.json"
-client = ndb.Client()
-
 with open("./service_account.json", "r") as j:
     contents = json.loads(j.read())
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./service_account.json"
+client = ndb.Client()
 
 import requests
 
