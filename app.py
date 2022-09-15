@@ -30,7 +30,7 @@ def init_app(test_config=None):
     global SCHEDULE_INFO
     global DAYS
     global LUNCH_TODAY
-    #initiates a constant to store the lunch for today
+    # initiates a constant to store the lunch for today
     LUNCH_TODAY = get_lunch_for_date(datetime.date.today())
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
