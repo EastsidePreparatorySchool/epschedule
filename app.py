@@ -5,7 +5,7 @@ import os
 import time
 
 import google.oauth2.id_token
-from flask import Flask, abort, make_response, render_template, request, session
+from flask import *
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
 
@@ -19,8 +19,8 @@ verify_firebase_token = None
 datastore_client = None
 SCHEDULE_INFO = None
 DAYS = None
-FALL_TRI_END = datetime.datetime(2021, 11, 23, 15, 30, 0, 0)
-WINT_TRI_END = datetime.datetime(2022, 3, 11, 15, 30, 0, 0)
+FALL_TRI_END = datetime.datetime(2022, 12, 15, 15, 30, 0, 0)
+WINT_TRI_END = datetime.datetime(2023, 3, 10, 15, 30, 0, 0)
 
 
 def init_app(test_config=None):
@@ -438,10 +438,8 @@ def handle_cron_photos():
     crawl_photos()
     return "OK"
 
-"""
+
 @app.route("/cron/update_lunch")
 def handle_cron_lunches():
     read_lunches()
-    print("running")
     return "OK"
-"""

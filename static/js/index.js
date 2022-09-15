@@ -498,9 +498,8 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
       period: "X",
       time: ""
     };
-    LPC_COMMONS_CLASSES = ["Lunch", "Assembly", "US Community"];
+    LPC_COMMONS_CLASSES = ["Lunch (US)", "Lunch (MS)", "Assembly", "US Community"];
     if (LPC_COMMONS_CLASSES.includes(scheduleObj.name)) {
-
       scheduleObj.room = "LPC Commons";
     }
     if (scheduleObj.name == "Lunch (US)" || scheduleObj.name == "Lunch (MS)") {
