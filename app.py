@@ -19,6 +19,7 @@ verify_firebase_token = None
 datastore_client = None
 SCHEDULE_INFO = None
 DAYS = None
+LUNCH_TODAY = []
 FALL_TRI_END = datetime.datetime(2022, 12, 15, 15, 30, 0, 0)
 WINT_TRI_END = datetime.datetime(2023, 3, 10, 15, 30, 0, 0)
 
@@ -28,6 +29,9 @@ def init_app(test_config=None):
     global datastore_client
     global SCHEDULE_INFO
     global DAYS
+    global LUNCH_TODAY
+    #initiates a constant to store the lunch for today
+    LUNCH_TODAY = get_lunch_for_date(datetime.date.today())
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -157,7 +161,7 @@ def main():
             schedule=json.dumps(get_schedule(session["username"])),
             days=json.dumps(DAYS),
             components="static/components.html",
-            lunches=get_lunch_for_date(datetime.date.today()),
+            lunches=LUNCH_TODAY,
             fall_end_unix=str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
             wint_end_unix=str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000),
         )
