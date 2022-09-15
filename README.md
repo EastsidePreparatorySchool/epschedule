@@ -30,7 +30,10 @@ and navigate to http://localhost:8080/, where a local version of EPSchedule will
 ### Code style
 We try to follow the Black [Python](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html) and Google [JavaScript](https://google.github.io/styleguide/javascriptguide.xml) style guides. To auto-format your Python code, run
 
-```black .```
+```
+black .
+isort . --profile black
+```
 
 from the command line.
 
