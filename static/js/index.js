@@ -543,7 +543,7 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
 }
 
 // Grades on campus or each day
-SPRING_2021_SCHEDULE = { 
+SPRING_2021_SCHEDULE = { // should be deleted
   "2021-04-27": [5, 6], 
   "2021-04-28": [5, 6], 
   "2021-04-29": [7, 8],
