@@ -144,7 +144,7 @@ def get_lunch_for_date(current_date, days_into_past=28):
         # days_into_past is the number of days into the past to go
         earliest_lunch = current_date - datetime.timedelta(days_into_past)
         lunch_objs = []
-        for lunch_obj in Lunch.queryWithTimeConstraint(earliest_lunch):
+        for lunch_obj in Lunch.query_with_time_constraint(earliest_lunch):
             cleaned_description = (
                 []
             )  # the desc after it is cleaned of escape characters and new lines
