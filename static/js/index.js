@@ -1,9 +1,22 @@
+/* 
+  index.js
+  Main js file holding ui for epschedule when logged in
+
+  Last edited: September 2022
+  By: Jack Goetzmann
+*/
+
+// Signs out user
 function signOut() {
   sendPostMessage("logout", reload);
 }
+
+// Reloads something (website or ui idk)
 function reload(result) {
   location.reload();
 }
+
+// Idk what this does
 // Data argument is optional
 function sendPostMessage(location, successFunction, data) {
   // Location is the suburl to send data to, e.g. /logout
@@ -29,24 +42,31 @@ function sendPostMessage(location, successFunction, data) {
     xhr.send(data);
   }
 }
+
+// Code that makes "report bug" button link to office form
 function reportBug() {
   window.open("https://forms.office.com/r/rwmhK8xw44");
   // Old URL =  window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
-function reportBugOld()
-{
+
+// Old URL for bug report button
+function reportBugOld() {
   window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
 
+// Code that makes "about" button open pannel
 function about() {
   var about = document.getElementById("about");
   about.open();
 }
 
+// Code that makes "settings" button open pannel
 function openSettings() {
   var dialog = document.getElementById("dialog");
   dialog.open();
 }
+
+// Changes some password (idk what)
 function submitChangePassword() {
   var data = new FormData();
   var oldPassword = document.getElementById("oldpassword")
@@ -62,7 +82,7 @@ function submitChangePassword() {
         oldPassword.value = "";
         newPassword.value = "";
       } else {
-        console.log(result.error);
+        console.log(result.error); // logs error if password isnt changed
         renderToast(result.error);
       }
     }
@@ -70,6 +90,8 @@ function submitChangePassword() {
   xhr.open("POST", "changepassword", true);
   xhr.send(data);
 }
+
+// Code that makes the "hide/show photo or schedule" work (sliders on privacy pannel)
 function submitUpdatePrivacy() {
   var share_photo = document.getElementById("sharephototoggle");
   var share_schedule = document.getElementById("sharescheduletoggle");
@@ -77,6 +99,7 @@ function submitUpdatePrivacy() {
   document.getElementById("dialog").close()
 }
 
+// "Ok" button on privacy pannel that submits privace preferences to cloud
 function sendUpdatePrivacyRequest(share_photo, share_schedule) {
   var data = new FormData();
   data.append('share_photo', share_photo);
@@ -89,7 +112,7 @@ function sendUpdatePrivacyRequest(share_photo, share_schedule) {
       if (!result.error) {
         renderToast("Settings updated!");
       } else {
-        console.log(result.error);
+        console.log(result.error); // logs error if update privace fails
         renderToast(result.error);
       }
     }
@@ -97,6 +120,8 @@ function sendUpdatePrivacyRequest(share_photo, share_schedule) {
   xhr.open("POST", "privacy", true);
   xhr.send(data);
 }
+
+// Idk what this code does -- Probably related the 20-21 school year senior prank (depreciated code point towards this)
 document.onkeydown = function(event) {
   if (pages.selected == 0) {  // no popup
     if (event.keyCode == 37) {  // left
@@ -111,41 +136,51 @@ document.onkeydown = function(event) {
   }
 }
 
+// Controls date switch on swipe left or right
 function scheduleSwiped(evt) {
-  if (evt.detail.direction == "left") {
+  if (evt.detail.direction == "left") { // if left move date forward
     dateForward();
-  } else {
+  } else { // if not left move date back
     dateBack();
   }
 }
 
+// Grabs data for schedule I think
 var globalDate = getInitialDate();
 
+// Finds date and grabs data and modifies it to Monday (if on weekend) 
 function getInitialDate() {
-  date = new Date();
-  switch(date.getDay()) { // Falling through is intentional here
-    case 6: // If Saturday, move the date forward twice
+  date = new Date(); // Grabs date using api?
+  switch(date.getDay()) { // Falling through is intentional here (no default so its fine) -> (0 sunday, 1 monday, ... 5 friday, 6 saturday)
+    case 6: // If Saturday, move the date forward twice -- To always show Monday - Friday
       date.setDate(date.getDate() + 2);
       break;
-    case 0: // If Sunday, move the date forward once
+    case 0: // If Sunday, move the date forward once -- To always show Monday - Friday
       date.setDate(date.getDate() + 1);
   }
 
-  FIRST_DAY = new Date(2019, 8, 4);
+  FIRST_DAY = new Date(2019, 8, 4); // hard coded "first day" of epschedule -- probably exists to avoid an error
 
-  if (date < FIRST_DAY) {
-    date = FIRST_DAY;
+  if (date < FIRST_DAY) { // if before hard coded "first day"
+    date = FIRST_DAY; // sets to "first day"
   }
-  return date;
+
+  return date; // returns modified date
 }
+
+// moves date back 1 day
 function dateBack() {
-  adjustDate(globalDate, -1);
-  updateMainSchedule();
+  adjustDate(globalDate, -1); // removes 1 day to date
+  updateMainSchedule(); // refreshes schedule ui
 }
+
+// move date forward 1 day
 function dateForward() {
-  adjustDate(globalDate, 1);
-  updateMainSchedule();
+  adjustDate(globalDate, 1); // adds 1 day to date
+  updateMainSchedule(); // refreshes schedule ui
 }
+
+// Gets data in xx-xx-xxxx form and splits in into useable code I think
 function selectDate() {
   let dateElement = document.getElementById("date");
   splitDate = dateElement.value.split("-");
@@ -153,10 +188,14 @@ function selectDate() {
   console.log(globalDate);
   updateMainSchedule();
 }
+
+// Sets date to end of fall tri
 function skipToWinter() {
   globalDate.setDate(fallTriEndDate.getDate());
   dateForward();
 }
+
+// Sets date to end of winter tri
 function skipToSpring() {
   globalDate.setDate(wintTriEndDate.getDate());
   dateForward();
