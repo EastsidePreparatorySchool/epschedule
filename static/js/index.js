@@ -30,7 +30,12 @@ function sendPostMessage(location, successFunction, data) {
   }
 }
 function reportBug() {
-  window.open("https://github.com/guberti/epschedule/issues");
+  window.open("https://forms.office.com/r/rwmhK8xw44");
+  // Old URL =  window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
+}
+function reportBugOld()
+{
+  window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
 
 function about() {
@@ -190,6 +195,7 @@ function renderToast(text) {
   toast.setAttribute("text", text);
   toast.show();
 }
+// Wait why are we doing this
 function getGpsSuccess(position, roomObj) {
   var radius = 6371000; // Radius of the earth
   var phi1 = position.coords.latitude * (Math.PI / 180);
@@ -459,7 +465,8 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
       var clazz = schedule["classes"][k];
       if (clazz["period"] == period) {
         if (clazz["teacher_username"]) {
-          // TODO remove shitty hack
+          // TODO remove garbage hack
+          // we cant curse smh
           var tu = clazz["teacher_username"]
           var teacher = tu.charAt(1).toUpperCase() + tu.slice(2);
 
@@ -498,8 +505,9 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
       period: "X",
       time: ""
     };
-    LPC_COMMONS_CLASSES = ["Lunch (US)", "Lunch (MS)", "Assembly", "US Community"];
+    LPC_COMMONS_CLASSES = ["Lunch", "Assembly", "US Community"];
     if (LPC_COMMONS_CLASSES.includes(scheduleObj.name)) {
+
       scheduleObj.room = "LPC Commons";
     }
     if (scheduleObj.name == "Lunch (US)" || scheduleObj.name == "Lunch (MS)") {
@@ -614,7 +622,7 @@ function getLunchForDate(lunch_list, date) {
     // all lunch date months are stored 1-12
     if (
       date.getDate() == lunch["day"] &&
-      date.getMonth() + 1 == lunch[ "month"] &&
+      date.getMonth() + 1 == lunch["month"] &&
       date.getFullYear() == lunch["year"]
       ) {
       return lunch;

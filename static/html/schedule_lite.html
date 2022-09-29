@@ -1,8 +1,6 @@
 <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/polymer/polymer.html">
-<link rel="import"
-  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import"
-  href="https://epschedule-static.storage.googleapis.com/bower_components/paper-material/paper-material.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/paper-material/paper-material.html">
 <link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="schedule-lite">
@@ -13,11 +11,9 @@
     [layout] {
       @apply(--layout);
     }
-
     [layout][vertical] {
       @apply(--layout-vertical);
     }
-
     [layout][center] {
       @apply(--layout-center);
     }
@@ -31,26 +27,21 @@
       margin-bottom: 1px;
       transition: 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
     }
-
     :host-context(.no-transition) {
       transition: none;
     }
-
     .date {
       padding: 16px;
       font-size: 14px;
       color: gray;
     }
-
     .card {
       margin-bottom: 1px;
       background: white;
     }
-
     p {
       margin: 0px;
     }
-
     .check {
       width: 70px;
       margin-left: 16px;
@@ -58,11 +49,9 @@
       font-weight: bold;
       color: #2196f3;
     }
-
     .check:after {
       content: "SHARED";
     }
-
     .clear {
       width: 70px;
       margin-left: 16px;
@@ -70,15 +59,12 @@
       #font-weight: bold;
       color: lightgray;
     }
-
     .clear:after {
       content: "------------";
     }
-
     .hidden {
       opacity: 0.5;
     }
-
     .time {
       margin-top: 10px;
       margin-bottom: 2px;
@@ -86,7 +72,6 @@
       font-weight: 300;
       color: gray;
     }
-
     .name {
       margin-top: 2px;
       margin-bottom: 10px;
@@ -102,16 +87,16 @@
           <div layout vertical>
             <p class="time">
               <span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
-              <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
-                (<span>{{item.teacherLastName}}</span>,
-                <span>{{item.room}}</span>)
-              </template>
-              <template is="dom-if" if="{{hasTeacherOnly(item)}}">
-                (<span>{{item.teacherLastName}}</span>)
-              </template>
-              <template is="dom-if" if="{{hasRoomOnly(item)}}">
-                (<span>{{item.room}}</span>)
-              </template>
+                <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
+                  (<span>{{item.teacherLastName}}</span>,
+                  <span>{{item.room}}</span>)
+                </template>
+                <template is="dom-if" if="{{hasTeacherOnly(item)}}">
+                  (<span>{{item.teacherLastName}}</span>)
+                </template>
+                <template is="dom-if" if="{{hasRoomOnly(item)}}">
+                  (<span>{{item.room}}</span>)
+                </template>
             </p>
             <p class="name"><span>{{item.name}}</span></p>
           </div>
@@ -122,23 +107,23 @@
   <script>
     Polymer({
       is: 'schedule-lite',
-      behaviors: [SwipeableBehavior],
+      behaviors: [ SwipeableBehavior ],
       properties: {
         entries: { notify: true },
         dateString: String
       },
-      ready: function () {
-        // disable vertical gestures on the card
+      ready: function() {
+      // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
       },
-      computeShared: function (item) {
+      computeShared: function(item) {
         if (item.shared) {
           return "check";
         } else {
           return "clear";
         }
       },
-      computeHidden: function (item) {
+      computeHidden: function(item) {
         var classes = "card";
 
         if (item.name == "Hidden") {
@@ -147,13 +132,13 @@
         return classes;
       },
 
-      hasTeacherAndRoom: function (item) {
+      hasTeacherAndRoom: function(item) {
         return item.teacherLastName && item.room;
       },
-      hasTeacherOnly: function (item) {
+      hasTeacherOnly: function(item) {
         return item.teacherLastName && !item.room;
       },
-      hasRoomOnly: function (item) {
+      hasRoomOnly: function(item) {
         return !item.teacherLastName && item.room;
       },
     });

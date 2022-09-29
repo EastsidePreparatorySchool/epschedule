@@ -5,13 +5,12 @@ import os
 import time
 
 import google.oauth2.id_token
-from flask import *
+from flask import Flask, abort, make_response, render_template, request, session
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
 
 from cron.photos import crawl_photos, hash_username
 from cron.schedules import crawl_schedules
-from cron.update_lunch import get_lunch_for_date, read_lunches
 
 app = Flask(__name__)
 
@@ -19,8 +18,7 @@ verify_firebase_token = None
 datastore_client = None
 SCHEDULE_INFO = None
 DAYS = None
-LUNCH_TODAY = []
-FALL_TRI_END = datetime.datetime(2022, 12, 15, 15, 30, 0, 0)
+FALL_TRI_END = datetime.datetime(2022, 11, 18, 15, 30, 0, 0)
 WINT_TRI_END = datetime.datetime(2023, 3, 10, 15, 30, 0, 0)
 
 
@@ -29,9 +27,6 @@ def init_app(test_config=None):
     global datastore_client
     global SCHEDULE_INFO
     global DAYS
-    global LUNCH_TODAY
-    # initiates a constant to store the lunch for today
-    LUNCH_TODAY = get_lunch_for_date(datetime.date.today())
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -161,7 +156,7 @@ def main():
             schedule=json.dumps(get_schedule(session["username"])),
             days=json.dumps(DAYS),
             components="static/components.html",
-            lunches=LUNCH_TODAY,
+            lunches="[]",
             fall_end_unix=str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
             wint_end_unix=str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000),
         )
@@ -443,7 +438,7 @@ def handle_cron_photos():
     return "OK"
 
 
-@app.route("/cron/update_lunch")
+@app.route("/cron/lunches")
 def handle_cron_lunches():
-    read_lunches()
+    # update_lunch.read_lunches()
     return "OK"
