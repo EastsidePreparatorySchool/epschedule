@@ -23,7 +23,7 @@ class Lunch(ndb.Model):
     day = ndb.DateProperty(required=True)
 
     @classmethod
-    def queryWithTimeConstraint(cls, earliest_lunch):
+    def query_with_time_constraint(cls, earliest_lunch):
         return cls.query().filter(Lunch.day >= earliest_lunch)
 
 
