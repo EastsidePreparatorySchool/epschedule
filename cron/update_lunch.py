@@ -155,7 +155,12 @@ def get_lunch_for_date(current_date, days_into_past=28):
                     or description_section == False
                 ):  # eliminates a section if it is empty or just a space
                     cleaned_description.append(
-                        description_section.replace("\,", ",").replace("\n", "").replace("&amp\;", "&").replace("Click here for meal account and food services details", "")
+                        description_section.replace("\,", ",")
+                        .replace("\n", "")
+                        .replace("&amp\;", "&")
+                        .replace(
+                            "Click here for meal account and food services details", ""
+                        )
                     )
             # this for loop destroyed all escape characters and new lines in the description
 
