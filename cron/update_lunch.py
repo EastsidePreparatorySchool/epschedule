@@ -139,10 +139,10 @@ def read_lunches():  # Update the database with new lunches
 
 
 # Returns lunches to be displayed in a schedule
-def get_lunches_since_date(current_date_minus_28):
+def get_lunches(current_date, days_in_past):
     with client.context():
         # days_into_past is the number of days into the past to go
-        earliest_lunch = current_date_minus_28
+        earliest_lunch = current_date - datetime.timedelta(days_in_past)
         lunch_objs = []
         for lunch_obj in Lunch.query_with_time_constraint(earliest_lunch):
             cleaned_description = (
@@ -155,9 +155,9 @@ def get_lunches_since_date(current_date_minus_28):
                     or description_section == False
                 ):  # eliminates a section if it is empty or just a space
                     cleaned_description.append(
-                        description_section.replace("\,", ",")
+                        description_section.replace("\\,", ",")
                         .replace("\n", "")
-                        .replace("&amp\;", "&")
+                        .replace("&amp\\;", "&")
                         .replace(
                             "Click here for meal account and food services details", ""
                         )
