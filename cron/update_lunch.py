@@ -139,10 +139,10 @@ def read_lunches():  # Update the database with new lunches
 
 
 # Returns lunches to be displayed in a schedule
-def get_lunches(current_date, days_in_past):
+def get_lunches_since_date(date):
     with client.context():
         # days_into_past is the number of days into the past to go
-        earliest_lunch = current_date - datetime.timedelta(days_in_past)
+        earliest_lunch = date
         lunch_objs = []
         for lunch_obj in Lunch.query_with_time_constraint(earliest_lunch):
             cleaned_description = (
@@ -166,7 +166,7 @@ def get_lunches(current_date, days_in_past):
 
             obj = {
                 "summary": lunch_obj.summary.replace(
-                    "\,", ","
+                    "\\,", ","
                 ),  # deletes all annoying escape character backslashes
                 "description": cleaned_description,
                 "day": lunch_obj.day.day,
