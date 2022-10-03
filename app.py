@@ -157,7 +157,9 @@ def main():
             schedule=json.dumps(get_schedule(session["username"])),
             days=json.dumps(DAYS),
             components="static/components.html",
-            lunches=get_lunches_since_date(datetime.date.today() - datetime.timedelta(28)),  # gets the last 28 days of lunches
+            lunches=get_lunches_since_date(
+                datetime.date.today() - datetime.timedelta(28)
+            ),  # gets the last 28 days of lunches
             fall_end_unix=str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
             wint_end_unix=str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000),
         )
