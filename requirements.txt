@@ -1,9 +1,10 @@
 Flask
-google-cloud-datastore
-google-auth
 requests
+google-auth
+google-cloud-datastore>=1.15.3,<2.0
 google-cloud-secret-manager
 google-cloud-storage
+google-cloud-ndb
 Pillow
 pytest
 pylint

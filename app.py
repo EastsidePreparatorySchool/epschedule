@@ -11,6 +11,7 @@ from google.cloud import datastore, secretmanager, storage
 
 from cron.photos import crawl_photos, hash_username
 from cron.schedules import crawl_schedules
+from cron.update_lunch import get_lunches_since_date, read_lunches
 
 app = Flask(__name__)
 
@@ -156,7 +157,9 @@ def main():
             schedule=json.dumps(get_schedule(session["username"])),
             days=json.dumps(DAYS),
             components="static/components.html",
-            lunches="[]",
+            lunches=get_lunches_since_date(
+                datetime.date.today() - datetime.timedelta(28)
+            ),  # gets the last 28 days of lunches
             fall_end_unix=str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
             wint_end_unix=str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000),
         )
@@ -438,7 +441,7 @@ def handle_cron_photos():
     return "OK"
 
 
-@app.route("/cron/lunches")
+@app.route("/cron/update_lunch")
 def handle_cron_lunches():
-    # update_lunch.read_lunches()
+    read_lunches()
     return "OK"
