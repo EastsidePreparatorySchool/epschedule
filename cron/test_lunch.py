@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from cron.update_lunch import add_events
 
+
 # Test reading lunch data from an ICS file and sanitizing it.
 def test_read_lunches():
     events = []
