@@ -112,8 +112,8 @@ def write_event_to_db(entry):  # Places a single entry into the db
         entry.put()
 
 
-def add_events(response):
-    text = response.text
+def add_events(response_text):
+    text = response_text
     lines = text.splitlines()
     events = parse_events(lines)
 
@@ -126,16 +126,10 @@ def add_events(response):
 # ---------------------------------------------- #
 
 
-def test_read_lunches(fakepath):  # Will be called by unit tests
-    # Adds two fake lunch objects to db with dates 12/20/9999 and 12/21/9999
-    mainresponse = open(fakepath)
-    add_events(mainresponse)
-
-
 def read_lunches():  # Update the database with new lunches
     # lunch_url is a global var
-    mainresponse = requests.get(LUNCH_URL)
-    add_events(mainresponse)
+    response = requests.get(LUNCH_URL)
+    add_events(response.text)
 
 
 # Returns lunches to be displayed in a schedule
