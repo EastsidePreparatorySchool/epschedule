@@ -1,26 +1,26 @@
 /* 
   index.js
-  Main js file holding ui for epschedule when logged in
+  main js file holding ui for epschedule when logged in
 
-  Last edited: September 2022
-  By: Jack Goetzmann
+  last edited: October 2022
+  by: Jack Goetzmann
 */
 
-// Signs out user
+// signs out user
 function signOut() {
   sendPostMessage("logout", reload);
 }
 
-// Reloads something (website or ui idk)
+// reloads something (website or ui idk)
 function reload(result) {
   location.reload();
 }
 
-// Idk what this does
-// Data argument is optional
+// idk what this does
+// data argument is optional
 function sendPostMessage(location, successFunction, data) {
-  // Location is the suburl to send data to, e.g. /logout
-  // Successfunction is the function to call if 200 is returned
+  // location is the suburl to send data to, e.g. /logout
+  // successfunction is the function to call if 200 is returned
   xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4) {
@@ -35,7 +35,7 @@ function sendPostMessage(location, successFunction, data) {
   }
   xhr.open("POST", location, true);
 
-  // If there is no data to send
+  // if there is no data to send
   if (typeof data === "undefined") {
     xhr.send(new FormData());
   } else {
@@ -43,30 +43,30 @@ function sendPostMessage(location, successFunction, data) {
   }
 }
 
-// Code that makes "report bug" button link to office form
+// code that makes "report bug" button link to office form
 function reportBug() {
   window.open("https://forms.office.com/r/rwmhK8xw44");
-  // Old URL =  window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
+  // old URL =  window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
 
-// Old URL for bug report button
+// old URL for bug report button
 function reportBugOld() {
   window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
 
-// Code that makes "about" button open pannel
+// code that makes "about" button open pannel
 function about() {
   var about = document.getElementById("about");
   about.open();
 }
 
-// Code that makes "settings" button open pannel
+// code that makes "settings" button open pannel
 function openSettings() {
   var dialog = document.getElementById("dialog");
   dialog.open();
 }
 
-// Changes some password (idk what)
+// changes some password (idk what)
 function submitChangePassword() {
   var data = new FormData();
   var oldPassword = document.getElementById("oldpassword")
@@ -91,7 +91,7 @@ function submitChangePassword() {
   xhr.send(data);
 }
 
-// Code that makes the "hide/show photo or schedule" work (sliders on privacy pannel)
+// code that makes the "hide/show photo or schedule" work (sliders on privacy pannel)
 function submitUpdatePrivacy() {
   var share_photo = document.getElementById("sharephototoggle");
   var share_schedule = document.getElementById("sharescheduletoggle");
@@ -99,7 +99,7 @@ function submitUpdatePrivacy() {
   document.getElementById("dialog").close()
 }
 
-// "Ok" button on privacy pannel that submits privace preferences to cloud
+// "ok" button on privacy pannel that submits privace preferences to cloud
 function sendUpdatePrivacyRequest(share_photo, share_schedule) {
   var data = new FormData();
   data.append('share_photo', share_photo);
@@ -121,7 +121,7 @@ function sendUpdatePrivacyRequest(share_photo, share_schedule) {
   xhr.send(data);
 }
 
-// Idk what this code does -- Probably related the 20-21 school year senior prank (depreciated code point towards this)
+// idk what this code does -- Probably related the 20-21 school year senior prank (depreciated code point towards this)
 document.onkeydown = function(event) {
   if (pages.selected == 0) {  // no popup
     if (event.keyCode == 37) {  // left
@@ -136,7 +136,7 @@ document.onkeydown = function(event) {
   }
 }
 
-// Controls date switch on swipe left or right
+// controls date switch on swipe left or right
 function scheduleSwiped(evt) {
   if (evt.detail.direction == "left") { // if left move date forward
     dateForward();
@@ -145,10 +145,10 @@ function scheduleSwiped(evt) {
   }
 }
 
-// Grabs data for schedule I think
+// grabs data for schedule I think
 var globalDate = getInitialDate();
 
-// Finds date and grabs data and modifies it to Monday (if on weekend) 
+// finds date and grabs data and modifies it to Monday (if on weekend) 
 function getInitialDate() {
   date = new Date(); // Grabs date using api?
   switch(date.getDay()) { // Falling through is intentional here (no default so its fine) -> (0 sunday, 1 monday, ... 5 friday, 6 saturday)
@@ -180,7 +180,7 @@ function dateForward() {
   updateMainSchedule(); // refreshes schedule ui
 }
 
-// Gets data in xx-xx-xxxx form and splits in into useable code I think
+// gets data in xx-xx-xxxx form and splits in into useable code I think
 function selectDate() {
   let dateElement = document.getElementById("date");
   splitDate = dateElement.value.split("-");
@@ -189,44 +189,55 @@ function selectDate() {
   updateMainSchedule();
 }
 
-// Sets date to end of fall tri
+// sets date to end of fall tri
 function skipToWinter() {
   globalDate.setDate(fallTriEndDate.getDate());
   dateForward();
 }
 
-// Sets date to end of winter tri
+// sets date to end of winter tri
 function skipToSpring() {
   globalDate.setDate(wintTriEndDate.getDate());
   dateForward();
 }
+
+// takes a date and sets the date to that new date?
 function copyDate(date) {
   return new Date(date.getTime());
 }
+
+// takes a date and a change value and moves the date forward or back by that amount
 function adjustDate(date, delta) {
-  date.setDate(date.getDate() + delta);
-  if (date.getDay() == 6 && delta == 1) {
+  date.setDate(date.getDate() + delta); // takes date and adds or subtracts time
+  if (date.getDay() == 6 && delta == 1) { // if Saturday and would change to Sunday changes to Monday
     // jump from Saturday to Monday
     date.setDate(date.getDate() + 2);
-  } else if (date.getDay() == 0 && delta == -1) {
+  } else if (date.getDay() == 0 && delta == -1) { // if Sunday and would change to Saturday changes to Friday
     // jump from Sunday back to Friday
     date.setDate(date.getDate() - 2);
   }
 }
+
+// takes a day and returns the day of the week (0 sunday, 1 monday -> 5 friday, 6 saturday)
 function dayOfWeekToString(day) {
   var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   return DAYS[day];
 }
+
+// takes a date and returns a string with that date in (, month/day)
 function dateToString(date) {
   return dayOfWeekToString(date.getDay()) + ', ' +
       (date.getMonth() + 1) + "/" + date.getDate();
 }
 
+// main refresh UI function
 function updateMainSchedule() {
-  var scheduleElement = document.getElementById('mainschedule');
-  renderDate(globalDate);
-  renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches);
+  var scheduleElement = document.getElementById('mainschedule'); // finds the html div 'mainschedule'
+  renderDate(globalDate); // renders the date and initializes the UI (nonschool days will get a blank image) and (schools days will get the dropdowns)
+  renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches); // adds the information to initialized UI
 }
+
+// either gavin was on crack or this a senior prank (probably both)
 function renderToast(text) {
   toast = document.getElementById("toast");
   console.log("Displaying toast");
@@ -234,9 +245,10 @@ function renderToast(text) {
   toast.setAttribute("text", text);
   toast.show();
 }
-// Wait why are we doing this
+
+// wait why are we doing this (J: why ARE you doing this?)
 function getGpsSuccess(position, roomObj) {
-  var radius = 6371000; // Radius of the earth
+  var radius = 6371000; // radius of the earth (WHY IS THIS HARDCODED/EXISTS?)
   var phi1 = position.coords.latitude * (Math.PI / 180);
   var phi2 = roomObj.latitude * (Math.PI / 180);
   var deltaPhi = (roomObj.latitude-position.coords.latitude) * (Math.PI / 180);
@@ -257,29 +269,35 @@ function getGpsSuccess(position, roomObj) {
   marker.title = "Your face";
   map.appendChild(marker);
 }
+
+// takes a number for and uses an array 
 function isStandardClass(letter) {
   var standardPeriods = ["O", "A", "B", "C", "D", "E", "F", "G", "H"];
-  return standardPeriods.indexOf(letter) >= 0;
+  return standardPeriods.indexOf(letter) >= 0; // returns index of number
 }
+
+// switch logic to log errors for gps
 function getGpsFail(error) {
   switch(error.code) {
-      case error.PERMISSION_DENIED:
+      case error.PERMISSION_DENIED: // if user does not allow location
           console.log("User did not allow access to GPS");
           break;
-      case error.POSITION_UNAVAILABLE:
+      case error.POSITION_UNAVAILABLE: // if user consented to allow location but it wasnt sent
           console.log("EPSchedule was not able to get location information");
           break;
-      case error.TIMEOUT:
+      case error.TIMEOUT: // if user request to enable gps times out
           console.log("Request to enable GPS timed out");
           break;
-      case error.UNKNOWN_ERROR:
+      case error.UNKNOWN_ERROR: // if not any of these errors
           console.log("Geolocation failed, error unknown");
           break;
   }
 }
+
+// requests more data to be displayed (if something fails???)
 function requestAdditionalData(name, type, funct) {
-  // Type is the type of data being requested - [class, teacher, student, room, period]
-  // Name is the name of the class, teacher, student, etc.
+  // type is the type of data being requested - [class, teacher, student, room, period]
+  // name is the name of the class, teacher, student, etc.
   name = cleanString(name);
   var url = type + "/" + name;
   console.log("Requesting " + url);
@@ -293,9 +311,11 @@ function requestAdditionalData(name, type, funct) {
   xhr.open("GET", url, true);
   xhr.send();
 }
+
+// more geolocating google maps stuff WHY DID GAVIN DO THIS?
 function renderRoom(roomObj) {
-  /*renderToast("Please allow EPSchedule to use your current location"); // TODO check to see if browser allows geolocation by default*/
-  // Bug here that causes latitude and longitude of google map tag to not exist
+  // renderToast("Please allow EPSchedule to use your current location"); // TODO check to see if browser allows geolocation by default*/
+  // bug here that causes latitude and longitude of google map tag to not exist
   var popup = document.getElementById("popup");
   var container = document.getElementById("popupContainer");
   console.log("Latitude = " + roomObj.latitude);
@@ -316,20 +336,24 @@ function renderRoom(roomObj) {
       renderToast("Your browser does not support Geolocation");
   }*/
 }
+
+// unused code for the feature to add teacher bios and display them
 function renderBio(teacherBio) {
-  var html = "";
-  for (var i = 0; i < teacherBio.length; ++i) {
-    html += '<p>' + teacherBio[i] + '</p>';
+  var html = ""; // creates string
+  for (var i = 0; i < teacherBio.length; ++i) { // loops through length of teacherBio
+    html += '<p>' + teacherBio[i] + '</p>'; // adds it to the html with html print syntax
   }
-  return html;
+  return html; // returns a string that can be inserted into html to print bio
 }
+
+// renders popup for teacher when searched up
 function renderTeacher(teacherObj) {
-  var popupContainer = document.getElementById("popupContainer");
-  var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
-  imgSrc = imgSrc + teacherObj.lastname + ".jpg";
-  imgSrc = imgSrc.toLowerCase();
-  var email = teacherObj.email;
-  popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
+  var popupContainer = document.getElementById("popupContainer"); // gets popup code
+  var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_"; // generates a string that correlates to a photo
+  imgSrc = imgSrc + teacherObj.lastname + ".jpg"; // sets the picture to a jpg
+  imgSrc = imgSrc.toLowerCase(); // removes capitals of string
+  var email = teacherObj.email; // finds email and sets it to email
+  popupContainer.innerHTML = '<div class="teacher" layout vertical>' + // creates a string with html code
       '<paper-material class="header" elevation="2">' +
       '<div layout horizontal center>' +
       '<img src="' + imgSrc + '" width="128px" height="128px">' +
@@ -339,24 +363,28 @@ function renderTeacher(teacherObj) {
       renderBio(teacherObj.bio) + '</div></div></paper-material>' +
       '<schedule-lite id="teacherschedule"></schedule-lite>' +
       '</div>';
-  // Wait for HTML to be parsed/applied before trying to show the schedule.
-  // Without this, Firefox/Safari don't display the schedule.
+  // wait for HTML to be parsed/applied before trying to show the schedule.
+  // without this, Firefox/Safari don't display the schedule.
   setTimeout(function() {
     finishLiteSchedule(document.getElementById('teacherschedule'), teacherObj);
   }, 0);
 }
-function stringifyRooms(arr) {
-  s = "";
-  for (var i = 0; i < arr.length; i++) {
-    s += arr[i];
 
-    // Don't put a comma after the last item
+// makes the room a string (or "stringifys" it)
+function stringifyRooms(arr) {
+  s = ""; // sets return variable to clean slate
+  for (var i = 0; i < arr.length; i++) { // loops through array
+    s += arr[i]; // adds the value of each item in the array to s
+
+    // don't put a comma after the last item
     if (i != arr.length - 1) {
       s += ", ";
     }
   }
-  return s;
+  return s; // returns stringified vairable
 }
+
+// takes period info and renders UI
 function renderPeriod(periodObj) {
   var popupContainer = document.getElementById("popupContainer");
 
@@ -379,8 +407,8 @@ function renderPeriod(periodObj) {
     '</paper-material></div></div>' +
   '</div>';
 
-  // Wait for HTML to be parsed/applied before trying to show the schedule.
-  // Without this, Firefox/Safari don't display the schedule.
+  // wait for HTML to be parsed/applied before trying to show the schedule.
+  // without this, Firefox/Safari don't display the schedule.
   setTimeout(function() {
     var e = document.getElementById('altclassesschedule');
     var f = document.getElementById('currentperiodclassschedule');
@@ -388,8 +416,8 @@ function renderPeriod(periodObj) {
     renderSchedule(copyDate(globalDate), periodObj, "core", e, {}, false);
     console.log( {'classes': [[periodObj['currentclass']]*3]});
 
-    // We have the same item three times to simulate three trimesters
-    // That way, no matter what trimester we're in, we'll always pick "currentclass"
+    // we have the same item three times to simulate three trimesters
+    // that way, no matter what trimester we're in, we'll always pick "currentclass"
     renderSchedule(copyDate(globalDate), {'classes': [[periodObj['currentclass']],
       [periodObj['currentclass']],[periodObj['currentclass']]]}, "core", f, {}, false);
 
@@ -398,18 +426,20 @@ function renderPeriod(periodObj) {
     f.behaviors = [];
   }, 20);
 }
+
+// renders popup for student when searched up
 function renderStudent(studentObj) {
-  var popupContainer = document.getElementById("popupContainer");
-  var email = studentObj.email;
-  email = email.toLowerCase();
-  if (studentObj.grade) {
-    var grade = studentObj.grade + "th Grade";
-    var name = studentObj.firstname;
-  } else {
-    var grade = "";
-    var name = studentObj.firstname + " " + studentObj.lastname;
+  var popupContainer = document.getElementById("popupContainer"); // gets popup code 
+  var email = studentObj.email; // finds email and sets it to email
+  email = email.toLowerCase(); // makes email all lowercase
+  if (studentObj.grade) { // if student has a grade
+    var grade = studentObj.grade + "th Grade"; // adds "-th" after the grade
+    var name = studentObj.firstname; // adds first name after grade
+  } else { // if student does not currently have a grade
+    var grade = ""; // sets grade to blank
+    var name = studentObj.firstname + " " + studentObj.lastname; // sets name to first and last
   }
-  popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
+  popupContainer.innerHTML = '<div class="teacher" layout vertical>' + // html for popup
       '<paper-material class="header" elevation="2">' +
       '<div layout horizontal center>' +
       '<img src="' + studentObj.photo_url + '" onerror="if (this.src != \'/static/images/placeholder.png\') this.src = \'/static/images/placeholder.png\';">' +
@@ -418,28 +448,34 @@ function renderStudent(studentObj) {
       '<span class="email">Email ' + name + '</span></a></p></div></div></paper-material>' +
       '<schedule-lite id="studentschedule"></schedule-lite>' +
       '</div>';
-  // Wait for HTML to be parsed/applied before trying to show the schedule.
-  // Without this, Firefox/Safari don't display the schedule.
+  // wait for HTML to be parsed/applied before trying to show the schedule.
+  // without this, Firefox/Safari don't display the schedule.
   setTimeout(function() {
     finishLiteSchedule(document.getElementById('studentschedule'), studentObj);
   }, 0);
 }
+
+// generates schedule for individual
 function finishLiteSchedule(scheduleElement, otherUserObj) {
-  scheduleElement.date = copyDate(globalDate);
+  scheduleElement.date = copyDate(globalDate); // copies data from api
   scheduleElement.addEventListener("swiped", function(e) {
-    adjustDate(scheduleElement.date,
+    adjustDate(scheduleElement.date, //adjust 
         (e.detail.direction == 'left') ? 1 : -1);
     updateLiteSchedule(scheduleElement, otherUserObj);
   });
   updateLiteSchedule(scheduleElement, otherUserObj);
 }
+
+// refreshes ui of the popschedule when you search someone up 
 function updateLiteSchedule(scheduleElement, otherUserObj) {
-  scheduleElement.dateString = dateToString(scheduleElement.date);
-  renderSchedule(scheduleElement.date, otherUserObj, "lite", scheduleElement);
+  scheduleElement.dateString = dateToString(scheduleElement.date); // attaches date
+  renderSchedule(scheduleElement.date, otherUserObj, "lite", scheduleElement); // attaches 'lite' schedule
 }
+
+// takes date stored and updates ui with that date
 function renderDate(dateObj) {
-  var daySpan = document.getElementById("day");
-  daySpan.firstChild.textContent = dateToString(dateObj);
+  var daySpan = document.getElementById("day"); // finds date ui
+  daySpan.firstChild.textContent = dateToString(dateObj); // converts date to string for ui
 }
 
 // Determine whether the user is in middle or upper school
@@ -451,6 +487,7 @@ function getSchool(grade) {
   }
 }
 
+// changes a one digit number to a two digit number string by adding '0' in front of the other number
 function toTwoDig(num) {
   var s = num.toString();
   if (s.length == 1) {
@@ -459,19 +496,23 @@ function toTwoDig(num) {
     return s;
   }
 }
+
+// generates date key from date in xxxx-xx-xx (2000-01-01)
 function makeDateKey(dateObj){
-  var datekey = dateObj.getFullYear() + "-" + 
-      toTwoDig(dateObj.getMonth() + 1) + "-" + 
-      toTwoDig(dateObj.getDate());
+  var datekey = dateObj.getFullYear() + "-" + // year
+      toTwoDig(dateObj.getMonth() + 1) + "-" +  // month
+      toTwoDig(dateObj.getDate()); // date
   return datekey;
 }
-// Handles exceptions, also handles special weekend schedules
+
+// handles exceptions, also handles special weekend schedules
 function getScheduleTypeForDate(dateObj, exceptions) {
   var datekey = makeDateKey(dateObj);
   var day = exceptions[0][datekey];
   return exceptions[1][day];
 }
 
+// changes ui based on US or MS
 function incorrectSchool(s, school) {
   var other = "MS";
   if (school == "MS") {
@@ -487,18 +528,18 @@ function incorrectSchool(s, school) {
   return false;
 }
 
-// Generate basic name, teacher, room, time, and period info for a class
+// generate basic name, teacher, room, time, and period info for a class
 function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
   var scheduleObj;
   var foundClass = false;
 
-  // Ensure that we don't display periods for middle schoolers for upper schoolers
+  // ensure that we don't display periods for middle schoolers for upper schoolers
   if (incorrectSchool(day[currentSlot]["period"], school)) {
     return null;
   } else {
     var period = day[currentSlot]["period"].replace(" - " + school, "");
   }
-  // If it is a normal period
+  // if it is a normal period
   if (isStandardClass(period)) {
     for (var k = 0; k < schedule["classes"].length; k++) {
       var clazz = schedule["classes"][k];
@@ -531,12 +572,12 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
         break;
       }
     }
-    if (!foundClass) { // We're looking for a period the user doesn't have, like O period
+    if (!foundClass) { // we're looking for a period the user doesn't have, like O period
       return null;
     }
-  } else { // If it is a special class, such as Lunch, Assembly, or Class Meeting
+  } else { // if it is a special class, such as Lunch, Assembly, or Class Meeting
 
-    // Note that 0 Period Instrumental Music does not fall in this category
+    // note that 0 Period Instrumental Music does not fall in this category
     scheduleObj = {
       name: period,
       teacher: "",
@@ -559,20 +600,20 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
   if (scheduleObj.room == "N/A") {
     scheduleObj.room = "";
   }
-  // Add in photos if the user's schedule is being rendered
+  // add in photos if the user's schedule is being rendered
   if (type == "full" || type == "core") {
-    // Add the left-hand images to the schedule
+    // add the left-hand images to the schedule
     addScheduleImages(scheduleObj, schedule, type);
   } else if (type == "lite") {
     if (isStandardClass(scheduleObj.period)) { // If it's a class period
-      // Determine if the class is shared
+      // determine if the class is shared
       scheduleObj.shared = isSharedClass(scheduleObj, schedule.termid);
     } else {
-      return null; // Skip over lunch, advisory, assembly, etc.
+      return null; // skip over lunch, advisory, assembly, etc.
     }
   }
   scheduleObj.termId = termId;
-  // Split the time into the start and end times
+  // split the time into the start and end times
   if (type != "core") {
     var times = day[currentSlot]["times"].split('-');
     scheduleObj.startTime = times[0].trim();
@@ -618,9 +659,10 @@ function isOnCampus(grade, dateObj) {
   }
 }
 
+// random image
 IMAGE_CDN = "https://epschedule-avatars.storage.googleapis.com/"
 
-// Add the images on the left side to full schedules
+// add the images on the left side to full schedules
 function addScheduleImages(scheduleObj, userSchedule, type) {
   if (scheduleObj.teacher != "" || type == "core" ) {
     var sanitized_teacher_name;
@@ -629,7 +671,7 @@ function addScheduleImages(scheduleObj, userSchedule, type) {
     scheduleObj.avatar = IMAGE_CDN + scheduleObj.teacherUsername + ".jpg";
     scheduleObj.teacherLink = "/teacher/" + sanitized_teacher_name;
 
-  // If class is a special class or free period
+  // if class is a special class or free period
   } else if (scheduleObj.period == "X" || scheduleObj.name == "Free Period") {
     scheduleObj.teacherLink = "";
     var image_name = scheduleObj.name.toLowerCase();
@@ -641,6 +683,7 @@ function addScheduleImages(scheduleObj, userSchedule, type) {
   scheduleObj.roomLink = "/room/" + scheduleObj.room.toLowerCase().replace(/ /g,"_");
 }
 
+// if class is shared
 function isSharedClass(scheduleObj, termid) {
   var userClasses = userSchedule.classes[termid];
   for (var i = 0; i < userClasses.length; i++) {
@@ -652,12 +695,13 @@ function isSharedClass(scheduleObj, termid) {
   return false;
 }
 
+// finds lunch for the date
 function getLunchForDate(lunch_list, date) {
-  // Returns the lunch for the given date
-  // If there is no lunch, returns null
+  // returns the lunch for the given date
+  // if there is no lunch, returns null
   for (var i = 0; i < lunch_list.length; i++) {
     var lunch = lunch_list[i];
-    // Note that date.getMonth is from 0-11 but
+    // note that date.getMonth is from 0-11 but
     // all lunch date months are stored 1-12
     if (
       date.getDate() == lunch["day"] &&
@@ -669,6 +713,7 @@ function getLunchForDate(lunch_list, date) {
   }
 }
 
+// checks if the date being shown is the current day
 function dateIsCurrentDay(d1) {
   var d2 = new Date();
   return (
@@ -677,6 +722,7 @@ function dateIsCurrentDay(d1) {
     d1.getYear() == d2.getYear());
 }
 
+// renders schedule
 function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, expandable = true) {
 
   if (dateObj > wintTriEndDate) {
@@ -687,8 +733,8 @@ function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, ex
     termId = 0;
   }
   console.log("Converted " + dateObj + " to a term ID of " + termId);
-  // Either MS or US
-  if (type == "full" || type == "lite") {
+  // either MS or US
+  if (type == "full" || type == "lite") { // full == yours || lite == looking at someone elses
     var school = getSchool(schedule.grade);
   }
 
@@ -698,16 +744,16 @@ function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, ex
     var lunchInfo = getLunchForDate(lunch_list, dateObj);
   }
 
-  // The current schedule for that day
+  // the current schedule for that day
   var day = getScheduleTypeForDate(dateObj, days);
   if (type == "core") {
     day = [{'period': schedule["classes"][termId][0]['period'], 'times': ''}];
   }
   scheduleElement.type = type;
   scheduleElement.expandable = expandable;
-  // If it is a normal day (no all day event)
+  // if it is a normal day (no all day event)
   if (!day) { // If there is no school
-    // Get the data for the imageObj
+    // get the data for the imageObj
     var imageObj = {url: "/static/images/epslogolarge.png", text: "No School"};
     scheduleElement.allDayEvent = imageObj;
     scheduleElement.entries = null; // Clear the classes
@@ -720,32 +766,32 @@ function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, ex
     scheduleElement.entries = todaySchedule;
     scheduleElement.allDayEvent = null;
   } else if (day.length > 1) {
-    // For each class
+    // for each class
     for (var currentSlot = 0; currentSlot < day.length; currentSlot++) {
 
-      // Render the base of the class
+      // render the base of the class
       var triSchedule = JSON.parse(JSON.stringify(schedule));
       triSchedule['classes'] = triSchedule['classes'][termId]
       triSchedule['termid'] = termId;
       var scheduleObj = createClassEntry(triSchedule, school, day, currentSlot, type, lunchInfo);
-      if (scheduleObj) { // If scheduleObj is not null
-        // To see when scheduleObj might be null, look at createClassEntry()
-        // Push scheduleObj to a list of class objs
+      if (scheduleObj) { // if scheduleObj is not null
+        // to see when scheduleObj might be null, look at createClassEntry()
+        // push scheduleObj to a list of class objs
         todaySchedule.push(scheduleObj);
       }
     }
-    // Add the list of schedules to scheduleElement's entries array
+    // add the list of schedules to scheduleElement's entries array
     scheduleElement.entries = todaySchedule;
-    // Tell the element that it is not an all day event
+    // tell the element that it is not an all day event
     scheduleElement.allDayEvent = null;
     scheduleElement.isOnCampus = isOnCampus(schedule.grade, dateObj);
   } else if (day.length == 1) { // If it is an all day event
-    // Get the data for the imageObj
+    // get the data for the imageObj
     var imageObj = {url: '/static/images/epslogolarge.png', text: day[0]['period']};
     scheduleElement.allDayEvent = imageObj;
     scheduleElement.entries = null; // Clear the classes
   }
-  // Add in the expansion functions to the full schedule
+  // add in the expansion functions to the full schedule
   if (type == "full" || type == "core") {
     scheduleElement.onTeacherTap = function(e) {
       var username = e.model.item.teacherUsername;  
@@ -781,26 +827,34 @@ function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, ex
     scheduleElement.isToday = dateIsCurrentDay(dateObj);
   }
 }
+
+// more of gavin's location tracker
 function ratingSuccessful(result) {
   renderToast(result.error);
 }
+
+// opens search bar
 function openSearchBar() {
   var titlebar = document.querySelector(".headerbarpages");
   titlebar.entryAnimation = "slide-from-top-animation";
   titlebar.exitAnimation = "";
   titlebar.selected = 1;
   var input = document.querySelector("paper-input.paper-typeahead-input")
-  input.tabIndex = 1; // We can only focus elements with tab indexes, so we need to give our paper-input one
+  input.tabIndex = 1; // we can only focus elements with tab indexes, so we need to give our paper-input one
 
-  // We need to set a time out here, because the dom renders funny when a focused input moves
+  // we need to set a time out here, because the dom renders funny when a focused input moves
   setTimeout(function(){ input.focus(); }, 200);
 }
+
+// closes search bad to allow interaction with other ui
 function closeSearchBar() {
   var titlebar = document.querySelector(".headerbarpages");
   titlebar.exitAnimation = "slide-up-animation";
   titlebar.entryAnimation = "";
   titlebar.selected = 0;
 }
+
+// opens popup
 function openPopup(title) {
   var titleSpan = document.getElementById("popupTitle");
   titleSpan.textContent = title;
@@ -809,12 +863,14 @@ function openPopup(title) {
   pages.selected = 1;
 }
 
+// closes popup
 function closePopup() {
   pages.entryAnimation = "";
   pages.exitAnimation = "slide-right-animation";
   pages.selected = 0;
 }
 
+// removes spaces and periods from a string
 function cleanString(text) {
   text = text.toLowerCase();
   text = text.replace(/ /g, "_"); // Remove spaces
@@ -822,6 +878,7 @@ function cleanString(text) {
   return text;
 }
 
+// checks privacy settings
 function closePrivacyDialog() {
   document.getElementById("privacydialog").close();
   var share_photo = document.getElementById("initialsharephototoggle");
@@ -829,10 +886,12 @@ function closePrivacyDialog() {
   sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
 }
 
+// shows privacy settings
 function changePrivacySettings() {
   document.getElementById("privacydialogcollapse").show()
 }
 
+// waits for events and updates the ui based on the events
 document.addEventListener('WebComponentsReady', function() {
   var scheduleElement = document.getElementById('mainschedule');
   scheduleElement.addEventListener("swiped", scheduleSwiped, false);
@@ -845,4 +904,3 @@ document.addEventListener('WebComponentsReady', function() {
     openPopup(obj.name);
   });
 });
-
