@@ -46,30 +46,9 @@ function about() {
 function openSettings() {
   var dialog = document.getElementById("dialog");
   dialog.open();
+
 }
-function submitChangePassword() {
-  var data = new FormData();
-  var oldPassword = document.getElementById("oldpassword")
-  var newPassword = document.getElementById("newpassword")
-  data.append('oldpassword', oldPassword.value)
-  data.append('newpassword', newPassword.value)
-  xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4 && xhr.status==200) {
-      result = JSON.parse(xhr.responseText);
-      if (!result.error) {
-        renderToast("Password changed successfully.");
-        oldPassword.value = "";
-        newPassword.value = "";
-      } else {
-        console.log(result.error);
-        renderToast(result.error);
-      }
-    }
-  }
-  xhr.open("POST", "changepassword", true);
-  xhr.send(data);
-}
+
 function submitUpdatePrivacy() {
   var share_photo = document.getElementById("sharephototoggle");
   var share_schedule = document.getElementById("sharescheduletoggle");
