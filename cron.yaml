@@ -4,5 +4,5 @@ cron:
   schedule: every 24 hours
 
 - description: update lunches
-  url: /cron/lunches
+  url: /cron/update_lunch
   schedule: every 24 hours
