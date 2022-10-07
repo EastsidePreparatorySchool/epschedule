@@ -258,3 +258,7 @@ paper-icon-item {
   padding: 0 16px;
   width: initial;
 }
+
+.about-dialog{
+  overflow-y:auto;
+}
