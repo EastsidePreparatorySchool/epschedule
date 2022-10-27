@@ -46,30 +46,31 @@ function about() {
 function openSettings() {
   var dialog = document.getElementById("dialog");
   dialog.open();
-}
-function submitChangePassword() {
-  var data = new FormData();
-  var oldPassword = document.getElementById("oldpassword")
-  var newPassword = document.getElementById("newpassword")
-  data.append('oldpassword', oldPassword.value)
-  data.append('newpassword', newPassword.value)
+
   xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4 && xhr.status==200) {
       result = JSON.parse(xhr.responseText);
-      if (!result.error) {
-        renderToast("Password changed successfully.");
-        oldPassword.value = "";
-        newPassword.value = "";
-      } else {
+      if (result.error) {
         console.log(result.error);
-        renderToast(result.error);
       }
     }
   }
-  xhr.open("POST", "changepassword", true);
-  xhr.send(data);
+  xhr.onload = function() {
+    console.log("Hi")
+    const privacyDataOutput = JSON.parse(xhr.response);
+
+    var share_photo = document.getElementById("sharephototoggle");
+    var share_schedule = document.getElementById("sharescheduletoggle");
+
+    share_photo.checked = privacyDataOutput.share_photo;
+    share_schedule.checked = privacyDataOutput.share_schedule;
+  }
+
+  xhr.open("GET", "privacy", true);
+  xhr.send();
 }
+
 function submitUpdatePrivacy() {
   var share_photo = document.getElementById("sharephototoggle");
   var share_schedule = document.getElementById("sharescheduletoggle");
