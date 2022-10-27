@@ -137,7 +137,6 @@ def main():
                 user = datastore.Entity(key=key)
                 user.update(
                     {
-                        "joined": datetime.datetime.utcnow(),
                         "share_photo": True,
                         "share_schedule": True,
                     }
@@ -393,7 +392,12 @@ def handle_settings():
     user = get_database_entry(session["username"])
 
     if request.method == "GET":
-        return json.dumps(dict(user.items()))
+        userPrivacyDictRaw = dict(user.items())
+        userPrivacyDict = {
+            "share_photo": userPrivacyDictRaw["share_photo"],
+            "share_schedule": userPrivacyDictRaw["share_schedule"],
+        }
+        return json.dumps(userPrivacyDict)
 
     elif request.method == "POST":
         user.update(

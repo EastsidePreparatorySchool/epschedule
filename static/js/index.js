@@ -47,6 +47,28 @@ function openSettings() {
   var dialog = document.getElementById("dialog");
   dialog.open();
 
+  xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status==200) {
+      result = JSON.parse(xhr.responseText);
+      if (result.error) {
+        console.log(result.error);
+      }
+    }
+  }
+  xhr.onload = function() {
+    console.log("Hi")
+    const privacyDataOutput = JSON.parse(xhr.response);
+
+    var share_photo = document.getElementById("sharephototoggle");
+    var share_schedule = document.getElementById("sharescheduletoggle");
+
+    share_photo.checked = privacyDataOutput.share_photo;
+    share_schedule.checked = privacyDataOutput.share_schedule;
+  }
+
+  xhr.open("GET", "privacy", true);
+  xhr.send();
 }
 
 function submitUpdatePrivacy() {
