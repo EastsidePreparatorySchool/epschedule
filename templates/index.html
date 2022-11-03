@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <script src="https://epschedule-static.storage.googleapis.com/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- gets icons -->
   <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/polymer/polymer.html">
   <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/font-roboto/roboto.html">
   <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -117,6 +118,9 @@
               </paper-icon-button>
               <paper-icon-button class="rightfloat" icon="arrow-forward"
                onclick="dateForward()">
+              </paper-icon-button>
+              <paper-icon-button class="rightfloat" icon="forward"
+               onclick="dateToNextTri()">
               </paper-icon-button>
               <paper-icon-button class="rightfloat" icon="search"
                onclick="openSearchBar()">
