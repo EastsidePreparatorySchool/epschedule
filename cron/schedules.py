@@ -84,8 +84,12 @@ def download_schedule(session, api_key, username, year):
 
     individual = briggs_person["individual"]
     person["sid"] = individual["id"]
-    person["nickname"] = individual["nickname"]
-    person["firstname"] = individual["firstname"]
+    # person["nickname"] = individual["nickname"]
+    if(person["preferred_name"] is not None):
+        person["firstname"] = individual["preferred_name"]
+        print("preferred_name")
+    else:
+        person["firstname"] = individual["firstname"]
     person["lastname"] = individual["lastname"]
     person["gradyear"] = individual["gradyear"]
     # Recompute the username, don't just stuff the one we were passed
