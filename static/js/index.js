@@ -57,14 +57,13 @@ function openSettings() {
     }
   }
   xhr.onload = function() {
-    console.log("Hi")
     const privacyDataOutput = JSON.parse(xhr.response);
 
-    var share_photo = document.getElementById("sharephototoggle");
-    var share_schedule = document.getElementById("sharescheduletoggle");
+    var sharePhoto = document.getElementById("sharephototoggle");
+    var shareSchedule = document.getElementById("sharescheduletoggle");
 
-    share_photo.checked = privacyDataOutput.share_photo;
-    share_schedule.checked = privacyDataOutput.share_schedule;
+    sharePhoto.checked = privacyDataOutput.share_photo;
+    shareSchedule.checked = privacyDataOutput.share_schedule;
   }
 
   xhr.open("GET", "privacy", true);
