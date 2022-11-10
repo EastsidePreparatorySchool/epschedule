@@ -137,6 +137,7 @@ def main():
                 user = datastore.Entity(key=key)
                 user.update(
                     {
+                        "joined": datetime.datetime.utcnow(),
                         "share_photo": True,
                         "share_schedule": True,
                     }
