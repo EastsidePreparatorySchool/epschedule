@@ -152,7 +152,7 @@ function dateToNextTri() {
       break;
     }
   }
-  if (goToTri == -1){
+  if (goToTri == -1) {
     // if it is greater than the start of the spring tri
     // then loop back to the fall tri
     goToTri = 0;
