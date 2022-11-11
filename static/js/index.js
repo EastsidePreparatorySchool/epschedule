@@ -1,7 +1,5 @@
 const FALL_TRI_START = new Date(2022, 9 - 1, 6, 15, 30, 0, 0)
-const WINT_TRI_START = new Date(2023, 1 - 1, 3, 15, 30, 0, 0)
-const SPR_TRI_START = new Date(2023, 3 - 1, 14, 15, 30, 0, 0)
-const TRI_START_ARR = [FALL_TRI_START, WINT_TRI_START, SPR_TRI_START]
+const TRI_START_ARR = [FALL_TRI_START, fallTriEndDate, wintTriEndDate]
 
 function signOut() {
   sendPostMessage("logout", reload);
@@ -147,8 +145,8 @@ function dateToNextTri() {
   // TRI_START_ARR stores all the start of tri dates
   let goToTri = -1; // stores index of trimester you want to go to
   // default to -1 if no tri is greater than current date
-  for (let currLooking = 0; currLooking < 3; currLooking++){
-    if (globalDate < TRI_START_ARR[currLooking]){
+  for (let currLooking = 0; currLooking < 3; currLooking++) {
+    if (globalDate < TRI_START_ARR[currLooking]) {
       // located the tri to go to
       goToTri = currLooking; // set it and break
       break;
@@ -159,7 +157,6 @@ function dateToNextTri() {
     // then loop back to the fall tri
     goToTri = 0;
   }
-  console.log(TRI_START_ARR[goToTri])
   // adjust the date to reflect this
   specifyDate(TRI_START_ARR[goToTri])
 }
