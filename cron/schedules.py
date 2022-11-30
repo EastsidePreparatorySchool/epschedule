@@ -105,7 +105,6 @@ def download_schedule(session, api_key, username, year):
     if person["gradyear"]:
         person["grade"] = 12 - (person["gradyear"] - year)
 
-    print("Decoded " + person["username"])
     return person
 
 
@@ -150,7 +149,8 @@ def crawl_schedules(args):
             schedules[username] = download_schedule_with_retry(
                 session, key, username, school_year
             )
-            print(f"Crawled user {username}")
+            if args.verbose:
+                print(f"Crawled user {username}")
         except NameError:
             errors += 1
             print(f"Could not crawl user {username}")
