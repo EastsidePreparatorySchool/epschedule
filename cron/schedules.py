@@ -120,7 +120,7 @@ def download_schedule_with_retry(session, api_key, username, year):
                 raise e
 
 
-def crawl_schedules(args):
+def crawl_schedules(dry_run=False, verbose=False):
     print(f"Starting schedule crawl, dry_run={args.dry_run}")
 
     start = time.time()
@@ -189,4 +189,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
-    crawl_schedules(args)
+    crawl_schedules(args.dry_run, args.verbose)
