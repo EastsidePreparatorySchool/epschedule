@@ -121,7 +121,7 @@ def download_schedule_with_retry(session, api_key, username, year):
 
 
 def crawl_schedules(dry_run=False, verbose=False):
-    print(f"Starting schedule crawl, dry_run={args.dry_run}")
+    print(f"Starting schedule crawl, dry_run={dry_run}")
 
     start = time.time()
     # Load access key
@@ -149,7 +149,7 @@ def crawl_schedules(dry_run=False, verbose=False):
             schedules[username] = download_schedule_with_retry(
                 session, key, username, school_year
             )
-            if args.verbose:
+            if verbose:
                 print(f"Crawled user {username}")
         except NameError:
             errors += 1
@@ -171,7 +171,7 @@ def crawl_schedules(dry_run=False, verbose=False):
     print("Schedules passed sanity check")
 
     # Now do the upload, unless it's a dry run
-    if not args.dry_run:
+    if not dry_run:
         schedule_blob = data_bucket.blob("schedules.json")
         schedule_blob.upload_from_string(json.dumps(schedules))
     print("Schedule crawl took {:.2f} seconds".format(time.time() - start))
