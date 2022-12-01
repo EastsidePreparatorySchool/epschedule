@@ -215,7 +215,7 @@ def get_class_schedule(user_class, term_id, censor=True):
                     "name"
                 ] == "Free Period":
                     student = {
-                        "firstname": schedule["firstname"],
+                        "firstname": schedule.get("preferred_name") or schedule["firstname"],
                         "lastname": schedule["lastname"],
                         "grade": schedule["grade"],
                         "username": schedule["username"],
