@@ -8,7 +8,9 @@ with open("data/test_schedule.json", "r") as f:
 
 TEST_MASTER_SCHEDULE = [
     {
-        "2020-09-09": "Remote A-D_Rem",
+        "2020-09-01": "Remote A-D_Rem",
+        "2020-11-30": "End of Fall Term",
+        "2021-03-30": "End of Winter Term",
     }
 ]
 
