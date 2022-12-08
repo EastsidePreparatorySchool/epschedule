@@ -84,7 +84,6 @@ def download_schedule(session, api_key, username, year):
 
     individual = briggs_person["individual"]
     person["sid"] = individual["id"]
-    # person["nickname"] = individual["nickname"]
     if individual.get("preferred_name"):
         person["preferred_name"] = individual["preferred_name"]
         print(individual["preferred_name"])
