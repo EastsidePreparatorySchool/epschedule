@@ -215,8 +215,9 @@ def get_class_schedule(user_class, term_id, censor=True):
                     "name"
                 ] == "Free Period":
                     student = {
-                        "firstname": schedule.get("preferred_name")
-                        or schedule["firstname"],
+                        "firstname": (
+                            schedule.get("preferred_name") or schedule["firstname"]
+                        ),
                         "lastname": schedule["lastname"],
                         "grade": schedule["grade"],
                         "username": schedule["username"],
@@ -429,8 +430,9 @@ def handle_search(keyword):
 
 def get_name(schedule):
     return (
-        schedule.get("preferred_name")
-        or schedule["firstname"] + " " + schedule["lastname"]
+        (schedule.get("preferred_name") or schedule["firstname"])
+        + " "
+        + schedule["lastname"]
     )
 
 
