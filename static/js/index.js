@@ -161,7 +161,7 @@ function dateToNextTri() {
   specifyDate(TRI_START_ARR[goToTri])
 }
 function specifyDate(goToDate) {
-  globalDate = goToDate;
+  globalDate = new Date(goToDate);
   console.log(globalDate);
   updateMainSchedule();
 }
