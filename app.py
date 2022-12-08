@@ -36,8 +36,7 @@ def init_app(test_config=None):
         # Get application secret key
         secret_client = secretmanager.SecretManagerServiceClient()
         app.secret_key = secret_client.access_secret_version(
-            request={
-                "name": "projects/epschedule-v2/secrets/session_key/versions/1"}
+            request={"name": "projects/epschedule-v2/secrets/session_key/versions/1"}
         ).payload.data
 
         verify_firebase_token = (
@@ -51,13 +50,15 @@ def init_app(test_config=None):
         SCHEDULE_INFO = json.loads(
             data_bucket.blob("schedules.json").download_as_string()
         )
-        DAYS = json.loads(data_bucket.blob(
-            "master_schedule.json").download_as_string())
+        DAYS = json.loads(data_bucket.blob("master_schedule.json").download_as_string())
 
         datastore_client = datastore.Client()
     else:
         app.config.from_mapping(test_config)
-        def verify_firebase_token(token): return json.loads(token)
+
+        def verify_firebase_token(token):
+            return json.loads(token)
+
         datastore_client = app.config["DATASTORE"]
         SCHEDULE_INFO = app.config["SCHEDULES"]
         DAYS = app.config["MASTER_SCHEDULE"]
@@ -162,10 +163,8 @@ def main():
             lunches=get_lunches_since_date(
                 datetime.date.today() - datetime.timedelta(28)
             ),  # gets the last 28 days of lunches
-            fall_end_unix=str(
-                int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
-            wint_end_unix=str(
-                int(time.mktime(WINT_TRI_END.timetuple())) * 1000),
+            fall_end_unix=str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
+            wint_end_unix=str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000),
         )
     )
     response.set_cookie("token", "", expires=0)
@@ -239,8 +238,7 @@ def get_class_schedule(user_class, term_id, censor=True):
         privacy_settings = get_database_entries(
             [x["username"] for x in result["students"]]
         )
-        opted_out = [
-            x.key.name for x in privacy_settings if not x.get("share_photo")]
+        opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
         for student in result["students"]:
             if student["username"] in opted_out:
                 student["photo_url"] = "/static/images/placeholder_small.png"
@@ -287,8 +285,7 @@ def sanitize_schedule(orig_schedule, user_schedule):
         for k in range(0, len(schedule["classes"][i])):
             # If the class is not shared
             if not schedule["classes"][i][k] in user_schedule["classes"][i]:
-                schedule["classes"][i][k] = sanitize_class(
-                    schedule["classes"][i][k])
+                schedule["classes"][i][k] = sanitize_class(schedule["classes"][i][k])
 
     return schedule
 
@@ -424,10 +421,9 @@ def handle_search(keyword):
 
     results = []
     for schedule in get_schedule_data().values():
-        test_keyword = get_first_name(schedule) + " "  + schedule["lastname"]
+        test_keyword = get_first_name(schedule) + " " + schedule["lastname"]
         if keyword.lower() in test_keyword.lower():
-            results.append(
-                {"name": test_keyword, "username": schedule["username"]})
+            results.append({"name": test_keyword, "username": schedule["username"]})
             if len(results) >= 5:  # We only display five results
                 break
     return json.dumps(results)
