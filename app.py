@@ -55,7 +55,10 @@ def init_app(test_config=None):
         datastore_client = datastore.Client()
     else:
         app.config.from_mapping(test_config)
-        verify_firebase_token = lambda token: json.loads(token)
+
+        def verify_firebase_token(token):
+            return json.loads(token)
+
         datastore_client = app.config["DATASTORE"]
         SCHEDULE_INFO = app.config["SCHEDULES"]
         DAYS = app.config["MASTER_SCHEDULE"]
@@ -185,7 +188,7 @@ def handle_class(period):
     return json.dumps(class_schedule)
 
 
-### Functions to generate and censor class schedules
+# Functions to generate and censor class schedules
 
 # List of people who opted out of photo sharing
 def gen_opted_out_table():
@@ -215,8 +218,7 @@ def get_class_schedule(user_class, term_id, censor=True):
                     "name"
                 ] == "Free Period":
                     student = {
-                        "firstname": schedule.get("preferred_name")
-                        or schedule["firstname"],
+                        "firstname": get_first_name(schedule),
                         "lastname": schedule["lastname"],
                         "grade": schedule["grade"],
                         "username": schedule["username"],
@@ -327,7 +329,7 @@ def handle_period(period):
     )
 
 
-### Functions to generate period information
+# Functions to generate period information
 
 
 def get_free_rooms(period, term):
@@ -419,7 +421,7 @@ def handle_search(keyword):
 
     results = []
     for schedule in get_schedule_data().values():
-        test_keyword = get_name(schedule)
+        test_keyword = get_first_name(schedule) + " " + schedule["lastname"]
         if keyword.lower() in test_keyword.lower():
             results.append({"name": test_keyword, "username": schedule["username"]})
             if len(results) >= 5:  # We only display five results
@@ -427,11 +429,8 @@ def handle_search(keyword):
     return json.dumps(results)
 
 
-def get_name(schedule):
-    return (
-        schedule.get("preferred_name")
-        or schedule["firstname"] + " " + schedule["lastname"]
-    )
+def get_first_name(schedule):
+    return schedule.get("preferred_name") or schedule["firstname"]
 
 
 # This is a post because it changes things
