@@ -437,17 +437,19 @@ def handle_search(keyword):
 
     results = []
     for schedule in get_schedule_data().values():
-        test_name = get_student_full_name(schedule)
-        if keyword.lower() in test_name.lower():
-            results.append({"name": test_name, "username": schedule["username"]})
+        test_keyword = get_name(schedule)
+        if keyword.lower() in test_keyword.lower():
+            results.append({"name": test_keyword, "username": schedule["username"]})
             if len(results) >= 5:  # We only display five results
                 break
     return json.dumps(results)
 
 
-def get_student_full_name(schedule):
-    first_name = schedule.get("preferred_name") or schedule["firstname"]
-    return f"{first_name} {schedule['lastname']}"
+def get_name(schedule):
+    return (
+        schedule.get("preferred_name")
+        or schedule["firstname"] + " " + schedule["lastname"]
+    )
 
 
 # This is a post because it changes things
