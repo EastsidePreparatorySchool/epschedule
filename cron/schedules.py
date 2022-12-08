@@ -86,7 +86,6 @@ def download_schedule(session, api_key, username, year):
     person["sid"] = individual["id"]
     if individual.get("preferred_name"):
         person["preferred_name"] = individual["preferred_name"]
-        print(individual["preferred_name"])
     
     person["firstname"] = individual["firstname"]
     person["lastname"] = individual["lastname"]
