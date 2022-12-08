@@ -134,12 +134,6 @@
           </neon-animated-pages>
         </paper-toolbar>
         <div id="container" class="container" layout="" vertical="" center="">
-          <div id="prescreen" style="text-align:center; background-color:white;">
-            <p style="padding:12px; margin-bottom:12px; margin-top:0px; font-size:1.4rem; font-weight:300;">
-            <a style="color:black; text-decoration:none;" href="https://prescreen.eastsideprep.org/user" target="_blank">⚕️ Fill out Prescreen
-            </a>
-            </p>
-          </div>
           <x-schedule id="mainschedule" show="all"></x-schedule>
         </div>
       </paper-header-panel>
@@ -194,12 +188,12 @@
       <h3 class="privacypaneltitle">Privacy</h3>
       <div class="inlinesettingsswitch">
         <span class="leftfloat padleft">Show other EPS students my photo</span>
-        <paper-toggle-button checked class="rightfloat" id="sharephototoggle">
+        <paper-toggle-button class="rightfloat" id="sharephototoggle">
         </paper-toggle-button>
       </div>
       <div class="inlinesettingsswitch">
         <span class="leftfloat padleft">Show other EPS students my schedule</span>
-        <paper-toggle-button checked class="rightfloat" id="sharescheduletoggle">
+        <paper-toggle-button class="rightfloat" id="sharescheduletoggle">
         </paper-toggle-button>
       </div>
       <paper-button onclick="submitUpdatePrivacy()" raised

@@ -394,7 +394,12 @@ def handle_settings():
     user = get_database_entry(session["username"])
 
     if request.method == "GET":
-        return json.dumps(dict(user.items()))
+        user_privacy_dict_raw = dict(user.items())
+        user_privacy_dict = {
+            "share_photo": user_privacy_dict_raw["share_photo"],
+            "share_schedule": user_privacy_dict_raw["share_schedule"],
+        }
+        return json.dumps(user_privacy_dict)
 
     elif request.method == "POST":
         user.update(
