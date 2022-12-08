@@ -215,7 +215,8 @@ def get_class_schedule(user_class, term_id, censor=True):
                     "name"
                 ] == "Free Period":
                     student = {
-                        "firstname": schedule["firstname"],
+                        "firstname": schedule.get("preferred_name")
+                        or schedule["firstname"],
                         "lastname": schedule["lastname"],
                         "grade": schedule["grade"],
                         "username": schedule["username"],
@@ -418,12 +419,19 @@ def handle_search(keyword):
 
     results = []
     for schedule in get_schedule_data().values():
-        test_keyword = schedule["firstname"] + " " + schedule["lastname"]
+        test_keyword = get_name(schedule)
         if keyword.lower() in test_keyword.lower():
             results.append({"name": test_keyword, "username": schedule["username"]})
             if len(results) >= 5:  # We only display five results
                 break
     return json.dumps(results)
+
+
+def get_name(schedule):
+    return (
+        schedule.get("preferred_name")
+        or schedule["firstname"] + " " + schedule["lastname"]
+    )
 
 
 # This is a post because it changes things
