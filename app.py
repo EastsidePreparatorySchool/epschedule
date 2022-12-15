@@ -29,6 +29,7 @@ def init_app(test_config=None):
     global datastore_client
     global SCHEDULE_INFO
     global DAYS
+    global TERM_STARTS
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
