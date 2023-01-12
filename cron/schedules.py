@@ -8,7 +8,8 @@ import requests
 from google.cloud import secretmanager, storage
 from requests.models import HTTPError
 
-ENDPOINT_URL = "https://four11.eastsideprep.org/epsnet/courses/{}"
+PEOPLE_ENDPOINT_URL = "https://four11.eastsideprep.org/epschedule/people"
+COURSE_ENDPOINT_URL = "https://four11.eastsideprep.org/epsnet/courses/{}"
 SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"}
 PARSEABLE_PERIODS = ["A", "B", "C", "D", "E", "F", "G", "H"]
 FREE_PERIOD_CLASS = {
@@ -75,7 +76,7 @@ def download_schedule(session, api_key, username, year):
     # For each trimester
     for term_id in range(1, 4):
         req = session.get(
-            ENDPOINT_URL.format(username),
+            COURSE_ENDPOINT_URL.format(username),
             headers=gen_auth_header(api_key),
             params={"term_id": str(term_id)},
         )
@@ -120,6 +121,11 @@ def download_schedule_with_retry(session, api_key, username, year):
                 raise e
 
 
+def get_usernames(session, key):
+    response = session.get(PEOPLE_ENDPOINT_URL, headers=gen_auth_header(key))
+    return [u["email"].split("@")[0] for u in response.json()]
+
+
 def crawl_schedules(dry_run=False, verbose=False):
     print(f"Starting schedule crawl, dry_run={dry_run}")
 
@@ -135,14 +141,12 @@ def crawl_schedules(dry_run=False, verbose=False):
     storage_client = storage.Client()
     data_bucket = storage_client.bucket("epschedule-data")
 
-    username_blob = data_bucket.blob("usernames.json")
-    usernames = json.loads(username_blob.download_as_string())
-    usernames.remove("dyezbick")
-
     schedules = {}
     errors = 0
 
     session = requests.Session()
+    usernames = get_usernames(session, key)
+    usernames.remove("dyezbick")
 
     for username in usernames:
         try:
