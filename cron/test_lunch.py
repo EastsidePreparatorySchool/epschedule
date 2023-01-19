@@ -8,7 +8,7 @@ from cron.update_lunch import add_events
 def test_read_lunches():
     events = []
     with patch(
-        "cron.update_lunch.write_event_to_db", side_effect=lambda e: events.append(e)
+        "cron.update_lunch.write_event_to_db", side_effect=lambda c, e: events.append(e)
     ) as mock:
         ICS_PATH = "data/test_lunch.ics"
         # Reads the ICS file to get a lunch object for 10/7/2019, Cheese Manicotti

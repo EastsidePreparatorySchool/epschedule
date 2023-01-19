@@ -8,8 +8,6 @@ from google.cloud import ndb
 TIME_FORMAT = "%Y%m%dT%H%M%S"
 LUNCH_URL = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
 
-client = ndb.Client()
-
 # NDB class definitions
 class Lunch(ndb.Model):
     summary = ndb.StringProperty(required=True)
@@ -56,6 +54,7 @@ def parse_events(lines):  # lines is a list of all lines of text in the whole fi
 
 # Sanitizes a list of events obtained from parse_events
 def save_events(events, dry_run=False, verbose=False):
+    client = ndb.Client()
     for event in events:
         # Convert the datetime string (e.g. 20151124T233401) to a date object
         # Gets format from global var
@@ -83,10 +82,10 @@ def save_events(events, dry_run=False, verbose=False):
                 print("           ", line)
         if not dry_run:
             entry = Lunch(summary=summary, description=description, day=date)
-            write_event_to_db(entry)
+            write_event_to_db(client, entry)
 
 
-def write_event_to_db(entry):  # Places a single entry into the db
+def write_event_to_db(client, entry):  # Places a single entry into the db
     # this enables using NDB
     with client.context():
         # Check how many lunches there are already for that date (always 1 or 0)
@@ -98,7 +97,7 @@ def write_event_to_db(entry):  # Places a single entry into the db
             lunch.key.delete()  # Delete the existing ndb entity
 
         # If not, log it and put it into the db
-        logging.info(str(entry))
+        logging.info(f"Adding lunch entry to DB: {str(entry)}")
         entry.put()
 
 
@@ -117,13 +116,13 @@ def add_events(response_text, dry_run=False, verbose=False):
 
 
 def read_lunches(dry_run=False, verbose=False):  # Update the database with new lunches
-    # lunch_url is a global var
     response = requests.get(LUNCH_URL)
     add_events(response.text, dry_run, verbose)
 
 
 # Returns lunches to be displayed in a schedule
 def get_lunches_since_date(date):
+    client = ndb.Client()
     with client.context():
         # days_into_past is the number of days into the past to go
         earliest_lunch = date
@@ -158,5 +157,5 @@ def get_lunches_since_date(date):
                 "year": lunch_obj.day.year,
             }
             lunch_objs.append(obj)
-    print(lunch_objs)
+
     return lunch_objs
