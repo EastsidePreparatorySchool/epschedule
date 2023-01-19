@@ -36,9 +36,11 @@ run *FLAGS:
 deploy:     
     gcloud app deploy --project=epschedule-v2 
 
-crawl-schedules *FLAGS:
-    cd cron; python schedules.py {{FLAGS}}
+update-schedules *FLAGS:
+    python update.py {{FLAGS}} schedules
 
-crawl-photos *FLAGS:
-    cd cron; python photos.py {{FLAGS}}
+update-photos *FLAGS:
+    python update.py {{FLAGS}} photos
 
+update-lunches *FLAGS:
+    python update.py {{FLAGS}} lunches
