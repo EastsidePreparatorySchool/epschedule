@@ -43,11 +43,9 @@
     var userSchedule = {{ schedule | safe }};
     var days = {{days | safe }};
     var lunches = {{lunches | safe}};
-    var termStarts = {{ term_starts | safe}};
-    var triStartDates = [];
-    for (var i = 0; i < 3; i++) {
-        triStartDates.push(new Date(term_starts[i]));
-    }
+    // Multiply by 1000 to account for milliseconds
+    var fallTriEndDate = new Date({{fall_end_unix | safe}});
+    var wintTriEndDate = new Date({{wint_end_unix | safe}});
   </script>
   <script src="static/js/index.js"></script>
 </head>
