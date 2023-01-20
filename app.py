@@ -2,7 +2,6 @@ import copy
 import datetime
 import json
 import os
-import re
 import time
 
 import google.oauth2.id_token
@@ -20,16 +19,15 @@ verify_firebase_token = None
 datastore_client = None
 SCHEDULE_INFO = None
 DAYS = None
-TERM_STARTS = []
+FALL_TRI_END = datetime.datetime(2022, 11, 18, 15, 30, 0, 0)
+WINT_TRI_END = datetime.datetime(2023, 3, 10, 15, 30, 0, 0)
 
 
 def init_app(test_config=None):
-    """Initialize the app and set up global variables."""
     global verify_firebase_token
     global datastore_client
     global SCHEDULE_INFO
     global DAYS
-    global TERM_STARTS
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -64,33 +62,6 @@ def init_app(test_config=None):
         datastore_client = app.config["DATASTORE"]
         SCHEDULE_INFO = app.config["SCHEDULES"]
         DAYS = app.config["MASTER_SCHEDULE"]
-    TERM_STARTS = get_term_starts(DAYS[0])
-
-
-def get_term_starts(days):
-    """Return a list of datetime objects for the start of each trimester."""
-    return [
-        find_day(days, ".*"),
-        find_day(days, ".*End.*Fall Term") + datetime.timedelta(days=1),
-        find_day(days, ".*End.*Winter Term") + datetime.timedelta(days=1),
-    ]
-
-
-def find_day(days, regex):
-    """Find the first day that matches the given regex"""
-    for day in days:
-        if re.match(regex, days[day]):
-            return datetime.datetime.strptime(day, "%Y-%m-%d").date()
-    assert False, f"No day matched {regex}"
-
-
-def get_term_id():
-    """Return the current trimester index (fall=0, winter=1, spring=2)"""
-    now = datetime.datetime.now()
-    for i in range(len(TERM_STARTS) - 1):
-        if now < TERM_STARTS[i + 1]:
-            return i
-    return 2
 
 
 def username_to_email(username):
@@ -101,15 +72,19 @@ def is_teacher_schedule(schedule):
     return not schedule["grade"]
 
 
+def get_term_id():
+    now = datetime.datetime.now()
+    if now < FALL_TRI_END:
+        default = 0
+    elif now < WINT_TRI_END:
+        default = 1
+    else:
+        default = 2
+    return request.form.get("input_name", default)
+
+
 def get_schedule_data():
     return SCHEDULE_INFO
-
-
-def get_schedule(username):
-    schedules = get_schedule_data()
-    if username not in schedules:
-        return None
-    return schedules[username]
 
 
 def gen_photo_url(username, icon=False):
@@ -124,6 +99,13 @@ def gen_login_response():
     session.pop("username", None)
     template.set_cookie("token", "", expires=0)
     return template
+
+
+def get_schedule(username):
+    schedules = get_schedule_data()
+    if username not in schedules:
+        return None
+    return schedules[username]
 
 
 def get_user_key(username):
@@ -178,12 +160,11 @@ def main():
             schedule=json.dumps(get_schedule(session["username"])),
             days=json.dumps(DAYS),
             components="static/components.html",
-            # gets the last 28 days of lunches
             lunches=get_lunches_since_date(
                 datetime.date.today() - datetime.timedelta(28)
-            ),
-            # gets the trimester starts in a format JS can parse
-            term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
+            ),  # gets the last 28 days of lunches
+            fall_end_unix=str(int(time.mktime(FALL_TRI_END.timetuple())) * 1000),
+            wint_end_unix=str(int(time.mktime(WINT_TRI_END.timetuple())) * 1000),
         )
     )
     response.set_cookie("token", "", expires=0)
