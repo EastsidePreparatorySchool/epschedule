@@ -6,7 +6,6 @@ from cron.update_lunch import add_events
 
 # Test reading lunch data from an ICS file and sanitizing it.
 def test_read_lunches():
-    patch("google.cloud.ndb.Client")
     with patch("cron.update_lunch.write_event_to_db") as mock:
         ICS_PATH = "data/test_lunch.ics"
         # Reads the ICS file to get a lunch object for 10/7/2019, Cheese Manicotti
