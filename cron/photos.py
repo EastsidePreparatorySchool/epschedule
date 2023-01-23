@@ -1,86 +1,25 @@
-import csv
 import hashlib
 import hmac
-import json
-import os
 import time
 from io import BytesIO
 
 import PIL
 import requests
-from google.cloud import secretmanager, storage
+from google.cloud import storage
 from PIL import Image
 
+from cron import four11
+
 ICON_SIZE = 96  # 96x96 pixels
-SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"}
 
 
-def download_photo_bytes(url):
-    response = requests.get(url, stream=True)
-    return Image.open(BytesIO(response.content))
-
-
-def download_photo(user):
-    photo_url = "http://four11.eastsideprep.org/system/"
-    if user["grade"]:
-        photo_url += "students"
-    else:
-        photo_url += "teachers"
-    photo_url += "/idphotos/000/00"
-    sid = str(user["sid"])
-
-    if len(sid) == 3:
-        photo_url += "0/" + sid
-    else:  # If length is 4
-        photo_url += sid[0] + "/" + sid[1:]
-
-    photo_url += "/medium/"
-
-    last = user["lastname"].replace(" ", "_").replace(".", "")
-    first = user["firstname"].replace(" ", "_").replace(".", "")
-
-    primary_url = photo_url + last + "__" + first + ".jpg"
-    backup_url = photo_url + last + "_" + first + "_" + sid + ".jpg"
-
-    # Now try each url - I'm unsure why we sometimes need to fall back to
-    # the secondary URL, but it is necessary
+def download_photo_from_url(session, url):
     try:
-        return download_photo_bytes(primary_url)
+        response = session.get(url)
+        return Image.open(BytesIO(response.content))
     except PIL.UnidentifiedImageError:
-        print("Unable to download {} with primary url".format(user["username"]))
-    try:
-        return download_photo_bytes(backup_url)
-    except PIL.UnidentifiedImageError:
-        print("UNABLE to download " + user["username"])
-        # Some students don't have photos if they never went for picture day
+        print(f"Unable to download image at {url}")
     return None
-
-
-def download_photo_from_url(url):
-    try:
-        return download_photo_bytes(url)
-    except PIL.UnidentifiedImageError:
-        print("Unable to download {} with primary url")
-    try:
-        return download_photo_bytes(url)
-    except PIL.UnidentifiedImageError:
-        print("UNABLE to download ")
-        # If there is another issue
-    return None
-
-
-def read_csv_as_dict():
-    photoids = {}
-    with open("idphotos_2021.csv") as csvfile:
-        csvreader = csv.reader(csvfile)
-        for row in csvreader:
-            url = row[4]
-            urlparts = url.split("/")
-            studentid = urlparts[6:8]
-            joinedid = studentid.join()
-            photoids[joinedid] = url
-
-    return photoids
 
 
 def crop_image(img):
@@ -104,52 +43,47 @@ def hash_username(key, username, icon=False):
     return hashed.hexdigest() + ".jpg"
 
 
-def upload_photo(bucket, filename, photo):
+def upload_photo(bucket, filename, photo, verbose=False):
     with BytesIO() as output:
         photo.save(output, format="JPEG")
         bucket.blob(filename).upload_from_string(output.getvalue())
-        print(bucket.blob(filename).public_url)
+        if verbose:
+            print(bucket.blob(filename).public_url)
 
 
 # Takes about three minutes for ~450 photos
-def crawl_photos():
-    # Prepare our secret
+def crawl_photos(dry_run=False, verbose=False):
     start = time.time()
-    secret_client = secretmanager.SecretManagerServiceClient()
-    secret_response = secret_client.access_secret_version(request=SECRET_REQUEST)
-    key = secret_response.payload.data
+    four11_client = four11.Four11Client()
+    key_bytes = four11_client.api_key().encode("utf-8")
 
     # Open the bucket
+    session = requests.Session()
     storage_client = storage.Client()
     avatar_bucket = storage_client.bucket("epschedule-avatars")
-    data_bucket = storage_client.bucket("epschedule-data")
-    schedule_blob = data_bucket.blob("schedules.json")
-    schedules = json.loads(schedule_blob.download_as_string())
-    photo_ids = read_csv_as_dict()
+    people = four11_client.get_people()
 
-    for username in schedules:
-        # student_schedule = schedules[username]
-        student_id = schedules[sid]
-        target_url = photo_ids[studentid]
-        photo = download_photo_from_url(target_url)
+    for user in people:
+        photo = download_photo_from_url(session, photo_url)
         if photo is None:
             continue
-        fullsize_filename = hash_username(key, username)
-        upload_photo(avatar_bucket, fullsize_filename, photo)
+
+        fullsize_filename = hash_username(key_bytes, username)
+        if not dry_run:
+            upload_photo(avatar_bucket, fullsize_filename, photo)
 
         # Now crop photo
         cropped = crop_image(photo)
-        icon_filename = hash_username(key, username, icon=True)
-        upload_photo(avatar_bucket, icon_filename, cropped)
+        icon_filename = hash_username(key_bytes, username, icon=True)
+        if not dry_run:
+            upload_photo(avatar_bucket, icon_filename, cropped)
 
         # For teachers, upload an unhashed grayscale photo
-        if not student_schedule["grade"]:
+        if user.is_staff():
             grayscale = cropped.convert("L")
-            upload_photo(avatar_bucket, username + ".jpg", grayscale)
+            if not dry_run:
+                upload_photo(avatar_bucket, username + ".jpg", grayscale)
+        if verbose:
+            print(f"Processed photo for user {username}")
 
     print("Operation took {:.2f} seconds".format(time.time() - start))
-
-
-if __name__ == "__main__":
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
-    crawl_photos()

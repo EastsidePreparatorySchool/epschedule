@@ -2,20 +2,17 @@ import datetime
 import logging
 import os
 
+import requests
 from google.cloud import ndb
 
+# TODO(juberti): Fully mock out NDB so we don't need to talk to GCP when running tests.
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
-client = ndb.Client()
-
-import requests
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
 LUNCH_URL = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
 
 # NDB class definitions
-
-
 class Lunch(ndb.Model):
     summary = ndb.StringProperty(required=True)
     # description is a list of lines in the description
@@ -27,16 +24,7 @@ class Lunch(ndb.Model):
         return cls.query().filter(Lunch.day >= earliest_lunch)
 
 
-class LunchRating(ndb.Model):
-    sid = ndb.IntegerProperty(required=True)
-    rating = ndb.IntegerProperty(required=True)  # 1-10 star rating
-    lunch_id = ndb.IntegerProperty(required=True)  # Which type of lunch its for
-    created = ndb.DateProperty()  # What date the rating was made
-
-
 # Functions for parsing iCal files
-
-
 def parse_events(lines):  # lines is a list of all lines of text in the whole file
     in_event = False  # Whether the current line is in an event
     properties = {}  # When properties are discovered, they will be stuffed in here
@@ -68,7 +56,9 @@ def parse_events(lines):  # lines is a list of all lines of text in the whole fi
     return events
 
 
-def sanitize_events(events):  # Sanitizes a list of events obtained from parse_events
+# Sanitizes a list of events obtained from parse_events
+def save_events(events, dry_run=False, verbose=False):
+    client = ndb.Client()
     for event in events:
         # Convert the datetime string (e.g. 20151124T233401) to a date object
         # Gets format from global var
@@ -86,17 +76,20 @@ def sanitize_events(events):  # Sanitizes a list of events obtained from parse_e
         desc = desc[start + 13 : end]
 
         # To keep things brief, we'll cap the length at two lines
-        description = desc.split("\\n")[:2]
+        lines = desc.split("\\n")[:2]
+        # Strip out any extra whitespace
+        description = [line.strip() for line in lines]
 
-        print(date, summary)
-        for line in description:
-            print("  ", line)
-        print("")
-        entry = Lunch(summary=summary, description=description, day=date)
-        write_event_to_db(entry)
+        print(f"{date}: {summary}")
+        if verbose:
+            for line in description:
+                print("           ", line)
+        if not dry_run:
+            entry = Lunch(summary=summary, description=description, day=date)
+            write_event_to_db(client, entry)
 
 
-def write_event_to_db(entry):  # Places a single entry into the db
+def write_event_to_db(client, entry):  # Places a single entry into the db
     # this enables using NDB
     with client.context():
         # Check how many lunches there are already for that date (always 1 or 0)
@@ -108,17 +101,17 @@ def write_event_to_db(entry):  # Places a single entry into the db
             lunch.key.delete()  # Delete the existing ndb entity
 
         # If not, log it and put it into the db
-        logging.info(str(entry))
+        logging.info(f"Adding lunch entry to DB: {str(entry)}")
         entry.put()
 
 
-def add_events(response_text):
+def add_events(response_text, dry_run=False, verbose=False):
     text = response_text
     lines = text.splitlines()
     events = parse_events(lines)
 
     # Sanitize and write the events to the database
-    sanitize_events(events)
+    save_events(events, dry_run, verbose)
 
 
 # ---------------------------------------------- #
@@ -126,14 +119,14 @@ def add_events(response_text):
 # ---------------------------------------------- #
 
 
-def read_lunches():  # Update the database with new lunches
-    # lunch_url is a global var
+def read_lunches(dry_run=False, verbose=False):  # Update the database with new lunches
     response = requests.get(LUNCH_URL)
-    add_events(response.text)
+    add_events(response.text, dry_run, verbose)
 
 
 # Returns lunches to be displayed in a schedule
 def get_lunches_since_date(date):
+    client = ndb.Client()
     with client.context():
         # days_into_past is the number of days into the past to go
         earliest_lunch = date
@@ -168,65 +161,5 @@ def get_lunches_since_date(date):
                 "year": lunch_obj.day.year,
             }
             lunch_objs.append(obj)
-    print(lunch_objs)
+
     return lunch_objs
-
-
-"""
-def calc_lunch_rating(lunch_id):  # Uses mean, returns a float
-    rating_sum = 0
-    rating_num = 0
-
-    lunches = LunchRating.query(LunchRating.lunch_id == lunch_id)
-    for lunch in lunches:
-        rating_sum += lunch.rating
-        rating_num += 1
-
-    return rating_sum / float(rating_num)
-
-
-def get_lunch_id_for_date(date):
-    lunches = Lunch.query(Lunch.day == date).fetch(1)
-    if lunches:  # If there is a lunch for the date
-        return lunches[0].key.id()
-
-    return None
-
-
-def get_all_future_lunches(date):
-    lunches = Lunch.query(Lunch.day >= date).order(Lunch.day).fetch(5)
-    obj = []
-    for item in lunches:
-        obj.append({"day": str(item.day), "summary": item.summary})
-    return obj
-
-
-def place_rating(rating, sid, lunch_id, date, overwrite=True):
-    # Detects if there is already a rating for that student and lunch,
-    # and if not (or if overwrite is true) writes a new rating
-    # Returns whether a rating was overwritten
-
-    overwrote = False
-
-    current_rating = LunchRating.query(
-        LunchRating.sid == sid and LunchRating.lunch_id == lunch_id
-    )
-
-    for entity in current_rating:  # If there is already a rating
-        if not overwrite:  # If not set to overwrite
-            return overwrote  # To not make any changes
-
-        # Otherwise, if we should overwrite,
-        entity.key.delete()  # Delete the existing ndb entity
-        overwrote = True  # Record that something was overwritten
-
-    # Place a new rating
-    obj = LunchRating(sid=sid, rating=rating, lunch_id=lunch_id, created=date)
-    obj.put()
-
-    return overwrote
-"""
-
-if __name__ == "__main__":
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
-    read_lunches()

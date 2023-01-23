@@ -10,3 +10,6 @@ epschedule-*.json
 epschedule-v2-*.json
 service_account.json
 service_account*.json
+
+# Misc
+.DS_Store
