@@ -46,7 +46,7 @@
     var termStarts = {{ term_starts | safe}};
     var triStartDates = [];
     for (var i = 0; i < 3; i++) {
-        triStartDates.push(new Date(term_starts[i]));
+        triStartDates.push(new Date(termStarts[i]));
     }
   </script>
   <script src="static/js/index.js"></script>

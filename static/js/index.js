@@ -436,6 +436,15 @@ function getSchool(grade) {
   }
 }
 
+function getTermId(dateObj) {
+  for (var termId = 0; termId < 2; termId++) {
+    if (dateObj < triStartDates[termId + 1])
+      break;
+  }
+  console.log("Converted " + dateObj + " to a term ID of " + termId);
+  return termId;
+}
+
 function toTwoDig(num) {
   var s = num.toString();
   if (s.length == 1) {
@@ -663,15 +672,8 @@ function dateIsCurrentDay(d1) {
 }
 
 function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, expandable = true) {
+  termId = getTermId(dateObj);
 
-  if (dateObj > wintTriEndDate) {
-    termId = 2;
-  } else if (globalDate > fallTriEndDate) {
-    termId = 1;
-  } else {
-    termId = 0;
-  }
-  console.log("Converted " + dateObj + " to a term ID of " + termId);
   // Either MS or US
   if (type == "full" || type == "lite") {
     var school = getSchool(schedule.grade);
