@@ -1,6 +1,3 @@
-const FALL_TRI_START = new Date(2022, 9 - 1, 6, 15, 30, 0, 0)
-const TRI_START_ARR = [FALL_TRI_START, fallTriEndDate, wintTriEndDate]
-
 function signOut() {
   sendPostMessage("logout", reload);
 }
@@ -146,7 +143,7 @@ function dateToNextTri() {
   let goToTri = -1; // stores index of trimester you want to go to
   // default to -1 if no tri is greater than current date
   for (let currLooking = 0; currLooking < 3; currLooking++) {
-    if (globalDate < TRI_START_ARR[currLooking]) {
+    if (globalDate < triStartDates[currLooking]) {
       // located the tri to go to
       goToTri = currLooking; // set it and break
       break;
@@ -158,7 +155,7 @@ function dateToNextTri() {
     goToTri = 0;
   }
   // adjust the date to reflect this
-  specifyDate(TRI_START_ARR[goToTri])
+  specifyDate(triStartDates[goToTri])
 }
 function specifyDate(goToDate) {
   globalDate = new Date(goToDate);
@@ -439,6 +436,15 @@ function getSchool(grade) {
   }
 }
 
+function getTermId(dateObj) {
+  for (var termId = 0; termId < 2; termId++) {
+    if (dateObj < triStartDates[termId + 1])
+      break;
+  }
+  console.log("Converted " + dateObj + " to a term ID of " + termId);
+  return termId;
+}
+
 function toTwoDig(num) {
   var s = num.toString();
   if (s.length == 1) {
@@ -666,15 +672,8 @@ function dateIsCurrentDay(d1) {
 }
 
 function renderSchedule(dateObj, schedule, type, scheduleElement, lunch_list, expandable = true) {
+  termId = getTermId(dateObj);
 
-  if (dateObj > wintTriEndDate) {
-    termId = 2;
-  } else if (globalDate > fallTriEndDate) {
-    termId = 1;
-  } else {
-    termId = 0;
-  }
-  console.log("Converted " + dateObj + " to a term ID of " + termId);
   // Either MS or US
   if (type == "full" || type == "lite") {
     var school = getSchool(schedule.grade);
