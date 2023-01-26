@@ -14,12 +14,12 @@ SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"
 class Four11User:
     id: int
     firstname: str
-    preferred_name: str
     lastname: str
     lunch_id: int
     email: str
     gradyear: str
     photo_url: str
+    preferred_name: Optional[str] = None
 
     def username(self):
         return self.email.split("@")[0]
