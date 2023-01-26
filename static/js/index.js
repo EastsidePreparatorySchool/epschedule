@@ -363,12 +363,16 @@ function renderStudent(studentObj) {
   var popupContainer = document.getElementById("popupContainer");
   var email = studentObj.email;
   email = email.toLowerCase();
+  var preferredname = studentObj.preferredname;
+  if (!preferredname) {
+    preferredname = studentObj.firstname;
+  }
   if (studentObj.grade) {
     var grade = studentObj.grade + "th Grade";
-    var name = studentObj.firstname;
+    var name = preferredname;
   } else {
     var grade = "";
-    var name = studentObj.firstname + " " + studentObj.lastname;
+    var name = preferredname + " " + studentObj.lastname;
   }
   popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
       '<paper-material class="header" elevation="2">' +
