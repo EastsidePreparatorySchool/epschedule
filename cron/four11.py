@@ -28,10 +28,10 @@ class Four11User:
         return f"{self.preferred_name or self.firstname} {self.lastname}"
 
     def is_student(self):
-        return not self.is_staff(self.id)
+        return not self.is_staff()
 
     def is_staff(self):
-        return self.gradyear != "fac/staff"
+        return self.gradyear == "fac/staff"
 
     def class_of(self) -> Optional[int]:
         return int(self.gradyear) if self.is_student() else None
