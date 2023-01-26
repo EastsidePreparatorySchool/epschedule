@@ -64,9 +64,12 @@ def crawl_photos(dry_run=False, verbose=False):
     people = four11_client.get_people()
 
     for user in people:
+        photo_url = user.photo_url
         photo = download_photo_from_url(session, photo_url)
         if photo is None:
             continue
+
+        username = user.email.split("@")[0]
 
         fullsize_filename = hash_username(key_bytes, username)
         if not dry_run:
