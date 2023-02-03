@@ -183,7 +183,7 @@ class TestClassEndpoint(AuthenticatedTest):
     def test_class_endpoint(self):
         response = self.client.get("/class/a?term_id=1")
         self.assertEqual(response.status_code, 200)
-        json.loads(response.data)
+        _ = json.loads(response.data)
 
     # Test that any students who aren't sharing their pics return placeholders.
     def test_urls_inclass(self):
@@ -198,6 +198,18 @@ class TestClassEndpoint(AuthenticatedTest):
         self.assertEqual(
             found_student["photo_url"], "/static/images/placeholder_small.png"
         )
+
+
+class TestPeriodEndpoint(AuthenticatedTest):
+    """Tests for the /period endpoint."""
+
+    def test_period_endpoint(self):
+        response = self.client.get("/period/a")
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.data)
+        self.assertEqual(results["period"], "A")
+        self.assertGreaterEqual(results["term_id"], 0)
+        self.assertLessEqual(results["term_id"], 2)
 
 
 class TestLogout(AuthenticatedTest):

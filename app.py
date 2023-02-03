@@ -86,9 +86,9 @@ def find_day(days, regex):
 
 def get_term_id():
     """Return the current trimester index (fall=0, winter=1, spring=2)"""
-    now = datetime.datetime.now()
+    today = datetime.datetime.now().date()
     for i in range(len(TERM_STARTS) - 1):
-        if now < TERM_STARTS[i + 1]:
+        if today < TERM_STARTS[i + 1]:
             return i
     return 2
 
