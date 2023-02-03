@@ -12,6 +12,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
 TIME_FORMAT = "%Y%m%dT%H%M%S"
 LUNCH_URL = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
 
+
 # NDB class definitions
 class Lunch(ndb.Model):
     summary = ndb.StringProperty(required=True)
