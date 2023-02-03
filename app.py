@@ -209,6 +209,7 @@ def handle_class(period):
 
 # Functions to generate and censor class schedules
 
+
 # List of people who opted out of photo sharing
 def gen_opted_out_table():
     # TODO write this
