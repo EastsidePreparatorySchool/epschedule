@@ -10,4 +10,4 @@ pytest
 pylint
 isort
 black
-
+PyGithub

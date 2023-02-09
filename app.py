@@ -5,6 +5,8 @@ import os
 import re
 import time
 
+from github import Github as gh
+
 import google.oauth2.id_token
 from flask import Flask, abort, make_response, render_template, request, session
 from google.auth.transport import requests
@@ -34,6 +36,7 @@ def init_app(test_config=None):
     if test_config is None:
         # Authenticate ourselves
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+        os.environ["GH_TOKEN"] = "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"
 
         # Get application secret key
         secret_client = secretmanager.SecretManagerServiceClient()
@@ -184,6 +187,7 @@ def main():
             ),
             # gets the trimester starts in a format JS can parse
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
+            latest_commits=get_github_info(),
         )
     )
     response.set_cookie("token", "", expires=0)
@@ -451,6 +455,23 @@ def handle_search(keyword):
 def get_first_name(schedule):
     return schedule.get("preferred_name") or schedule["firstname"]
 
+def get_github_info():
+    # this uses PyGithub module
+    # using an access token from a person who can access epschedule
+    g = gh(os.environ["GH_TOKEN"])
+    repo = g.get_repo("EastsidePreparatorySchool/epschedule")
+    # get arr of commits
+    commitsArr = repo.get_commits()
+    # print info about last 3
+    result = []
+    for repo_num in range(0, 3):
+        commit_name = str(commitsArr[repo_num].commit.message).split("\n")[0]
+        commit_author = str(commitsArr[repo_num].commit.author)[16:-2]
+        commit_date = str(commitsArr[repo_num].commit.author.date)
+        result.append({"Name" : commit_name, 
+                            "Author" : commit_author, 
+                            "Date" : commit_date})
+    return result
 
 # This is a post because it changes things
 @app.route("/logout", methods=["POST"])

@@ -1,3 +1,13 @@
+function github(){
+  let updated = "";
+  for (let dictNum = 0; dictNum < 3; dictNum++){
+    dict = latestCommits[dictNum];
+    updated += dict["Name"] + ";<br>" + 
+                "Committed by " + dict["Author"] + " at " + dict["Date"] 
+                + "<br><br>";
+  }
+  document.getElementById("GHUpdateText").innerHTML=updated;
+}
 function signOut() {
   sendPostMessage("logout", reload);
 }
@@ -211,6 +221,8 @@ function updateMainSchedule() {
   var scheduleElement = document.getElementById('mainschedule');
   renderDate(globalDate);
   renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches);
+  // also update github info 
+  github()
 }
 function renderToast(text) {
   toast = document.getElementById("toast");

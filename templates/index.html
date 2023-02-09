@@ -44,10 +44,12 @@
     var days = {{days | safe }};
     var lunches = {{lunches | safe}};
     var termStarts = {{ term_starts | safe}};
+    var latestCommits = {{ latest_commits | safe}};
     var triStartDates = [];
     for (var i = 0; i < 3; i++) {
         triStartDates.push(new Date(termStarts[i]));
     }
+    console.log(latestCommits)
   </script>
   <script src="static/js/index.js"></script>
 </head>
@@ -138,6 +140,17 @@
         </paper-toolbar>
         <div id="container" class="container" layout="" vertical="" center="">
           <x-schedule id="mainschedule" show="all"></x-schedule>
+          <div id="GithubUpdateBox" style="text-align:center; background-color:white;">
+            <p style="padding:12px; margin-bottom:12px; margin-top:0px; font-size:1.4rem; font-weight:300;">
+              <a style="color:black; text-decoration:none;" target="_blank">
+                Latest Github Updates
+              </a>
+              <div id = "GHUpdateText">
+                aaa
+              </div>
+              <br>
+            </p>
+          </div>
         </div>
       </paper-header-panel>
     </paper-drawer-panel>
