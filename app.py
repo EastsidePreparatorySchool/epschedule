@@ -35,7 +35,6 @@ def init_app(test_config=None):
     if test_config is None:
         # Authenticate ourselves
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
-        os.environ["GH_TOKEN"] = "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"
 
         # Get application secret key
         secret_client = secretmanager.SecretManagerServiceClient()
