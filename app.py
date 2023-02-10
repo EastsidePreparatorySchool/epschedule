@@ -455,6 +455,7 @@ def handle_search(keyword):
 def get_first_name(schedule):
     return schedule.get("preferred_name") or schedule["firstname"]
 
+
 def get_github_info():
     # this uses PyGithub module
     # using an access token from a person who can access epschedule
@@ -468,10 +469,11 @@ def get_github_info():
         commit_name = str(commitsArr[repo_num].commit.message).split("\n")[0]
         commit_author = str(commitsArr[repo_num].commit.author)[16:-2]
         commit_date = str(commitsArr[repo_num].commit.author.date)
-        result.append({"Name" : commit_name, 
-                            "Author" : commit_author, 
-                            "Date" : commit_date})
+        result.append(
+            {"Name": commit_name, "Author": commit_author, "Date": commit_date}
+        )
     return result
+
 
 # This is a post because it changes things
 @app.route("/logout", methods=["POST"])
