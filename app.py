@@ -7,6 +7,7 @@ import time
 
 import google.oauth2.id_token
 from flask import Flask, abort, make_response, render_template, request, session
+from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
 
@@ -184,6 +185,7 @@ def main():
             ),
             # gets the trimester starts in a format JS can parse
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
+            latest_commits=get_latest_github_commits(),
         )
     )
     response.set_cookie("token", "", expires=0)
@@ -451,6 +453,40 @@ def handle_search(keyword):
 
 def get_first_name(schedule):
     return schedule.get("preferred_name") or schedule["firstname"]
+
+
+def get_latest_github_commits():
+    # get token from secret client
+    secret_client = secretmanager.SecretManagerServiceClient()
+    gh_token = secret_client.access_secret_version(
+        request={"name": "projects/epschedule-v2/secrets/gh_token/versions/1"}
+    ).payload.data
+    # this uses PyGithub module
+    # using an access token from a person who can access epschedule
+    g = gh(gh_token.decode("utf-8"))
+    repo = g.get_repo("EastsidePreparatorySchool/epschedule")
+    # get arr of commits
+    commitsArr = repo.get_commits()
+    # print info about last 3
+    result = []  # initialize array for it
+    for repo_num in range(3):
+        # select the top 3, get its name (title),
+        # author (github name), date, and URL to the changes
+        commit_name = str(commitsArr[repo_num].commit.message).split("\n")[0]
+        commit_author = str(commitsArr[repo_num].commit.author)[16:-2]
+        commit_date = str(commitsArr[repo_num].commit.author.date)
+        commit_url = str(commitsArr[repo_num].html_url)
+        # append it to the array as a dictionary object
+        result.append(
+            {
+                "Name": commit_name,
+                "Author": commit_author,
+                "Date": commit_date,
+                "URL": commit_url,
+            }
+        )
+    # return it
+    return result
 
 
 # This is a post because it changes things
