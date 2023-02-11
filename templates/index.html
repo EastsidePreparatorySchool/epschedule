@@ -85,6 +85,14 @@
 
 
           
+          <paper-icon-item onclick="githubDisplay()">
+            <iron-icon class="drawer-icon" icon="info" item-icon>
+            </iron-icon>
+            <span>See Latest Changes</span>
+          </paper-icon-item>
+
+
+          
           <!-- go down to around line 160, then format your name like kalie's -->
           <paper-icon-item onclick="about()">
             <iron-icon class="drawer-icon" icon="info" item-icon>
@@ -143,15 +151,6 @@
         </paper-toolbar>
         <div id="container" class="container" layout="" vertical="" center="">
           <x-schedule id="mainschedule" show="all"></x-schedule>
-          <div id="GithubUpdateBox" class = "GithubUpdateBox">
-            <p class="GithubInnerP">
-              <a class="GithubTitleA" href = "https://github.com/EastsidePreparatorySchool/epschedule" target="_blank">
-                Latest Github Updates
-              </a>
-              <div id = "GHUpdateText"></div>
-              <br>
-            </p>
-          </div>
         </div>
       </paper-header-panel>
     </paper-drawer-panel>
@@ -196,6 +195,19 @@
   </paper-dialog>
 
 
+  <paper-dialog class="github-dialog" id="Github">
+    <div id="GithubUpdateBox" class = "GithubUpdateBox">
+      <p class="GithubInnerP">
+        <h1>
+          <a class="GithubTitleA" href = "https://github.com/EastsidePreparatorySchool/epschedule">
+            Latest Github Updates
+          </a>
+        </h1>
+        <div id = "GHUpdateText"></div>
+        <br>
+      </p>
+    </div>
+  </paper-dialog>
 
 
   <paper-dialog id="dialog">
