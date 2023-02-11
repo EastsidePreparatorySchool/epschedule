@@ -459,7 +459,7 @@ def get_latest_github_commits():
     secret_client = secretmanager.SecretManagerServiceClient()
     gh_token = secret_client.access_secret_version(
         request={"name": "projects/epschedule-v2/secrets/gh_token/versions/1"}
-        ).payload.data
+    ).payload.data
     # this uses PyGithub module
     # using an access token from a person who can access epschedule
     g = gh(gh_token.decode("utf-8"))
