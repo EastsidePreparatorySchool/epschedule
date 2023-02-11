@@ -185,7 +185,7 @@ def main():
             ),
             # gets the trimester starts in a format JS can parse
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
-            latest_commits=get_github_info(),
+            latest_commits=get_latest_github_commits(),
         )
     )
     response.set_cookie("token", "", expires=0)
@@ -454,7 +454,10 @@ def get_first_name(schedule):
     return schedule.get("preferred_name") or schedule["firstname"]
 
 
-def get_github_info():
+def get_latest_github_commits():
+    # return an empty if there is no token, just in case and also to pass tests
+    if "GH_TOKEN" not in os.environ:
+        return []
     # this uses PyGithub module
     # using an access token from a person who can access epschedule
     g = gh(os.environ["GH_TOKEN"])
@@ -462,14 +465,24 @@ def get_github_info():
     # get arr of commits
     commitsArr = repo.get_commits()
     # print info about last 3
-    result = []
-    for repo_num in range(0, 3):
+    result = []  # initialize array for it
+    for repo_num in range(3):
+        # select the top 3, get its name (title),
+        # author (github name), date, and URL to the changes
         commit_name = str(commitsArr[repo_num].commit.message).split("\n")[0]
         commit_author = str(commitsArr[repo_num].commit.author)[16:-2]
         commit_date = str(commitsArr[repo_num].commit.author.date)
+        commit_url = str(commitsArr[repo_num].html_url)
+        # append it to the array as a dictionary object
         result.append(
-            {"Name": commit_name, "Author": commit_author, "Date": commit_date}
+            {
+                "Name": commit_name,
+                "Author": commit_author,
+                "Date": commit_date,
+                "URL": commit_url,
+            }
         )
+    # return it
     return result
 
 

@@ -1,11 +1,10 @@
-function github(){
+function renderGitHubCommits(){
   let updated = "";
-  for (let dictNum = 0; dictNum < 3; dictNum++){
-    dict = latestCommits[dictNum];
-    updated += dict["Name"] + ";<br>" + 
-                "Committed by " + dict["Author"] + " at " + dict["Date"] 
-                + "<br><br>";
-  }
+  latestCommits.forEach(commit => {
+    updated += '<a href = "' + commit["URL"] + '">' + commit["Name"] + ";<br>" + 
+                "Committed by " + commit["Author"] + " at " + commit["Date"] 
+                + "<br><br>" + '</a>';
+  });
   document.getElementById("GHUpdateText").innerHTML=updated;
 }
 function signOut() {
@@ -222,7 +221,7 @@ function updateMainSchedule() {
   renderDate(globalDate);
   renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches);
   // also update github info 
-  github()
+  renderGitHubCommits()
 }
 function renderToast(text) {
   toast = document.getElementById("toast");
