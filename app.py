@@ -455,12 +455,14 @@ def get_first_name(schedule):
 
 
 def get_latest_github_commits():
-    # return an empty if there is no token, just in case and also to pass tests
-    if "GH_TOKEN" not in os.environ:
-        return []
+    # get token from secret client
+    secret_client = secretmanager.SecretManagerServiceClient()
+    gh_token = secret_client.access_secret_version(
+        request={"name": "projects/epschedule-v2/secrets/gh_token/versions/1"}
+        ).payload.data
     # this uses PyGithub module
     # using an access token from a person who can access epschedule
-    g = gh(os.environ["GH_TOKEN"])
+    g = gh(gh_token.decode("utf-8"))
     repo = g.get_repo("EastsidePreparatorySchool/epschedule")
     # get arr of commits
     commitsArr = repo.get_commits()
