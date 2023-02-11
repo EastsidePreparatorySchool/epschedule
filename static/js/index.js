@@ -3,14 +3,14 @@ function renderGitHubCommits() {
   latestCommits.forEach((commit) => {
     updated +=
       '<a href = "' +
-      commit["URL"] +
+      commit["url"] +
       '">' +
-      commit["Name"] +
+      commit["name"] +
       ";<br>" +
       "Committed by " +
-      commit["Author"] +
+      commit["author"] +
       " at " +
-      commit["Date"] +
+      commit["date"] +
       "<br><br>" +
       "</a>";
   });
