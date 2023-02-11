@@ -1,8 +1,8 @@
 function renderGitHubCommits(){
   let updated = "";
   latestCommits.forEach(commit => {
-    updated += '<a href = "' + commit["URL"] + '">' + commit["Name"] + ";<br>" + 
-                "Committed by " + commit["Author"] + " at " + commit["Date"] 
+    updated += '<a href = "' + commit["url"] + '">' + commit["name"] + ";<br>" + 
+                "Committed by " + commit["author"] + " at " + commit["date"] 
                 + "<br><br>" + '</a>';
   });
   document.getElementById("GHUpdateText").innerHTML=updated;
