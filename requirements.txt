@@ -11,4 +11,4 @@ pylint
 isort
 black
 autoflake
-
+PyGithub

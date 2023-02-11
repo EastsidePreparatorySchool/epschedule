@@ -1,3 +1,12 @@
+function renderGitHubCommits(){
+  let updated = "";
+  latestCommits.forEach(commit => {
+    updated += '<a href = "' + commit["URL"] + '">' + commit["Name"] + ";<br>" + 
+                "Committed by " + commit["Author"] + " at " + commit["Date"] 
+                + "<br><br>" + '</a>';
+  });
+  document.getElementById("GHUpdateText").innerHTML=updated;
+}
 function signOut() {
   sendPostMessage("logout", reload);
 }
@@ -211,6 +220,8 @@ function updateMainSchedule() {
   var scheduleElement = document.getElementById('mainschedule');
   renderDate(globalDate);
   renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches);
+  // also update github info 
+  renderGitHubCommits()
 }
 function renderToast(text) {
   toast = document.getElementById("toast");
