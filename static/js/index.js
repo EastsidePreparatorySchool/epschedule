@@ -52,6 +52,11 @@ function about() {
   about.open();
 }
 
+function githubDisplay() {
+  var gh = document.getElementById("Github");
+  gh.open();
+}
+
 function openSettings() {
   var dialog = document.getElementById("dialog");
   dialog.open();

@@ -22,6 +22,7 @@ datastore_client = None
 SCHEDULE_INFO = None
 DAYS = None
 TERM_STARTS = []
+NUM_COMMITS = 7
 
 
 def init_app(test_config=None):
@@ -467,10 +468,10 @@ def get_latest_github_commits():
     repo = g.get_repo("EastsidePreparatorySchool/epschedule")
     # get arr of commits
     commitsArr = repo.get_commits()
-    # print info about last 3
+    # print info about last commits
     result = []  # initialize array for it
-    for repo_num in range(3):
-        # select the top 3, get its name (title),
+    for repo_num in range(NUM_COMMITS):
+        # select the last few commits, get its name (title),
         # author (github name), date, and URL to the changes
         commit_name = commitsArr[repo_num].commit.message.split("\n")[0]
         commit_author = commitsArr[repo_num].commit.author.name
