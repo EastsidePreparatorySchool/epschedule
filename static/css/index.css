@@ -305,3 +305,24 @@ paper-icon-item {
   color:black; 
   text-decoration:none;
 }
+
+/* unvisited link */
+.GithubLink:link {
+  color: rgb(0, 0, 79);
+  /* take off the underline */
+  text-decoration: none;
+}
+
+/* visited link */
+.GithubLink:visited {
+  color: blueviolet;
+  /* take off the underline */
+  text-decoration: none;
+}
+
+/* mouse over link */
+.GithubLink:hover {
+  color: blue;
+  /* take off the underline */
+  text-decoration: none;
+}

@@ -2,7 +2,7 @@ function renderGitHubCommits() {
   let updated = "";
   latestCommits.forEach((commit) => {
     updated +=
-      '<a href = "' +
+      '<a class = "GithubLink" href = "' +
       commit["url"] +
       '">' +
       commit["name"] +
