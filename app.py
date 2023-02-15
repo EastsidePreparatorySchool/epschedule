@@ -3,7 +3,6 @@ import datetime
 import json
 import os
 import re
-import time
 
 import google.oauth2.id_token
 from flask import Flask, abort, make_response, render_template, request, session

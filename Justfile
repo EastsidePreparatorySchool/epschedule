@@ -14,12 +14,12 @@ install:
     pip install -r requirements.txt
     
 format:
-    #autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv
+    autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv
     isort .  --profile black --skip venv
     black . --exclude venv
 
 check:
-    #autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check
+    autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check
     isort .  --profile black --skip venv --check
     black . --exclude venv --check
     #mypy .
