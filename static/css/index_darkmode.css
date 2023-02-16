@@ -1,15 +1,14 @@
-/* based on https://m2.material.io/design/color/dark-theme.html#behavior */
 html,body {
   height: 100%;
   margin: 0;
-  #background-color: #e6eef4;
+  background-color: #e6eef4;
   font-family: 'Roboto', sans-serif;
 }
 neon-animated-pages {
   height: 100%;
 }
 #drawerheader {
-  background: white;
+  background: #1f1f1f;
 }
 #toastButton {
     display: none;

@@ -65,17 +65,17 @@
           <paper-icon-item onclick="signOut()">
             <iron-icon class="drawer-icon" icon="account-circle" item-icon>
             </iron-icon>
-            <span>Sign out</span>
+            <span style="color: #e2e2e2;">Sign out</span>
           </paper-icon-item>
           <paper-icon-item onclick="openSettings()">
             <iron-icon class="drawer-icon" icon="settings" item-icon>
             </iron-icon>
-            <span>Settings</span>
+            <span style="color: #e2e2e2;">Settings</span>
           </paper-icon-item>
           <paper-icon-item onclick="reportBug()">
             <iron-icon class="drawer-icon" icon="bug-report" item-icon>
             </iron-icon>
-            <span>Report a bug</span>
+            <span style="color: #e2e2e2;">Report a bug</span>
           </paper-icon-item>
 
 
@@ -84,7 +84,7 @@
           <paper-icon-item onclick="about()">
             <iron-icon class="drawer-icon" icon="info" item-icon>
             </iron-icon>
-            <span>About</span>
+            <span style="color: #e2e2e2;">About</span>
           </paper-icon-item>
 
 
@@ -142,13 +142,13 @@
       </paper-header-panel>
     </paper-drawer-panel>
     <paper-header-panel id="popup">
-    <div class="popupcontainerholder">
+    <div class="popupcontainerholder" style="color: #e2e2e2; background-color: #1f1f1f;">
       <paper-toolbar>
         <paper-icon-button icon="arrow-back" onclick="closePopup()">
         </paper-icon-button>
         <span id="popupTitle" class="title"></span>
       </paper-toolbar>
-      <div id="popupContainer" layout="" vertical="" center="">
+      <div id="popupContainer" layout="" vertical="" center="" style="color: #e2e2e2; background-color: #1f1f1f;">
       </div>
     </div>
     </paper-header-panel>
@@ -157,8 +157,8 @@
 
 
 
-  <paper-dialog class="about-dialog" id="about">
-    <div id="aboutpanel">
+  <paper-dialog class="about-dialog" id="about" style="background-color: #1f1f1f;">
+    <div id="aboutpanel" style="color: #e2e2e2;">
       <h2>About</h2>
       <div>EPSchedule Club: 
         <p>---A club designated to maintain this website and add changes</p>
@@ -184,8 +184,8 @@
 
 
 
-  <paper-dialog id="dialog">
-    <div id="settingspanel">
+  <paper-dialog id="dialog" style="background-color: #1f1f1f;">
+    <div id="settingspanel" style="color: #e2e2e2;">
       <h2 class="settingstitle">Settings</h2>
       <div class="settingsdividerline"></div>
       <h3 class="privacypaneltitle">Privacy</h3>

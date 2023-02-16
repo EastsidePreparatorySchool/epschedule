@@ -121,7 +121,7 @@
       left: 2px;
       right: 2px;
       background: rgba(0,0,0,0.5);
-      color: #121212;
+      color: #e2e2e2;
       font-size: 14px;
       padding: 8px;
       white-space: nowrap;
@@ -230,7 +230,7 @@
           <iron-collapse id="{{computeCollapseId(item)}}">
             <template is="dom-if" if="{{isLunchWithDesc(item)}}" style="height:auto">
               <div layout vertical class="lunch">
-                <ul>
+                <ul style="color: #e2e2e2;">
                   <li>{{getLineInDesc(item, "0")}}</li>
                   <li>{{getLineInDesc(item, "1")}}</li>
                 </ul>
