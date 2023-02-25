@@ -894,7 +894,7 @@ function changePrivacySettings() {
 }
 
 document.addEventListener("keydown", (event) => {
-  var drawerState = document.querySelector(".drawerpanel").selected;
+  var drawerState = document.querySelector("#drawerpanel").selected;
   if (drawerState == "drawer") {
     // Ignore keyboard shortcuts when the drawer is open
     return;
