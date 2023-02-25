@@ -7,7 +7,17 @@ from requests.models import HTTPError
 
 from cron import four11
 
-PARSEABLE_PERIODS = ["A", "B", "C", "D", "E", "F", "G", "H"]
+PARSEABLE_PERIODS = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "Advisory",
+]
 FREE_PERIOD_CLASS = {
     "room": None,
     "name": "Free Period",
@@ -47,9 +57,11 @@ def decode_trimester_classes(four11_response):
     trimester_classes = []
     trimester = four11_response["sections"]
     for clss in trimester:
-        if clss["period"] in PARSEABLE_PERIODS:
+        # Remove " - US" suffix if needed
+        period = clss["period"].split(" ")[0]
+        if period in PARSEABLE_PERIODS:
             obj = {
-                "period": clss["period"],
+                "period": period,
                 "room": clss["location"],
                 "name": clss["course"],
                 "teacher_username": clss["teacher"],
@@ -58,7 +70,10 @@ def decode_trimester_classes(four11_response):
             trimester_classes.append(obj)
 
     add_free_periods_to_schedule(trimester_classes)
-    trimester_classes.sort(key=lambda x: x["period"])
+    # Sort by period, with advisory at the end
+    trimester_classes.sort(
+        key=lambda x: x["period"] if x["period"] != "Advisory" else "Z"
+    )
     return trimester_classes
 
 
@@ -86,7 +101,11 @@ def download_schedule(client, username, year):
         if "advisory" in section["course"].lower():
             person["advisor"] = section["teacher"]
 
-    # Convert grade to gradyear
+    # Find office for teachers
+    if individual["office"] and individual["office"] != "No-loc":
+        person["office"] = individual["office"]
+
+    # Convert gradyear to grade
     person["grade"] = None
     if person["gradyear"]:
         person["grade"] = 12 - (person["gradyear"] - year)
@@ -107,18 +126,11 @@ def download_schedule_with_retry(client, username, year):
 
 
 def crawl_schedules(dry_run=False, verbose=False):
-    print(f"Starting schedule crawl, dry_run={dry_run}")
-    start = time.time()
     school_year = get_current_school_year()
 
     # Open the bucket
     storage_client = storage.Client()
     data_bucket = storage_client.bucket("epschedule-data")
-
-    username_blob = data_bucket.blob("usernames.json")
-    usernames = json.loads(username_blob.download_as_string())
-    usernames.remove("dyezbick")
-
     schedules = {}
     errors = 0
 
@@ -132,7 +144,9 @@ def crawl_schedules(dry_run=False, verbose=False):
                 four11_client, username, school_year
             )
             if verbose:
-                print(f"Crawled user {username}")
+                copy = schedules[username].copy()
+                del copy["classes"]  # omitted for brevity
+                print(f"Crawled user {username}: {copy}")
         except NameError:
             errors += 1
             print(f"Could not crawl user {username}")
@@ -147,7 +161,7 @@ def crawl_schedules(dry_run=False, verbose=False):
     for username, schedule in schedules.items():
         assert len(schedule["classes"]) == 3
         for trimester in schedule["classes"]:
-            assert len(trimester) == 8 or len(trimester) == 9
+            assert len(trimester) == 9 or len(trimester) == 10
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
 
     print("Schedules passed sanity check")
@@ -156,4 +170,3 @@ def crawl_schedules(dry_run=False, verbose=False):
     if not dry_run:
         schedule_blob = data_bucket.blob("schedules.json")
         schedule_blob.upload_from_string(json.dumps(schedules))
-    print("Schedule crawl took {:.2f} seconds".format(time.time() - start))
