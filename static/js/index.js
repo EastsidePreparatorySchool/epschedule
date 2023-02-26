@@ -293,7 +293,18 @@ function getGpsSuccess(position, roomObj) {
   map.appendChild(marker);
 }
 function isStandardClass(letter) {
-  var standardPeriods = ["O", "A", "B", "C", "D", "E", "F", "G", "H"];
+  var standardPeriods = [
+    "O",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "Advisory",
+  ];
   return standardPeriods.indexOf(letter) >= 0;
 }
 function getGpsFail(error) {
