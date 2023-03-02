@@ -21,6 +21,7 @@ datastore_client = None
 SCHEDULE_INFO = None
 DAYS = None
 TERM_STARTS = []
+GITHUB_COMMITS = None
 NUM_COMMITS = 7
 
 
@@ -31,6 +32,7 @@ def init_app(test_config=None):
     global SCHEDULE_INFO
     global DAYS
     global TERM_STARTS
+    global GITHUB_COMMITS
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -54,7 +56,7 @@ def init_app(test_config=None):
             data_bucket.blob("schedules.json").download_as_string()
         )
         DAYS = json.loads(data_bucket.blob("master_schedule.json").download_as_string())
-
+        GITHUB_COMMITS = get_latest_github_commits()
         datastore_client = datastore.Client()
     else:
         app.config.from_mapping(test_config)
@@ -65,6 +67,7 @@ def init_app(test_config=None):
         datastore_client = app.config["DATASTORE"]
         SCHEDULE_INFO = app.config["SCHEDULES"]
         DAYS = app.config["MASTER_SCHEDULE"]
+        GITHUB_COMMITS = []
     TERM_STARTS = get_term_starts(DAYS[0])
 
 
@@ -172,6 +175,9 @@ def main():
     elif "username" not in session:
         return gen_login_response()
 
+    # Get the last 28 days of lunches
+    lunches = get_lunches_since_date(datetime.date.today() - datetime.timedelta(28))
+
     # Handler for how to serialize date objs into json
     response = make_response(
         render_template(
@@ -179,13 +185,10 @@ def main():
             schedule=json.dumps(get_schedule(session["username"])),
             days=json.dumps(DAYS),
             components="static/components.html",
-            # gets the last 28 days of lunches
-            lunches=get_lunches_since_date(
-                datetime.date.today() - datetime.timedelta(28)
-            ),
+            lunches=lunches,
             # gets the trimester starts in a format JS can parse
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
-            latest_commits=get_latest_github_commits(),
+            latest_commits=json.dumps(GITHUB_COMMITS),
         )
     )
     response.set_cookie("token", "", expires=0)
