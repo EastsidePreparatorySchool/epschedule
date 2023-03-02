@@ -119,24 +119,6 @@ function sendUpdatePrivacyRequest(share_photo, share_schedule) {
   xhr.open("POST", "privacy", true);
   xhr.send(data);
 }
-document.onkeydown = function (event) {
-  if (pages.selected == 0) {
-    // no popup
-    if (event.keyCode == 37) {
-      // left
-      dateBack();
-    } else if (event.keyCode == 39) {
-      // right
-      dateForward();
-    }
-  } else if (pages.selected == 1) {
-    // no popup
-    if (event.keyCode == 27) {
-      // escape
-      closePopup();
-    }
-  }
-};
 
 function scheduleSwiped(evt) {
   if (evt.detail.direction == "left") {
@@ -623,7 +605,12 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
       period: "X",
       time: "",
     };
-    LPC_COMMONS_CLASSES = ["Lunch", "Assembly", "US Community"];
+    LPC_COMMONS_CLASSES = [
+      "Assembly",
+      "US Community",
+      "Lunch (US)",
+      "Lunch (MS)",
+    ];
     if (LPC_COMMONS_CLASSES.includes(scheduleObj.name)) {
       scheduleObj.room = "LPC Commons";
     }
@@ -906,15 +893,51 @@ function changePrivacySettings() {
   document.getElementById("privacydialogcollapse").show();
 }
 
-document.addEventListener("WebComponentsReady", function () {
+document.addEventListener("keydown", (event) => {
+  var drawerState = document.querySelector("#drawerpanel").selected;
+  if (drawerState == "drawer") {
+    // Ignore keyboard shortcuts when the drawer is open
+    return;
+  }
+
+  var titlebar = document.querySelector(".headerbarpages");
+  if (pages.selected == 0 && titlebar.selected == 0) {
+    // No popup, no search bar
+    if (event.keyCode == 37) {
+      // left
+      dateBack();
+    } else if (event.keyCode == 39) {
+      // right
+      dateForward();
+    } else if (event.keyCode == 191) {
+      // slash
+      openSearchBar();
+    }
+  } else if (titlebar.selected == 1) {
+    // If the search bar is up, close it with Esc
+    if (event.keyCode == 27) {
+      var typeAhead = document.querySelector("paper-typeahead-input");
+      typeAhead.inputValue = "";
+      closeSearchBar();
+    }
+  } else if (pages.selected == 1) {
+    // If the popup is up, close it with Esc
+    if (event.keyCode == 27) {
+      closePopup();
+    }
+  }
+});
+
+document.addEventListener("WebComponentsReady", () => {
   var scheduleElement = document.getElementById("mainschedule");
   scheduleElement.addEventListener("swiped", scheduleSwiped, false);
   updateMainSchedule();
-  var input = document.querySelector("paper-typeahead-input");
-
-  input.addEventListener("pt-item-confirmed", function () {
-    var obj = input.inputObject;
+  var typeAhead = document.querySelector("paper-typeahead-input");
+  typeAhead.addEventListener("pt-item-confirmed", () => {
+    var obj = typeAhead.inputObject;
     requestAdditionalData(obj.username, "student", renderStudent);
     openPopup(obj.name);
+    typeAhead.inputValue = "";
+    closeSearchBar();
   });
 });
