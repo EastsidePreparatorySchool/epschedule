@@ -395,7 +395,7 @@ function renderStudent(studentObj) {
     var name = studentObj.firstname + " " + studentObj.lastname;
   }
   popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
-      '<paper-material class="header" elevation="2">' +
+      '<paper-material class="header" elevation="2" style="background-color: #1f1f1f;">' +
       '<div layout horizontal center>' +
       '<img src="' + studentObj.photo_url + '" onerror="if (this.src != \'/static/images/placeholder.png\') this.src = \'/static/images/placeholder.png\';">' +
       '<div layout vertical><h3><span class="grade">' + grade + '</span></h3>' +

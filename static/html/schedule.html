@@ -191,7 +191,7 @@
       <template is="dom-repeat" id="entryList" items="{{entries}}">
         <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
           <div class="card-header" layout="" horizontal="" center="">
-            <img src="{{item.avatar}}" onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';">
+            <img style="background-color:white;" src="{{item.avatar}}" onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';">
             <div class="card-mid" layout="" vertical="">
               <p item="time">
                 <template is="dom-if" if="{{!isCore()}}">
