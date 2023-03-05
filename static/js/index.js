@@ -347,6 +347,7 @@ function renderTeacher(teacherObj) {
   imgSrc = imgSrc + teacherObj.lastname + ".jpg";
   imgSrc = imgSrc.toLowerCase();
   var email = teacherObj.email;
+  console.log ("office" + teacherObj.office)
   popupContainer.innerHTML =
     '<div class="teacher" layout vertical>' +
     '<paper-material class="header" elevation="2">' +
@@ -359,7 +360,7 @@ function renderTeacher(teacherObj) {
     email +
     '""><iron-icon icon="communication:email"></iron-icon>' +
     '<span class="email">Email teacher</span></a></p>' +
-    renderBio(teacherObj.bio) +
+    renderBio(teacherObj.bio) + teacherObj.office +
     "</div></div></paper-material>" +
     '<schedule-lite id="teacherschedule"></schedule-lite>' +
     "</div>";
@@ -445,6 +446,7 @@ function renderStudent(studentObj) {
     var grade = "";
     var name = studentObj.firstname + " " + studentObj.lastname;
   }
+  console.log("office="+studentObj.office)
   popupContainer.innerHTML =
     '<div class="teacher" layout vertical>' +
     '<paper-material class="header" elevation="2">' +
@@ -460,7 +462,8 @@ function renderStudent(studentObj) {
     '""><iron-icon icon="communication:email"></iron-icon>' +
     '<span class="email">Email ' +
     name +
-    "</span></a></p></div></div></paper-material>" +
+    "</span></a></p>"+
+    "<p>Office: "+studentObj.office+"</p></div></div></paper-material>" +
     '<schedule-lite id="studentschedule"></schedule-lite>' +
     "</div>";
   // Wait for HTML to be parsed/applied before trying to show the schedule.

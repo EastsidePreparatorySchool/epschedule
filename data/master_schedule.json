@@ -136,8 +136,8 @@
         "2023-03-03": "H-E_Fri",
         "2023-03-06": "A-D_Mon",
         "2023-03-07": "E-H_Tue",
-        "2023-03-08": "Finals_Mid",
-        "2023-03-09": "Finals_Mid",
+        "2023-03-08": "Finals_MidABC",
+        "2023-03-09": "Finals_MidDEF",
         "2023-03-10": "Finals / End Winter Term",
         "2023-03-13": "PDD",
         "2023-03-14": "A-D_Tue",
@@ -874,15 +874,73 @@
         ],
         "Finals / End Winter Term": [
             {
-                "period": "Finals / End Winter Term",
-                "times": "08:00-03:15"
+                "period": "G",
+                "times": "08:30-10:10"
+            },
+            {
+                "period": "H",
+                "times": "10:15-11:45"
             }
         ],
-        "Finals_Mid": [
+        "Finals_MidABC": [
             {
-                "period": "Finals",
-                "times": "08:00-03:15"
+                "period": "A",
+                "times": "08:30-10:00"
+            },
+            {
+                "period": "B",
+                "times":"10:15-11:45"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:50-12:30"
+            },
+            {
+                "period": "Advisory - US",
+                "times": "11:50-12:30"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "12:40-1:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "12:40-1:20"
+            },
+            {
+                "period": "C",
+                "times": "1:30-3:00"
             }
+        ],
+        "Finals_MidDEF": [
+            {
+                "period": "D",
+                "times": "08:30-10:00"
+            },
+            {
+                "period": "E",
+                "times": "10:15-11:45"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:50-12:30"
+            },
+            {
+                "period": "Advisory - US",
+                "times": "11:50-12:30"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "12:40-1:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "12:40-1:20"
+            },
+            {
+                "period":"F",
+                "times": "1:30-3:00"
+            }  
         ],
         "Grade Level Orientations": [
             {

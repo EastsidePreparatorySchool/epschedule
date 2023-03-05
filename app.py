@@ -55,7 +55,8 @@ def init_app(test_config=None):
         SCHEDULE_INFO = json.loads(
             data_bucket.blob("schedules.json").download_as_string()
         )
-        DAYS = json.loads(data_bucket.blob("master_schedule.json").download_as_string())
+        #DAYS = json.loads(data_bucket.blob("master_schedule.json").download_as_string())
+        DAYS = json.loads(open("data/master_schedule.json").read())
         GITHUB_COMMITS = get_latest_github_commits()
         datastore_client = datastore.Client()
     else:
