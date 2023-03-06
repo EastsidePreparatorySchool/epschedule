@@ -441,9 +441,12 @@ function renderStudent(studentObj) {
   if (studentObj.grade) {
     var grade = studentObj.grade + "th Grade";
     var name = studentObj.firstname;
+    var officeTag = "";
   } else {
     var grade = "";
     var name = studentObj.firstname + " " + studentObj.lastname;
+    var officeTag ='<p><iron-icon icon="icons:home"></iron-icon>' +
+    "Office: "+studentObj.office+"</p>";
   }
   popupContainer.innerHTML =
     '<div class="teacher" layout vertical>' +
@@ -461,6 +464,9 @@ function renderStudent(studentObj) {
     '<span class="email">Email ' +
     name +
     "</span></a></p></div></div></paper-material>" +
+    "</span></a></p>"+
+    officeTag +
+    "</div></div></paper-material>" +
     '<schedule-lite id="studentschedule"></schedule-lite>' +
     "</div>";
   // Wait for HTML to be parsed/applied before trying to show the schedule.
