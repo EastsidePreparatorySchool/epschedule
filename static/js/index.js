@@ -463,7 +463,6 @@ function renderStudent(studentObj) {
     '""><iron-icon icon="communication:email"></iron-icon>' +
     '<span class="email">Email ' +
     name +
-    "</span></a></p></div></div></paper-material>" +
     "</span></a></p>"+
     officeTag +
     "</div></div></paper-material>" +
