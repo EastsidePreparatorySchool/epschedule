@@ -443,11 +443,15 @@ function renderStudent(studentObj) {
     var grade = studentObj.grade + "th Grade";
     var name = studentObj.firstname;
     var officeTag = "";
+    var advisoryTag = '<p><iron-icon icon="icons:perm-identity"></iron-icon>' +
+    "Advisor: "+ studentObj.advisor.charAt(1).toUpperCase() + 
+    studentObj.advisor.slice(2) +"</p>";
   } else {
     var grade = "";
     var name = studentObj.firstname + " " + studentObj.lastname;
     var officeTag ='<p><iron-icon icon="icons:home"></iron-icon>' +
     "Office: "+studentObj.office+"</p>";
+    var advisoryTag = "";
   }
   popupContainer.innerHTML =
     '<div class="teacher" layout vertical>' +
@@ -466,6 +470,7 @@ function renderStudent(studentObj) {
     name +
     "</span></a></p>"+
     officeTag +
+    advisoryTag +
     "</div></div></paper-material>" +
     '<schedule-lite id="studentschedule"></schedule-lite>' +
     "</div>";
@@ -640,7 +645,7 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
       // Determine if the class is shared
       scheduleObj.shared = isSharedClass(scheduleObj, schedule.termid);
     } else {
-      return null; // Skip over lunch, advisory, assembly, etc.
+      return null; // Skip over lunch, assembly, etc.
     }
   }
   scheduleObj.termId = termId;
@@ -682,7 +687,8 @@ function isSharedClass(scheduleObj, termid) {
   for (var i = 0; i < userClasses.length; i++) {
     if (
       userClasses[i].period == scheduleObj.period &&
-      userClasses[i].name == scheduleObj.name
+      userClasses[i].name == scheduleObj.name &&
+      userClasses[i].teacher_username == scheduleObj.teacherUsername
     ) {
       return true;
     }
