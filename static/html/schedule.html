@@ -1,12 +1,18 @@
 <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/polymer/polymer.html">
-<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/paper-material/paper-material.html">
-<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-collapse/iron-collapse.html">
-<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/communication-icons.html">
-<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/hardware-icons.html">
+<link rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/paper-material/paper-material.html">
+<link rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-collapse/iron-collapse.html">
+<link rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/communication-icons.html">
+<link rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/hardware-icons.html">
 <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-image/iron-image.html">
 <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-list/iron-list.html">
-<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/star-rating/star-rating.html">
+<link rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/star-rating/star-rating.html">
 <link rel="import" href="swipeable-behavior.html">
 
 <dom-module id="x-schedule">
@@ -17,54 +23,95 @@
     [layout] {
       @apply(--layout);
     }
+
     [layout][vertical] {
       @apply(--layout-vertical);
     }
+
     [layout][center] {
       @apply(--layout-center);
     }
   </style>
   <style>
-    :host {
-      width: 100%;
-      display: block;
-      position: relative;
-      background-color: #1f1f1f;
-      font-size: 1.2rem;
-      font-weight: 300;
-      margin-bottom: 1px;
-      border-radius: 2px;
-      transition: 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    @media (prefers-color-scheme: dark) {
+      :host {
+        width: 100%;
+        display: block;
+        position: relative;
+        background-color: #1f1f1f;
+        font-size: 1.2rem;
+        font-weight: 300;
+        margin-bottom: 1px;
+        border-radius: 2px;
+        transition: 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+      }
     }
+
+    @media (prefers-color-scheme: light) {
+      :host {
+        width: 100%;
+        display: block;
+        position: relative;
+        background-color: #efefef;
+        font-size: 1.2rem;
+        font-weight: 300;
+        margin-bottom: 1px;
+        border-radius: 2px;
+        transition: 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+      }
+    }
+
     :host-context(.no-transition) {
       transition: none;
     }
-    iron-icon{
-      color: #e2e2e2;
+
+    @media (prefers-color-scheme: dark) {
+      iron-icon {
+        color: #e2e2e2;
+      }
+
+      h2 {
+        color: #e2e2e2;
+      }
     }
-    h2 {
-      color: #e2e2e2;
-    }
+
     .status {
       width: 100%;
     }
+
     .status img {
       width: 100%;
       position: absolute;
       top: 0px;
     }
-    .status p {
-      position: relative;
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 16px;
-      margin: 0px;
-      color: #121212;
-      font-size: 1.5rem;
+
+    @media (prefers-color-scheme: dark) {
+      .status p {
+        position: relative;
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 16px;
+        margin: 0px;
+        color: #121212;
+        font-size: 1.5rem;
+      }
     }
+
+    @media (prefers-color-scheme: light) {
+      .status p {
+        position: relative;
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 16px;
+        margin: 0px;
+        color: white;
+        font-size: 1.5rem;
+      }
+    }
+
     .hybrid {
       width: 100%;
       background-color: #F0B300;
     }
+
     .hybrid p {
       position: relative;
       font-size: 1.4rem;
@@ -76,74 +123,146 @@
       cursor: pointer;
       position: relative;
     }
-    .card-header {
-      background: #121212;
+
+    @media (prefers-color-scheme: dark) {
+      .card-header {
+        background: #121212;
+      }
     }
-    .card-header ::content img {
-      width: 64px;
-      padding: 1px;
-      border-radius: 50%;
-      margin: 8px;
-      margin-right: 16px;
-      background: #121212 center no-repeat;
+
+    @media (prefers-color-scheme: light) {
+      .card-header {
+        background: white;
+      }
     }
+
+    @media (prefers-color-scheme: dark) {
+      .card-header ::content img {
+        width: 64px;
+        padding: 1px;
+        border-radius: 50%;
+        margin: 8px;
+        margin-right: 16px;
+        background: #121212 center no-repeat;
+      }
+    }
+
+    @media (prefers-color-scheme: light) {
+      .card-header ::content img {
+        width: 64px;
+        padding: 1px;
+        border-radius: 50%;
+        margin: 8px;
+        margin-right: 16px;
+        background: #efefef center no-repeat;
+      }
+    }
+
     .card-header ::content h2 {
       margin: 0;
       font-size: 1.5rem;
       font-weight: 300;
     }
+
     .card-header ::content p {
       margin: 0;
       font-size: 0.9rem;
       font-weight: 300;
       color: gray;
     }
+
     a {
       color: gray;
       font-weight: 300;
       text-decoration: none;
     }
+
     .card-header ::content a:hover {
       color: #2196f3;
     }
-    .selected {
+
+    @media (prefers-color-scheme: dark) {
+      iron-collapse {
+        background: #121212;
+      }
     }
-    iron-collapse {
-      background: #121212;
+
+    @media (prefers-color-scheme: white) {
+      iron-collapse {
+        background: white;
+      }
     }
-    .student {
-      background: #121212;
-      padding: 2px;
+
+
+    @media (prefers-color-scheme: dark) {
+      .student {
+        background: #121212;
+        padding: 2px;
+      }
+
+      .studentname {
+        position: absolute;
+        bottom: 2px;
+        left: 2px;
+        right: 2px;
+        background: rgba(0, 0, 0, 0.5);
+        color: #e2e2e2;
+        font-size: 14px;
+        padding: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .lunch {
+        background: #121212;
+        padding-left: 64px;
+        padding-right: 16px;
+        font-size: 0.9rem;
+      }
     }
-    .studentname {
-      position: absolute;
-      bottom: 2px;
-      left: 2px;
-      right: 2px;
-      background: rgba(0,0,0,0.5);
-      color: #e2e2e2;
-      font-size: 14px;
-      padding: 8px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+
+    @media (prefers-color-scheme: light) {
+      .student {
+        background: white;
+        padding: 2px;
+      }
+
+      .studentname {
+        position: absolute;
+        bottom: 2px;
+        left: 2px;
+        right: 2px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 14px;
+        padding: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .lunch {
+        background: white;
+        padding-left: 64px;
+        padding-right: 16px;
+        font-size: 0.9rem;
+      }
     }
-    .lunch {
-      background: #121212;
-      padding-left: 64px;
-      padding-right: 16px;
-      font-size: 0.9rem;
-    }
+
+
     .inline {
       position: relative;
       bottom: 0;
     }
+
     .optionicon {
       position: absolute;
       top: 0px;
       right: 0px;
       padding: 8px;
     }
+
     .altclassescontainer {
       height: auto;
       padding-bottom: 4px;
@@ -152,114 +271,141 @@
       font-size: 0.9rem;
       text-align: center;
     }
-    .classinfodivider {
-      height: 1px;
-      width: 100%;
-      background-color: #121212;
+
+    @media (prefers-color-scheme: dark) {
+      .classinfodivider {
+        height: 1px;
+        width: 100%;
+        background-color: #121212;
+      }
+
+      .classinfoupwardsdivider {
+        padding-left: 8px;
+        padding-right: 8px;
+        width: 5px;
+        height: 100%;
+        background-color: #121212;
+      }
     }
-    .classinfoupwardsdivider {
-      padding-left: 8px;
-      padding-right: 8px;
-      width: 5px;
-      height: 100%;
-      background-color: #121212 ;
+    @media (prefers-color-scheme: light) {
+      .classinfodivider {
+        height: 1px;
+        width: 100%;
+        background-color: #EFEFEF;
+      }
+
+      .classinfoupwardsdivider {
+        padding-left: 8px;
+        padding-right: 8px;
+        width: 5px;
+        height: 100%;
+        background-color: #EFEFEF;
+      }
     }
+
+
     .classinfosubcontainer {
       font-weight: bold;
       display: inline-block;
       margin: 0 auto;
     }
+
     .studentimage {
       width: 128px;
       height: 128px;
     }
+
     .classemaillink {
       font-weight: bold;
     }
   </style>
   <template>
     <paper-material class="xcard" elevation="2" on-track="handleTrack">
-    <div layout="" vertical="">
-      <template is="dom-if" if="{{allDayEvent}}">
-        <div class="status">
-          <img src="{{allDayEvent.url}}"></img>
-          <p>{{allDayEvent.text}}</p>
-        </div>
-      </template>
-      <div class="hybrid">
-      </div>
-      <template is="dom-repeat" id="entryList" items="{{entries}}">
-        <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
-          <div class="card-header" layout="" horizontal="" center="">
-            <img style="background-color:white;" src="{{item.avatar}}" onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';">
-            <div class="card-mid" layout="" vertical="">
-              <p item="time">
-                <template is="dom-if" if="{{!isCore()}}">
-                  <span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
-                </template>
-                <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
-                  (<a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>,
-                  <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
-                </template>
-                <template is="dom-if" if="{{isCore()}}"> <!--If support for AND is ever added, use AND here instead of two IFS-->
-                  <template is="dom-if" if="{{item.teacher}}">
-                    <a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>,
-                    <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>,
-                    <a href="#">{{item.studentCount}} students</a>
-                  </template>
-                </template>
-                <template is="dom-if" if="{{hasTeacherOnly(item)}}">
-                  (<a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>)
-                </template>
-                <template is="dom-if" if="{{hasRoomOnly(item)}}">
-                  (<a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
-                </template>
-              </p>
-              <h2>{{getName(item.name)}}</h2>
-              <p>{{item.lunchInfo.summary}}</p>
-            </div>
-            <template is="dom-if" if="{{showChevron(item)}}">
-              <div class="optionicon">
-                <iron-pages selected="0">
-                  <iron-icon icon="hardware:keyboard-arrow-down"></iron-icon>
-                  <iron-icon icon="hardware:keyboard-arrow-up"></iron-icon>
-                </iron-pages>
-              </div>
-            </template>
+      <div layout="" vertical="">
+        <template is="dom-if" if="{{allDayEvent}}">
+          <div class="status">
+            <img src="{{allDayEvent.url}}"></img>
+            <p>{{allDayEvent.text}}</p>
           </div>
-          <iron-collapse id="{{computeCollapseId(item)}}">
-            <template is="dom-if" if="{{isLunchWithDesc(item)}}" style="height:auto">
-              <div layout vertical class="lunch">
-                <ul style="color: #e2e2e2;">
-                  <li>{{getLineInDesc(item, "0")}}</li>
-                  <li>{{getLineInDesc(item, "1")}}</li>
-                </ul>
-              </div>
-            </template>
-            <template is="dom-if" if="{{displayClassOptions(item)}}">
-              <div class="altclassescontainer">
-                <div class="inline classinfosubcontainer" item="{{item}}">
-                  <a class="classemaillink" item="link" on-tap="removeThunk" href="#">EMAIL CLASS</a>    |    <span on-tap="periodThunk"> PERIOD INFO </span>
-                </div>
-              </div>
-            </template>
-            <template is="dom-if" if="{{!isLunchWithDesc(item)}}">
-              <iron-list items="{{item.students}}" grid class="studentgrid" style="height:20vh">
-                <template>
-                  <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                    <img class="studentimage" src="{{item.photo_url}}" onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';">
-
-                    <div class="studentname">
-                      <span>{{item.firstname}} {{item.lastname}}</span>
-                    </div>
-                  </div>
-                </template>
-              </iron-list>
-            </template>
-          </iron-collapse>
+        </template>
+        <div class="hybrid">
         </div>
-      </template>
-    </div>
+        <template is="dom-repeat" id="entryList" items="{{entries}}">
+          <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
+            <div class="card-header" layout="" horizontal="" center="">
+              <img style="@media (prefers-color-scheme: dark) {background-color:white;} " src="{{item.avatar}}"
+                onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';">
+              <div class="card-mid" layout="" vertical="">
+                <p item="time">
+                  <template is="dom-if" if="{{!isCore()}}">
+                    <span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
+                  </template>
+                  <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
+                    (<a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>,
+                    <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
+                  </template>
+                  <template is="dom-if" if="{{isCore()}}">
+                    <!--If support for AND is ever added, use AND here instead of two IFS-->
+                    <template is="dom-if" if="{{item.teacher}}">
+                      <a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>,
+                      <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>,
+                      <a href="#">{{item.studentCount}} students</a>
+                    </template>
+                  </template>
+                  <template is="dom-if" if="{{hasTeacherOnly(item)}}">
+                    (<a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>)
+                  </template>
+                  <template is="dom-if" if="{{hasRoomOnly(item)}}">
+                    (<a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
+                  </template>
+                </p>
+                <h2>{{getName(item.name)}}</h2>
+                <p>{{item.lunchInfo.summary}}</p>
+              </div>
+              <template is="dom-if" if="{{showChevron(item)}}">
+                <div class="optionicon">
+                  <iron-pages selected="0">
+                    <iron-icon icon="hardware:keyboard-arrow-down"></iron-icon>
+                    <iron-icon icon="hardware:keyboard-arrow-up"></iron-icon>
+                  </iron-pages>
+                </div>
+              </template>
+            </div>
+            <iron-collapse id="{{computeCollapseId(item)}}">
+              <template is="dom-if" if="{{isLunchWithDesc(item)}}" style="height:auto">
+                <div layout vertical class="lunch">
+                  <ul style="color: #e2e2e2;">
+                    <li>{{getLineInDesc(item, "0")}}</li>
+                    <li>{{getLineInDesc(item, "1")}}</li>
+                  </ul>
+                </div>
+              </template>
+              <template is="dom-if" if="{{displayClassOptions(item)}}">
+                <div class="altclassescontainer">
+                  <div class="inline classinfosubcontainer" item="{{item}}">
+                    <a class="classemaillink" item="link" on-tap="removeThunk" href="#">EMAIL CLASS</a> | <span
+                      on-tap="periodThunk"> PERIOD INFO </span>
+                  </div>
+                </div>
+              </template>
+              <template is="dom-if" if="{{!isLunchWithDesc(item)}}">
+                <iron-list items="{{item.students}}" grid class="studentgrid" style="height:20vh">
+                  <template>
+                    <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
+                      <img class="studentimage" src="{{item.photo_url}}"
+                        onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';">
+
+                      <div class="studentname">
+                        <span>{{item.firstname}} {{item.lastname}}</span>
+                      </div>
+                    </div>
+                  </template>
+                </iron-list>
+              </template>
+            </iron-collapse>
+          </div>
+        </template>
+      </div>
     </paper-material>
   </template>
   <script>
@@ -268,40 +414,40 @@
       is: 'x-schedule',
       behaviors: [SwipeableBehavior],
       properties: { entries: { notify: true } },
-      ready: function() {
-      // disable vertical gestures on the card
+      ready: function () {
+        // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
         this.behaviors[0].disabled = true;
       },
-      and: function(a, b) {
+      and: function (a, b) {
         console.log(a);
         console.log(b);
         return a && b;
       },
-      getHeaderText: function(isOnCampus) {
+      getHeaderText: function (isOnCampus) {
         if (isOnCampus) {
           return "🏫 On Campus"
         } else {
           return "💻 Remote"
         }
       },
-      displayClassOptions: function(item) {
+      displayClassOptions: function (item) {
         return this.type != "core" && !Boolean(item.lunchInfo);
       },
-      isLunchWithDesc: function(item) {
+      isLunchWithDesc: function (item) {
         return Boolean(item.lunchInfo);
       },
-      getLineInDesc: function(item, linenum) {
+      getLineInDesc: function (item, linenum) {
         if (item.lunchInfo) {
           var num = parseInt(linenum);
           return item.lunchInfo.description[num];
         }
       },
-      getName: function(name) {
+      getName: function (name) {
         name = name.replace('&', 'and');
         return name; // Debug func
       },
-      showChevron: function(item) {
+      showChevron: function (item) {
         if (!this.expandable) {
           return false;
         }
@@ -312,7 +458,7 @@
           return false;
         }
       },
-      genClassEmailURL: function(students) {
+      genClassEmailURL: function (students) {
         console.log(students);
         console.log("Trying to render email!")
         recipients = "";
@@ -325,26 +471,26 @@
         }
         return "mailto:" + recipients;
       },
-      isCore: function() {
+      isCore: function () {
         return this.type == "core";
       },
-      hasTeacherAndRoom: function(item) {
+      hasTeacherAndRoom: function (item) {
         return item.teacher && item.room && this.type != "core";
       },
-      hasTeacherOnly: function(item) {
+      hasTeacherOnly: function (item) {
         return item.teacher && !item.room;
       },
-      hasRoomOnly: function(item) {
+      hasRoomOnly: function (item) {
         return !item.teacherUsername && item.room;
       },
-      getTeacherLastName: function(item) {
+      getTeacherLastName: function (item) {
         var splitNames = item.teacher.split(" ");
         return splitNames[splitNames.length - 1];
       },
-      getIconURL: function(item) {
+      getIconURL: function (item) {
         return "/96x96_photos/" + item.lastname + "_" + item.firstname + ".jpg"
       },
-      canRateLunch: function(strTime, isToday) {
+      canRateLunch: function (strTime, isToday) {
         /*Takes in a time as a string, and returns
         whether the current time is after that time*/
 
@@ -364,10 +510,10 @@
 
         return (pastTime && isToday);
       },
-      computeCollapseId: function(item) {
+      computeCollapseId: function (item) {
         return "collapse-" + item.name + "-" + item.period;
       },
-      toggleExpand: function(e) {
+      toggleExpand: function (e) {
         if (!this.expandable) {
           return;
         }
@@ -398,7 +544,7 @@
           var cleanedClass = item.name.replace(/[\W]/g, "_");
           var url = "class/" + item.period.toLowerCase() + "?term_id=" + item.termId;
 
-          xhr.onreadystatechange = function() {
+          xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
               // Change the chevron to a more-vert
               el.children[0].children[2].children[0].selected = 1;
@@ -435,38 +581,38 @@
           //e.model.set('item.students', []);
         }
       },
-      ratingThunk: function(e) {
+      ratingThunk: function (e) {
         var rating = document.getElementById("lunchrater").rate;
         e.stopPropagation();
         if (this.onRate) {
           this.onRate(rating);
         }
       },
-      studentThunk: function(e) {
+      studentThunk: function (e) {
         e.stopPropagation();
         if (this.onStudentTap) {
           this.onStudentTap(e);
         }
       },
-      roomThunk: function(e) {
+      roomThunk: function (e) {
         e.stopPropagation();
         /*if (this.onRoomTap) {
           this.onRoomTap(e);
         }*/
       },
-      teacherThunk: function(e) {
+      teacherThunk: function (e) {
         e.stopPropagation();
         if (this.onTeacherTap) {
           this.onTeacherTap(e);
         }
       },
-      periodThunk: function(e) {
+      periodThunk: function (e) {
         e.stopPropagation();
         if (this.onPeriodTap) {
           this.onPeriodTap(e);
         }
       },
-      removeThunk: function(e) {
+      removeThunk: function (e) {
         e.stopPropagation();
       }
     });

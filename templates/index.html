@@ -38,7 +38,7 @@
   </iron-iconset-svg>
   <link rel="import" href="static/html/schedule.html">
   <link rel="import" href="static/html/schedule_lite.html">
-  <link rel="stylesheet" href="static/css/index_darkmode.css">
+  <link rel="stylesheet" href="static/css/index.css">
   <script>
     var userSchedule = {{ schedule | safe }};
     var days = {{days | safe }};
@@ -142,7 +142,7 @@
       </paper-header-panel>
     </paper-drawer-panel>
     <paper-header-panel id="popup">
-    <div class="popupcontainerholder" style="color: #e2e2e2; background-color: #292929;">
+    <div class="popupcontainerholder" style="color: #e2e2e2; @media (prefers-color-scheme: dark) {background-color: #292929;} @media (prefers-color-scheme: dark) {background-color: #1f1f1f;}">
       <paper-toolbar>
         <paper-icon-button icon="arrow-back" onclick="closePopup()">
         </paper-icon-button>
