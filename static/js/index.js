@@ -441,14 +441,15 @@ function renderStudent(studentObj) {
   email = email.toLowerCase();
   if (studentObj.grade) {
     var grade = studentObj.grade + "th Grade";
-    var name = studentObj.firstname;
+    var name = studentObj.preferred_name ? studentObj.preferred_name : studentObj.firstname;
     var officeTag = "";
     var advisoryTag = '<p><iron-icon icon="icons:perm-identity"></iron-icon>' +
     "Advisor: "+ studentObj.advisor.charAt(1).toUpperCase() + 
     studentObj.advisor.slice(2) +"</p>";
   } else {
     var grade = "";
-    var name = studentObj.firstname + " " + studentObj.lastname;
+    var name = studentObj.preferred_name ? studentObj.preferred_name : studentObj.firstname;
+    name += " " + studentObj.lastname
     var officeTag ='<p><iron-icon icon="icons:home"></iron-icon>' +
     "Office: "+studentObj.office+"</p>";
     var advisoryTag = "";
