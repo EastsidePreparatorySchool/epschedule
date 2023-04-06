@@ -1,3 +1,23 @@
+@media (prefers-color-scheme:light){
+  :root{
+    --background: #efefef;
+    --lighter-background: white;
+    --text: #1f1f1f;
+    --alt-text: #efefef;
+  }
+}
+
+@media (prefers-color-scheme:dark)
+{
+  :root{
+    --background: #1f1f1f;
+    --lighter-background: #292929;
+    --text: #efefef;
+    --alt-text: #1f1f1f;
+  }
+}
+
+
 html,
 body {
   height: 100%;
@@ -9,16 +29,40 @@ neon-animated-pages {
   height: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  #drawerheader {
-    background: #1f1f1f;
-  }
+#dialog{
+  color: var(--text); 
+  background-color: var(--background);
 }
 
-@media (prefers-color-scheme: light) {
-  #drawerheader {
-    background: white;
-  }
+#studentname{
+  color: #efefef;
+}
+
+#drawerheader {
+  background: var(--background);
+}
+
+#popupContainer{
+  background: var(--background);
+  color: var(--text);
+}
+
+#popupContainerHolder{
+  background: var(--background);
+}
+
+#lite-sched{
+  background: var(--background);
+  color: var(--text);
+}
+
+#lite-sched-inner{
+  background: var(--lighter-background);
+  color: var(--text);
+}
+
+#side-panel-buttons{
+  color: var(--text);
 }
 
 #toastButton {
@@ -56,22 +100,13 @@ google-map {
   height: 600px;
 }
 
-@media (prefers-color-scheme: dark) {
-  #mainheader {
-    height: 100%;
-    background: #292929;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+#mainheader {
+  height: 100%;
+  background: var(--lighter-background);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
-@media (prefers-color-scheme: light) {
-  #mainheader {
-    height: 100%;
-    background: #efefef;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-}
+
 
 paper-toolbar {
   background: #0d47a1;

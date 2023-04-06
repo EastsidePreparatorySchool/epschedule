@@ -1,3 +1,4 @@
+const darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
 function signOut() {
   sendPostMessage("logout", reload);
 }
@@ -314,8 +315,14 @@ function renderTeacher(teacherObj) {
   imgSrc = imgSrc + teacherObj.lastname + ".jpg";
   imgSrc = imgSrc.toLowerCase();
   var email = teacherObj.email;
+  var innerHTMLStyle;
+  if (darkScheme.matches){
+    innerHTMLStyle = "style='background-color: #1f1f1f;'";
+  } else {
+    innerHTMLStyle = "style='background-color: #efefef;'"
+  }
   popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
-      '<paper-material class="header" elevation="2">' +
+      '<paper-material class="header" elevation="2" ' + innerHTMLStyle + '>' +
       '<div layout horizontal center>' +
       '<img src="' + imgSrc + '" width="128px" height="128px">' +
       '<div layout vertical>' +
@@ -394,8 +401,14 @@ function renderStudent(studentObj) {
     var grade = "";
     var name = studentObj.firstname + " " + studentObj.lastname;
   }
+  var innerHTMLStyle;
+  if (darkScheme.matches){
+    innerHTMLStyle = "style='background-color: #1f1f1f;'";
+  } else {
+    innerHTMLStyle = "style='background-color: #efefef;'"
+  }
   popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
-      '<paper-material class="header" elevation="2" style="@media (prefers-color-scheme: light) {background-color:#1f1f1f;} @media (prefers-color-scheme: dark) {background-color:#efefef;}">' +
+      '<paper-material class="header" elevation="2" ' + innerHTMLStyle+ '>' +
       '<div layout horizontal center>' +
       '<img src="' + studentObj.photo_url + '" onerror="if (this.src != \'/static/images/placeholder.png\') this.src = \'/static/images/placeholder.png\';">' +
       '<div layout vertical><h3><span class="grade">' + grade + '</span></h3>' +
