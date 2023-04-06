@@ -295,11 +295,11 @@ function getGpsFail(error) {
       break;
   }
 }
-function requestAdditionalData(name, type, funct) {
+function requestAdditionalData(name, type, funct, termid) {
   // Type is the type of data being requested - [class, teacher, student, room, period]
   // Name is the name of the class, teacher, student, etc.
   name = cleanString(name);
-  var url = type + "/" + name;
+  var url = type + "/" + name + "?" + termid;
   console.log("Requesting " + url);
   xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function () {
@@ -835,7 +835,9 @@ function renderSchedule(
       openPopup(orig_name);
     };
     scheduleElement.onPeriodTap = function (e) {
-      requestAdditionalData(e.model.item.period, "period", renderPeriod);
+      termId = getTermId(globalDate);
+      console.log("termid="+termId)
+      requestAdditionalData(e.model.item.period, "period", renderPeriod, termId);
       openPopup(e.model.item.period + " Period");
     };
     scheduleElement.onRate = function (rating) {
