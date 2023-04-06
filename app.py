@@ -3,10 +3,10 @@ import datetime
 import json
 import os
 import re
-import time
 
 import google.oauth2.id_token
 from flask import Flask, abort, make_response, render_template, request, session
+from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
 
@@ -21,6 +21,8 @@ datastore_client = None
 SCHEDULE_INFO = None
 DAYS = None
 TERM_STARTS = []
+GITHUB_COMMITS = None
+NUM_COMMITS = 7
 
 
 def init_app(test_config=None):
@@ -30,6 +32,7 @@ def init_app(test_config=None):
     global SCHEDULE_INFO
     global DAYS
     global TERM_STARTS
+    global GITHUB_COMMITS
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -53,7 +56,7 @@ def init_app(test_config=None):
             data_bucket.blob("schedules.json").download_as_string()
         )
         DAYS = json.loads(data_bucket.blob("master_schedule.json").download_as_string())
-
+        GITHUB_COMMITS = get_latest_github_commits()
         datastore_client = datastore.Client()
     else:
         app.config.from_mapping(test_config)
@@ -64,6 +67,7 @@ def init_app(test_config=None):
         datastore_client = app.config["DATASTORE"]
         SCHEDULE_INFO = app.config["SCHEDULES"]
         DAYS = app.config["MASTER_SCHEDULE"]
+        GITHUB_COMMITS = []
     TERM_STARTS = get_term_starts(DAYS[0])
 
 
@@ -86,9 +90,9 @@ def find_day(days, regex):
 
 def get_term_id():
     """Return the current trimester index (fall=0, winter=1, spring=2)"""
-    now = datetime.datetime.now()
+    today = datetime.datetime.now().date()
     for i in range(len(TERM_STARTS) - 1):
-        if now < TERM_STARTS[i + 1]:
+        if today < TERM_STARTS[i + 1]:
             return i
     return 2
 
@@ -171,6 +175,9 @@ def main():
     elif "username" not in session:
         return gen_login_response()
 
+    # Get the last 28 days of lunches
+    lunches = get_lunches_since_date(datetime.date.today() - datetime.timedelta(28))
+
     # Handler for how to serialize date objs into json
     response = make_response(
         render_template(
@@ -178,12 +185,10 @@ def main():
             schedule=json.dumps(get_schedule(session["username"])),
             days=json.dumps(DAYS),
             components="static/components.html",
-            # gets the last 28 days of lunches
-            lunches=get_lunches_since_date(
-                datetime.date.today() - datetime.timedelta(28)
-            ),
+            lunches=lunches,
             # gets the trimester starts in a format JS can parse
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
+            latest_commits=json.dumps(GITHUB_COMMITS),
         )
     )
     response.set_cookie("token", "", expires=0)
@@ -208,6 +213,7 @@ def handle_class(period):
 
 
 # Functions to generate and censor class schedules
+
 
 # List of people who opted out of photo sharing
 def gen_opted_out_table():
@@ -450,6 +456,40 @@ def handle_search(keyword):
 
 def get_first_name(schedule):
     return schedule.get("preferred_name") or schedule["firstname"]
+
+
+def get_latest_github_commits():
+    # get token from secret client
+    secret_client = secretmanager.SecretManagerServiceClient()
+    gh_token = secret_client.access_secret_version(
+        request={"name": "projects/epschedule-v2/secrets/gh_token/versions/1"}
+    ).payload.data
+    # this uses PyGithub module
+    # using an access token from a person who can access epschedule
+    g = gh(gh_token.decode("utf-8"))
+    repo = g.get_repo("EastsidePreparatorySchool/epschedule")
+    # get arr of commits
+    commitsArr = repo.get_commits()
+    # print info about last commits
+    result = []  # initialize array for it
+    for repo_num in range(NUM_COMMITS):
+        # select the last few commits, get its name (title),
+        # author (github name), date, and URL to the changes
+        commit_name = commitsArr[repo_num].commit.message.split("\n")[0]
+        commit_author = commitsArr[repo_num].commit.author.name
+        commit_date = str(commitsArr[repo_num].commit.author.date)
+        commit_url = commitsArr[repo_num].html_url
+        # append it to the array as a dictionary object
+        result.append(
+            {
+                "name": commit_name,
+                "author": commit_author,
+                "date": commit_date,
+                "url": commit_url,
+            }
+        )
+    # return it
+    return result
 
 
 # This is a post because it changes things

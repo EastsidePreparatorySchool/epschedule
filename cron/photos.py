@@ -1,15 +1,15 @@
 import hashlib
 import hmac
-import time
 from io import BytesIO
 
 import PIL
 import requests
-from google.cloud import storage
+from google.cloud import secretmanager, storage
 from PIL import Image
 
 from cron import four11
 
+SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/session_key/versions/1"}
 ICON_SIZE = 96  # 96x96 pixels
 
 
@@ -18,8 +18,7 @@ def download_photo_from_url(session, url):
         response = session.get(url)
         return Image.open(BytesIO(response.content))
     except PIL.UnidentifiedImageError:
-        print(f"Unable to download image at {url}")
-    return None
+        return None
 
 
 def crop_image(img):
@@ -53,9 +52,9 @@ def upload_photo(bucket, filename, photo, verbose=False):
 
 # Takes about three minutes for ~450 photos
 def crawl_photos(dry_run=False, verbose=False):
-    start = time.time()
     four11_client = four11.Four11Client()
-    key_bytes = four11_client.api_key().encode("utf-8")
+    secret_client = secretmanager.SecretManagerServiceClient()
+    key_bytes = secret_client.access_secret_version(request=SECRET_REQUEST).payload.data
 
     # Open the bucket
     session = requests.Session()
@@ -64,9 +63,16 @@ def crawl_photos(dry_run=False, verbose=False):
     people = four11_client.get_people()
 
     for user in people:
+        photo_url = user.photo_url
+        username = user.username()
         photo = download_photo_from_url(session, photo_url)
         if photo is None:
+            print(f"Unable to download photo for user {username} from {photo_url}")
             continue
+        if photo.width > photo.height:
+            print(
+                f"Image for user {username} from {photo_url} is landscape, {photo.width}x{photo.height}"
+            )
 
         fullsize_filename = hash_username(key_bytes, username)
         if not dry_run:
@@ -85,5 +91,3 @@ def crawl_photos(dry_run=False, verbose=False):
                 upload_photo(avatar_bucket, username + ".jpg", grayscale)
         if verbose:
             print(f"Processed photo for user {username}")
-
-    print("Operation took {:.2f} seconds".format(time.time() - start))

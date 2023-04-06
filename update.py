@@ -1,5 +1,6 @@
 import argparse
 import os
+import time
 
 from cron import photos, schedules, update_lunch
 
@@ -17,6 +18,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    start_time = time.time()
+    print(f"Updating {args.data}... dry run={args.dry_run} verbose={args.verbose}")
     callable = None
     if args.data == "lunches":
         callable = update_lunch.read_lunches
@@ -29,3 +32,4 @@ if __name__ == "__main__":
         exit(1)
 
     callable(args.dry_run, args.verbose)
+    print("Operation took {:.2f} seconds".format(time.time() - start_time))

@@ -14,12 +14,12 @@ SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"
 class Four11User:
     id: int
     firstname: str
-    preferred_name: str
     lastname: str
     lunch_id: int
     email: str
     gradyear: str
     photo_url: str
+    preferred_name: Optional[str] = None
 
     def username(self):
         return self.email.split("@")[0]
@@ -28,10 +28,10 @@ class Four11User:
         return f"{self.preferred_name or self.firstname} {self.lastname}"
 
     def is_student(self):
-        return not self.is_staff(self.id)
+        return not self.is_staff()
 
     def is_staff(self):
-        return self.gradyear != "fac/staff"
+        return self.gradyear == "fac/staff"
 
     def class_of(self) -> Optional[int]:
         return int(self.gradyear) if self.is_student() else None

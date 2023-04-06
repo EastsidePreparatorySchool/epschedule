@@ -117,8 +117,8 @@
         "2023-02-06": "D-A_Mon",
         "2023-02-07": "H-E_Tue",
         "2023-02-08": "A-D_Wed",
-        "2023-02-09": "D-A_Thu",
-        "2023-02-10": "E-H_Fri",
+        "2023-02-09": "E-H_Thu",
+        "2023-02-10": "D-A_Fri",
         "2023-02-13": "H-E_Mon",
         "2023-02-14": "A-D_Tue",
         "2023-02-15": "E-H_Wed",
@@ -136,8 +136,8 @@
         "2023-03-03": "H-E_Fri",
         "2023-03-06": "A-D_Mon",
         "2023-03-07": "E-H_Tue",
-        "2023-03-08": "Finals_Mid",
-        "2023-03-09": "Finals_Mid",
+        "2023-03-08": "Finals_MidABC",
+        "2023-03-09": "Finals_MidDEF",
         "2023-03-10": "Finals / End Winter Term",
         "2023-03-13": "PDD",
         "2023-03-14": "A-D_Tue",
@@ -246,7 +246,7 @@
                 "times": "11:10-11:45"
             },
             {
-                "period": "Clubs/Activites - MS",
+                "period": "Clubs/Activities - MS",
                 "times": "11:45-12:20"
             },
             {
@@ -314,7 +314,7 @@
                 "times": "11:10-11:40"
             },
             {
-                "period": "Clubs/Activites - US",
+                "period": "Clubs/Activities - US",
                 "times": "11:10-11:45"
             },
             {
@@ -394,7 +394,7 @@
                 "times": "11:10-11:45"
             },
             {
-                "period": "Clubs/Activites - MS",
+                "period": "Clubs/Activities - MS",
                 "times": "11:45-12:20"
             },
             {
@@ -480,7 +480,7 @@
                 "times": "11:10-11:45"
             },
             {
-                "period": "Clubs/Activites - MS",
+                "period": "Clubs/Activities - MS",
                 "times": "11:45-12:20"
             },
             {
@@ -548,7 +548,7 @@
                 "times": "11:10-11:40"
             },
             {
-                "period": "Clubs/Activites - US",
+                "period": "Clubs/Activities - US",
                 "times": "11:10-11:45"
             },
             {
@@ -628,7 +628,7 @@
                 "times": "11:10-11:45"
             },
             {
-                "period": "Clubs/Activites - MS",
+                "period": "Clubs/Activities - MS",
                 "times": "11:45-12:20"
             },
             {
@@ -684,7 +684,7 @@
                 "times": "11:10-11:45"
             },
             {
-                "period": "Clubs/Activites - MS",
+                "period": "Clubs/Activities - MS",
                 "times": "11:45-12:20"
             },
             {
@@ -752,7 +752,7 @@
                 "times": "11:10-11:40"
             },
             {
-                "period": "Clubs/Activites - US",
+                "period": "Clubs/Activities - US",
                 "times": "11:10-11:45"
             },
             {
@@ -832,7 +832,7 @@
                 "times": "11:10-11:45"
             },
             {
-                "period": "Clubs/Activites - MS",
+                "period": "Clubs/Activities - MS",
                 "times": "11:45-12:20"
             },
             {
@@ -874,15 +874,73 @@
         ],
         "Finals / End Winter Term": [
             {
-                "period": "Finals / End Winter Term",
-                "times": "08:00-03:15"
+                "period": "G",
+                "times": "08:30-10:10"
+            },
+            {
+                "period": "H",
+                "times": "10:15-11:45"
             }
         ],
-        "Finals_Mid": [
+        "Finals_MidABC": [
             {
-                "period": "Finals",
-                "times": "08:00-03:15"
+                "period": "A",
+                "times": "08:30-10:00"
+            },
+            {
+                "period": "B",
+                "times":"10:15-11:45"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:50-12:30"
+            },
+            {
+                "period": "Advisory - US",
+                "times": "11:50-12:30"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "12:40-1:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "12:40-1:20"
+            },
+            {
+                "period": "C",
+                "times": "1:30-3:00"
             }
+        ],
+        "Finals_MidDEF": [
+            {
+                "period": "D",
+                "times": "08:30-10:00"
+            },
+            {
+                "period": "E",
+                "times": "10:15-11:45"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:50-12:30"
+            },
+            {
+                "period": "Advisory - US",
+                "times": "11:50-12:30"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "12:40-1:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "12:40-1:20"
+            },
+            {
+                "period":"F",
+                "times": "1:30-3:00"
+            }  
         ],
         "Grade Level Orientations": [
             {
@@ -918,7 +976,7 @@
                 "times": "11:10-11:45"
             },
             {
-                "period": "Clubs/Activites - MS",
+                "period": "Clubs/Activities - MS",
                 "times": "11:45-12:20"
             },
             {
@@ -986,7 +1044,7 @@
                 "times": "11:10-11:40"
             },
             {
-                "period": "Clubs/Activites - US",
+                "period": "Clubs/Activities - US",
                 "times": "11:10-11:45"
             },
             {
@@ -1066,7 +1124,7 @@
                 "times": "11:10-11:45"
             },
             {
-                "period": "Clubs/Activites - MS",
+                "period": "Clubs/Activities - MS",
                 "times": "11:45-12:20"
             },
             {

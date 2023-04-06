@@ -6,28 +6,30 @@ var firebaseConfig = {
   projectId: "epschedule-v2",
   storageBucket: "epschedule-v2.appspot.com",
   messagingSenderId: "795697214579",
-  appId: "1:795697214579:web:29da422869841b742d2606"
+  appId: "1:795697214579:web:29da422869841b742d2606",
 };
 firebase.initializeApp(firebaseConfig);
 
 function microsoftLogin(postAction) {
-  var provider = new firebase.auth.OAuthProvider('microsoft.com');
+  var provider = new firebase.auth.OAuthProvider("microsoft.com");
   provider.setCustomParameters({
-    domain_hint: 'eastsideprep.org'
+    domain_hint: "eastsideprep.org",
   });
-  firebase.auth().signInWithPopup(provider)
-  .then(function(result) {
-    console.log(result);
-    result.user.getIdToken().then(function (token) {
-      document.cookie = "token=" + token;
-      displayToast("Signing you in...");
-      location.reload();
+  firebase
+    .auth()
+    .signInWithPopup(provider)
+    .then(function (result) {
+      console.log(result);
+      result.user.getIdToken().then(function (token) {
+        document.cookie = "token=" + token;
+        displayToast("Signing you in...");
+        location.reload();
+      });
+    })
+    .catch(function (error) {
+      console.log(error);
+      displayToast("There was a problem signing you in");
     });
-  })
-  .catch(function(error) {
-    console.log(error);
-    displayToast("There was a problem signing you in");
-  });
 }
 
 function displayToast(text) {

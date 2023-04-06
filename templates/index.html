@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/static/favicon/site.webmanifest">
   <script src="https://epschedule-static.storage.googleapis.com/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- gets icons -->
   <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/polymer/polymer.html">
@@ -44,6 +48,7 @@
     var days = {{days | safe }};
     var lunches = {{lunches | safe}};
     var termStarts = {{ term_starts | safe}};
+    var latestCommits = {{ latest_commits | safe}};
     var triStartDates = [];
     for (var i = 0; i < 3; i++) {
         triStartDates.push(new Date(termStarts[i]));
@@ -76,6 +81,14 @@
             <iron-icon class="drawer-icon" icon="bug-report" item-icon>
             </iron-icon>
             <span id="side-panel-buttons"">Report a bug</span>
+          </paper-icon-item>
+
+
+          
+          <paper-icon-item onclick="githubDisplay()">
+            <iron-icon class="drawer-icon" icon="description" item-icon>
+            </iron-icon>
+            <span>See Latest Changes</span>
           </paper-icon-item>
 
 
@@ -182,6 +195,19 @@
   </paper-dialog>
 
 
+  <paper-dialog class="github-dialog" id="Github">
+    <div id="GithubUpdateBox" class = "GithubUpdateBox">
+      <p class="GithubInnerP">
+        <h1>
+          <a class="GithubTitleA" href = "https://github.com/EastsidePreparatorySchool/epschedule">
+            Latest Github Updates
+          </a>
+        </h1>
+        <div id = "GHUpdateText"></div>
+        <br>
+      </p>
+    </div>
+  </paper-dialog>
 
 
   <paper-dialog id="dialog">
