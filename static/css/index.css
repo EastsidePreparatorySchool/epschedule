@@ -395,13 +395,17 @@ paper-icon-item {
   z-index: 1;
 }
 
+.github-dialog{
+  background-color:var(--background);
+}
+
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
 
 .GithubUpdateBox {
   text-align:center; 
-  background-color:white;
+  background-color:var(--background);
 }
 
 .GithubInnerP {
@@ -413,13 +417,13 @@ paper-icon-item {
 }
 
 .GithubTitleA{
-  color:black; 
+  color:var(--text); 
   text-decoration:none;
 }
 
 /* unvisited link */
 .GithubLink:link {
-  color: rgb(0, 0, 79);
+  color: var(--text);
   /* take off the underline */
   text-decoration: none;
 }
