@@ -29,12 +29,12 @@ neon-animated-pages {
   height: 100%;
 }
 
-#dialog{
+#dialog {
   color: var(--text); 
   background-color: var(--background);
 }
 
-#studentname{
+#studentname {
   color: #efefef;
 }
 
@@ -42,26 +42,26 @@ neon-animated-pages {
   background: var(--background);
 }
 
-#popupContainer{
+#popupContainer {
   background: var(--background);
   color: var(--text);
 }
 
-#popupContainerHolder{
+#popupContainerHolder {
   background: var(--background);
 }
 
-#lite-sched{
+#lite-sched {
   background: var(--background);
   color: var(--text);
 }
 
-#lite-sched-inner{
+#lite-sched-inner {
   background: var(--lighter-background);
   color: var(--text);
 }
 
-#side-panel-buttons{
+.side-panel-buttons {
   color: var(--text);
 }
 
@@ -372,6 +372,13 @@ paper-icon-item {
 
 .about-dialog {
   overflow-y: auto;
+  background-color: var(--background);
+  color: var(--text);
+}
+
+#aboutpanel{
+  background-color: var(--background);
+  color: var(--text);
 }
 
 .tooltip {

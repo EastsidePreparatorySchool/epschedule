@@ -70,17 +70,17 @@
           <paper-icon-item onclick="signOut()">
             <iron-icon class="drawer-icon" icon="account-circle" item-icon>
             </iron-icon>
-            <span id="side-panel-buttons">Sign out</span>
+            <span class="side-panel-buttons">Sign out</span>
           </paper-icon-item>
           <paper-icon-item onclick="openSettings()">
             <iron-icon class="drawer-icon" icon="settings" item-icon>
             </iron-icon>
-            <span id="side-panel-buttons">Settings</span>
+            <span class="side-panel-buttons">Settings</span>
           </paper-icon-item>
           <paper-icon-item onclick="reportBug()">
             <iron-icon class="drawer-icon" icon="bug-report" item-icon>
             </iron-icon>
-            <span id="side-panel-buttons"">Report a bug</span>
+            <span class="side-panel-buttons"">Report a bug</span>
           </paper-icon-item>
 
 
@@ -88,7 +88,7 @@
           <paper-icon-item onclick="githubDisplay()">
             <iron-icon class="drawer-icon" icon="description" item-icon>
             </iron-icon>
-            <span id="side-panel-buttons">See Latest Changes</span>
+            <span class="side-panel-buttons">See Latest Changes</span>
           </paper-icon-item>
 
 
@@ -97,7 +97,7 @@
           <paper-icon-item onclick="about()">
             <iron-icon class="drawer-icon" icon="info" item-icon>
             </iron-icon>
-            <span id="side-panel-buttons">About</span>
+            <span class="side-panel-buttons">About</span>
           </paper-icon-item>
 
 
@@ -170,8 +170,8 @@
 
 
 
-  <paper-dialog class="about-dialog" id="about" style="background-color: #1f1f1f;">
-    <div id="aboutpanel" style="color: #e2e2e2;">
+  <paper-dialog class="about-dialog" id="about">
+    <div id="aboutpanel">
       <h2>About</h2>
       <div>EPSchedule Club: 
         <p>---A club designated to maintain this website and add changes</p>
