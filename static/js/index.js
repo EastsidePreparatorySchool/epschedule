@@ -1,4 +1,3 @@
-const darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
 function renderGitHubCommits() {
   let updated = "";
   latestCommits.forEach((commit) => {
@@ -353,11 +352,7 @@ function renderTeacher(teacherObj) {
   // Gets the CSS style
   var style = getComputedStyle(document.body);
   var bgColor = style.getPropertyValue('--background')
-  if (darkScheme.matches) {
-    innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
-  } else {
-    innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
-  }
+  innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
 
   popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
     '<paper-material class="header" elevation="2" ' + innerHTMLStyle + '>' +
@@ -463,11 +458,7 @@ function renderStudent(studentObj) {
   // Gets the CSS style
   var style = getComputedStyle(document.body);
   var bgColor = style.getPropertyValue('--background')
-  if (darkScheme.matches) {
-    innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
-  } else {
-    innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
-  }
+  innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
   popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
     '<paper-material class="header" elevation="2" ' + innerHTMLStyle + '>' +
     "<div layout horizontal center>" +
