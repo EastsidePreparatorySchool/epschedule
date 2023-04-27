@@ -79,10 +79,10 @@
     }
   </style>
   <template>
-    <paper-material elevation="2" on-track="handleTrack">
+    <paper-material elevation="2" on-track="handleTrack" id="lite-sched">
       <div class="date">{{dateString}}</div>
       <template is="dom-repeat" id="entryList" items="{{entries}}">
-        <div class$="{{computeHidden(item)}}" layout="" horizontal="" center>
+        <div class$="{{computeHidden(item)}}" layout="" horizontal="" center id="lite-sched-inner">
           <div class$="{{computeShared(item)}}"></div>
           <div layout vertical>
             <p class="time">

@@ -70,17 +70,17 @@
           <paper-icon-item onclick="signOut()">
             <iron-icon class="drawer-icon" icon="account-circle" item-icon>
             </iron-icon>
-            <span>Sign out</span>
+            <span class="side-panel-buttons">Sign out</span>
           </paper-icon-item>
           <paper-icon-item onclick="openSettings()">
             <iron-icon class="drawer-icon" icon="settings" item-icon>
             </iron-icon>
-            <span>Settings</span>
+            <span class="side-panel-buttons">Settings</span>
           </paper-icon-item>
           <paper-icon-item onclick="reportBug()">
             <iron-icon class="drawer-icon" icon="bug-report" item-icon>
             </iron-icon>
-            <span>Report a bug</span>
+            <span class="side-panel-buttons">Report a bug</span>
           </paper-icon-item>
 
 
@@ -88,7 +88,7 @@
           <paper-icon-item onclick="githubDisplay()">
             <iron-icon class="drawer-icon" icon="description" item-icon>
             </iron-icon>
-            <span>See Latest Changes</span>
+            <span class="side-panel-buttons">See Latest Changes</span>
           </paper-icon-item>
 
 
@@ -97,7 +97,7 @@
           <paper-icon-item onclick="about()">
             <iron-icon class="drawer-icon" icon="info" item-icon>
             </iron-icon>
-            <span>About</span>
+            <span class="side-panel-buttons">About</span>
           </paper-icon-item>
 
 
@@ -155,7 +155,7 @@
       </paper-header-panel>
     </paper-drawer-panel>
     <paper-header-panel id="popup">
-    <div class="popupcontainerholder">
+    <div class="popupcontainerholder" id = "popupContainerHolder">
       <paper-toolbar>
         <paper-icon-button icon="arrow-back" onclick="closePopup()">
         </paper-icon-button>

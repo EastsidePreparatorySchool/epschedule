@@ -133,7 +133,7 @@ var globalDate = getInitialDate();
 function getInitialDate() {
   date = new Date();
   switch (
-    date.getDay() // Falling through is intentional here
+  date.getDay() // Falling through is intentional here
   ) {
     case 6: // If Saturday, move the date forward twice
       date.setDate(date.getDate() + 2);
@@ -257,9 +257,9 @@ function getGpsSuccess(position, roomObj) {
   var a =
     Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
     Math.cos(phi1) *
-      Math.cos(phi2) *
-      Math.sin(deltaLambda / 2) *
-      Math.sin(deltaLambda / 2);
+    Math.cos(phi2) *
+    Math.sin(deltaLambda / 2) *
+    Math.sin(deltaLambda / 2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   var d = radius * c;
   if (d > 200) {
@@ -348,22 +348,22 @@ function renderTeacher(teacherObj) {
   imgSrc = imgSrc + teacherObj.lastname + ".jpg";
   imgSrc = imgSrc.toLowerCase();
   var email = teacherObj.email;
-  popupContainer.innerHTML =
-    '<div class="teacher" layout vertical>' +
-    '<paper-material class="header" elevation="2">' +
-    "<div layout horizontal center>" +
-    '<img src="' +
-    imgSrc +
-    '" width="128px" height="128px">' +
-    "<div layout vertical>" +
-    '<p><a href="mailto:' +
-    email +
-    '""><iron-icon icon="communication:email"></iron-icon>' +
+  var innerHTMLStyle;
+  // Gets the CSS style
+  var style = getComputedStyle(document.body);
+  var bgColor = style.getPropertyValue('--background')
+  innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
+
+  popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
+    '<paper-material class="header" elevation="2" ' + innerHTMLStyle + '>' +
+    '<div layout horizontal center>' +
+    '<img src="' + imgSrc + '" width="128px" height="128px">' +
+    '<div layout vertical>' +
+    '<p><a href="mailto:' + email + '""><iron-icon icon="communication:email"></iron-icon>' +
     '<span class="email">Email teacher</span></a></p>' +
-    renderBio(teacherObj.bio) +
-    "</div></div></paper-material>" +
+    renderBio(teacherObj.bio) + '</div></div></paper-material>' +
     '<schedule-lite id="teacherschedule"></schedule-lite>' +
-    "</div>";
+    '</div>';
   // Wait for HTML to be parsed/applied before trying to show the schedule.
   // Without this, Firefox/Safari don't display the schedule.
   setTimeout(function () {
@@ -444,19 +444,23 @@ function renderStudent(studentObj) {
     var name = studentObj.preferred_name ? studentObj.preferred_name : studentObj.firstname;
     var officeTag = "";
     var advisoryTag = '<p><iron-icon icon="icons:perm-identity"></iron-icon>' +
-    "Advisor: "+ studentObj.advisor.charAt(1).toUpperCase() + 
-    studentObj.advisor.slice(2) +"</p>";
+      "Advisor: " + studentObj.advisor.charAt(1).toUpperCase() +
+      studentObj.advisor.slice(2) + "</p>";
   } else {
     var grade = "";
     var name = studentObj.preferred_name ? studentObj.preferred_name : studentObj.firstname;
     name += " " + studentObj.lastname
-    var officeTag ='<p><iron-icon icon="icons:home"></iron-icon>' +
-    "Office: "+studentObj.office+"</p>";
+    var officeTag = '<p><iron-icon icon="icons:home"></iron-icon>' +
+      "Office: " + studentObj.office + "</p>";
     var advisoryTag = "";
   }
-  popupContainer.innerHTML =
-    '<div class="teacher" layout vertical>' +
-    '<paper-material class="header" elevation="2">' +
+  var innerHTMLStyle;
+  // Gets the CSS style
+  var style = getComputedStyle(document.body);
+  var bgColor = style.getPropertyValue('--background')
+  innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
+  popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
+    '<paper-material class="header" elevation="2" ' + innerHTMLStyle + '>' +
     "<div layout horizontal center>" +
     '<img src="' +
     studentObj.photo_url +
@@ -469,7 +473,7 @@ function renderStudent(studentObj) {
     '""><iron-icon icon="communication:email"></iron-icon>' +
     '<span class="email">Email ' +
     name +
-    "</span></a></p>"+
+    "</span></a></p>" +
     officeTag +
     advisoryTag +
     "</div></div></paper-material>" +
