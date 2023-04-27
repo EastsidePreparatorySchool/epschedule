@@ -110,6 +110,10 @@ def download_schedule(client, username, year):
     if person["gradyear"]:
         person["grade"] = 12 - (person["gradyear"] - year)
 
+    # Add birthday
+    if individual["birthday"]:
+        person["birthday"] = individual["birthday"]
+
     return person
 
 
