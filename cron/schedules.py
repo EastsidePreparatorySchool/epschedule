@@ -136,7 +136,6 @@ def crawl_schedules(dry_run=False, verbose=False):
 
     four11_client = four11.Four11Client()
     usernames = [u.username() for u in four11_client.get_people()]
-    usernames.remove("dyezbick")
 
     for username in usernames:
         try:
