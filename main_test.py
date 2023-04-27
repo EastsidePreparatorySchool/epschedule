@@ -64,13 +64,9 @@ class NoAuthTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         init_app(TEST_CONFIG)
-        cls.client = app.test_client()
 
-    # tearDown method is called after each test - we need it so that
-    # after login tests the user is still "unauthorized"
-    @classmethod
-    def tearDown(cls):
-        cls.client.cookie_jar.clear()
+    def setUp(self):
+        self.client = app.test_client()
 
     # Test that when not logged in, we're given a sign-in page.
     def test_main_login_response(self):
@@ -88,7 +84,7 @@ class NoAuthTests(unittest.TestCase):
     # Test that username being set from cookies is what we want
     def test_login(self):
         self.client.set_cookie(
-            "localhost", "token", '{"email": "aaardvark@eastsideprep.org"}'
+            key="token", value='{"email": "aaardvark@eastsideprep.org"}'
         )
         test_username = "aaardvark"
         with self.client as c:
@@ -107,8 +103,10 @@ class AuthenticatedTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         init_app(TEST_CONFIG)
-        cls.client = app.test_client()
-        with cls.client.session_transaction() as sess:
+
+    def setUp(self):
+        self.client = app.test_client()
+        with self.client.session_transaction() as sess:
             sess["username"] = AUTHENTICATED_USER
 
     def check_photo_url(self, url):
