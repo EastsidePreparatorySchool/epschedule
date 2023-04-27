@@ -288,7 +288,7 @@
             <iron-collapse id="{{computeCollapseId(item)}}">
               <template is="dom-if" if="{{isLunchWithDesc(item)}}" style="height:auto">
                 <div layout vertical class="lunch">
-                  <ul>
+                  <ul id="lunchtext">
                     <li>{{getLineInDesc(item, "0")}}</li>
                     <li>{{getLineInDesc(item, "1")}}</li>
                   </ul>
