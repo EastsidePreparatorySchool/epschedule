@@ -4,6 +4,7 @@
     --lighter-background: white;
     --text: #1f1f1f;
     --alt-text: #efefef;
+    --icon: black;
   }
 }
 
@@ -14,6 +15,7 @@
     --lighter-background: #292929;
     --text: #efefef;
     --alt-text: #1f1f1f;
+    --icon: white;
   }
 }
 
@@ -36,6 +38,10 @@ neon-animated-pages {
 
 #studentname {
   color: #efefef;
+}
+
+#lunchtext {
+  color: var(--text);
 }
 
 #drawerheader {
@@ -94,6 +100,7 @@ paper-button {
 
 .drawer-icon {
   padding-right: 16px;
+  fill: var(--icon);
 }
 
 google-map {
