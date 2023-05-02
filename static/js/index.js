@@ -65,6 +65,18 @@ function githubDisplay() {
   gh.open();
 }
 
+function birthdayOpen() {
+  var dialog = document.getElementById("birthday");
+  dialog.open();
+  xhr = new XMLHttpRequest();
+  xhr.onload = function () {
+    var birthdayBox = document.getElementById("BirthdayUpdateBox")
+    birthdayBox.innerHTML = xhr.responseText;
+  }
+  xhr.open("GET", "birthdays", true);
+  xhr.send();
+}
+
 function openSettings() {
   var dialog = document.getElementById("dialog");
   dialog.open();

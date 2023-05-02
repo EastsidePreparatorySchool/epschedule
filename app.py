@@ -492,6 +492,16 @@ def get_latest_github_commits():
     return result
 
 
+@app.route("/birthdays")
+def handle_birthdays():
+    birthdays = []
+    current_datetime = datetime.datetime.now()
+    formatted_date = current_datetime.strftime("%m/%d")
+    for schedule in get_schedule_data().values():
+        if schedule["birthday"] == formatted_date:
+            birthdays.append(schedule["username"])
+    return json.dumps(birthdays)
+
 # This is a post because it changes things
 @app.route("/logout", methods=["POST"])
 def handle_sign_out():

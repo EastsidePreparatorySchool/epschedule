@@ -112,10 +112,24 @@
               </paper-icon-button>
               <span class="title" id="day">Today</span>
 
+              <paper-icon-item onclick="birthdayOpen()">
+                <iron-icon icon="icons:perm-identity">
+                </iron-icon>
+              </paper-icon-item>
+              <paper-dialog class="Birthday-dialog" id="birthday" style="width: 480px; height: 360px;">
+                <div id="BirthdayUpdateBox" class = "BirthdayUpdateBox">
+                <h1>Birthdays Today:</h1>
+                  <div>Eevee</div>
+                  <div>Benji</div>
+                  <div>Lexie</div>
+                </div>
+              </paper-dialog>
+
               <!-- Draw our calendar icon on top of the native picker -->
               <span class="datepicker-toggle">
                 <span class="datepicker-toggle-button">
                   <iron-icon icon="action:calendar">
+                  
                 </span>
                 <input class="datepicker-input" type="date" id="date" onchange="selectDate()">
               </span>
