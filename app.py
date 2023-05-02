@@ -281,7 +281,7 @@ def handle_user(target_user):
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
 
-    priv_settings = {"share_photo": True, "share_schedule": True}
+    priv_settings = {"share_photo": True, "share_schedule": True, "share_birthday": True}
     # Teachers don't see and can't set privacy settings
     if (not is_teacher_schedule(user_schedule)) and (
         not is_teacher_schedule(target_schedule)
@@ -425,6 +425,7 @@ def handle_settings():
         user_privacy_dict = {
             "share_photo": user_privacy_dict_raw["share_photo"],
             "share_schedule": user_privacy_dict_raw["share_schedule"],
+            "share_birthday": user_privacy_dict_raw["share_birthday"]
         }
         return json.dumps(user_privacy_dict)
 
@@ -433,6 +434,7 @@ def handle_settings():
             {
                 "share_photo": request.form["share_photo"] == "true",
                 "share_schedule": request.form["share_schedule"] == "true",
+                "share_birthday": request.form["share_birthday"] == "true",
             }
         )
         datastore_client.put(user)

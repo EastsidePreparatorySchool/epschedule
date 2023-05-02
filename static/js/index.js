@@ -95,9 +95,11 @@ function openSettings() {
 
     var sharePhoto = document.getElementById("sharephototoggle");
     var shareSchedule = document.getElementById("sharescheduletoggle");
+    var shareBirthday = document.getElementById("sharebirthdaytoggle");
 
     sharePhoto.checked = privacyDataOutput.share_photo;
     shareSchedule.checked = privacyDataOutput.share_schedule;
+    shareBirthday.checked = privacyDataOutput.share_birthday;
   };
 
   xhr.open("GET", "privacy", true);
@@ -107,14 +109,16 @@ function openSettings() {
 function submitUpdatePrivacy() {
   var share_photo = document.getElementById("sharephototoggle");
   var share_schedule = document.getElementById("sharescheduletoggle");
-  sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
+  var share_birthday = document.getElementById("sharebirthdaytoggle")
+  sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked, share_birthday.checked);
   document.getElementById("dialog").close();
 }
 
-function sendUpdatePrivacyRequest(share_photo, share_schedule) {
+function sendUpdatePrivacyRequest(share_photo, share_schedule, share_birthday) {
   var data = new FormData();
   data.append("share_photo", share_photo);
   data.append("share_schedule", share_schedule);
+  data.append("share_birthday", share_birthday);
 
   xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function () {
@@ -912,7 +916,8 @@ function closePrivacyDialog() {
   document.getElementById("privacydialog").close();
   var share_photo = document.getElementById("initialsharephototoggle");
   var share_schedule = document.getElementById("initialsharescheduletoggle");
-  sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
+  var share_birthday = document.getElementById("initialsharebirthday");
+  sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked, share_birthday.checked);
 }
 
 function changePrivacySettings() {

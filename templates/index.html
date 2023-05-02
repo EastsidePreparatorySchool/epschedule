@@ -113,7 +113,7 @@
               <span class="title" id="day">Today</span>
 
               <paper-icon-item onclick="birthdayOpen()">
-                <iron-icon icon="icons:perm-identity">
+                <iron-icon icon="social:cake">
                 </iron-icon>
               </paper-icon-item>
               <paper-dialog class="Birthday-dialog" id="birthday" style="width: 480px; height: 360px;">
@@ -237,6 +237,11 @@
       <div class="inlinesettingsswitch">
         <span class="leftfloat padleft">Show other EPS students my schedule</span>
         <paper-toggle-button class="rightfloat" id="sharescheduletoggle">
+        </paper-toggle-button>
+      </div>
+      <div class="inlinesettingsswitch">
+        <span class="leftfloat padleft">Show my birthday in the birthday tab</span>
+        <paper-toggle-button class="rightfloat" id="sharebirthdaytoggle">
         </paper-toggle-button>
       </div>
       <paper-button onclick="submitUpdatePrivacy()" raised
