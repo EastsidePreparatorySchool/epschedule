@@ -67,13 +67,23 @@ function githubDisplay() {
 
 function birthdayOpen() {
   var dialog = document.getElementById("birthday");
+  var birthdayBox = document.getElementById("BirthdayUpdateBox")
+  birthdayBox.innerHTML=""
   dialog.open();
   xhr = new XMLHttpRequest();
   xhr.onload = function () {
-    var birthdayBox = document.getElementById("BirthdayUpdateBox")
     birthdayBox.innerHTML = xhr.responseText;
   }
-  xhr.open("GET", "birthdays", true);
+  var month = (globalDate.getMonth() + 1).toString();
+  if (month.length == 1) {
+    month="0" + month;
+   }
+  var day = globalDate.getDate().toString();
+  if (day.length == 1) {
+    day="0" + day;
+  }
+  var url = 'birthdays?date=' + month + "/" + day;
+  xhr.open("GET", url, true);
   xhr.send();
 }
 

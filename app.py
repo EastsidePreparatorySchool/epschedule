@@ -497,12 +497,15 @@ def get_latest_github_commits():
 @app.route("/birthdays")
 def handle_birthdays():
     birthdays = []
-    current_datetime = datetime.datetime.now()
-    formatted_date = current_datetime.strftime("%m/%d")
+    formatted_date = request.args["date"]
     for schedule in get_schedule_data().values():
+        #print(f"birthday: {schedule['birthday']}")
         if schedule["birthday"] == formatted_date:
             birthdays.append(schedule["username"])
-    return json.dumps(birthdays)
+    privacy_settings = get_database_entries(birthdays)
+    print(privacy_settings)
+    opted_in = [x.key.name for x in privacy_settings if x.get("share_birthday")]
+    return json.dumps(opted_in)
 
 # This is a post because it changes things
 @app.route("/logout", methods=["POST"])
