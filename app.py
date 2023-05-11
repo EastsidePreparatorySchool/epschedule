@@ -480,27 +480,13 @@ def get_latest_github_commits():
         commit_author = commitsArr[repo_num].commit.author.name
         # raw date input from pygithub
         raw_date = str(commitsArr[repo_num].commit.author.date)
-        # convert it to a datetime object, with pytz specifying this is UTC
-        datetime_object = datetime.datetime(
-            int(raw_date[0:4]),
-            int(raw_date[5:7]),
-            int(raw_date[8:10]),
-            int(raw_date[11:13]),
-            int(raw_date[14:16]),
-            int(raw_date[17:19]),
-            tzinfo=pytz.utc,
-        )
-        # use pytz again to change it to LA time
-        commit_date = datetime_object.astimezone(
-            pytz.timezone("America/Los_Angeles")
-        ).strftime("%b %d, %Y, %I:%M:%S %p")
         commit_url = commitsArr[repo_num].html_url
         # append it to the array as a dictionary object
         result.append(
             {
                 "name": commit_name,
                 "author": commit_author,
-                "date": commit_date,
+                "date": raw_date,
                 "url": commit_url,
             }
         )

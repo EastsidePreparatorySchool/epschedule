@@ -1,6 +1,16 @@
 function renderGitHubCommits() {
   let updated = "";
   latestCommits.forEach((commit) => {
+    // first create a date object
+    const date = new Date(commit["date"]+" UTC");
+    var options = { year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' , 
+                      hour: "2-digit" , 
+                      minute: "2-digit" , 
+                      second: "2-digit"
+                    };
+    const strDate = date.toLocaleDateString("en-US", options)
     updated +=
       '<a class = "GithubLink" href = "' +
       commit["url"] +
@@ -10,7 +20,7 @@ function renderGitHubCommits() {
       "Committed by " +
       commit["author"] +
       " at " +
-      commit["date"] +
+      strDate +
       "<br><br>" +
       "</a>";
   });
