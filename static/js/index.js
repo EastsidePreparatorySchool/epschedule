@@ -570,7 +570,7 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
     var period = day[currentSlot]["period"].replace(" - " + school, "");
   }
   // If it is a normal period
-  if (isStandardClass(period)) {
+  if (isStandardClass(period) || period == "Seminars / Office Hours") {
     for (var k = 0; k < schedule["classes"].length; k++) {
       var clazz = schedule["classes"][k];
       if (clazz["period"] == period) {
