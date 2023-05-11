@@ -693,7 +693,7 @@ function isSharedClass(scheduleObj, termid) {
     if (
       userClasses[i].period == scheduleObj.period &&
       userClasses[i].name == scheduleObj.name &&
-      userClasses[i].teacher_username == scheduleObj.teacherUsername
+      (userClasses[i].teacher_username != null ? userClasses[i].teacher_username : "")  == scheduleObj.teacherUsername
     ) {
       return true;
     }
