@@ -477,14 +477,15 @@ def get_latest_github_commits():
         # author (github name), date, and URL to the changes
         commit_name = commitsArr[repo_num].commit.message.split("\n")[0]
         commit_author = commitsArr[repo_num].commit.author.name
-        commit_date = str(commitsArr[repo_num].commit.author.date)
+        # raw date input from pygithub
+        raw_date = str(commitsArr[repo_num].commit.author.date)
         commit_url = commitsArr[repo_num].html_url
         # append it to the array as a dictionary object
         result.append(
             {
                 "name": commit_name,
                 "author": commit_author,
-                "date": commit_date,
+                "date": raw_date,
                 "url": commit_url,
             }
         )
