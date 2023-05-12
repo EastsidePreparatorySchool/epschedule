@@ -5,7 +5,10 @@ function renderGitHubCommits() {
     const date = new Date(commit["date"]+" UTC");
     var options = { year: 'numeric', 
                       month: 'long', 
-                      day: 'numeric'
+                      day: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      second: '2-digit',
                     };
     const strDate = date.toLocaleDateString("en-US", options)
     updated +=
