@@ -672,6 +672,12 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
 
 IMAGE_CDN = "https://epschedule-avatars.storage.googleapis.com/";
 
+function isDarkMode() {
+  // returns a boolean indicating if it is a dark mode or not
+  return (window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches);
+}
+
 // Add the images on the left side to full schedules
 function addScheduleImages(scheduleObj, userSchedule, type) {
   if (scheduleObj.teacher != "" || type == "core") {
@@ -688,7 +694,13 @@ function addScheduleImages(scheduleObj, userSchedule, type) {
     image_name = image_name.replace("/", "");
     image_name = image_name.replace(/\s/g, "");
     image_name = image_name.replace(/(\(.*?\))/g, ""); // Remove text between parentheses
-    scheduleObj.avatar = "/static/images/" + image_name + ".svg";
+    if (isDarkMode()) {
+      // user uses dark theme, update to the dark theme svg
+      scheduleObj.avatar = "/static/images/" + image_name + "_dark.svg";
+    } else {
+      // user uses light mode, use default svg
+      scheduleObj.avatar = "/static/images/" + image_name + ".svg";
+    }
   }
   scheduleObj.roomLink =
     "/room/" + scheduleObj.room.toLowerCase().replace(/ /g, "_");
