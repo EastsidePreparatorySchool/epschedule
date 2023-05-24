@@ -111,7 +111,9 @@
               <paper-icon-button class="" icon="menu" paper-drawer-toggle>
               </paper-icon-button>
               <span class="title" id="day">Today</span>
-
+              <div style = "position:relative; left:-20px; background-color:yellow;">
+                <button onclick="collegeAdmission()" class="joinbutton">JOIN EPSCHEDULE CLUB</button>
+              </div>
               <!-- Draw our calendar icon on top of the native picker -->
               <span class="datepicker-toggle">
                 <span class="datepicker-toggle-button">
@@ -119,7 +121,6 @@
                 </span>
                 <input class="datepicker-input" type="date" id="date" onchange="selectDate()">
               </span>
-
               <paper-icon-button class="rightfloat" icon="arrow-back"
                onclick="dateBack()">
               </paper-icon-button>
@@ -167,7 +168,7 @@
     </paper-header-panel>
   </neon-animated-pages>
 
-
+  
 
 
   <paper-dialog class="about-dialog" id="about">
@@ -206,6 +207,16 @@
         <div id = "GHUpdateText"></div>
         <br>
       </p>
+    </div>
+  </paper-dialog>
+
+  <paper-dialog id="join-epschedule" class="join-dialog">
+    <div id="GithubUpdateBox">
+      <h2>JOIN EPSCHEDULE</h2>
+      <p>Click "About" for more details.</p>
+      <p>We meet every Thursday at 11:10 in TMAC-007.</p>
+      <p> Check us out: <a href="https://github.com/EastsidePreparatorySchool/epschedule">Github</a></p>
+      <p>If you have any suggestions for potential features, please click the three dots in the left panel and click "Report a bug". Here is a link to join: .</p>
     </div>
   </paper-dialog>
 
