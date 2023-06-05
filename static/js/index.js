@@ -61,10 +61,7 @@ function reportBug() {
 function reportBugOld() {
   window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
-function collegeAdmission(){
-  var about = document.getElementById("join-epschedule");
-  about.open();
-}
+
 function about() {
   var about = document.getElementById("about");
   about.open();
