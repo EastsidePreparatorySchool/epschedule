@@ -388,7 +388,7 @@ function renderPeriod(periodObj) {
   // Gets the CSS style
   var style = getComputedStyle(document.body);
   var bgColor = style.getPropertyValue('--background')
-  innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
+  var innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
   popupContainer.innerHTML =
     '<div class="period" layout vertical>' +
     '<div class="halfwidth periodbottomspace"><paper-material class="periodsubcontainer" ' + innerHTMLStyle +' elevation="2">' +
