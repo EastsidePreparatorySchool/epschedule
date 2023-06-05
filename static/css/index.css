@@ -43,7 +43,7 @@ neon-animated-pages {
   width: 600px;
 }
 
-.joinbutton {
+.join-button {
   background-color: #4CAF50;
   border: none;
   color: white;
@@ -53,7 +53,7 @@ neon-animated-pages {
   cursor: pointer;
 }
 
-.githubbutton {
+.github-button {
   padding: 15px 32px;
   text-align: center;
   font-size: 16px;
