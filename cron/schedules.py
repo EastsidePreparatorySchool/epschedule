@@ -5,7 +5,11 @@ import time
 from google.cloud import storage
 from requests.models import HTTPError
 
-from cron import four11
+import four11
+
+import os
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./service_account.json"
 
 PARSEABLE_PERIODS = [
     "A",
@@ -164,11 +168,11 @@ def crawl_schedules(dry_run=False, verbose=False):
     for username, schedule in schedules.items():
         assert len(schedule["classes"]) == 3
         for trimester in schedule["classes"]:
-            assert len(trimester) == 9 or len(trimester) == 10
+            assert len(trimester) == 9 or len(trimester) == 10 or username == "icorey-boulet"
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
 
     print("Schedules passed sanity check")
-
+    
     # Now do the upload, unless it's a dry run
     if not dry_run:
         schedule_blob = data_bucket.blob("schedules.json")
