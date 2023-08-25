@@ -95,6 +95,7 @@ def download_schedule(client, username, year):
     # Recompute the username, don't just stuff the one we were passed
     person["username"] = individual["email"].split("@")[0]
 
+
     # Find advisor
     person["advisor"] = None
     for section in briggs_person["sections"]:
@@ -143,13 +144,14 @@ def crawl_schedules(dry_run=False, verbose=False):
 
     for username in usernames:
         try:
-            schedules[username] = download_schedule_with_retry(
+            if username != "icourey-boulet":
+                schedules[username] = download_schedule_with_retry(
                 four11_client, username, school_year
-            )
-            if verbose:
-                copy = schedules[username].copy()
-                del copy["classes"]  # omitted for brevity
-                print(f"Crawled user {username}: {copy}")
+                )
+                if verbose:
+                    copy = schedules[username].copy()
+                    del copy["classes"]  # omitted for brevity
+                    print(f"Crawled user {username}: {copy}")
         except NameError:
             errors += 1
             print(f"Could not crawl user {username}")
@@ -164,8 +166,7 @@ def crawl_schedules(dry_run=False, verbose=False):
     for username, schedule in schedules.items():
         assert len(schedule["classes"]) == 3
         for trimester in schedule["classes"]:
-            if username != "icourey-boulet":
-                assert len(trimester) == 9 or len(trimester) == 10
+            assert len(trimester) == 9 or len(trimester) == 10
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
 
     print("Schedules passed sanity check")
