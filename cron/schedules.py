@@ -143,13 +143,14 @@ def crawl_schedules(dry_run=False, verbose=False):
 
     for username in usernames:
         try:
-            schedules[username] = download_schedule_with_retry(
-                four11_client, username, school_year
-            )
-            if verbose:
-                copy = schedules[username].copy()
-                del copy["classes"]  # omitted for brevity
-                print(f"Crawled user {username}: {copy}")
+            if username != "icourey-boulet":
+                schedules[username] = download_schedule_with_retry(
+                    four11_client, username, school_year
+                )
+                if verbose:
+                    copy = schedules[username].copy()
+                    del copy["classes"]  # omitted for brevity
+                    print(f"Crawled user {username}: {copy}")
         except NameError:
             errors += 1
             print(f"Could not crawl user {username}")
