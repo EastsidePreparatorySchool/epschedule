@@ -168,7 +168,7 @@ def crawl_schedules(dry_run=False, verbose=False):
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
 
     print("Schedules passed sanity check")
-    
+
     # Now do the upload, unless it's a dry run
     if not dry_run:
         schedule_blob = data_bucket.blob("schedules.json")
