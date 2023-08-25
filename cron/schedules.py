@@ -2,9 +2,10 @@ import datetime
 import json
 import time
 
-from cron import four11
 from google.cloud import storage
 from requests.models import HTTPError
+
+from cron import four11
 
 PARSEABLE_PERIODS = [
     "A",
