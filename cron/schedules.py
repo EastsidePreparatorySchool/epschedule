@@ -7,10 +7,6 @@ from requests.models import HTTPError
 
 import four11
 
-import os
-
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./service_account.json"
-
 PARSEABLE_PERIODS = [
     "A",
     "B",
@@ -168,7 +164,8 @@ def crawl_schedules(dry_run=False, verbose=False):
     for username, schedule in schedules.items():
         assert len(schedule["classes"]) == 3
         for trimester in schedule["classes"]:
-            assert len(trimester) == 9 or len(trimester) == 10 or username == "icorey-boulet"
+            if username != "icourey-boulet":
+                assert len(trimester) == 9 or len(trimester) == 10
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
 
     print("Schedules passed sanity check")
