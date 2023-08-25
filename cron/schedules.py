@@ -95,7 +95,6 @@ def download_schedule(client, username, year):
     # Recompute the username, don't just stuff the one we were passed
     person["username"] = individual["email"].split("@")[0]
 
-
     # Find advisor
     person["advisor"] = None
     for section in briggs_person["sections"]:
@@ -146,7 +145,7 @@ def crawl_schedules(dry_run=False, verbose=False):
         try:
             if username != "icourey-boulet":
                 schedules[username] = download_schedule_with_retry(
-                four11_client, username, school_year
+                    four11_client, username, school_year
                 )
                 if verbose:
                     copy = schedules[username].copy()
