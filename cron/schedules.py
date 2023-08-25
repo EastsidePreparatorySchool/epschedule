@@ -2,10 +2,9 @@ import datetime
 import json
 import time
 
+import four11
 from google.cloud import storage
 from requests.models import HTTPError
-
-import four11
 
 PARSEABLE_PERIODS = [
     "A",
