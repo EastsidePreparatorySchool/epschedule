@@ -3,11 +3,14 @@ function renderGitHubCommits() {
   latestCommits.forEach((commit) => {
     // first create a date object
     const date = new Date(commit["date"]+" UTC");
-    var options = { year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric'
-                    };
-    const strDate = date.toLocaleDateString("en-US", options)
+    // var options = { year: 'numeric', 
+    //                   month: 'long', 
+    //                   day: 'numeric',
+    //                   hour: 'numeric',
+    //                   minute: '2-digit',
+    //                   second: '2-digit',
+    //                 };
+    const strDate = date.toLocaleString("en-US");
     updated +=
       '<a class = "GithubLink" href = "' +
       commit["url"] +
