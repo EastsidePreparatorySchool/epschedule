@@ -273,7 +273,7 @@
                     (<a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
                   </template>
                 </p>
-                <h2>{{getName(item.name)}}</h2>
+                <h2>{{getName(item.name, item.period)}}</h2>
                 <p>{{item.lunchInfo.summary}}</p>
               </div>
               <template is="dom-if" if="{{showChevron(item)}}">
@@ -357,8 +357,11 @@
           return item.lunchInfo.description[num];
         }
       },
-      getName: function (name) {
+      getName: function (name, letter = "") {
         name = name.replace('&', 'and');
+        if (letter.length == 1 && letter != "X"){
+          name = letter + " - " + name;
+        }
         return name; // Debug func
       },
       showChevron: function (item) {
