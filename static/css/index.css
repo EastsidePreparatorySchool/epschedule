@@ -57,6 +57,7 @@ neon-animated-pages {
   text-align: center;
   font-size: 16px;
   cursor: pointer;
+  border-radius: 12px;
 }
 
 #studentname {
