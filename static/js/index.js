@@ -395,22 +395,26 @@ function stringifyRooms(arr) {
 function renderPeriod(periodObj) {
   var popupContainer = document.getElementById("popupContainer");
 
+  // Gets the CSS style
+  var style = getComputedStyle(document.body);
+  var bgColor = style.getPropertyValue('--background')
+  var innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
   popupContainer.innerHTML =
     '<div class="period" layout vertical>' +
-    '<div class="halfwidth periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' +
-    '<div class="periodheading">Other classes to take:</div>' +
+    '<div class="halfwidth periodbottomspace"><paper-material class="periodsubcontainer" ' + innerHTMLStyle +' elevation="2">' +
+    '<div class="periodheading" ' + innerHTMLStyle +'>Other classes to take:</div>' +
     '<x-schedule id="altclassesschedule" show="all" swipe-disabled></x-schedule>' +
     "</paper-material></div>" +
-    '<div class="halfwidth"><div class="periodbottomspace"><paper-material class="periodsubcontainer periodmediumpadding" elevation="2">' +
-    '<div class="periodheading">Empty rooms:</div>' +
-    '<div class="freeroomswarning">These are the classrooms without a class taking place this period.' +
+    '<div class="halfwidth"><div class="periodbottomspace" ' + innerHTMLStyle +'><paper-material class="periodsubcontainer periodmediumpadding"  ' + innerHTMLStyle +' elevation="2">' +
+    '<div class="periodheading" ' + innerHTMLStyle +'>Empty rooms:</div>' +
+    '<div class="freeroomswarning" ' + innerHTMLStyle +'>These are the classrooms without a class taking place this period.' +
     "You may use them to work or study as you choose. Note that there may be other students or teachers already in these rooms.</div>" +
-    "<div>" +
+    "<div " + innerHTMLStyle +">" +
     stringifyRooms(periodObj["freerooms"]) +
     "</div>" +
     "</paper-material></div>" +
     '<div class="periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' +
-    '<div class="periodheading">Current class:</div>' +
+    '<div class="periodheading"' + innerHTMLStyle +'>Current class:</div>' +
     '<x-schedule id="currentperiodclassschedule" show="all" swipe-disabled></x-schedule>' +
     "</paper-material></div></div>" +
     "</div>";
