@@ -256,14 +256,16 @@
                   </template>
                   <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
                     (<a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>,
-                    <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
+                    <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>,
+                    {{item.period}} Period)
                   </template>
                   <template is="dom-if" if="{{isCore()}}">
                     <!--If support for AND is ever added, use AND here instead of two IFS-->
                     <template is="dom-if" if="{{item.teacher}}">
                       <a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>,
                       <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>,
-                      <a href="#">{{item.studentCount}} students</a>
+                      <a href="#">{{item.studentCount}} students</a>,
+                      {{item.period}} Period
                     </template>
                   </template>
                   <template is="dom-if" if="{{hasTeacherOnly(item)}}">
@@ -273,7 +275,7 @@
                     (<a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
                   </template>
                 </p>
-                <h2>{{getName(item.name, item.period)}}</h2>
+                <h2>{{getName(item.name)}}</h2>
                 <p>{{item.lunchInfo.summary}}</p>
               </div>
               <template is="dom-if" if="{{showChevron(item)}}">
@@ -357,11 +359,8 @@
           return item.lunchInfo.description[num];
         }
       },
-      getName: function (name, letter = "") {
+      getName: function (name) {
         name = name.replace('&', 'and');
-        if (letter.length == 1 && letter != "X"){
-          name = letter + " - " + name;
-        }
         return name; // Debug func
       },
       showChevron: function (item) {
