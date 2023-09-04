@@ -61,6 +61,9 @@ function reportBug() {
   window.open("https://forms.office.com/r/rwmhK8xw44");
   // Old URL =  window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
+function feedbackForm() {
+  window.open("https://forms.office.com/r/d59XVcaEn4");
+}
 function reportBugOld() {
   window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
