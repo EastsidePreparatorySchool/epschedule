@@ -288,18 +288,11 @@
               </template>
             </div>
             <iron-collapse id="{{computeCollapseId(item)}}">
-              <template is="dom-if" if="{{isLunchWith2Desc(item)}}" style="height:auto">
+              <template is="dom-if" if="{{isLunchWithDesc(item)}}" style="height:auto">
                 <div layout vertical class="lunch">
                   <ul id="lunchtext">
                     <li>{{getLineInDesc(item, "0")}}</li>
                     <li>{{getLineInDesc(item, "1")}}</li>
-                  </ul>
-                </div>
-              </template>
-              <template is="dom-if" if="{{isLunchWith1Desc(item)}}" style="height:auto">
-                <div layout vertical class="lunch">
-                  <ul id="lunchtext">
-                    <li>{{getLineInDesc(item, "0")}}</li>
                   </ul>
                 </div>
               </template>
@@ -357,19 +350,8 @@
       displayClassOptions: function (item) {
         return this.type != "core" && !Boolean(item.lunchInfo);
       },
-      isLunchWith2Desc: function (item) {
-        if (Boolean(item.lunchInfo)){
-          console.log(item.lunchInfo.description);
-          return item.lunchInfo.description.length >= 2;
-        }
-        return false;
-      },
-      isLunchWith1Desc: function (item) {
-        if (Boolean(item.lunchInfo)){
-          console.log(item.lunchInfo.description);
-          return item.lunchInfo.description.length == 1;
-        }
-        return false;
+      isLunchWithDesc: function (item) {
+        return Boolean(item.lunchInfo);
       },
       getLineInDesc: function (item, linenum) {
         if (item.lunchInfo) {
