@@ -460,6 +460,8 @@ function renderStudent(studentObj) {
     var advisoryTag = '<p><iron-icon icon="icons:perm-identity"></iron-icon>' +
       "Advisor: " + studentObj.advisor.charAt(1).toUpperCase() +
       studentObj.advisor.slice(2) + "</p>";
+    var advisoryLocationTag = '<p><iron-icon icon="icons:room"></iron-icon>' +
+      "Advisory Room: " + studentObj.classes[0][8].room + "</p>";
   } else {
     var grade = "";
     var name = studentObj.preferred_name ? studentObj.preferred_name : studentObj.firstname;
@@ -467,6 +469,8 @@ function renderStudent(studentObj) {
     var officeTag = '<p><iron-icon icon="icons:home"></iron-icon>' +
       "Office: " + studentObj.office + "</p>";
     var advisoryTag = "";
+    var advisoryLocationTag = '<p><iron-icon icon="icons:room"></iron-icon>' +
+      "Advisory Room: " + studentObj.classes[0][8].room + "</p>";
   }
   var innerHTMLStyle;
   // Gets the CSS style
@@ -490,6 +494,7 @@ function renderStudent(studentObj) {
     "</span></a></p>" +
     officeTag +
     advisoryTag +
+    advisoryLocationTag +
     "</div></div></paper-material>" +
     '<schedule-lite id="studentschedule"></schedule-lite>' +
     "</div>";
