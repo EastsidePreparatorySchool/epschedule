@@ -10,7 +10,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
-LUNCH_URL = "http://www.eastsideprep.org/wp-content/plugins/dpProEventCalendar/includes/ical.php?calendar_id=19"
+LUNCH_URL = "http://www.eastsideprep.org/?post_type=tribe_events&ical=1&eventDisplay=list&tribe_events_cat=lunch"
 
 
 # NDB class definitions
@@ -78,8 +78,8 @@ def save_events(events, dry_run=False, verbose=False):
 
         # To keep things brief, we'll cap the length at two lines
         lines = desc.split("\\n")[:2]
-        # Strip out any extra whitespace
-        description = [line.strip() for line in lines]
+        # Strip out any extra whitespace and the weird starting thing
+        description = [line.replace("ing_top=”0px” padding_bottom=”0px”][vc_column fade_animation_offset=”45px”]", "").strip() for line in lines]
 
         print(f"{date}: {summary}")
         if verbose:
