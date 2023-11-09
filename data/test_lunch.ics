@@ -26,8 +26,8 @@ UID:526957e1-d768-4e3a-9e0b-81b537eaae7f
 DTSTART;TZID=America/Los_Angeles:20191007T110000
 DTEND;TZID=America/Los_Angeles:20191007T123000
 DTSTAMP:20190829T090338Z
-SUMMARY:Monday | Cheese Manicotti
-DESCRIPTION:Cheese Manicotti with Meat Sauce\, Side Salad\, and Bread Stick\n Vegetarian: Marinara\n Our lunch today contains the following Allergens:\n Dairy\, Gluten\, Soy
+SUMMARY:Cheese Manicotti
+DESCRIPTION:[vc_row padding_top=”0px” padding_bottom=”0px”][vc_column fade_animation_offset=”45px”]Cheese Manicotti with Meat Sauce\, Side Salad\, and Bread Stick\nVegetarian Option: Eggplant Lasagna\nClick here for meal account and food services details \n[/vc_column][/vc_row]
 LOCATION:
 URL:
 END:VEVENT

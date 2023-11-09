@@ -72,14 +72,22 @@ def save_events(events, dry_run=False, verbose=False):
 
         # Remove formatting from the description, and break it up into lines
         desc = event["DESCRIPTION"]
-        start = desc.find("[text_output]")
-        end = desc.find("[/text_output]")
-        desc = desc[start + 13 : end]
 
         # To keep things brief, we'll cap the length at two lines
         lines = desc.split("\\n")[:2]
         # Strip out any extra whitespace and the weird starting thing
-        description = [line.replace("ing_top=”0px” padding_bottom=”0px”][vc_column fade_animation_offset=”45px”]", "").strip() for line in lines]
+        # this is what it looks like at this point:
+        '''['[vc_row padding_top=”0px” padding_bottom=”0px”][vc_column fade_animation_offset=”45px”]With Mashed Potato and Fresh Veggie', 'Vegetarian Option: Seitan Chimichurri']  
+            2023-11-30: Flat Iron Chimichurri
+                        With Mashed Potato and Fresh Veggie
+                        Vegetarian Option: Seitan Chimichurri'''
+        description = [
+            line.replace(
+                "[vc_row padding_top=”0px” padding_bottom=”0px”][vc_column fade_animation_offset=”45px”]",
+                "",
+            ).strip()
+            for line in lines
+        ]
 
         print(f"{date}: {summary}")
         if verbose:
@@ -154,7 +162,7 @@ def get_lunches_since_date(date):
 
             obj = {
                 "summary": lunch_obj.summary.replace(
-                    "\\,", ","
+                    "\,", ","
                 ),  # deletes all annoying escape character backslashes
                 "description": cleaned_description,
                 "day": lunch_obj.day.day,

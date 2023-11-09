@@ -14,5 +14,5 @@ def test_read_lunches():
 
         assert mock.call_count == 1  # summary() == "Cheese Manicotti"
         event = mock.call_args[0][1]
-        assert event.summary == "Monday | Cheese Manicotti"
+        assert event.summary == "Cheese Manicotti"
         assert event.day == datetime.date(2019, 10, 7)
