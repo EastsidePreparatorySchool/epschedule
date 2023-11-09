@@ -77,10 +77,10 @@ def save_events(events, dry_run=False, verbose=False):
         lines = desc.split("\\n")[:2]
         # Strip out any extra whitespace and the weird starting thing
         # this is what it looks like at this point:
-        '''['[vc_row padding_top=”0px” padding_bottom=”0px”][vc_column fade_animation_offset=”45px”]With Mashed Potato and Fresh Veggie', 'Vegetarian Option: Seitan Chimichurri']  
+        """['[vc_row padding_top=”0px” padding_bottom=”0px”][vc_column fade_animation_offset=”45px”]With Mashed Potato and Fresh Veggie', 'Vegetarian Option: Seitan Chimichurri']  
             2023-11-30: Flat Iron Chimichurri
                         With Mashed Potato and Fresh Veggie
-                        Vegetarian Option: Seitan Chimichurri'''
+                        Vegetarian Option: Seitan Chimichurri"""
         description = [
             line.replace(
                 "[vc_row padding_top=”0px” padding_bottom=”0px”][vc_column fade_animation_offset=”45px”]",
