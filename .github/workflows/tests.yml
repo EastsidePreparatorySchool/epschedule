@@ -29,8 +29,5 @@ jobs:
           black . --check
           isort . --check --profile black
       - name: Test main
-        env:
-          SERVICE_ACCOUNT: ${{secrets.GCP_SERVICE_ACCOUNT}}
         run: |
-          echo '${{secrets.GCP_SERVICE_ACCOUNT}}' > service_account.json
           python main_test.py
