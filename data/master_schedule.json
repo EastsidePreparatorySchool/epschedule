@@ -57,7 +57,7 @@
     "2023-11-09": "D-A_Thu",
     "2023-11-10": "Veteran's Day",
     "2023-11-13": "H-E_Mon",
-    "2023-11-14": "A-D_Tue",
+    "2023-11-14": "A-H_Tue",
     "2023-11-15": "Fall Finals_Mid",
     "2023-11-16": "Fall Finals_Mid",
     "2023-11-17": "Fall Finals / End of Fall Term",
@@ -1171,6 +1171,52 @@
       {
         "period": "Lunch (US)",
         "times": "11:50-12:20"
+      }
+    ],
+    "A-H_Tue": [
+      {
+        "period": "A",
+        "times": "08:30-09:05"
+      },
+      {
+        "period": "B",
+        "times": "09:15-9:50"
+      },
+      {
+        "period": "C",
+        "times": "10:00-10:35"
+      },
+      {
+        "period": "D",
+        "times": "10:45-11:20"
+      },
+      {
+        "period": "Lunch (MS)",
+        "times": "11:10-11:40"
+      },
+      {
+        "period": "E",
+        "times": "11:10-11:45"
+      },
+      {
+        "period": "E",
+        "times": "11:45-12:20"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "11:50-12:20"
+      },
+      {
+        "period": "F",
+        "times": "01:00-01:35"
+      },
+      {
+        "period": "G",
+        "times": "01:45-02:20"
+      },
+      {
+        "period": "H",
+        "times": "02:30-3:05"
       }
     ],
     "PDD": [
