@@ -223,7 +223,11 @@ def gen_opted_out_table():
 
 def is_same_class(a, b):
     print(a)
-    return a["teacher_username"] == b["teacher_username"] and a["period"] == b["period"] and a["name"] == b["name"]
+    return (
+        a["teacher_username"] == b["teacher_username"]
+        and a["period"] == b["period"]
+        and a["name"] == b["name"]
+    )
 
 
 def get_class_schedule(user_class, term_id, censor=True):
