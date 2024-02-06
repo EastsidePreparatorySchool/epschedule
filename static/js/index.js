@@ -2,9 +2,9 @@ function renderGitHubCommits() {
   let updated = "";
   latestCommits.forEach((commit) => {
     // first create a date object
-    const date = new Date(commit["date"]+" UTC");
-    // var options = { year: 'numeric', 
-    //                   month: 'long', 
+    const date = new Date(commit["date"] + " UTC");
+    // var options = { year: 'numeric',
+    //                   month: 'long',
     //                   day: 'numeric',
     //                   hour: 'numeric',
     //                   minute: '2-digit',
@@ -143,7 +143,7 @@ var globalDate = getInitialDate();
 function getInitialDate() {
   date = new Date();
   switch (
-  date.getDay() // Falling through is intentional here
+    date.getDay() // Falling through is intentional here
   ) {
     case 6: // If Saturday, move the date forward twice
       date.setDate(date.getDate() + 2);
@@ -267,9 +267,9 @@ function getGpsSuccess(position, roomObj) {
   var a =
     Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
     Math.cos(phi1) *
-    Math.cos(phi2) *
-    Math.sin(deltaLambda / 2) *
-    Math.sin(deltaLambda / 2);
+      Math.cos(phi2) *
+      Math.sin(deltaLambda / 2) *
+      Math.sin(deltaLambda / 2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   var d = radius * c;
   if (d > 200) {
@@ -286,7 +286,18 @@ function getGpsSuccess(position, roomObj) {
 }
 function isStandardClass(letter) {
   // include advisory here as well to auto make the class into a class type
-  var standardPeriods = ["O", "A", "B", "C", "D", "E", "F", "G", "H", "Advisory"];
+  var standardPeriods = [
+    "O",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "Advisory",
+  ];
   return standardPeriods.indexOf(letter) >= 0;
 }
 function getGpsFail(error) {
@@ -361,19 +372,27 @@ function renderTeacher(teacherObj) {
   var innerHTMLStyle;
   // Gets the CSS style
   var style = getComputedStyle(document.body);
-  var bgColor = style.getPropertyValue('--background')
+  var bgColor = style.getPropertyValue("--background");
   innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
 
-  popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
-    '<paper-material class="header" elevation="2" ' + innerHTMLStyle + '>' +
-    '<div layout horizontal center>' +
-    '<img src="' + imgSrc + '" width="128px" height="128px">' +
-    '<div layout vertical>' +
-    '<p><a href="mailto:' + email + '""><iron-icon icon="communication:email"></iron-icon>' +
+  popupContainer.innerHTML =
+    '<div class="teacher" layout vertical>' +
+    '<paper-material class="header" elevation="2" ' +
+    innerHTMLStyle +
+    ">" +
+    "<div layout horizontal center>" +
+    '<img src="' +
+    imgSrc +
+    '" width="128px" height="128px">' +
+    "<div layout vertical>" +
+    '<p><a href="mailto:' +
+    email +
+    '""><iron-icon icon="communication:email"></iron-icon>' +
     '<span class="email">Email teacher</span></a></p>' +
-    renderBio(teacherObj.bio) + '</div></div></paper-material>' +
+    renderBio(teacherObj.bio) +
+    "</div></div></paper-material>" +
     '<schedule-lite id="teacherschedule"></schedule-lite>' +
-    '</div>';
+    "</div>";
   // Wait for HTML to be parsed/applied before trying to show the schedule.
   // Without this, Firefox/Safari don't display the schedule.
   setTimeout(function () {
@@ -397,24 +416,40 @@ function renderPeriod(periodObj) {
 
   // Gets the CSS style
   var style = getComputedStyle(document.body);
-  var bgColor = style.getPropertyValue('--background')
+  var bgColor = style.getPropertyValue("--background");
   var innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
   popupContainer.innerHTML =
     '<div class="period" layout vertical>' +
-    '<div class="halfwidth periodbottomspace"><paper-material class="periodsubcontainer" ' + innerHTMLStyle +' elevation="2">' +
-    '<div class="periodheading" ' + innerHTMLStyle +'>Other classes to take:</div>' +
+    '<div class="halfwidth periodbottomspace"><paper-material class="periodsubcontainer" ' +
+    innerHTMLStyle +
+    ' elevation="2">' +
+    '<div class="periodheading" ' +
+    innerHTMLStyle +
+    ">Other classes to take:</div>" +
     '<x-schedule id="altclassesschedule" show="all" swipe-disabled></x-schedule>' +
     "</paper-material></div>" +
-    '<div class="halfwidth"><div class="periodbottomspace" ' + innerHTMLStyle +'><paper-material class="periodsubcontainer periodmediumpadding"  ' + innerHTMLStyle +' elevation="2">' +
-    '<div class="periodheading" ' + innerHTMLStyle +'>Empty rooms:</div>' +
-    '<div class="freeroomswarning" ' + innerHTMLStyle +'>These are the classrooms without a class taking place this period.' +
+    '<div class="halfwidth"><div class="periodbottomspace" ' +
+    innerHTMLStyle +
+    '><paper-material class="periodsubcontainer periodmediumpadding"  ' +
+    innerHTMLStyle +
+    ' elevation="2">' +
+    '<div class="periodheading" ' +
+    innerHTMLStyle +
+    ">Empty rooms:</div>" +
+    '<div class="freeroomswarning" ' +
+    innerHTMLStyle +
+    ">These are the classrooms without a class taking place this period." +
     "You may use them to work or study as you choose. Note that there may be other students or teachers already in these rooms.</div>" +
-    "<div " + innerHTMLStyle +">" +
+    "<div " +
+    innerHTMLStyle +
+    ">" +
     stringifyRooms(periodObj["freerooms"]) +
     "</div>" +
     "</paper-material></div>" +
     '<div class="periodbottomspace"><paper-material class="periodsubcontainer" elevation="2">' +
-    '<div class="periodheading"' + innerHTMLStyle +'>Current class:</div>' +
+    '<div class="periodheading"' +
+    innerHTMLStyle +
+    ">Current class:</div>" +
     '<x-schedule id="currentperiodclassschedule" show="all" swipe-disabled></x-schedule>' +
     "</paper-material></div></div>" +
     "</div>";
@@ -455,29 +490,43 @@ function renderStudent(studentObj) {
   email = email.toLowerCase();
   if (studentObj.grade) {
     var grade = studentObj.grade + "th Grade";
-    var name = studentObj.preferred_name ? studentObj.preferred_name : studentObj.firstname;
+    var name = studentObj.preferred_name
+      ? studentObj.preferred_name
+      : studentObj.firstname;
     var officeTag = "";
-    var advisoryTag = '<p><iron-icon icon="icons:perm-identity"></iron-icon>' +
-      "Advisor: " + studentObj.advisor.charAt(1).toUpperCase() +
-      studentObj.advisor.slice(2) + "</p>";
+    var advisoryTag =
+      '<p><iron-icon icon="icons:perm-identity"></iron-icon>' +
+      "Advisor: " +
+      studentObj.advisor.charAt(1).toUpperCase() +
+      studentObj.advisor.slice(2) +
+      "</p>";
   } else {
     var grade = "";
-    var name = studentObj.preferred_name ? studentObj.preferred_name : studentObj.firstname;
-    name += " " + studentObj.lastname
-    var officeTag = '<p><iron-icon icon="icons:home"></iron-icon>' +
-      "Office: " + studentObj.office + "</p>";
+    var name = studentObj.preferred_name
+      ? studentObj.preferred_name
+      : studentObj.firstname;
+    name += " " + studentObj.lastname;
+    var officeTag =
+      '<p><iron-icon icon="icons:home"></iron-icon>' +
+      "Office: " +
+      studentObj.office +
+      "</p>";
     var advisoryTag = "";
   }
   var innerHTMLStyle;
   // Gets the CSS style
   var style = getComputedStyle(document.body);
-  var bgColor = style.getPropertyValue('--background')
+  var bgColor = style.getPropertyValue("--background");
   innerHTMLStyle = "style='background-color: " + bgColor.toString() + "'";
-  popupContainer.innerHTML = '<div class="teacher" layout vertical>' +
-    '<paper-material class="header" elevation="2" ' + innerHTMLStyle + '>' +
+  popupContainer.innerHTML =
+    '<div class="teacher" layout vertical>' +
+    '<paper-material class="header" elevation="2" ' +
+    innerHTMLStyle +
+    ">" +
     "<div layout horizontal center>" +
     '<img src="' +
     studentObj.photo_url +
+    '" width="360px"' +
     "\" onerror=\"if (this.src != '/static/images/placeholder.png') this.src = '/static/images/placeholder.png';\">" +
     '<div layout vertical><h3><span class="grade">' +
     grade +
@@ -681,8 +730,10 @@ IMAGE_CDN = "https://epschedule-avatars.storage.googleapis.com/";
 
 function isDarkMode() {
   // returns a boolean indicating if it is a dark mode or not
-  return (window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches);
+  return (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 }
 
 // Add the images on the left side to full schedules
@@ -719,7 +770,9 @@ function isSharedClass(scheduleObj, termid) {
     if (
       userClasses[i].period == scheduleObj.period &&
       userClasses[i].name == scheduleObj.name &&
-      (userClasses[i].teacher_username != null ? userClasses[i].teacher_username : "")  == scheduleObj.teacherUsername
+      (userClasses[i].teacher_username != null
+        ? userClasses[i].teacher_username
+        : "") == scheduleObj.teacherUsername
     ) {
       return true;
     }
