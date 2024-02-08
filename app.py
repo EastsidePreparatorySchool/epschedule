@@ -328,6 +328,8 @@ def sanitize_class(orig_class_obj):
         class_obj["name"] = "Free Period"
     else:
         class_obj["name"] = "Hidden"
+        class_obj["teacher_username"] = "Hidden"
+        class_obj["department"] = "Hidden"
 
     class_obj["teacher"] = ""
     class_obj["room"] = ""
