@@ -8,6 +8,7 @@ google-cloud-ndb
 Pillow
 pytest
 pylint
+protobuf==3.20.*
 isort
 black
 autoflake
