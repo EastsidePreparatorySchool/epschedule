@@ -367,6 +367,7 @@ function renderTeacher(teacherObj) {
   var popupContainer = document.getElementById("popupContainer");
   var imgSrc = "teacher_photos_fullsize/" + teacherObj.firstname + "_";
   imgSrc = imgSrc + teacherObj.lastname + ".jpg";
+  imgSrc = "static/images/epslogo.jpg"
   imgSrc = imgSrc.toLowerCase();
   var email = teacherObj.email;
   var innerHTMLStyle;
@@ -381,9 +382,7 @@ function renderTeacher(teacherObj) {
     innerHTMLStyle +
     ">" +
     "<div layout horizontal center>" +
-    '<img src="' +
-    imgSrc +
-    '" width="128px" height="128px">' +
+    '<img src="/static/images/theboard.png" width="128px" height="128px">' +
     "<div layout vertical>" +
     '<p><a href="mailto:' +
     email +
@@ -524,9 +523,7 @@ function renderStudent(studentObj) {
     innerHTMLStyle +
     ">" +
     "<div layout horizontal center>" +
-    '<img src="' +
-    studentObj.photo_url +
-    '" width="360px"' +
+    '<img src="/static/images/theboard.png" width="360px"' +
     "\" onerror=\"if (this.src != '/static/images/placeholder.png') this.src = '/static/images/placeholder.png';\">" +
     '<div layout vertical><h3><span class="grade">' +
     grade +
