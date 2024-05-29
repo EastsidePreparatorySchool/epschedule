@@ -241,12 +241,18 @@ function dateToString(date) {
   );
 }
 
+function prank(){
+  var pran = document.getElementById("prank");
+  pran.open();
+}
+
 function updateMainSchedule() {
   var scheduleElement = document.getElementById("mainschedule");
   renderDate(globalDate);
   renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches);
   // also update github info
   renderGitHubCommits();
+  prank();
 }
 function renderToast(text) {
   toast = document.getElementById("toast");
