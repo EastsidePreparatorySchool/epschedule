@@ -3,6 +3,7 @@ import datetime
 import json
 import os
 import re
+import random
 
 import google.oauth2.id_token
 from flask import Flask, abort, make_response, render_template, request, session
@@ -107,8 +108,7 @@ def is_teacher_schedule(schedule):
 
 def get_schedule_data():
     return SCHEDULE_INFO
-
-
+ 
 def get_schedule(username):
     schedules = get_schedule_data()
     if username not in schedules:
@@ -178,6 +178,10 @@ def main():
     # Get the last 28 days of lunches
     lunches = get_lunches_since_date(datetime.date.today() - datetime.timedelta(28))
 
+    days_randified = DAYS.copy()
+    num = random.uniform(0, 1)
+    if (num < 0.75):
+        days_randified[0]["2024-05-31"] = "D-A_Fri"
     # Handler for how to serialize date objs into json
     response = make_response(
         render_template(
