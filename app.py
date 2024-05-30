@@ -2,11 +2,12 @@ import copy
 import datetime
 import json
 import os
-import re
 import random
+import re
 
 import google.oauth2.id_token
-from flask import Flask, abort, make_response, render_template, request, session
+from flask import (Flask, abort, make_response, render_template, request,
+                   session)
 from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
@@ -108,7 +109,8 @@ def is_teacher_schedule(schedule):
 
 def get_schedule_data():
     return SCHEDULE_INFO
- 
+
+
 def get_schedule(username):
     schedules = get_schedule_data()
     if username not in schedules:
@@ -180,7 +182,7 @@ def main():
 
     days_randified = DAYS.copy()
     num = random.uniform(0, 1)
-    if (num < 0.75):
+    if num < 0.75:
         days_randified[0]["2024-05-31"] = "D-A_Fri"
     # Handler for how to serialize date objs into json
     response = make_response(
@@ -226,7 +228,6 @@ def gen_opted_out_table():
 
 
 def is_same_class(a, b):
-    print(a)
     return (
         a["teacher_username"] == b["teacher_username"]
         and a["period"] == b["period"]
