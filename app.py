@@ -6,8 +6,7 @@ import random
 import re
 
 import google.oauth2.id_token
-from flask import (Flask, abort, make_response, render_template, request,
-                   session)
+from flask import Flask, abort, make_response, render_template, request, session
 from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
