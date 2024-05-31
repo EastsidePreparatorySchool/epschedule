@@ -2,6 +2,7 @@ import copy
 import datetime
 import json
 import os
+import random
 import re
 
 import google.oauth2.id_token
@@ -178,6 +179,10 @@ def main():
     # Get the last 28 days of lunches
     lunches = get_lunches_since_date(datetime.date.today() - datetime.timedelta(28))
 
+    days_randified = DAYS.copy()
+    num = random.uniform(0, 1)
+    if num < 0.75:
+        days_randified[0]["2024-05-31"] = "D-A_Fri"
     # Handler for how to serialize date objs into json
     response = make_response(
         render_template(
@@ -222,7 +227,6 @@ def gen_opted_out_table():
 
 
 def is_same_class(a, b):
-    print(a)
     return (
         a["teacher_username"] == b["teacher_username"]
         and a["period"] == b["period"]
