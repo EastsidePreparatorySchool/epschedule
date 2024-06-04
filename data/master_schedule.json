@@ -202,11 +202,11 @@
     "2024-05-31": "A-D_Fri",
     "2024-06-03": "E-H_Mon",
     "2024-06-04": "A-H_Tue",
-    "2024-06-05": "US Finals / MS Field day",
-    "2024-06-06": "US Finals / MS Field day",
+    "2024-06-05": "Reading Day",
+    "2024-06-06": "Reading Day",
     "2024-06-07": "Finals_MidABC",
     "2024-06-10": "Finals_MidDEF",
-    "2024-06-08": "US Finals / MS Field day"
+    "2024-06-08": "G and H Finals"
   },
   {
     "A-D": [
@@ -1212,15 +1212,15 @@
       },
       {
         "period": "E - US",
-        "times": "11:10-11:45"
+        "times": "11:30-12:05"
       },
       {
         "period": "E - MS",
-        "times": "11:45-12:20"
+        "times": "12:05-12:55"
       },
       {
         "period": "Lunch (US)",
-        "times": "11:50-12:20"
+        "times": "12:05-12:55"
       },
       {
         "period": "F",
