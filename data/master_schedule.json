@@ -206,7 +206,7 @@
     "2024-06-06": "Reading Day",
     "2024-06-07": "Finals_MidABC",
     "2024-06-10": "Finals_MidDEF",
-    "2024-06-08": "G and H Finals"
+    "2024-06-08": "Finals_MidGH"
   },
   {
     "A-D": [
@@ -892,27 +892,19 @@
       },
       {
         "period": "B",
-        "times": "10:15-11:45"
+        "times": "10:45-12:15"
       },
       {
         "period": "Lunch (MS)",
-        "times": "11:50-12:30"
-      },
-      {
-        "period": "Advisory - US",
-        "times": "11:50-12:30"
-      },
-      {
-        "period": "Advisory - MS",
-        "times": "12:40-1:20"
+        "times": "12:15-1:00"
       },
       {
         "period": "Lunch (US)",
-        "times": "12:40-1:20"
+        "times": "12:15-1:00"
       },
       {
         "period": "C",
-        "times": "1:30-3:00"
+        "times": "1:00-2:30"
       }
     ],
     "Finals_MidDEF": [
@@ -922,27 +914,37 @@
       },
       {
         "period": "E",
-        "times": "10:15-11:45"
+        "times": "10:45-12:15"
       },
       {
         "period": "Lunch (MS)",
-        "times": "11:50-12:30"
-      },
-      {
-        "period": "Advisory - US",
-        "times": "11:50-12:30"
-      },
-      {
-        "period": "Advisory - MS",
-        "times": "12:40-1:20"
+        "times": "12:15-1:00"
       },
       {
         "period": "Lunch (US)",
-        "times": "12:40-1:20"
+        "times": "12:15-1:00"
       },
       {
         "period": "F",
-        "times": "1:30-3:00"
+        "times": "1:00-2:30"
+      }
+    ],
+    "Finals_MidGH": [
+      {
+        "period": "G",
+        "times": "08:30-10:00"
+      },
+      {
+        "period": "H",
+        "times": "10:45-12:15"
+      },
+      {
+        "period": "Lunch (MS)",
+        "times": "12:15-1:00"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "12:15-1:00"
       }
     ],
     "Grade Level Orientations": [
