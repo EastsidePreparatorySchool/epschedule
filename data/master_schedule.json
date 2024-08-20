@@ -1,1307 +1,1354 @@
 [
-  {
-    "2023-08-25": "PDD",
-    "2023-08-28": "PDD",
-    "2023-08-29": "PDD",
-    "2023-08-30": "Convocation, A-H",
-    "2023-08-31": "Grade Level Orientations",
-    "2023-09-01": "Grade Level Orientations",
-    "2023-09-04": "Labor Day",
-    "2023-09-05": "A-D_Tue",
-    "2023-09-06": "E-H_Wed",
-    "2023-09-07": "D-A_Thu",
-    "2023-09-08": "H-E_Fri",
-    "2023-09-11": "A-D_Mon",
-    "2023-09-12": "E-H_Tue",
-    "2023-09-13": "D-A_Wed",
-    "2023-09-14": "H-E_Thu",
-    "2023-09-15": "A-D_Fri",
-    "2023-09-18": "E-H_Mon",
-    "2023-09-19": "D-A_Tue",
-    "2023-09-20": "H-E_Wed",
-    "2023-09-21": "A-D_Thu",
-    "2023-09-22": "E-H_Fri",
-    "2023-09-25": "Fall Break",
-    "2023-09-26": "Fall Break",
-    "2023-09-27": "D-A_Wed",
-    "2023-09-28": "H-E_Thu",
-    "2023-09-29": "A-D_Fri",
-    "2023-10-02": "E-H_Mon",
-    "2023-10-03": "D-A_Tue",
-    "2023-10-04": "H-E_Wed",
-    "2023-10-05": "A-D_Thu",
-    "2023-10-06": "E-H_Fri",
-    "2023-10-09": "D-A_Mon",
-    "2023-10-10": "H-E_Tue",
-    "2023-10-11": "A-D_Wed",
-    "2023-10-12": "E-H_Thu",
-    "2023-10-13": "PDD",
-    "2023-10-16": "D-A_Mon",
-    "2023-10-17": "H-E_Tue",
-    "2023-10-18": "A-D_Wed",
-    "2023-10-19": "Student-Teacher Conferences",
-    "2023-10-20": "Student-Teacher Conferences",
-    "2023-10-23": "E-H_Mon",
-    "2023-10-24": "D-A_Tue",
-    "2023-10-25": "H-E_Wed",
-    "2023-10-26": "A-D_Thu",
-    "2023-10-27": "E-H_Fri",
-    "2023-10-30": "D-A_Mon",
-    "2023-10-31": "H-E_Tue",
-    "2023-11-01": "A-D_Wed",
-    "2023-11-02": "E-H_Thu",
-    "2023-11-03": "D-A_Fri",
-    "2023-11-06": "H-E_Mon",
-    "2023-11-07": "A-D_Tue",
-    "2023-11-08": "E-H_Wed",
-    "2023-11-09": "D-A_Thu",
-    "2023-11-10": "Veteran's Day",
-    "2023-11-13": "H-E_Mon",
-    "2023-11-14": "A-H_Tue",
-    "2023-11-15": "Fall Finals_Mid",
-    "2023-11-16": "Fall Finals_Mid",
-    "2023-11-17": "Fall Finals / End of Fall Term",
-    "2023-11-20": "Thanksgiving",
-    "2023-11-21": "Thanksgiving",
-    "2023-11-22": "Thanksgiving",
-    "2023-11-23": "Thanksgiving",
-    "2023-11-24": "Thanksgiving",
-    "2023-11-27": "PDD",
-    "2023-11-28": "A-D_Tue",
-    "2023-11-29": "E-H_Wed",
-    "2023-11-30": "D-A_Thu",
-    "2023-12-01": "H-E_Fri",
-    "2023-12-04": "A-D_Mon",
-    "2023-12-05": "E-H_Tue",
-    "2023-12-06": "D-A_Wed",
-    "2023-12-07": "H-E_Thu",
-    "2023-12-08": "A-D_Fri",
-    "2023-12-11": "E-H_Mon",
-    "2023-12-12": "D-A_Tue",
-    "2023-12-13": "H-E_Wed",
-    "2023-12-14": "A-D_Thu",
-    "2023-12-15": "PDD",
-    "2023-12-18": "Winter Break",
-    "2023-12-19": "Winter Break",
-    "2023-12-20": "Winter Break",
-    "2023-12-21": "Winter Break",
-    "2023-12-22": "Winter Break",
-    "2023-12-25": "Winter Break",
-    "2023-12-26": "Winter Break",
-    "2023-12-27": "Winter Break",
-    "2023-12-28": "Winter Break",
-    "2023-12-29": "Winter Break",
-    "2024-01-01": "PDD",
-    "2024-01-02": "PDD",
-    "2024-01-03": "E-H_Wed",
-    "2024-01-04": "D-A_Thu",
-    "2024-01-05": "H-E_Fri",
-    "2024-01-08": "A-D_Mon",
-    "2024-01-09": "E-H_Tue",
-    "2024-01-10": "D-A_Wed",
-    "2024-01-11": "H-E_Thu",
-    "2024-01-12": "PDD",
-    "2024-01-15": "MLK Jr. Day",
-    "2024-01-16": "A-D_Tue",
-    "2024-01-17": "E-H_Wed",
-    "2024-01-18": "D-A_Thu",
-    "2024-01-19": "H-E_Fri",
-    "2024-01-22": "A-D_Mon",
-    "2024-01-23": "E-H_Tue",
-    "2024-01-24": "D-A_Wed",
-    "2024-01-25": "H-E_Thu",
-    "2024-01-26": "A-D_Fri",
-    "2024-01-29": "E-H_Mon",
-    "2024-01-30": "D-A_Tue",
-    "2024-01-31": "H-E_Wed",
-    "2024-02-01": "A-D_Thu",
-    "2024-02-02": "E-H_Fri",
-    "2024-02-05": "D-A_Mon",
-    "2024-02-06": "H-E_Tue",
-    "2024-02-07": "A-D_Wed",
-    "2024-02-08": "E-H_Thu",
-    "2024-02-09": "D-A_Fri",
-    "2024-02-12": "H-E_Mon",
-    "2024-02-13": "A-D_Tue",
-    "2024-02-14": "E-H_Wed",
-    "2024-02-15": "D-A_Thu",
-    "2024-02-16": "PDD_Fri",
-    "2024-02-19": "President's Day",
-    "2024-02-20": "Mid-Winter Break",
-    "2024-02-21": "Mid-Winter Break",
-    "2024-02-22": "Mid-Winter Break",
-    "2024-02-23": "Mid-Winter Break",
-    "2024-02-26": "H-E_Mon",
-    "2024-02-27": "A-D_Tue",
-    "2024-02-28": "E-H_Wed",
-    "2024-02-29": "D-A_Thu",
-    "2024-03-01": "H-E_Fri",
-    "2024-03-04": "A-D_Mon",
-    "2024-03-05": "E-H_Tue",
-    "2024-03-06": "Finals_MidABC",
-    "2024-03-07": "Finals_MidDEF",
-    "2024-03-08": "Finals / End Winter Term",
-    "2024-03-12": "A-D_Tue",
-    "2024-03-13": "E-H_Wed",
-    "2024-03-14": "D-A_Thu",
-    "2024-03-15": "H-E_Fri",
-    "2024-03-18": "A-D_Mon",
-    "2024-03-19": "E-H_Tue",
-    "2024-03-20": "D-A_Wed",
-    "2024-03-21": "H-E_Thu",
-    "2024-03-22": "A-D_Fri",
-    "2024-03-25": "E-H_Mon",
-    "2024-03-26": "D-A_Tue",
-    "2024-03-27": "H-E_Wed",
-    "2024-03-28": "A-D_Thu",
-    "2024-03-29": "E-H_Fri",
-    "2024-04-01": "EBC",
-    "2024-04-02": "EBC",
-    "2024-04-03": "EBC",
-    "2024-04-04": "EBC",
-    "2024-04-05": "EBC",
-    "2024-04-08": "Spring Break",
-    "2024-04-09": "Spring Break",
-    "2024-04-10": "Spring Break",
-    "2024-04-11": "Spring Break",
-    "2024-04-12": "Spring Break",
-    "2024-04-15": "PDD",
-    "2024-04-16": "D-A_Tue",
-    "2024-04-17": "H-E_Wed",
-    "2024-04-18": "A-D_Thu",
-    "2024-04-19": "E-H_Fri",
-    "2024-04-22": "D-A_Mon",
-    "2024-04-23": "H-E_Tue",
-    "2024-04-24": "A-D_Wed",
-    "2024-04-25": "E-H_Thu",
-    "2024-04-26": "Student-Led Conferences",
-    "2024-04-29": "D-A_Mon",
-    "2024-04-30": "H-E_Tue",
-    "2024-05-01": "A-D_Wed",
-    "2024-05-02": "E-H_Thu",
-    "2024-05-03": "D-A_Fri",
-    "2024-05-06": "H-E_Mon",
-    "2024-05-07": "A-D_Tue",
-    "2024-05-08": "E-H_Wed",
-    "2024-05-09": "D-A_Thu",
-    "2024-05-10": "H-E_Fri",
-    "2024-05-13": "A-D_Mon",
-    "2024-05-14": "E-H_Tue",
-    "2024-05-15": "D-A_Wed",
-    "2024-05-16": "H-E_Thu",
-    "2024-05-17": "A-D_Fri",
-    "2024-05-20": "E-H_Mon",
-    "2024-05-21": "D-A_Tue",
-    "2024-05-22": "H-E_Wed",
-    "2024-05-23": "A-D_Thu",
-    "2024-05-24": "PDD",
-    "2024-05-27": "Memorial Day",
-    "2024-05-28": "E-H_Tue",
-    "2024-05-29": "D-A_Wed",
-    "2024-05-30": "H-E_Thu",
-    "2024-05-31": "A-D_Fri",
-    "2024-06-03": "E-H_Mon",
-    "2024-06-04": "A-H_Tue",
-    "2024-06-05": "Reading Day",
-    "2024-06-06": "Reading Day",
-    "2024-06-07": "Finals_MidABC",
-    "2024-06-10": "Finals_MidDEF",
-    "2024-06-08": "Finals_MidGH"
-  },
-  {
-    "A-D": [
-      {
-        "period": "A",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "B",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "C",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "D",
-        "times": "01:50-03:00"
-      }
-    ],
-    "A-D_Fri": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "A",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "B",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "US Flex",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Clubs/Activities - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "C",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "D",
-        "times": "01:50-03:00"
-      }
-    ],
-    "A-D_Mon": [
-      {
-        "period": "A",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "B",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Class Meeting / Assembly - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Advisory - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "C",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "D",
-        "times": "01:50-03:00"
-      }
-    ],
-    "A-D_Thu": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "A",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "B",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Clubs/Activities - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Advisory - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "C",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "D",
-        "times": "01:50-03:00"
-      }
-    ],
-    "A-D_Tue": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "A",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "B",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Advisory - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Class Meeting / Assembly - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "C",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "D",
-        "times": "01:50-03:00"
-      }
-    ],
-    "A-D_Wed": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "A",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "B",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Seminars / Office Hours",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Clubs/Activities - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "C",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "D",
-        "times": "01:50-03:00"
-      }
-    ],
-    "Continuation": [
-      {
-        "period": "Continuation|12th grade grades due in four11",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Convocation, A-H": [
-      {
-        "period": "A",
-        "times": "09:10-09:40"
-      },
-      {
-        "period": "B",
-        "times": "09:50-10:20"
-      },
-      {
-        "period": "C",
-        "times": "10:30-11:00"
-      },
-      {
-        "period": "D",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:45-12:15"
-      },
-      {
-        "period": "E",
-        "times": "11:45-12:55"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "12:25-12:55"
-      },
-      {
-        "period": "F",
-        "times": "01:05-01:35"
-      },
-      {
-        "period": "G",
-        "times": "01:45-02:15"
-      },
-      {
-        "period": "H",
-        "times": "02:25-02:55"
-      }
-    ],
-    "D-A_Fri": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "D",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "C",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "US Flex",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Clubs/Activities - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "B",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "A",
-        "times": "01:50-03:00"
-      }
-    ],
-    "D-A_Mon": [
-      {
-        "period": "D",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "C",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Class Meeting / Assembly - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Advisory - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "B",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "A",
-        "times": "01:50-03:00"
-      }
-    ],
-    "D-A_Thu": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "D",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "C",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Clubs/Activities - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Advisory - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "B",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "A",
-        "times": "01:50-03:00"
-      }
-    ],
-    "D-A_Tue": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "D",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "C",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Advisory - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Class Meeting / Assembly - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "B",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "A",
-        "times": "01:50-03:00"
-      }
-    ],
-    "D-A_Wed": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "D",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "C",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Seminars / Office Hours",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Clubs/Activities - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "B",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "A",
-        "times": "01:50-03:00"
-      }
-    ],
-    "E-H": [
-      {
-        "period": "E",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "F",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "G",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "H",
-        "times": "01:50-03:00"
-      }
-    ],
-    "E-H_Fri": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "E",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "F",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "US Flex",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Clubs/Activities - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "G",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "H",
-        "times": "01:50-03:00"
-      }
-    ],
-    "E-H_Mon": [
-      {
-        "period": "E",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "F",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Class Meeting / Assembly - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Advisory - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "G",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "H",
-        "times": "01:50-03:00"
-      }
-    ],
-    "E-H_Thu": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "E",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "F",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Clubs/Activities - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Advisory - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "G",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "H",
-        "times": "01:50-03:00"
-      }
-    ],
-    "E-H_Tue": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "E",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "F",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Advisory - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Class Meeting / Assembly - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "G",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "H",
-        "times": "01:50-03:00"
-      }
-    ],
-    "E-H_Wed": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "E",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "F",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Seminars / Office Hours",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Clubs/Activities - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "G",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "H",
-        "times": "01:50-03:00"
-      }
-    ],
-    "EBC": [
-      {
-        "period": "EBC",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Fall Break": [
-      {
-        "period": "Fall Break",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Fall Finals / End of Fall Term": [
-      {
-        "period": "Fall Finals / End of Fall Term",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Fall Finals_Mid": [
-      {
-        "period": "Fall Finals",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Finals / End Winter Term": [
-      {
-        "period": "G",
-        "times": "08:30-10:10"
-      },
-      {
-        "period": "H",
-        "times": "10:15-11:45"
-      }
-    ],
-    "Finals_MidABC": [
-      {
-        "period": "A",
-        "times": "08:30-10:00"
-      },
-      {
-        "period": "B",
-        "times": "10:45-12:15"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "12:15-1:00"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "12:15-1:00"
-      },
-      {
-        "period": "C",
-        "times": "1:00-2:30"
-      }
-    ],
-    "Finals_MidDEF": [
-      {
-        "period": "D",
-        "times": "08:30-10:00"
-      },
-      {
-        "period": "E",
-        "times": "10:45-12:15"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "12:15-1:00"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "12:15-1:00"
-      },
-      {
-        "period": "F",
-        "times": "1:00-2:30"
-      }
-    ],
-    "Finals_MidGH": [
-      {
-        "period": "G",
-        "times": "08:30-10:00"
-      },
-      {
-        "period": "H",
-        "times": "10:45-12:15"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "12:15-1:00"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "12:15-1:00"
-      }
-    ],
-    "Grade Level Orientations": [
-      {
-        "period": "Grade Level Orientations",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Graduation": [
-      {
-        "period": "Graduation",
-        "times": "08:00-03:15"
-      }
-    ],
-    "H-E_Fri": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "H",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "G",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "US Flex",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Clubs/Activities - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "F",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "E",
-        "times": "01:50-03:00"
-      }
-    ],
-    "H-E_Mon": [
-      {
-        "period": "H",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "G",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Class Meeting / Assembly - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Advisory - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "F",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "E",
-        "times": "01:50-03:00"
-      }
-    ],
-    "H-E_Thu": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "H",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "G",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Clubs/Activities - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Advisory - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "F",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "E",
-        "times": "01:50-03:00"
-      }
-    ],
-    "H-E_Tue": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "H",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "G",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Advisory - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Class Meeting / Assembly - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "F",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "E",
-        "times": "01:50-03:00"
-      }
-    ],
-    "H-E_Wed": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "H",
-        "times": "08:30-09:40"
-      },
-      {
-        "period": "G",
-        "times": "09:55-11:05"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Seminars / Office Hours",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Clubs/Activities - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      },
-      {
-        "period": "F",
-        "times": "12:25-01:35"
-      },
-      {
-        "period": "E",
-        "times": "01:50-03:00"
-      }
-    ],
-    "Labor Day": [
-      {
-        "period": "Labor Day",
-        "times": "08:00-03:15"
-      }
-    ],
-    "MLK Jr. Day": [
-      {
-        "period": "MLK Jr. Day",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Memorial Day": [
-      {
-        "period": "Memorial Day",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Mid-Winter Break": [
-      {
-        "period": "Mid-Winter Break",
-        "times": "08:00-03:15"
-      }
-    ],
-    "O, A-H_Tue": [
-      {
-        "period": "O",
-        "times": "07:30-08:15"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "Advisory - US",
-        "times": "11:10-11:45"
-      },
-      {
-        "period": "Class Meeting / Assembly - MS",
-        "times": "11:45-12:20"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "11:50-12:20"
-      }
-    ],
-    "A-H_Tue": [
-      {
-        "period": "A",
-        "times": "08:30-09:05"
-      },
-      {
-        "period": "B",
-        "times": "09:15-9:50"
-      },
-      {
-        "period": "C",
-        "times": "10:00-10:35"
-      },
-      {
-        "period": "D",
-        "times": "10:45-11:20"
-      },
-      {
-        "period": "Lunch (MS)",
-        "times": "11:10-11:40"
-      },
-      {
-        "period": "E - US",
-        "times": "11:30-12:05"
-      },
-      {
-        "period": "E - MS",
-        "times": "12:05-12:55"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "12:05-12:55"
-      },
-      {
-        "period": "F",
-        "times": "01:00-01:35"
-      },
-      {
-        "period": "G",
-        "times": "01:45-02:20"
-      },
-      {
-        "period": "H",
-        "times": "02:30-3:05"
-      }
-    ],
-    "PDD": [
-      {
-        "period": "PDD",
-        "times": "08:00-03:15"
-      }
-    ],
-    "PDD_Fri": [
-      {
-        "period": "PDD",
-        "times": "08:00-03:15"
-      }
-    ],
-    "President's Day": [
-      {
-        "period": "President's Day",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Senior Dinner": [
-      {
-        "period": "Senior Dinner|8th grade grades due in four11",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Spring Break": [
-      {
-        "period": "Spring Break",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Student-Led Conferences": [
-      {
-        "period": "Student-Led Conferences",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Student-Teacher Conferences": [
-      {
-        "period": "Student-Teacher Conferences",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Thanksgiving": [
-      {
-        "period": "Thanksgiving",
-        "times": "08:00-03:15"
-      }
-    ],
-    "US Finals": [
-      {
-        "period": "US Finals",
-        "times": "08:00-03:15"
-      }
-    ],
-    "US Finals / MS Field day": [
-      {
-        "period": "US Finals / MS Field day",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Winter Break": [
-      {
-        "period": "Winter Break",
-        "times": "08:00-03:15"
-      }
-    ]
-  }
+    {
+        "2024-08-30": "Advisor Conferences",
+        "2024-09-02": "Labor Day",
+        "2024-09-03": "PDD",
+        "2024-09-04": "Convocation, A-H",
+        "2024-09-05": "Grade Level Orientations",
+        "2024-09-06": "Grade Level Orientations",
+        "2024-09-09": "A-D_Mon",
+        "2024-09-10": "E-H_Tue",
+        "2024-09-11": "D-A_Wed",
+        "2024-09-12": "H-E_Thu",
+        "2024-09-13": "A-D_Fri",
+        "2024-09-16": "E-H_Mon",
+        "2024-09-17": "D-A_Tue",
+        "2024-09-18": "H-E_Wed",
+        "2024-09-19": "A-D_Thu",
+        "2024-09-20": "E-H_Fri",
+        "2024-09-23": "D-A_Mon",
+        "2024-09-24": "H-E_Tue",
+        "2024-09-25": "A-D_Wed",
+        "2024-09-26": "E-H_Thu",
+        "2024-09-27": "D-A_Fri",
+        "2024-09-30": "H-E_Mon",
+        "2024-10-01": "A-D_Tue",
+        "2024-10-02": "E-H_Wed",
+        "2024-10-03": "Fall Break",
+        "2024-10-04": "Fall Break",
+        "2024-10-07": "D-A_Mon",
+        "2024-10-08": "H-E_Tue",
+        "2024-10-09": "A-D_Wed",
+        "2024-10-10": "E-H_Thu",
+        "2024-10-11": "PDD",
+        "2024-10-14": "D-A_Mon",
+        "2024-10-15": "H-E_Tue",
+        "2024-10-16": "A-D_Wed",
+        "2024-10-17": "E-H_Thu",
+        "2024-10-18": "D-A_Fri",
+        "2024-10-21": "H-E_Mon",
+        "2024-10-22": "A-D_Tue",
+        "2024-10-23": "E-H_Wed",
+        "2024-10-24": "Student-Teacher Conferences",
+        "2024-10-25": "Student-Teacher Conferences",
+        "2024-10-28": "D-A_Mon",
+        "2024-10-29": "H-E_Tue",
+        "2024-10-30": "A-D_Wed",
+        "2024-10-31": "E-H_Thu",
+        "2024-11-01": "D-A_Fri",
+        "2024-11-04": "H-E_Mon",
+        "2024-11-05": "A-D_Tue",
+        "2024-11-06": "E-H_Wed",
+        "2024-11-07": "D-A_Thu",
+        "2024-11-08": "H-E_Fri",
+        "2024-11-11": "Veterans Day",
+        "2024-11-12": "A-D_Tue",
+        "2024-11-13": "E-H_Wed",
+        "2024-11-14": "D-A_Thu",
+        "2024-11-15": "H-E_Fri",
+        "2024-11-18": "A-D_Mon",
+        "2024-11-19": "E-H_Mid",
+        "2024-11-20": "Finals A,B,C",
+        "2024-11-21": "Finals D,E,F",
+        "2024-11-22": "Finals G,H",
+        "2024-11-25": "Thanksgiving",
+        "2024-11-26": null,
+        "2024-11-27": null,
+        "2024-11-28": null,
+        "2024-11-29": null,
+        "2024-12-02": "PDD",
+        "2024-12-03": "O, A-H_Tue",
+        "2024-12-04": "A-D_Wed",
+        "2024-12-05": "E-H_Thu",
+        "2024-12-06": "D-A_Fri",
+        "2024-12-09": "H-E_Mon",
+        "2024-12-10": "A-D_Tue",
+        "2024-12-11": "E-H_Wed",
+        "2024-12-12": "D-A_Thu",
+        "2024-12-13": "H-E_Fri",
+        "2024-12-16": "A-D_Mon",
+        "2024-12-17": "E-H_Tue",
+        "2024-12-18": "D-A_Wed",
+        "2024-12-19": "H-E_Thu",
+        "2024-12-20": "PDD",
+        "2024-12-23": "Winter Break",
+        "2024-12-24": null,
+        "2024-12-25": null,
+        "2024-12-26": null,
+        "2024-12-27": null,
+        "2024-12-30": null,
+        "2024-12-31": null,
+        "2025-01-01": null,
+        "2025-01-02": null,
+        "2025-01-03": "Winter Break",
+        "2025-01-06": "A-D_Mon",
+        "2025-01-07": "E-H_Tue",
+        "2025-01-08": "D-A_Wed",
+        "2025-01-09": "H-E_Thu",
+        "2025-01-10": "A-D_Fri",
+        "2025-01-13": "E-H_Mon",
+        "2025-01-14": "D-A_Tue",
+        "2025-01-15": "H-E_Wed",
+        "2025-01-16": "A-D_Thu",
+        "2025-01-17": "PDD",
+        "2025-01-20": "MLK Jr. Day",
+        "2025-01-21": "E-H_Tue",
+        "2025-01-22": "D-A_Wed",
+        "2025-01-23": "H-E_Thu",
+        "2025-01-24": "A-D_Fri",
+        "2025-01-27": "Special Event Day",
+        "2025-01-28": "E-H_Tue",
+        "2025-01-29": "D-A_Wed",
+        "2025-01-30": "H-E_Thu",
+        "2025-01-31": "A-D_Fri",
+        "2025-02-03": "E-H_Mon",
+        "2025-02-04": "D-A_Tue",
+        "2025-02-05": "H-E_Wed",
+        "2025-02-06": "A-D_Thu",
+        "2025-02-07": "E-H_Fri",
+        "2025-02-10": "D-A_Mon",
+        "2025-02-11": "H-E_Tue",
+        "2025-02-12": "A-D_Wed",
+        "2025-02-13": "E-H_Thu",
+        "2025-02-14": "PDD",
+        "2025-02-17": "President's Day",
+        "2025-02-18": null,
+        "2025-02-19": null,
+        "2025-02-20": null,
+        "2025-02-21": null,
+        "2025-02-24": "D-A_Mon",
+        "2025-02-25": "H-E_Tue",
+        "2025-02-26": "A-D_Wed",
+        "2025-02-27": "E-H_Thu",
+        "2025-02-28": "D-A_Fri",
+        "2025-03-03": "H-E_Mon",
+        "2025-03-04": "O, A-H",
+        "2025-03-05": "Finals A,B,C_Wed",
+        "2025-03-06": "Finals D,E,F_Thu",
+        "2025-03-07": "Finals G,H_Fri",
+        "2025-03-10": "PDD",
+        "2025-03-11": "O, A-H",
+        "2025-03-12": "A-D_Wed",
+        "2025-03-13": "E-H_Thu",
+        "2025-03-14": "D-A_Fri",
+        "2025-03-17": "H-E_Mon",
+        "2025-03-18": "A-D_Tue",
+        "2025-03-19": "E-H_Wed",
+        "2025-03-20": "D-A_Thu",
+        "2025-03-21": "H-E_Fri",
+        "2025-03-24": "A-D_Mon",
+        "2025-03-25": "E-H_Tue",
+        "2025-03-26": "D-A_Wed",
+        "2025-03-27": "H-E_Thu",
+        "2025-03-28": "A-D_Fri",
+        "2025-03-31": "E-H_Mon",
+        "2025-04-01": "D-A_Tue",
+        "2025-04-02": "H-E_Wed",
+        "2025-04-03": "A-D_Thu",
+        "2025-04-04": "E-H_Fri",
+        "2025-04-07": "EBC",
+        "2025-04-08": null,
+        "2025-04-09": null,
+        "2025-04-10": null,
+        "2025-04-11": "EBC",
+        "2025-04-14": "Spring Break",
+        "2025-04-15": null,
+        "2025-04-16": null,
+        "2025-04-17": null,
+        "2025-04-18": "Spring Break",
+        "2025-04-21": "PDD",
+        "2025-04-22": "D-A_Tue",
+        "2025-04-23": "H-E_Wed",
+        "2025-04-24": "A-D_Thu",
+        "2025-04-25": "E-H_Fri",
+        "2025-04-28": "D-A_Mon",
+        "2025-04-29": "H-E_Tue",
+        "2025-04-30": "A-D_Wed",
+        "2025-05-01": "E-H_Thu",
+        "2025-05-02": "Student Led Conferences",
+        "2025-05-05": "D-A_Mon",
+        "2025-05-06": "H-E_Tue",
+        "2025-05-07": "A-D_Wed",
+        "2025-05-08": "E-H_Thu",
+        "2025-05-09": "D-A_Fri",
+        "2025-05-12": "H-E_Mon",
+        "2025-05-13": "A-D_Tue",
+        "2025-05-14": "E-H_Wed",
+        "2025-05-15": "D-A_Thu",
+        "2025-05-16": "H-E_Fri",
+        "2025-05-19": "A-D_Mon",
+        "2025-05-20": "E-H_Tue",
+        "2025-05-21": "D-A_Wed",
+        "2025-05-22": "H-E_Thu",
+        "2025-05-23": "PDD",
+        "2025-05-26": "Memorial Day",
+        "2025-05-27": "A-D_Tue",
+        "2025-05-28": "E-H_Wed",
+        "2025-05-29": "D-A_Thu",
+        "2025-05-30": "H-E_Fri",
+        "2025-06-02": "A-D_Mon",
+        "2025-06-03": "E-H_Tue",
+        "2025-06-04": "D-A_Wed",
+        "2025-06-05": "H-E_Thu"
+    },
+    {
+        "A-D_Fri": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "A",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "B",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "US Flex",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Clubs/Activites - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "C",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "D",
+                "times": "01:50-03:00"
+            }
+        ],
+        "A-D_Mon": [
+            {
+                "period": "A",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "B",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Class Meeting / Assembly - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "C",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "D",
+                "times": "01:50-03:00"
+            }
+        ],
+        "A-D_Thu": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "A",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "B",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Clubs/Activites - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "C",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "D",
+                "times": "01:50-03:00"
+            }
+        ],
+        "A-D_Tue": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "A",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "B",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Advisory - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Class Meeting / Assembly - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "C",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "D",
+                "times": "01:50-03:00"
+            }
+        ],
+        "A-D_Wed": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "A",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "B",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Seminars / Office Hours",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Clubs/Activites - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "C",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "D",
+                "times": "01:50-03:00"
+            }
+        ],
+        "Advisor Conferences": [
+            {
+                "period": "Advisor Conferences",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Convocation, A-H": [
+            {
+                "period": "A",
+                "times": "09:10-09:40"
+            },
+            {
+                "period": "B",
+                "times": "09:50-10:20"
+            },
+            {
+                "period": "C",
+                "times": "10:30-11:00"
+            },
+            {
+                "period": "D",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:45-12:15"
+            },
+            {
+                "period": "E",
+                "times": "11:45-12:55"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "12:25-12:55"
+            },
+            {
+                "period": "F",
+                "times": "01:05-01:35"
+            },
+            {
+                "period": "G",
+                "times": "01:45-02:15"
+            },
+            {
+                "period": "H",
+                "times": "02:25-02:55"
+            }
+        ],
+        "D-A_Fri": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "D",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "C",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "US Flex",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Clubs/Activites - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "B",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "A",
+                "times": "01:50-03:00"
+            }
+        ],
+        "D-A_Mon": [
+            {
+                "period": "D",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "C",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Class Meeting / Assembly - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "B",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "A",
+                "times": "01:50-03:00"
+            }
+        ],
+        "D-A_Thu": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "D",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "C",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Clubs/Activites - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "B",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "A",
+                "times": "01:50-03:00"
+            }
+        ],
+        "D-A_Tue": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "D",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "C",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Advisory - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Class Meeting / Assembly - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "B",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "A",
+                "times": "01:50-03:00"
+            }
+        ],
+        "D-A_Wed": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "D",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "C",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Seminars / Office Hours",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Clubs/Activites - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "B",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "A",
+                "times": "01:50-03:00"
+            }
+        ],
+        "E-H_Fri": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "E",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "F",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "US Flex",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Clubs/Activites - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "G",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "H",
+                "times": "01:50-03:00"
+            }
+        ],
+        "E-H_Mid": [
+            {
+                "period": "E",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "F",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "G",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "H",
+                "times": "01:50-03:00"
+            }
+        ],
+        "E-H_Mon": [
+            {
+                "period": "E",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "F",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Class Meeting / Assembly - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "G",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "H",
+                "times": "01:50-03:00"
+            }
+        ],
+        "E-H_Thu": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "E",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "F",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Clubs/Activites - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "G",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "H",
+                "times": "01:50-03:00"
+            }
+        ],
+        "E-H_Tue": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "E",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "F",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Advisory - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Class Meeting / Assembly - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "G",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "H",
+                "times": "01:50-03:00"
+            }
+        ],
+        "E-H_Wed": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "E",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "F",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Seminars / Office Hours",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Clubs/Activites - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "G",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "H",
+                "times": "01:50-03:00"
+            }
+        ],
+        "EBC": [
+            {
+                "period": "EBC",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Fall Break": [
+            {
+                "period": "Fall Break",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Finals A,B,C": [
+            {
+                "period": "A",
+                "times": "08:30-10:00"
+            },
+            {
+                "period": "B",
+                "times": "10:15-11:45"
+            },
+            {
+                "period": "C",
+                "times": "01:30-03:00"
+            }
+        ],
+        "Finals A,B,C_Wed": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "A",
+                "times": "08:30-10:00"
+            },
+            {
+                "period": "B",
+                "times": "10:15-11:45"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Seminars / Office Hours",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Clubs/Activites - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "C",
+                "times": "01:30-03:00"
+            }
+        ],
+        "Finals D,E,F": [
+            {
+                "period": "D",
+                "times": "08:30-10:00"
+            },
+            {
+                "period": "E",
+                "times": "10:15-11:45"
+            },
+            {
+                "period": "F",
+                "times": "01:30-03:00"
+            }
+        ],
+        "Finals D,E,F_Thu": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "D",
+                "times": "08:30-10:00"
+            },
+            {
+                "period": "E",
+                "times": "10:15-11:45"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Clubs/Activites - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "F",
+                "times": "01:30-03:00"
+            }
+        ],
+        "Finals G,H": [
+            {
+                "period": "G",
+                "times": "08:30-10:00"
+            },
+            {
+                "period": "H",
+                "times": "10:15-11:45"
+            }
+        ],
+        "Finals G,H_Fri": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "G",
+                "times": "08:30-10:00"
+            },
+            {
+                "period": "H",
+                "times": "10:15-11:45"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "US Flex",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Clubs/Activites - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            }
+        ],
+        "Grade Level Orientations": [
+            {
+                "period": "Grade Level Orientations",
+                "times": "08:00-03:15"
+            }
+        ],
+        "H-E_Fri": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "H",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "G",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "US Flex",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Clubs/Activites - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "F",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "E",
+                "times": "01:50-03:00"
+            }
+        ],
+        "H-E_Mon": [
+            {
+                "period": "H",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "G",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Class Meeting / Assembly - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "F",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "E",
+                "times": "01:50-03:00"
+            }
+        ],
+        "H-E_Thu": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "H",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "G",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Clubs/Activites - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Advisory - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "F",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "E",
+                "times": "01:50-03:00"
+            }
+        ],
+        "H-E_Tue": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "H",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "G",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Advisory - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Class Meeting / Assembly - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "F",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "E",
+                "times": "01:50-03:00"
+            }
+        ],
+        "H-E_Wed": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "H",
+                "times": "08:30-09:40"
+            },
+            {
+                "period": "G",
+                "times": "09:55-11:05"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Seminars / Office Hours",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "Clubs/Activites - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "F",
+                "times": "12:25-01:35"
+            },
+            {
+                "period": "E",
+                "times": "01:50-03:00"
+            }
+        ],
+        "Labor Day": [
+            {
+                "period": "Labor Day",
+                "times": "08:00-03:15"
+            }
+        ],
+        "MLK Jr. Day": [
+            {
+                "period": "MLK Jr. Day",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Memorial Day": [
+            {
+                "period": "Memorial Day",
+                "times": "08:00-03:15"
+            }
+        ],
+        "O, A-H": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "A",
+                "times": "08:30-09:05"
+            },
+            {
+                "period": "B",
+                "times": "09:15-09:50"
+            },
+            {
+                "period": "C",
+                "times": "10:00-10:35"
+            },
+            {
+                "period": "D",
+                "times": "10:45-11:20"
+            },
+            {
+                "period": "E",
+                "times": "11:30-12:50"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:30-12:05"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "12:15-12:50"
+            },
+            {
+                "period": "F",
+                "times": "01:00-01:35"
+            },
+            {
+                "period": "G",
+                "times": "01:45-02:20"
+            },
+            {
+                "period": "H",
+                "times": "02:30-03:05"
+            }
+        ],
+        "O, A-H_Tue": [
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "O",
+                "times": "07:30-08:15"
+            },
+            {
+                "period": "A",
+                "times": "08:30-09:05"
+            },
+            {
+                "period": "B",
+                "times": "09:15-09:50"
+            },
+            {
+                "period": "C",
+                "times": "10:00-10:35"
+            },
+            {
+                "period": "D",
+                "times": "10:45-11:20"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:10-11:40"
+            },
+            {
+                "period": "Advisory - US",
+                "times": "11:10-11:45"
+            },
+            {
+                "period": "E",
+                "times": "11:30-12:50"
+            },
+            {
+                "period": "Lunch (MS)",
+                "times": "11:30-12:05"
+            },
+            {
+                "period": "Class Meeting / Assembly - MS",
+                "times": "11:45-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "11:50-12:20"
+            },
+            {
+                "period": "Lunch (US)",
+                "times": "12:15-12:50"
+            },
+            {
+                "period": "F",
+                "times": "01:00-01:35"
+            },
+            {
+                "period": "G",
+                "times": "01:45-02:20"
+            },
+            {
+                "period": "H",
+                "times": "02:30-03:05"
+            }
+        ],
+        "PDD": [
+            {
+                "period": "PDD",
+                "times": "08:00-03:15"
+            }
+        ],
+        "President's Day": [
+            {
+                "period": "President's Day",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Special Event Day": [
+            {
+                "period": "Special Event Day",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Spring Break": [
+            {
+                "period": "Spring Break",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Student Led Conferences": [
+            {
+                "period": "Student Led Conferences",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Student-Teacher Conferences": [
+            {
+                "period": "Student-Teacher Conferences",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Thanksgiving": [
+            {
+                "period": "Thanksgiving",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Veterans Day": [
+            {
+                "period": "Veterans Day",
+                "times": "08:00-03:15"
+            }
+        ],
+        "Winter Break": [
+            {
+                "period": "Winter Break",
+                "times": "08:00-03:15"
+            }
+        ]
+    }
 ]
