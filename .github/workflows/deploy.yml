@@ -15,7 +15,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.11
-
       # Setup and configure gcloud CLI
       - uses: google-github-actions/setup-gcloud@v2
         with:
