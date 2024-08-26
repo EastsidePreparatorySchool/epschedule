@@ -11,20 +11,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
-          python-version: 3.11
-      
-      - name: Export gcloud related env variable
-        run: export CLOUDSDK_PYTHON="/usr/bin/python3"
+          python-version: 3.8
       
       # Setup and configure gcloud CLI
       - uses: google-github-actions/setup-gcloud@v2
         with:
-          version: '318.0.0'
+          version: '290.0.1'
           project_id: epschedule-v2
           service_account_key: ${{ secrets.GCP_SA_KEY}}
           export_default_credentials: true 
