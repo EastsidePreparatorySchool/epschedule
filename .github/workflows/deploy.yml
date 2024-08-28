@@ -18,6 +18,10 @@ jobs:
         with:
           python-version: 3.8
       
+      - uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{secrets.GCP_SERVICE_ACCOUNT}}
+      
       # Setup and configure gcloud CLI
       - uses: google-github-actions/setup-gcloud@v2
         with:
@@ -33,9 +37,6 @@ jobs:
           echo '${{secrets.GCP_SERVICE_ACCOUNT}}' > service_account.json
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Authenticate Google Cloud Service Account
-        run: gcloud auth activate-service-account ${{secrets.GCP_SERVICE_ACCOUNT}} --key-file=service_account.json
       
       - name: Verify tests pass
         run: python main_test.py
