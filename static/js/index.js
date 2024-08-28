@@ -65,11 +65,6 @@ function reportBugOld() {
   window.open("https://github.com/EastsidePreparatorySchool/epschedule/issues");
 }
 
-function openUp(){
-  var up = document.getElementById("up");
-  up.open();
-}
-
 function about() {
   var about = document.getElementById("about");
   about.open();
@@ -252,7 +247,6 @@ function updateMainSchedule() {
   renderSchedule(globalDate, userSchedule, "full", scheduleElement, lunches);
   // also update github info
   renderGitHubCommits();
-  openUp();
 }
 function renderToast(text) {
   toast = document.getElementById("toast");
