@@ -34,6 +34,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Authenticate Google Cloud Service Account
+        run: gcloud auth activate-service-account ${{secrets.GCP_SERVICE_ACCOUNT}} --key-file=service_account.json
+      
       - name: Verify tests pass
         run: python main_test.py
 
