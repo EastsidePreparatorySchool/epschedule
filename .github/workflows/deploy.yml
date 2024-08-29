@@ -19,12 +19,8 @@ jobs:
       - uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: ${{secrets.GCP_SERVICE_ACCOUNT}}
-
       - name: Set up dependencies
-        env:
-          SERVICE_ACCOUNT: ${{secrets.GCP_SERVICE_ACCOUNT}}
         run: |
-          echo '${{secrets.GCP_SERVICE_ACCOUNT}}' > service_account.json
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
