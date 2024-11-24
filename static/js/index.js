@@ -66,21 +66,26 @@ function reportBugOld() {
 }
 
 function about() {
+  //Opens about panel
   var about = document.getElementById("about");
   about.open();
 }
 
 function githubDisplay() {
+  //opens github
   var gh = document.getElementById("Github");
   gh.open();
 }
 
 function openSettings() {
+  //update settings
   var dialog = document.getElementById("dialog");
+  //opens modal
   dialog.open();
-
+  //create get request to server for data
   xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function () {
+    //if http response is all clear
     if (xhr.readyState == 4 && xhr.status == 200) {
       result = JSON.parse(xhr.responseText);
       if (result.error) {
@@ -89,6 +94,7 @@ function openSettings() {
     }
   };
   xhr.onload = function () {
+    //Loads privacy data
     const privacyDataOutput = JSON.parse(xhr.response);
 
     var sharePhoto = document.getElementById("sharephototoggle");
@@ -103,6 +109,7 @@ function openSettings() {
 }
 
 function submitUpdatePrivacy() {
+  //does as the name suggests, it submits the update privacy data
   var share_photo = document.getElementById("sharephototoggle");
   var share_schedule = document.getElementById("sharescheduletoggle");
   sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
@@ -111,11 +118,13 @@ function submitUpdatePrivacy() {
 
 function sendUpdatePrivacyRequest(share_photo, share_schedule) {
   var data = new FormData();
+  //Appends to db
   data.append("share_photo", share_photo);
   data.append("share_schedule", share_schedule);
-
+  //New req
   xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function () {
+    //its a reverse try catch
     if (xhr.readyState == 4 && xhr.status == 200) {
       result = JSON.parse(xhr.responseText);
       if (!result.error) {
@@ -143,20 +152,17 @@ var globalDate = getInitialDate();
 function getInitialDate() {
   date = new Date();
   switch (
-    date.getDay() // Falling through is intentional here
+  date.getDay() // Falling through is intentional here
   ) {
     case 6: // If Saturday, move the date forward twice
       date.setDate(date.getDate() + 2);
       break;
     case 0: // If Sunday, move the date forward once
       date.setDate(date.getDate() + 1);
+    default: // Else nothing
+      date = date;
   }
 
-  FIRST_DAY = new Date(2019, 8, 4);
-
-  if (date < FIRST_DAY) {
-    date = FIRST_DAY;
-  }
   return date;
 }
 function dateToNextTri() {
@@ -256,6 +262,7 @@ function renderToast(text) {
   toast.show();
 }
 // Wait why are we doing this
+//IDK man
 function getGpsSuccess(position, roomObj) {
   var radius = 6371000; // Radius of the earth
   var phi1 = position.coords.latitude * (Math.PI / 180);
@@ -267,9 +274,9 @@ function getGpsSuccess(position, roomObj) {
   var a =
     Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
     Math.cos(phi1) *
-      Math.cos(phi2) *
-      Math.sin(deltaLambda / 2) *
-      Math.sin(deltaLambda / 2);
+    Math.cos(phi2) *
+    Math.sin(deltaLambda / 2) *
+    Math.sin(deltaLambda / 2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   var d = radius * c;
   if (d > 200) {
@@ -400,16 +407,16 @@ function renderTeacher(teacherObj) {
   }, 0);
 }
 function stringifyRooms(arr) {
-  s = "";
+  tempString = "";
   for (var i = 0; i < arr.length; i++) {
-    s += arr[i];
+    tempString += arr[i];
 
     // Don't put a comma after the last item
     if (i != arr.length - 1) {
-      s += ", ";
+      tempString += ", ";
     }
   }
-  return s;
+  return tempString;
 }
 function renderPeriod(periodObj) {
   var popupContainer = document.getElementById("popupContainer");
@@ -639,10 +646,10 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo) {
       if (clazz["period"] == period) {
         if (clazz["teacher_username"]) {
           // TODO remove garbage hack
-          // we cant curse smh
+          // And the wait continues...
           var tu = clazz["teacher_username"];
           var teacher = tu.charAt(1).toUpperCase() + tu.slice(2);
-
+          //makes the block varaible
           scheduleObj = {
             name: clazz["name"],
             teacher: teacher,
