@@ -75,7 +75,9 @@ def get_term_starts(days):
     """Return a list of datetime objects for the start of each trimester."""
     return [
         find_day(days, ".*"),
-        find_day(days, ".*End.*Fall Term") + datetime.timedelta(days=1),
+        find_day(days, ".*End.*Fall Term")
+        + datetime.timedelta(days=1)
+        + datetime.timedelta(days=9),
         find_day(days, ".*End.*Winter Term") + datetime.timedelta(days=1),
     ]
 
