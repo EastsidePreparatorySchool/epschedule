@@ -23,6 +23,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Debug GOOGLE_APPLICATION_CREDENTIALS
+        run: |
+          echo "GOOGLE_APPLICATION_CREDENTIALS points to: $GOOGLE_APPLICATION_CREDENTIALS"
+          ls -l $GOOGLE_APPLICATION_CREDENTIALS
       
       - name: Verify tests pass
         run: python main_test.py
