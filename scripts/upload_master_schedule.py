@@ -30,5 +30,6 @@ def upload_master_schedule():
 
 
 if __name__ == "__main__":
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = CREDS_PATH
+    if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = CREDS_PATH
     upload_master_schedule()
