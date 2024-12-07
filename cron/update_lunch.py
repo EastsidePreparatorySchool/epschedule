@@ -142,7 +142,9 @@ def get_lunches_since_date(date):
         earliest_lunch = date
         lunch_objs = []
         for lunch_obj in Lunch.query_with_time_constraint(earliest_lunch):
-            cleaned_description = []  # the desc after it is cleaned of escape characters and new lines
+            cleaned_description = (
+                []
+            )  # the desc after it is cleaned of escape characters and new lines
             for description_section in lunch_obj.description:
                 if not (
                     description_section == ""
