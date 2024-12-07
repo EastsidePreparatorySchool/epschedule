@@ -6,7 +6,8 @@ import requests
 from google.cloud import ndb
 
 # TODO(juberti): Fully mock out NDB so we don't need to talk to GCP when running tests.
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+if not "GOOGLE_APPLICATION_CREDENTIALS" in os.environ:
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
 
 # Globals
 TIME_FORMAT = "%Y%m%dT%H%M%S"
