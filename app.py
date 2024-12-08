@@ -36,7 +36,8 @@ def init_app(test_config=None):
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+        if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
 
         # Get application secret key
         secret_client = secretmanager.SecretManagerServiceClient()
