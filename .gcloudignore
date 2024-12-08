@@ -1,4 +1,4 @@
-# This file specifies files that are *not* uploaded to Google Cloud
+# This file specifies files that are *not* uploaded to Google Cloud Platform
 # using gcloud. It follows the same syntax as .gitignore, with the addition of
 # "#!include" directives (which insert the entries of the given .gitignore-style
 # file at that point).
@@ -19,4 +19,4 @@ __pycache__/
 /setup.cfg
 
 # This should be ignored since it's in .gitignore, but it's not
-venv/
+venv
