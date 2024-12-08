@@ -25,7 +25,10 @@ jobs:
         with:
           credentials_json: ${{secrets.GCP_SERVICE_ACCOUNT}}
 
-      - name: Verify tests pass
+      - name: Export key
+        run: echo '${{secrets.GCP_SERVICE_ACCOUNT}}' > service_account.json
+
+      - name: Verify tests still pass
         run: python main_test.py
 
       - name: Upload master_schedule.json
