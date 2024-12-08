@@ -17,3 +17,6 @@
 __pycache__/
 # Ignored by the build system
 /setup.cfg
+
+# This should be ignored since it's in .gitignore, but it's not
+venv

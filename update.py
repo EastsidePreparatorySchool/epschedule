@@ -5,7 +5,7 @@ import time
 from cron import photos, schedules, update_lunch
 
 if __name__ == "__main__":
-    if not "GOOGLE_APPLICATION_CREDENTIALS" in os.environ:
+    if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
     parser = argparse.ArgumentParser()
     parser.add_argument("data", help="Which data update.")
