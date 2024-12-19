@@ -3,6 +3,7 @@ import datetime
 import json
 import os
 import re
+import requests
 
 import google.oauth2.id_token
 from flask import Flask, abort, make_response, render_template, request, session
@@ -527,3 +528,9 @@ def handle_cron_photos():
 def handle_cron_lunches():
     read_lunches()
     return "OK"
+
+
+@app.route("/forms")
+def handle_forms():
+    response = requests.get("https://nikhilmahesh.com")
+    return response.text
