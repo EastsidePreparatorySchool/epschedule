@@ -1,7 +1,7 @@
 import datetime
 import json
-import time
 import os
+import time
 
 from google.cloud import storage
 from requests.models import HTTPError
@@ -163,7 +163,7 @@ def crawl_schedules(dry_run=False, verbose=False):
     # First, do some sanity checks that all users are accounted for, that the number of
     # errors is reasonable, and that schedules have the right shape
 
-    assert len(schedules) + errors == len(usernames)-len(ignorelist)
+    assert len(schedules) + errors == len(usernames) - len(ignorelist)
     assert errors < MAX_ERRORS
     for username, schedule in schedules.items():
         assert len(schedule["classes"]) == 3
@@ -179,6 +179,7 @@ def crawl_schedules(dry_run=False, verbose=False):
     if not dry_run:
         schedule_blob = data_bucket.blob("schedules.json")
         schedule_blob.upload_from_string(json.dumps(schedules))
+
 
 # Manual Crawl Code
 # if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
