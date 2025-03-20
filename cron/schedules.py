@@ -134,7 +134,7 @@ def download_schedule_with_retry(client, username, year):
 def crawl_schedules(dry_run=False, verbose=False):
     school_year = get_current_school_year()
 
-    ignorelist = ["icorey-boulet", "aduffy", "who", "esieg"]
+    ignorelist = ["aduffy", "who", "esieg"]
 
     # Open the bucket
     storage_client = storage.Client()
