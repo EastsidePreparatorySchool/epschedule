@@ -824,7 +824,7 @@ function renderSchedule(
   termId = getTermId(dateObj);
 
   // Either MS or US
-  if (type == "full" || type == "lite") {
+  if ((type == "full" || type == "lite") && schedule.grade !== null) {
     var school = getSchool(schedule.grade);
   }
 

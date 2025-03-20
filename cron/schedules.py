@@ -1,5 +1,7 @@
 import datetime
 import json
+
+# import os
 import time
 
 from google.cloud import storage
@@ -132,6 +134,8 @@ def download_schedule_with_retry(client, username, year):
 def crawl_schedules(dry_run=False, verbose=False):
     school_year = get_current_school_year()
 
+    ignorelist = ["icorey-boulet", "aduffy", "who", "esieg"]
+
     # Open the bucket
     storage_client = storage.Client()
     data_bucket = storage_client.bucket("epschedule-data")
@@ -143,7 +147,7 @@ def crawl_schedules(dry_run=False, verbose=False):
 
     for username in usernames:
         try:
-            if username != "icourey-boulet":
+            if username not in ignorelist:
                 schedules[username] = download_schedule_with_retry(
                     four11_client, username, school_year
                 )
@@ -160,11 +164,13 @@ def crawl_schedules(dry_run=False, verbose=False):
     # First, do some sanity checks that all users are accounted for, that the number of
     # errors is reasonable, and that schedules have the right shape
 
-    assert len(schedules) + errors == len(usernames)
+    assert len(schedules) + errors == len(usernames) - len(ignorelist)
     assert errors < MAX_ERRORS
     for username, schedule in schedules.items():
         assert len(schedule["classes"]) == 3
         for trimester in schedule["classes"]:
+            if verbose:
+                print("checking " + username)
             assert len(trimester) == 9 or len(trimester) == 10
         assert bool(schedule["gradyear"]) == bool(schedule["grade"])
 
@@ -174,3 +180,10 @@ def crawl_schedules(dry_run=False, verbose=False):
     if not dry_run:
         schedule_blob = data_bucket.blob("schedules.json")
         schedule_blob.upload_from_string(json.dumps(schedules))
+
+
+# Manual Crawl Code
+# if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
+#     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
+#
+# crawl_schedules(verbose=True)
