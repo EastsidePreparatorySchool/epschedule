@@ -11,7 +11,7 @@ A schedule app for Eastside Preparatory School, built with [Google App Engine](h
 
 ## Running EPSchedule locally
 
-EPSchedule is designed to be *extremely* easy to get running locally - all you need are `git`, Python 3.7+, and `pip`. To set it up, just run:
+EPSchedule is designed to be *extremely* easy to get running locally - all you need are `git`, Python 3.7+, and `pip`. Requirements.txt is out of date - please email ajosan25@eastsideprep.org if you need this file. To set it up, just run:
 
 ```
 git clone https://github.com/guberti/epschedule.git
