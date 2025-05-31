@@ -134,7 +134,6 @@ def download_schedule_with_retry(client, username, year):
 def crawl_schedules(dry_run=False, verbose=False):
     school_year = get_current_school_year()
 
-
     # Open the bucket
     storage_client = storage.Client()
     data_bucket = storage_client.bucket("epschedule-data")
@@ -151,7 +150,9 @@ def crawl_schedules(dry_run=False, verbose=False):
             )
             for i in range(3):
                 if len(schedules[username]["classes"][i]) > 10:
-                    schedules[username]["classes"][i] = schedules[username]["classes"][i][:10]
+                    schedules[username]["classes"][i] = schedules[username]["classes"][
+                        i
+                    ][:10]
             if verbose:
                 copy = schedules[username].copy()
                 del copy["classes"]  # omitted for brevity
