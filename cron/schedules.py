@@ -134,7 +134,6 @@ def download_schedule_with_retry(client, username, year):
 def crawl_schedules(dry_run=False, verbose=False):
     school_year = get_current_school_year()
 
-    ignorelist = ["aduffy", "who", "esieg"]
 
     # Open the bucket
     storage_client = storage.Client()
@@ -147,14 +146,16 @@ def crawl_schedules(dry_run=False, verbose=False):
 
     for username in usernames:
         try:
-            if username not in ignorelist:
-                schedules[username] = download_schedule_with_retry(
-                    four11_client, username, school_year
-                )
-                if verbose:
-                    copy = schedules[username].copy()
-                    del copy["classes"]  # omitted for brevity
-                    print(f"Crawled user {username}: {copy}")
+            schedules[username] = download_schedule_with_retry(
+                four11_client, username, school_year
+            )
+            for i in range(3):
+                if len(schedules[username]["classes"][i]) > 10:
+                    schedules[username]["classes"][i] = schedules[username]["classes"][i][:10]
+            if verbose:
+                copy = schedules[username].copy()
+                del copy["classes"]  # omitted for brevity
+                print(f"Crawled user {username}: {copy}")
         except NameError:
             errors += 1
             print(f"Could not crawl user {username}")
@@ -164,7 +165,7 @@ def crawl_schedules(dry_run=False, verbose=False):
     # First, do some sanity checks that all users are accounted for, that the number of
     # errors is reasonable, and that schedules have the right shape
 
-    assert len(schedules) + errors == len(usernames) - len(ignorelist)
+    assert len(schedules) + errors == len(usernames)
     assert errors < MAX_ERRORS
     for username, schedule in schedules.items():
         assert len(schedule["classes"]) == 3
