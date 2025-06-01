@@ -149,10 +149,14 @@ def crawl_schedules(dry_run=False, verbose=False):
                 four11_client, username, school_year
             )
             for i in range(3):
-                if len(schedules[username]["classes"][i]) > 10:
-                    schedules[username]["classes"][i] = schedules[username]["classes"][
-                        i
-                    ][:10]
+                classes = schedules[username]["classes"][i]
+                filtered_classes = []
+                for period in PARSEABLE_PERIODS:
+                    for clss in classes:
+                        if clss.get("period") == period:
+                            filtered_classes.append(clss)
+                            break
+                schedules[username]["classes"][i] = filtered_classes
             if verbose:
                 copy = schedules[username].copy()
                 del copy["classes"]  # omitted for brevity
@@ -185,7 +189,7 @@ def crawl_schedules(dry_run=False, verbose=False):
 
 
 # Manual Crawl Code
+# import os
 # if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
-#     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
-#
-# crawl_schedules(verbose=True)
+#    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../service_account.json"
+# crawl_schedules(verbose=True, dry_run=True)
