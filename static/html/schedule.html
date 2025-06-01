@@ -256,14 +256,14 @@
                   </template>
                   <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
                     (<a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>,
-                    <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>,
+                    <a on-tap="roomThunk" item="link" target="_blank" href="{{linkFromRoom(item.room)}}">{{item.room}}</a>,
                     {{item.period}} Period)
                   </template>
                   <template is="dom-if" if="{{isCore()}}">
                     <!--If support for AND is ever added, use AND here instead of two IFS-->
                     <template is="dom-if" if="{{item.teacher}}">
                       <a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>,
-                      <a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>,
+                      <a on-tap="roomThunk" item="link" target="_blank" href="{{linkFromRoom(item.room)}}">{{item.room}}</a>,
                       <a href="#">{{item.studentCount}} students</a>,
                       {{item.period}} Period
                     </template>
@@ -272,7 +272,7 @@
                     (<a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>)
                   </template>
                   <template is="dom-if" if="{{hasRoomOnly(item)}}">
-                    (<a on-tap="roomThunk" item="link" href="#">{{item.room}}</a>)
+                    (<a on-tap="roomThunk" item="link" target="_blank" href="{{linkFromRoom(item.room)}}">{{item.room}}</a>)
                   </template>
                 </p>
                 <h2>{{getName(item.name)}}</h2>
@@ -530,7 +530,16 @@
       },
       removeThunk: function (e) {
         e.stopPropagation();
-      }
+      },
+      linkFromRoom: function (room) {
+        var building = room.substring(0, room.indexOf('-')).toUpperCase();
+        var floor = room.substring(room.indexOf('-') + 1, room.indexOf('-') + 2).toUpperCase();
+        var newRoom = room.substring(room.indexOf('-') + 1).replace(/[^A-Za-z0-9]/g, "");
+        newRoom = building + "_" + floor + "_" + newRoom;
+        var out = `http://epspaces.madeateps.org/?building=${building}&floor=${floor}&room=${newRoom}`;
+        
+        return out;
+      },
     });
   </script>
 </dom-module>
