@@ -6,8 +6,8 @@ from urllib.error import HTTPError
 
 BASE_URL = "https://four11.eastsideprep.org/epsnet/schedule_for_date?date="
 
-START_DATE = date(2022, 8, 30)
-END_DATE = date(2023, 6, 10)
+START_DATE = date(2025, 8, 30)
+END_DATE = date(2026, 6, 10)
 
 delta = END_DATE - START_DATE
 schedules = {}
@@ -69,7 +69,7 @@ def download_exceptions():
 
     exception_table = [days, schedules]
 
-    with open("../data/master_schedule.json", "w") as file:
+    with open("data/master_schedule.json", "w") as file:
         file.write(json.dumps(exception_table, indent=4, sort_keys=True))
 
 
