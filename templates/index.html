@@ -72,11 +72,7 @@
             </iron-icon>
             <span class="side-panel-buttons">Sign out</span>
           </paper-icon-item>
-          <paper-icon-item onclick="openSettings()">
-            <iron-icon class="drawer-icon" icon="settings" item-icon>
-            </iron-icon>
-            <span class="side-panel-buttons">Settings</span>
-          </paper-icon-item>
+          <!-- Settings removed -->
           <paper-icon-item onclick="reportBug()">
             <iron-icon class="drawer-icon" icon="bug-report" item-icon>
             </iron-icon>
@@ -209,21 +205,7 @@
     <div id="settingspanel">
       <h2 class="settingstitle">Settings</h2>
       <div class="settingsdividerline"></div>
-      <h3 class="privacypaneltitle">Privacy</h3>
-      <div class="inlinesettingsswitch">
-        <span class="leftfloat padleft">Show other EPS students my photo</span>
-        <paper-toggle-button class="rightfloat" id="sharephototoggle">
-        </paper-toggle-button>
-      </div>
-      <div class="inlinesettingsswitch">
-        <span class="leftfloat padleft">Show other EPS students my schedule</span>
-        <paper-toggle-button class="rightfloat" id="sharescheduletoggle">
-        </paper-toggle-button>
-      </div>
-      <paper-button onclick="submitUpdatePrivacy()" raised
-       class="settingsbutton" id="updatesettings">
-        OK
-      </paper-button>
+      <!-- Privacy UI removed -->
     </div>
   </paper-dialog>
   <paper-toast id="toast" text="" duration=10000></paper-toast>

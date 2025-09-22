@@ -166,8 +166,7 @@ def main():
                 user.update(
                     {
                         "joined": datetime.datetime.utcnow(),
-                        "share_photo": True,
-                        "share_schedule": True,
+                        # privacy fields removed
                     }
                 )
                 datastore_client.put(user)
@@ -266,15 +265,7 @@ def get_class_schedule(user_class, term_id, censor=True):
         key=lambda s: str(s["grade"]),
     )
 
-    # Censor photos
-    if censor:
-        privacy_settings = get_database_entries(
-            [x["username"] for x in result["students"]]
-        )
-        opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
-        for student in result["students"]:
-            if student["username"] in opted_out:
-                student["photo_url"] = "/static/images/placeholder_small.png"
+    # No privacy: always show real student photos
 
     return result
 
@@ -285,29 +276,23 @@ def handle_user(target_user):
     if "username" not in session:
         abort(403)
 
-    # TODO finish privacy logic
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
 
-    priv_settings = {"share_photo": True, "share_schedule": True}
-    # Teachers don't see and can't set privacy settings
-    if (not is_teacher_schedule(user_schedule)) and (
-        not is_teacher_schedule(target_schedule)
-    ):
-        priv_obj = get_database_entry(target_user)
-        if priv_obj:
-            priv_settings = dict(priv_obj.items())
-
-    if not priv_settings["share_schedule"]:
-        target_schedule = sanitize_schedule(target_schedule, user_schedule)
+    # Remove privacy logic
+    # priv_settings = {"share_photo": True, "share_schedule": True}
+    # if (not is_teacher_schedule(user_schedule)) and (
+    #     not is_teacher_schedule(target_schedule)
+    # ):
+    #     priv_obj = get_database_entry(target_user)
+    #     if priv_obj:
+    #         priv_settings = dict(priv_obj.items())
 
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
 
-    if priv_settings["share_photo"]:
-        target_schedule["photo_url"] = gen_photo_url(target_user, False)
-    else:
-        target_schedule["photo_url"] = "/static/images/placeholder.png"
+    # Always show photo
+    target_schedule["photo_url"] = gen_photo_url(target_user, False)
 
     return json.dumps(target_schedule)
 
@@ -423,30 +408,7 @@ def get_class_by_period(schedule, period):
             return c
 
 
-# Change and view privacy settings
-@app.route("/privacy", methods=["GET", "POST"])
-def handle_settings():
-    if "username" not in session:
-        abort(403)
-    user = get_database_entry(session["username"])
-
-    if request.method == "GET":
-        user_privacy_dict_raw = dict(user.items())
-        user_privacy_dict = {
-            "share_photo": user_privacy_dict_raw["share_photo"],
-            "share_schedule": user_privacy_dict_raw["share_schedule"],
-        }
-        return json.dumps(user_privacy_dict)
-
-    elif request.method == "POST":
-        user.update(
-            {
-                "share_photo": request.form["share_photo"] == "true",
-                "share_schedule": request.form["share_schedule"] == "true",
-            }
-        )
-        datastore_client.put(user)
-        return json.dumps({})
+# Privacy feature removed: no /privacy route
 
 
 @app.route("/search/<keyword>")

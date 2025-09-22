@@ -33,7 +33,8 @@ class FakeEntity:
         return self.key.name != TEST_STUDENT_NO_PIC
 
     def items(self):
-        return {x: self.get(x) for x in ["share_photo", "share_schedule"]}
+        # Privacy fields removed — return minimal user properties used in tests
+        return {}
 
 
 class FakeDatastore:
