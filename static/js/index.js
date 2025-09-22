@@ -78,12 +78,66 @@ function githubDisplay() {
 }
 
 function openSettings() {
-  // Open the settings dialog (privacy feature removed)
+  //update settings
   var dialog = document.getElementById("dialog");
+  //opens modal
   dialog.open();
+  //create get request to server for data
+  xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function () {
+    //if http response is all clear
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      result = JSON.parse(xhr.responseText);
+      if (result.error) {
+        console.log(result.error);
+      }
+    }
+  };
+  xhr.onload = function () {
+    //Loads privacy data
+    const privacyDataOutput = JSON.parse(xhr.response);
+
+    var sharePhoto = document.getElementById("sharephototoggle");
+    var shareSchedule = document.getElementById("sharescheduletoggle");
+
+    sharePhoto.checked = privacyDataOutput.share_photo;
+    shareSchedule.checked = privacyDataOutput.share_schedule;
+  };
+
+  xhr.open("GET", "privacy", true);
+  xhr.send();
 }
 
-// Privacy-related functions removed
+function submitUpdatePrivacy() {
+  //does as the name suggests, it submits the update privacy data
+  var share_photo = document.getElementById("sharephototoggle");
+  var share_schedule = document.getElementById("sharescheduletoggle");
+  sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
+  document.getElementById("dialog").close();
+}
+
+function sendUpdatePrivacyRequest(share_photo, share_schedule) {
+  var data = new FormData();
+  //Appends to db
+  data.append("share_photo", share_photo);
+  data.append("share_schedule", share_schedule);
+  //New req
+  xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function () {
+    //its a reverse try catch
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      result = JSON.parse(xhr.responseText);
+      if (!result.error) {
+        renderToast("Settings updated!");
+      } else {
+        console.log(result.error);
+        renderToast(result.error);
+      }
+    }
+  };
+  xhr.open("POST", "privacy", true);
+  xhr.send(data);
+}
 
 function scheduleSwiped(evt) {
   if (evt.detail.direction == "left") {
@@ -931,7 +985,16 @@ function cleanString(text) {
   return text;
 }
 
-// Privacy dialog functions removed
+function closePrivacyDialog() {
+  document.getElementById("privacydialog").close();
+  var share_photo = document.getElementById("initialsharephototoggle");
+  var share_schedule = document.getElementById("initialsharescheduletoggle");
+  sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
+}
+
+function changePrivacySettings() {
+  document.getElementById("privacydialogcollapse").show();
+}
 
 document.addEventListener("keydown", (event) => {
   var drawerState = document.querySelector("#drawerpanel").selected;
