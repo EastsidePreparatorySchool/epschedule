@@ -125,6 +125,54 @@ def gen_photo_url(username, icon=False):
     )
 
 
+def photo_exists(username, icon=False):
+    """Return True if the user's avatar is present in storage or marked in datastore.
+
+    Priority:
+    - If a datastore entry exists and exposes a has_photo property (used in tests),
+      honor that.
+    - Else, if a storage client is configured, check whether the blob exists.
+    - Otherwise, assume True to avoid hiding photos in environments we can't check.
+    """
+    # Check datastore entry first (tests can simulate missing photos here)
+    try:
+        entry = get_database_entry(username)
+    except Exception:
+        entry = None
+
+    if entry:
+        # Many datastore entity wrappers expose .get(prop). Use that when available.
+        try:
+            has_photo = entry.get("has_photo")
+        except Exception:
+            has_photo = None
+        if has_photo is not None:
+            return bool(has_photo)
+
+    # If we have a storage client, check whether the blob exists
+    try:
+        # storage_client is only set in production init_app; guard against missing
+        if datastore_client is not None:
+            # Note: storage client is created in non-test init_app as `storage_client`
+            # so try to access it from the module globals if available.
+            sc = globals().get("storage_client", None)
+            if sc:
+                blob_name = hash_username(app.secret_key, username, icon)
+                bucket = sc.bucket("epschedule-avatars")
+                blob = bucket.blob(blob_name)
+                try:
+                    return blob.exists(sc)
+                except Exception:
+                    # Some storage clients or mocks may not implement exists();
+                    # fall through to optimistic default.
+                    pass
+    except Exception:
+        pass
+
+    # Default to True when we can't determine
+    return True
+
+
 def gen_login_response():
     template = make_response(render_template("login.html"))
     # Clear all cookies
@@ -255,7 +303,9 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "grade": schedule["grade"],
                         "username": schedule["username"],
                         "email": username_to_email(schedule["username"]),
-                        "photo_url": gen_photo_url(schedule["username"], True),
+                        "photo_url": gen_photo_url(schedule["username"], True)
+                        if photo_exists(schedule["username"], True)
+                        else "/static/images/placeholder_small.png",
                     }
                     result["students"].append(student)
 
