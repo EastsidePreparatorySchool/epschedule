@@ -32,6 +32,18 @@ body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
 }
+body {
+  max-width: 100vw;
+}
+
+/* Prevent horizontal scrollbar caused by elements using fixed widths or negative offsets */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+}
 
 neon-animated-pages {
   height: 100%;
@@ -58,6 +70,11 @@ neon-animated-pages {
   font-size: 16px;
   cursor: pointer;
   border-radius: 12px;
+}
+
+/* visually nudge the join button without affecting layout to avoid horizontal overflow */
+.join-nudge {
+  transform: translateX(-12px);
 }
 
 #studentname {
@@ -132,10 +149,8 @@ google-map {
 }
 
 #mainheader {
-  height: 100%;
   background: var(--lighter-background);
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
 }
 
 
@@ -178,11 +193,13 @@ paper-toolbar {
 .container {
   width: 90%;
   margin: 24px auto;
+  max-width: 100vw;
 }
 
 @media (min-width: 720px) {
   .container {
-    width: 540px;
+    width: 90%;
+    max-width: 540px;
   }
 }
 
@@ -229,7 +246,7 @@ paper-toolbar {
 }
 
 .teacher img {
-  #margin-left: 16px;
+  max-width: 100%;
 }
 
 .leftfloat {
@@ -241,7 +258,8 @@ paper-toolbar {
 }
 
 .rightfloat {
-  float: right;
+  /* float removed to fix flexbox layout */
+  display: block;
 }
 
 .halfwidth {
@@ -271,9 +289,6 @@ paper-toolbar {
   margin-bottom: 8px;
 }
 
-.privacypaneltitle {
-  margin-top: 16px;
-}
 
 .underline {
   text-decoration: underline;
@@ -309,13 +324,18 @@ paper-toolbar {
 }
 
 .rightfloat {
-  float: right;
+  /* float removed to fix flexbox layout */
+  display: block;
 }
 
 .headerbarpage {
   width: 100%;
   display: flex;
   align-items: center;
+}
+
+.headerbarpage > :nth-child(5) {
+  margin-left: auto;
 }
 
 .headerbarpages {
@@ -336,9 +356,21 @@ paper-toolbar {
 
 .period {
   padding-top: 24px;
-  columns: 2 664px;
-  -moz-columns: 2 664px;
-  -webkit-columns: 2 664px;
+  /* Use flexible column width so layout doesn't force horizontal scroll */
+  column-width: 250px;
+  column-gap: 20px;
+  -moz-column-width: 250px;
+  -moz-column-gap: 20px;
+  -webkit-column-width: 250px;
+  -webkit-column-gap: 20px;
+}
+
+@media (max-width: 720px) {
+  .period {
+    column-count: 1;
+    -moz-column-count: 1;
+    -webkit-column-count: 1;
+  }
 }
 
 .periodsubcontainer {

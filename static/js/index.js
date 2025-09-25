@@ -73,6 +73,7 @@ function about() {
 
 function githubDisplay() {
   //opens github
+  
   var gh = document.getElementById("Github");
   gh.open();
 }

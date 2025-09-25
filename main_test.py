@@ -33,7 +33,8 @@ class FakeEntity:
         return self.key.name != TEST_STUDENT_NO_PIC
 
     def items(self):
-        return {x: self.get(x) for x in ["share_photo", "share_schedule"]}
+        # Privacy fields removed — return minimal user properties used in tests
+        return {}
 
 
 class FakeDatastore:
@@ -193,9 +194,8 @@ class TestClassEndpoint(AuthenticatedTest):
             if student["username"] == TEST_STUDENT_NO_PIC:
                 found_student = student
         self.assertNotEqual(found_student, None)
-        self.assertEqual(
-            found_student["photo_url"], "/static/images/placeholder_small.png"
-        )
+        # Simulate missing photo: should return placeholder
+        self.assertEqual(found_student["photo_url"], "/static/images/placeholder_small.png")
 
 
 class TestPeriodEndpoint(AuthenticatedTest):
