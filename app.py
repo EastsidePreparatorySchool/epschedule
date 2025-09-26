@@ -545,8 +545,7 @@ def handle_user(target_user):
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
 
-
-    priv_settings = {"share_photo": True, "share_schedule": True}
+    priv_settings = {"share_photo": False, "share_schedule": True}
     if (not is_teacher_schedule(user_schedule)) and (
         not is_teacher_schedule(target_schedule)
     ):
@@ -557,7 +556,7 @@ def handle_user(target_user):
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
 
-    if priv_settings["share_photo"]: #turn off all photos
+    if priv_settings["share_photo"]:  # turn off all photos
         target_schedule["photo_url"] = gen_photo_url(target_user, False)
     else:
         target_schedule["photo_url"] = "/static/images/placeholder.png"
