@@ -156,9 +156,6 @@ class TestStudentEndpoint(AuthenticatedTest):
     # Test that a student who isn't sharing their pic returns a placeholder.
     def test_urls_showing_up(self):
         student_obj = self.check_username(TEST_STUDENT_NO_PIC)
-        import pyperclip
-
-        pyperclip.copy(str(student_obj))
         self.assertEqual(student_obj["photo_url"], "/static/images/placeholder.png")
 
 
