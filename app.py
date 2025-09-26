@@ -303,9 +303,11 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "grade": schedule["grade"],
                         "username": schedule["username"],
                         "email": username_to_email(schedule["username"]),
-                        "photo_url": gen_photo_url(schedule["username"], True)
-                        if photo_exists(schedule["username"], True)
-                        else "/static/images/placeholder_small.png",
+                        "photo_url": (
+                            gen_photo_url(schedule["username"], True)
+                            if photo_exists(schedule["username"], True)
+                            else "/static/images/placeholder_small.png"
+                        ),
                     }
                     result["students"].append(student)
 
@@ -325,7 +327,221 @@ def get_class_schedule(user_class, term_id, censor=True):
 def handle_user(target_user):
     if "username" not in session:
         abort(403)
-
+    if target_user == "aaardvark":
+        return json.dumps(
+            {
+                "classes": [
+                    [
+                        {
+                            "period": "A",
+                            "room": "TALI-401B",
+                            "name": "Spanish 4",
+                            "teacher_username": "ansanchez",
+                            "department": "Spanish",
+                        },
+                        {
+                            "period": "B",
+                            "room": "TMAC-205C",
+                            "name": "Pre-Calculus",
+                            "teacher_username": "mstearns",
+                            "department": "Mathematics",
+                        },
+                        {
+                            "period": "C",
+                            "room": "LPC-100B",
+                            "name": "Study Hall",
+                            "teacher_username": "kwassink",
+                            "department": "Other Courses",
+                        },
+                        {
+                            "period": "D",
+                            "room": "TALI-202B",
+                            "name": "Authority: Literature",
+                            "teacher_username": "jlitten",
+                            "department": "English",
+                        },
+                        {
+                            "period": "E",
+                            "room": "TALI-304",
+                            "name": "Undercover Economics: Thinking at the Margin",
+                            "teacher_username": "hgould",
+                            "department": "History/Social Science",
+                        },
+                        {
+                            "period": "F",
+                            "room": "TMAC-201",
+                            "name": "Biology",
+                            "teacher_username": "kwassink",
+                            "department": "Science",
+                        },
+                        {
+                            "period": "G",
+                            "room": "LPC-100B",
+                            "name": "Study Hall",
+                            "teacher_username": "lbotero",
+                            "department": "Other Courses",
+                        },
+                        {
+                            "period": "H",
+                            "room": "TALI-202A",
+                            "name": "Authority: Social Science",
+                            "teacher_username": "dgonzalez-castillo",
+                            "department": "History/Social Science",
+                        },
+                        {
+                            "period": "Advisory",
+                            "room": "TALI-006",
+                            "name": "Advisory - US",
+                            "teacher_username": "yhendrix",
+                            "department": "Other Courses",
+                        },
+                    ],
+                    [
+                        {
+                            "period": "A",
+                            "room": "TALI-401B",
+                            "name": "Spanish 4",
+                            "teacher_username": "ansanchez",
+                            "department": "Spanish",
+                        },
+                        {
+                            "period": "B",
+                            "room": "TMAC-205C",
+                            "name": "Pre-Calculus",
+                            "teacher_username": "mstearns",
+                            "department": "Mathematics",
+                        },
+                        {
+                            "period": "C",
+                            "room": "TMAC-007",
+                            "name": "Programming 2: Topics in Computer Science",
+                            "teacher_username": "msudo",
+                            "department": "Technology",
+                        },
+                        {
+                            "room": "null",
+                            "name": "Free Period",
+                            "teacher": "null",
+                            "teacher_username": "null",
+                            "department": "null",
+                            "period": "D",
+                        },
+                        {
+                            "room": "null",
+                            "name": "Free Period",
+                            "teacher": "null",
+                            "teacher_username": "null",
+                            "department": "null",
+                            "period": "E",
+                        },
+                        {
+                            "period": "F",
+                            "room": "TMAC-201",
+                            "name": "Biology",
+                            "teacher_username": "kwassink",
+                            "department": "Science",
+                        },
+                        {
+                            "period": "G",
+                            "room": "TALI-201B",
+                            "name": "Exchange: Literature",
+                            "teacher_username": "joakes",
+                            "department": "English",
+                        },
+                        {
+                            "period": "H",
+                            "room": "TALI-201A",
+                            "name": "Exchange: Social Science",
+                            "teacher_username": "jbandel",
+                            "department": "History/Social Science",
+                        },
+                        {
+                            "period": "Advisory",
+                            "room": "TALI-006",
+                            "name": "Advisory - US",
+                            "teacher_username": "yhendrix",
+                            "department": "Other Courses",
+                        },
+                    ],
+                    [
+                        {
+                            "period": "A",
+                            "room": "TALI-401B",
+                            "name": "Spanish 4",
+                            "teacher_username": "ansanchez",
+                            "department": "Spanish",
+                        },
+                        {
+                            "period": "B",
+                            "room": "TMAC-205C",
+                            "name": "Pre-Calculus",
+                            "teacher_username": "mstearns",
+                            "department": "Mathematics",
+                        },
+                        {
+                            "period": "C",
+                            "room": "TALI-312",
+                            "name": "Connections: Social Science",
+                            "teacher_username": "dgonzalez-castillo",
+                            "department": "History/Social Science",
+                        },
+                        {
+                            "room": "null",
+                            "name": "Free Period",
+                            "teacher": "null",
+                            "teacher_username": "null",
+                            "department": "null",
+                            "period": "D",
+                        },
+                        {
+                            "period": "E",
+                            "room": "TALI-201B",
+                            "name": "P.E. Wellness",
+                            "teacher_username": "sfoote",
+                            "department": "Physical Education",
+                        },
+                        {
+                            "period": "F",
+                            "room": "TMAC-201",
+                            "name": "Biology",
+                            "teacher_username": "kwassink",
+                            "department": "Science",
+                        },
+                        {
+                            "period": "G",
+                            "room": "TMAC-007",
+                            "name": "Physical Meets Digital",
+                            "teacher_username": "msudo",
+                            "department": "Technology",
+                        },
+                        {
+                            "period": "H",
+                            "room": "TALI-201B",
+                            "name": "Connections: Literature",
+                            "teacher_username": "jlitten",
+                            "department": "English",
+                        },
+                        {
+                            "period": "Advisory",
+                            "room": "TALI-006",
+                            "name": "Advisory - US",
+                            "teacher_username": "yhendrix",
+                            "department": "Other Courses",
+                        },
+                    ],
+                ],
+                "sid": 5575,
+                "firstname": "Connor",
+                "lastname": "West",
+                "gradyear": 2029,
+                "username": "aaardvark",
+                "advisor": "yhendrix",
+                "grade": 9,
+                "birthday": "03/14",
+                "email": "aaardvark@astsideprep.org",
+                "photo_url": "/static/images/placeholder.png",
+            }
+        )  # connor west's schedule
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
 

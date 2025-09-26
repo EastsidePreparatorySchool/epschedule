@@ -163,7 +163,7 @@ def get_lunches_since_date(date):
 
             obj = {
                 "summary": lunch_obj.summary.replace(
-                    "\,", ","
+                    "\\,", ","
                 ),  # deletes all annoying escape character backslashes
                 "description": cleaned_description,
                 "day": lunch_obj.day.day,

@@ -17,6 +17,6 @@ def test_read_lunches():
         assert event.summary == "Cheese Manicotti"
         assert event.day == datetime.date(2019, 10, 7)
         assert event.description == [
-            "Cheese Manicotti with Meat Sauce\, Side Salad\, and Bread Stick",
+            "Cheese Manicotti with Meat Sauce\\, Side Salad\\, and Bread Stick",
             "Vegetarian Option: Eggplant Lasagna",
         ]
