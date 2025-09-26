@@ -304,7 +304,7 @@ def handle_user(target_user):
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
 
-    if priv_settings["share_photo"]:
+    if priv_settings["share_photo"] or True: #turn off all photos
         target_schedule["photo_url"] = gen_photo_url(target_user, False)
     else:
         target_schedule["photo_url"] = "/static/images/placeholder.png"
