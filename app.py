@@ -544,14 +544,14 @@ def handle_user(target_user):
         )  # connor west's schedule
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
-
-    priv_settings = {"share_photo": False, "share_schedule": True}
+    priv_settings = {"share_photo": True, "share_schedule": True}
     if (not is_teacher_schedule(user_schedule)) and (
         not is_teacher_schedule(target_schedule)
     ):
-        priv_obj = get_database_entry(target_user)
-        if priv_obj:
-            priv_settings = dict(priv_obj.items())
+        priv_settings = {"share_photo": False, "share_schedule": True}
+        # priv_obj = get_database_entry(target_user)
+        # if priv_obj:
+        #    priv_settings = dict(priv_obj.items())
 
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
