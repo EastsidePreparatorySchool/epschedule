@@ -125,6 +125,54 @@ def gen_photo_url(username, icon=False):
     )
 
 
+def photo_exists(username, icon=False):
+    """Return True if the user's avatar is present in storage or marked in datastore.
+
+    Priority:
+    - If a datastore entry exists and exposes a has_photo property (used in tests),
+      honor that.
+    - Else, if a storage client is configured, check whether the blob exists.
+    - Otherwise, assume True to avoid hiding photos in environments we can't check.
+    """
+    # Check datastore entry first (tests can simulate missing photos here)
+    try:
+        entry = get_database_entry(username)
+    except Exception:
+        entry = None
+
+    if entry:
+        # Many datastore entity wrappers expose .get(prop). Use that when available.
+        try:
+            has_photo = entry.get("has_photo")
+        except Exception:
+            has_photo = None
+        if has_photo is not None:
+            return bool(has_photo)
+
+    # If we have a storage client, check whether the blob exists
+    try:
+        # storage_client is only set in production init_app; guard against missing
+        if datastore_client is not None:
+            # Note: storage client is created in non-test init_app as `storage_client`
+            # so try to access it from the module globals if available.
+            sc = globals().get("storage_client", None)
+            if sc:
+                blob_name = hash_username(app.secret_key, username, icon)
+                bucket = sc.bucket("epschedule-avatars")
+                blob = bucket.blob(blob_name)
+                try:
+                    return blob.exists(sc)
+                except Exception:
+                    # Some storage clients or mocks may not implement exists();
+                    # fall through to optimistic default.
+                    pass
+    except Exception:
+        pass
+
+    # Default to True when we can't determine
+    return True
+
+
 def gen_login_response():
     template = make_response(render_template("login.html"))
     # Clear all cookies
@@ -166,8 +214,7 @@ def main():
                 user.update(
                     {
                         "joined": datetime.datetime.utcnow(),
-                        "share_photo": True,
-                        "share_schedule": True,
+                        # privacy fields removed
                     }
                 )
                 datastore_client.put(user)
@@ -256,7 +303,9 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "grade": schedule["grade"],
                         "username": schedule["username"],
                         "email": username_to_email(schedule["username"]),
-                        "photo_url": gen_photo_url(schedule["username"], True),
+                        "photo_url": gen_photo_url(schedule["username"], True)
+                        if photo_exists(schedule["username"], True)
+                        else "/static/images/placeholder_small.png",
                     }
                     result["students"].append(student)
 
@@ -266,15 +315,7 @@ def get_class_schedule(user_class, term_id, censor=True):
         key=lambda s: str(s["grade"]),
     )
 
-    # Censor photos
-    if censor:
-        privacy_settings = get_database_entries(
-            [x["username"] for x in result["students"]]
-        )
-        opted_out = [x.key.name for x in privacy_settings if not x.get("share_photo")]
-        for student in result["students"]:
-            if student["username"] in opted_out:
-                student["photo_url"] = "/static/images/placeholder_small.png"
+    # No privacy: always show real student photos
 
     return result
 
@@ -285,29 +326,23 @@ def handle_user(target_user):
     if "username" not in session:
         abort(403)
 
-    # TODO finish privacy logic
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
 
-    priv_settings = {"share_photo": True, "share_schedule": True}
-    # Teachers don't see and can't set privacy settings
-    if (not is_teacher_schedule(user_schedule)) and (
-        not is_teacher_schedule(target_schedule)
-    ):
-        priv_obj = get_database_entry(target_user)
-        if priv_obj:
-            priv_settings = dict(priv_obj.items())
-
-    if not priv_settings["share_schedule"]:
-        target_schedule = sanitize_schedule(target_schedule, user_schedule)
+    # Remove privacy logic
+    # priv_settings = {"share_photo": True, "share_schedule": True}
+    # if (not is_teacher_schedule(user_schedule)) and (
+    #     not is_teacher_schedule(target_schedule)
+    # ):
+    #     priv_obj = get_database_entry(target_user)
+    #     if priv_obj:
+    #         priv_settings = dict(priv_obj.items())
 
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
 
-    if priv_settings["share_photo"]:
-        target_schedule["photo_url"] = gen_photo_url(target_user, False)
-    else:
-        target_schedule["photo_url"] = "/static/images/placeholder.png"
+    # Always show photo
+    target_schedule["photo_url"] = gen_photo_url(target_user, False)
 
     return json.dumps(target_schedule)
 
@@ -423,30 +458,7 @@ def get_class_by_period(schedule, period):
             return c
 
 
-# Change and view privacy settings
-@app.route("/privacy", methods=["GET", "POST"])
-def handle_settings():
-    if "username" not in session:
-        abort(403)
-    user = get_database_entry(session["username"])
-
-    if request.method == "GET":
-        user_privacy_dict_raw = dict(user.items())
-        user_privacy_dict = {
-            "share_photo": user_privacy_dict_raw["share_photo"],
-            "share_schedule": user_privacy_dict_raw["share_schedule"],
-        }
-        return json.dumps(user_privacy_dict)
-
-    elif request.method == "POST":
-        user.update(
-            {
-                "share_photo": request.form["share_photo"] == "true",
-                "share_schedule": request.form["share_schedule"] == "true",
-            }
-        )
-        datastore_client.put(user)
-        return json.dumps({})
+# Privacy feature removed: no /privacy route
 
 
 @app.route("/search/<keyword>")
