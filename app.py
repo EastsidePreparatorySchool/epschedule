@@ -305,7 +305,7 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "email": username_to_email(schedule["username"]),
                         "photo_url": (
                             gen_photo_url(schedule["username"], True)
-                            if photo_exists(schedule["username"], True)
+                            if False
                             else "/static/images/placeholder_small.png"
                         ),
                     }
@@ -318,7 +318,6 @@ def get_class_schedule(user_class, term_id, censor=True):
     )
 
     # No privacy: always show real student photos
-
     return result
 
 
@@ -548,10 +547,10 @@ def handle_user(target_user):
     if (not is_teacher_schedule(user_schedule)) and (
         not is_teacher_schedule(target_schedule)
     ):
-        priv_settings = {"share_photo": False, "share_schedule": True}
-        # priv_obj = get_database_entry(target_user)
-        # if priv_obj:
-        #    priv_settings = dict(priv_obj.items())
+        priv_settings = {"share_photo": False, "share_schedule": False}
+        priv_obj = get_database_entry(target_user)
+        if priv_obj:
+            priv_settings = dict(priv_obj.items())
 
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
