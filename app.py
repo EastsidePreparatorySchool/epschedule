@@ -297,6 +297,10 @@ def get_class_schedule(user_class, term_id, censor=True):
                 if (not is_teacher_schedule(schedule)) or classobj[
                     "name"
                 ] == "Free Period":
+                    priv_settings = {"share_photo": False, "share_schedule": False}
+                    priv_obj = get_database_entry(schedule['username'])
+                    if priv_obj:
+                        priv_settings = dict(priv_obj.items())
                     student = {
                         "firstname": get_first_name(schedule),
                         "lastname": schedule["lastname"],
@@ -305,7 +309,7 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "email": username_to_email(schedule["username"]),
                         "photo_url": (
                             gen_photo_url(schedule["username"], True)
-                            if False
+                            if (not censor) or priv_settings['share_photo']
                             else "/static/images/placeholder_small.png"
                         ),
                     }
@@ -317,7 +321,6 @@ def get_class_schedule(user_class, term_id, censor=True):
         key=lambda s: str(s["grade"]),
     )
 
-    # No privacy: always show real student photos
     return result
 
 
