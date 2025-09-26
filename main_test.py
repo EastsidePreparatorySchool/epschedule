@@ -195,7 +195,9 @@ class TestClassEndpoint(AuthenticatedTest):
                 found_student = student
         self.assertNotEqual(found_student, None)
         # Simulate missing photo: should return placeholder
-        self.assertEqual(found_student["photo_url"], "/static/images/placeholder_small.png")
+        self.assertEqual(
+            found_student["photo_url"], "/static/images/placeholder_small.png"
+        )
 
 
 class TestPeriodEndpoint(AuthenticatedTest):

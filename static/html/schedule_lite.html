@@ -89,13 +89,13 @@
               <span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
                 <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
                   (<span>{{item.teacherLastName}}</span>,
-                  <span>{{item.room}}</span>)
+                  <span><a href="{{linkFromRoom(item.room)}}">{{item.room}}</a></span>)
                 </template>
                 <template is="dom-if" if="{{hasTeacherOnly(item)}}">
                   (<span>{{item.teacherLastName}}</span>)
                 </template>
                 <template is="dom-if" if="{{hasRoomOnly(item)}}">
-                  (<span>{{item.room}}</span>)
+                  (<span><a href="{{linkFromRoom(item.room)}}">{{item.room}}</a></span>)
                 </template>
             </p>
             <p class="name"><span>{{item.name}}</span></p>
@@ -140,6 +140,15 @@
       },
       hasRoomOnly: function(item) {
         return !item.teacherLastName && item.room;
+      },
+      linkFromRoom: function (room) {
+        var building = room.substring(0, room.indexOf('-')).toUpperCase();
+        var floor = room.substring(room.indexOf('-') + 1, room.indexOf('-') + 2).toUpperCase();
+        var newRoom = room.substring(room.indexOf('-') + 1).replace(/[^A-Za-z0-9]/g, "");
+        newRoom = building + "_" + floor + "_" + newRoom;
+        var out = `http://epspaces.madeateps.org/?building=${building}&floor=${floor}&room=${newRoom}`;
+        
+        return out;
       },
     });
   </script>

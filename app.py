@@ -303,9 +303,11 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "grade": schedule["grade"],
                         "username": schedule["username"],
                         "email": username_to_email(schedule["username"]),
-                        "photo_url": gen_photo_url(schedule["username"], True)
-                        if photo_exists(schedule["username"], True)
-                        else "/static/images/placeholder_small.png",
+                        "photo_url": (
+                            gen_photo_url(schedule["username"], True)
+                            if photo_exists(schedule["username"], True)
+                            else "/static/images/placeholder_small.png"
+                        ),
                     }
                     result["students"].append(student)
 
