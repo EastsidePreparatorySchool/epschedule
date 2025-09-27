@@ -184,6 +184,12 @@ function dateToNextTri() {
 }
 function specifyDate(goToDate) {
   globalDate = new Date(goToDate);
+  globalDate.setDate(globalDate.getDate() + 1);
+  if (globalDate.getDay() == 6) { // Saturday
+    globalDate.setDate(globalDate.getDate() + 2); // Skip to Monday
+  } else if (globalDate.getDay() == 0) { // Sunday 
+    globalDate.setDate(globalDate.getDate() + 1); // Skip to Monday
+  }
   console.log(globalDate);
   updateMainSchedule();
 }
