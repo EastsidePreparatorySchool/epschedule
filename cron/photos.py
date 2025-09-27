@@ -7,7 +7,7 @@ import requests
 from google.cloud import secretmanager, storage
 from PIL import Image
 
-import four11
+from cron import four11
 
 SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/session_key/versions/1"}
 ICON_SIZE = 96, 96  # 96x96 pixels. For Gavin's past code, use ICON_SIZE = 96
@@ -132,3 +132,4 @@ def crawl_photos(dry_run=False, verbose=False):
         if verbose:  # if you want to see whats happening
             # note that this person was just processed
             print(f"Processed photo for user {username}")
+
