@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>EPSchedule</title>
+  <title>EPSchedule{% if admin%} Admin{% endif %}</title>
   <meta charset="utf=8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -40,6 +40,13 @@
       </g>
     </defs></svg>
   </iron-iconset-svg>
+  <iron-iconset-svg name="custom" size="24">
+    <svg><defs>
+      <g id="trimester">
+        <path d="M2 4l6 8-6 8M10 4l6 8-6 8"/>
+      </g>
+    </defs></svg>
+</iron-iconset-svg>
   <link rel="import" href="static/html/schedule.html">
   <link rel="import" href="static/html/schedule_lite.html">
   <link rel="stylesheet" href="static/css/index.css">
@@ -72,7 +79,11 @@
             </iron-icon>
             <span class="side-panel-buttons">Sign out</span>
           </paper-icon-item>
-          <!-- Settings removed -->
+          <paper-icon-item onclick="openSettings()">
+            <iron-icon class="drawer-icon" icon="settings" item-icon>
+            </iron-icon>
+            <span class="side-panel-buttons">Settings</span>
+          </paper-icon-item>
           <paper-icon-item onclick="reportBug()">
             <iron-icon class="drawer-icon" icon="bug-report" item-icon>
             </iron-icon>
@@ -124,11 +135,10 @@
               <div class="tooltip">
                 <span class="tooltiptext">Skip to Next Trimester</span>
                 <paper-icon-button class="rightfloat" 
-                src="/static/images/trimesterarrow.png"
-                alt="Skip to Next Trimester" 
-                onclick="dateToNextTri()">
+                    icon="custom:trimester"
+                    onclick="dateToNextTri()">
                 </paper-icon-button>
-              </div>
+            </div>
               <paper-icon-button class="rightfloat" icon="search"
                onclick="openSearchBar()">
               </paper-icon-button>
@@ -205,7 +215,16 @@
     <div id="settingspanel">
       <h2 class="settingstitle">Settings</h2>
       <div class="settingsdividerline"></div>
-      <!-- Privacy UI removed -->
+            <h3 class="privacypaneltitle">Privacy</h3>
+      <div class="inlinesettingsswitch">
+        <span class="leftfloat padleft">Show other EPS students my photo</span>
+        <paper-toggle-button class="rightfloat" id="sharephototoggle">
+        </paper-toggle-button>
+      </div>
+      <paper-button onclick="submitUpdatePrivacy()" raised
+       class="settingsbutton" id="updatesettings">
+        OK
+      </paper-button>
     </div>
   </paper-dialog>
   <paper-toast id="toast" text="" duration=10000></paper-toast>
@@ -218,5 +237,51 @@
     ga('create', 'UA-83598394-1', 'auto');
     ga('send', 'pageview');
   </script>
+  {% if admin %}
+    <script>
+    
+  (function() {
+    const dayEl = document.getElementById('day');
+    if (!dayEl) return;
+
+    let last = dayEl.innerHTML;
+    let ignoreNext = false;
+
+    function onDayChanged(newText, oldText) {
+      // if we would set the same content, do nothing
+      let wanted;
+      if(newText.includes('Admin')){wanted=newText;}else{
+        wanted = newText + '<span style="color: lightblue;"> Admin</span>';
+      }
+      if (dayEl.innerHTML === wanted) return;
+
+      // mark that the next mutation is from us
+      ignoreNext = true;
+      try {
+        dayEl.innerHTML = wanted;
+      } finally {
+        // leave ignoreNext true until the observer clears it on the next callback
+      }
+    }
+
+const observer = new MutationObserver(() => {
+      if (ignoreNext) {
+        // skip the mutation caused by onDayChanged
+        ignoreNext = false;
+        last = dayEl.innerHTML; // keep last in sync
+        return;
+      }
+      const current = dayEl.innerHTML;
+      if (current !== last) {
+        const prev = last;
+        last = current;
+        try { onDayChanged(current, prev); } catch (err) { console.error(err); }
+      }
+    });
+
+    observer.observe(dayEl, { characterData: true, childList: true, subtree: true });
+  })();
+  </script>
+  {% endif %}
 </body>
 </html>

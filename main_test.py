@@ -57,8 +57,12 @@ TEST_CONFIG = {
     "DATASTORE": FakeDatastore(),
 }
 
-
-API_ENDPOINTS = ["/student/aaardvark", "/class/a", "/period/a", "/search/aaardvark"]
+API_ENDPOINTS = [
+    "/student/aaardvark",
+    "/class/a",
+    "/period/a",
+    "/search/aaardvark",
+]
 
 
 class NoAuthTests(unittest.TestCase):
@@ -120,9 +124,8 @@ class TestStudentEndpoint(AuthenticatedTest):
     """Tests for the /student endpoint."""
 
     def check_username(self, username):
-        response = self.client.get("/student/{}".format(username))
+        response = self.client.get(f"/student/{username}")
         self.assertEqual(response.status_code, 200)
-
         obj = json.loads(response.data)
         self.assertEqual(obj["username"], username)
         self.assertIn(obj["username"], obj["email"])
