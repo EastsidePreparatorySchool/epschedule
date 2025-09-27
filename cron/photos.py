@@ -10,7 +10,7 @@ from PIL import Image
 from cron import four11
 
 SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/session_key/versions/1"}
-ICON_SIZE = 96, 96  # 96x96 pixels. For Gavin's past code, use ICON_SIZE = 96
+ICON_SIZE = 96
 
 
 def download_photo_from_url(session, url):
@@ -25,26 +25,17 @@ def download_photo_from_url(session, url):
 
 
 def crop_image(img):
-    # past code by Gavin
-    # if img.width > img.height:
-    #     img = img.resize(((ICON_SIZE * img.width) // img.height, ICON_SIZE))
-    #     border = (img.width - ICON_SIZE) / 2
-    #     cropparams = (border, 0)
-    # else:
-    #     img = img.resize((ICON_SIZE, (ICON_SIZE * img.height) // img.width))
-    #     border = (img.height - ICON_SIZE) // 2
-    #     cropparams = (0, border)
-    # return img.crop(
-    #     (*cropparams, img.width - cropparams[0], img.height - cropparams[1])
-    # )
-
-    # copies the image
-    copy = img.copy()
-    # grabs its thumbnail according to ICON SIZE
-    copy.thumbnail(ICON_SIZE)
-    # returns the thumbnail
-    return copy
-
+    if img.width > img.height:
+        img = img.resize(((ICON_SIZE * img.width) // img.height, ICON_SIZE))
+        border = (img.width - ICON_SIZE) / 2
+        cropparams = (border, 0)
+    else:
+        img = img.resize((ICON_SIZE, (ICON_SIZE * img.height) // img.width))
+        border = (img.height - ICON_SIZE) // 2
+        cropparams = (0, border)
+    return img.crop(
+        (*cropparams, img.width - cropparams[0], img.height - cropparams[1])
+    )
 
 def hash_username(key, username, icon=False):
     # if its an icon, name it as such
@@ -112,12 +103,8 @@ def crawl_photos(dry_run=False, verbose=False):
             upload_photo(avatar_bucket, fullsize_filename, photo)
 
         # Now crop photo
-        photo.save("person_photo.jpeg", "JPEG")  # save it as JPEG in placeholder
-        cropped = crop_image(photo)  # crop it using the function
-        cropped.save("person_thumbnail.jpeg", "JPEG")  # save the cropped image
-        icon_filename = hash_username(
-            key_bytes, username, icon=True
-        )  # save the icon file name
+        cropped = crop_image(photo)
+        icon_filename = hash_username(key_bytes, username, icon=True)
         if not dry_run:  # if its not a test run
             # upload the photo
             upload_photo(avatar_bucket, icon_filename, cropped)
