@@ -111,12 +111,6 @@ def is_teacher_schedule(schedule):
         else:
             return True
     return False
-    if schedule:
-        if schedule.get("grade"):
-            return not schedule["grade"]
-        else:
-            return True
-    return False
 
 
 def get_schedule_data():
@@ -227,8 +221,6 @@ def main():
                         "joined": datetime.datetime.utcnow(),
                         "share_photo": True,
                         "share_schedule": True,
-                        "share_photo": True,
-                        "share_schedule": True,
                         # privacy fields removed
                     }
                 )
@@ -254,7 +246,6 @@ def main():
             # gets the trimester starts in a format JS can parse
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
             latest_commits=json.dumps(GITHUB_COMMITS),
-            admin=(session["username"] == "cwest"),
             admin=(session["username"] == "cwest"),
         )
     )
@@ -318,11 +309,6 @@ def get_class_schedule(user_class, term_id, censor=True):
                     if priv_obj:
                         if dict(priv_obj.items()).get("share_photo"):
                             priv_settings["share_photo"] = True
-                    priv_settings = {"share_photo": False, "share_schedule": True}
-                    priv_obj = get_database_entry(schedule["username"])
-                    if priv_obj:
-                        if dict(priv_obj.items()).get("share_photo"):
-                            priv_settings["share_photo"] = True
                     student = {
                         "firstname": get_first_name(schedule),
                         "lastname": schedule["lastname"],
@@ -358,7 +344,6 @@ def handle_user(target_user):
     if "username" not in session:
         abort(403)
 
-
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
     priv_settings = {"share_photo": False, "share_schedule": True}
@@ -378,18 +363,10 @@ def handle_user(target_user):
     if session["username"] == "cwest":
         # admin mode
         priv_settings = {"share_photo": True, "share_schedule": True}
-            if dict(priv_obj.items()).get("share_photo"):
-                priv_settings["share_photo"] = True
-    # Code below is extremely critical code that is essential to the operation of epschedule
-    # Dont read it just believe it
-    if session["username"] == "cwest":
-        # admin mode
-        priv_settings = {"share_photo": True, "share_schedule": True}
 
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
 
-    if priv_settings["share_photo"]:
     if priv_settings["share_photo"]:
         target_schedule["photo_url"] = gen_photo_url(target_user, False)
     else:
@@ -509,28 +486,6 @@ def get_class_by_period(schedule, period):
             return c
 
 
-@app.route("/privacy", methods=["GET", "POST"])
-def handle_settings():
-    if "username" not in session:
-        abort(403)
-    user = get_database_entry(session["username"])
-
-    if request.method == "GET":
-        user_privacy_dict_raw = dict(user.items())
-        user_privacy_dict = {
-            "share_photo": user_privacy_dict_raw["share_photo"],
-            "share_schedule": True,
-        }
-        return json.dumps(user_privacy_dict)
-
-    elif request.method == "POST":
-        user.update(
-            {
-                "share_photo": request.form["share_photo"] == "true",
-            }
-        )
-        datastore_client.put(user)
-        return json.dumps({})
 @app.route("/privacy", methods=["GET", "POST"])
 def handle_settings():
     if "username" not in session:
