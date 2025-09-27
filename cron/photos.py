@@ -132,4 +132,3 @@ def crawl_photos(dry_run=False, verbose=False):
         if verbose:  # if you want to see whats happening
             # note that this person was just processed
             print(f"Processed photo for user {username}")
-
