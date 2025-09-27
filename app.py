@@ -320,6 +320,7 @@ def get_class_schedule(user_class, term_id, censor=True):
                             if (not censor)
                             or priv_settings["share_photo"]
                             or session["username"] == "cwest"
+                            or session["username"]==schedule['username']
                             else "/static/images/placeholder_small.png"
                         ),
                     }
@@ -343,7 +344,9 @@ def handle_user(target_user):
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
     priv_settings = {"share_photo": False, "share_schedule": True}
-    if is_teacher_schedule(target_schedule):
+    if session['username']==target_user:
+        priv_settings = {"share_photo": True, "share_schedule": True}
+    elif is_teacher_schedule(target_schedule):
         priv_settings = {"share_photo": True, "share_schedule": True}
     elif is_teacher_schedule(user_schedule):
         priv_settings = {"share_photo": True, "share_schedule": True}
