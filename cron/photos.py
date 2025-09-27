@@ -37,6 +37,7 @@ def crop_image(img):
         (*cropparams, img.width - cropparams[0], img.height - cropparams[1])
     )
 
+
 def hash_username(key, username, icon=False):
     # if its an icon, name it as such
     if icon:
