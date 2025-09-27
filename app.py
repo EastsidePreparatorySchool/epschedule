@@ -105,7 +105,12 @@ def username_to_email(username):
 
 
 def is_teacher_schedule(schedule):
-    return not schedule["grade"]
+    if schedule:
+        if schedule.get("grade"):
+            return not schedule["grade"]
+        else:
+            return True
+    return False
 
 
 def get_schedule_data():
@@ -214,6 +219,8 @@ def main():
                 user.update(
                     {
                         "joined": datetime.datetime.utcnow(),
+                        "share_photo": True,
+                        "share_schedule": True,
                         # privacy fields removed
                     }
                 )
@@ -297,10 +304,11 @@ def get_class_schedule(user_class, term_id, censor=True):
                 if (not is_teacher_schedule(schedule)) or classobj[
                     "name"
                 ] == "Free Period":
-                    priv_settings = {"share_photo": False, "share_schedule": False}
-                    priv_obj = get_database_entry(schedule['username'])
+                    priv_settings = {"share_photo": False, "share_schedule": True}
+                    priv_obj = get_database_entry(schedule["username"])
                     if priv_obj:
-                        priv_settings = dict(priv_obj.items())
+                        if dict(priv_obj.items()).get("share_photo"):
+                            priv_settings["share_photo"] = True
                     student = {
                         "firstname": get_first_name(schedule),
                         "lastname": schedule["lastname"],
@@ -309,7 +317,7 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "email": username_to_email(schedule["username"]),
                         "photo_url": (
                             gen_photo_url(schedule["username"], True)
-                            if (not censor) or priv_settings['share_photo']
+                            if (not censor) or priv_settings["share_photo"]
                             else "/static/images/placeholder_small.png"
                         ),
                     }
@@ -329,236 +337,26 @@ def get_class_schedule(user_class, term_id, censor=True):
 def handle_user(target_user):
     if "username" not in session:
         abort(403)
-    if target_user == "aaardvark":
-        return json.dumps(
-            {
-                "classes": [
-                    [
-                        {
-                            "period": "A",
-                            "room": "TALI-401B",
-                            "name": "Spanish 4",
-                            "teacher_username": "ansanchez",
-                            "department": "Spanish",
-                        },
-                        {
-                            "period": "B",
-                            "room": "TMAC-205C",
-                            "name": "Pre-Calculus",
-                            "teacher_username": "mstearns",
-                            "department": "Mathematics",
-                        },
-                        {
-                            "period": "C",
-                            "room": "LPC-100B",
-                            "name": "Study Hall",
-                            "teacher_username": "kwassink",
-                            "department": "Other Courses",
-                        },
-                        {
-                            "period": "D",
-                            "room": "TALI-202B",
-                            "name": "Authority: Literature",
-                            "teacher_username": "jlitten",
-                            "department": "English",
-                        },
-                        {
-                            "period": "E",
-                            "room": "TALI-304",
-                            "name": "Undercover Economics: Thinking at the Margin",
-                            "teacher_username": "hgould",
-                            "department": "History/Social Science",
-                        },
-                        {
-                            "period": "F",
-                            "room": "TMAC-201",
-                            "name": "Biology",
-                            "teacher_username": "kwassink",
-                            "department": "Science",
-                        },
-                        {
-                            "period": "G",
-                            "room": "LPC-100B",
-                            "name": "Study Hall",
-                            "teacher_username": "lbotero",
-                            "department": "Other Courses",
-                        },
-                        {
-                            "period": "H",
-                            "room": "TALI-202A",
-                            "name": "Authority: Social Science",
-                            "teacher_username": "dgonzalez-castillo",
-                            "department": "History/Social Science",
-                        },
-                        {
-                            "period": "Advisory",
-                            "room": "TALI-006",
-                            "name": "Advisory - US",
-                            "teacher_username": "yhendrix",
-                            "department": "Other Courses",
-                        },
-                    ],
-                    [
-                        {
-                            "period": "A",
-                            "room": "TALI-401B",
-                            "name": "Spanish 4",
-                            "teacher_username": "ansanchez",
-                            "department": "Spanish",
-                        },
-                        {
-                            "period": "B",
-                            "room": "TMAC-205C",
-                            "name": "Pre-Calculus",
-                            "teacher_username": "mstearns",
-                            "department": "Mathematics",
-                        },
-                        {
-                            "period": "C",
-                            "room": "TMAC-007",
-                            "name": "Programming 2: Topics in Computer Science",
-                            "teacher_username": "msudo",
-                            "department": "Technology",
-                        },
-                        {
-                            "room": "null",
-                            "name": "Free Period",
-                            "teacher": "null",
-                            "teacher_username": "null",
-                            "department": "null",
-                            "period": "D",
-                        },
-                        {
-                            "room": "null",
-                            "name": "Free Period",
-                            "teacher": "null",
-                            "teacher_username": "null",
-                            "department": "null",
-                            "period": "E",
-                        },
-                        {
-                            "period": "F",
-                            "room": "TMAC-201",
-                            "name": "Biology",
-                            "teacher_username": "kwassink",
-                            "department": "Science",
-                        },
-                        {
-                            "period": "G",
-                            "room": "TALI-201B",
-                            "name": "Exchange: Literature",
-                            "teacher_username": "joakes",
-                            "department": "English",
-                        },
-                        {
-                            "period": "H",
-                            "room": "TALI-201A",
-                            "name": "Exchange: Social Science",
-                            "teacher_username": "jbandel",
-                            "department": "History/Social Science",
-                        },
-                        {
-                            "period": "Advisory",
-                            "room": "TALI-006",
-                            "name": "Advisory - US",
-                            "teacher_username": "yhendrix",
-                            "department": "Other Courses",
-                        },
-                    ],
-                    [
-                        {
-                            "period": "A",
-                            "room": "TALI-401B",
-                            "name": "Spanish 4",
-                            "teacher_username": "ansanchez",
-                            "department": "Spanish",
-                        },
-                        {
-                            "period": "B",
-                            "room": "TMAC-205C",
-                            "name": "Pre-Calculus",
-                            "teacher_username": "mstearns",
-                            "department": "Mathematics",
-                        },
-                        {
-                            "period": "C",
-                            "room": "TALI-312",
-                            "name": "Connections: Social Science",
-                            "teacher_username": "dgonzalez-castillo",
-                            "department": "History/Social Science",
-                        },
-                        {
-                            "room": "null",
-                            "name": "Free Period",
-                            "teacher": "null",
-                            "teacher_username": "null",
-                            "department": "null",
-                            "period": "D",
-                        },
-                        {
-                            "period": "E",
-                            "room": "TALI-201B",
-                            "name": "P.E. Wellness",
-                            "teacher_username": "sfoote",
-                            "department": "Physical Education",
-                        },
-                        {
-                            "period": "F",
-                            "room": "TMAC-201",
-                            "name": "Biology",
-                            "teacher_username": "kwassink",
-                            "department": "Science",
-                        },
-                        {
-                            "period": "G",
-                            "room": "TMAC-007",
-                            "name": "Physical Meets Digital",
-                            "teacher_username": "msudo",
-                            "department": "Technology",
-                        },
-                        {
-                            "period": "H",
-                            "room": "TALI-201B",
-                            "name": "Connections: Literature",
-                            "teacher_username": "jlitten",
-                            "department": "English",
-                        },
-                        {
-                            "period": "Advisory",
-                            "room": "TALI-006",
-                            "name": "Advisory - US",
-                            "teacher_username": "yhendrix",
-                            "department": "Other Courses",
-                        },
-                    ],
-                ],
-                "sid": 5575,
-                "firstname": "Connor",
-                "lastname": "West",
-                "gradyear": 2029,
-                "username": "aaardvark",
-                "advisor": "yhendrix",
-                "grade": 9,
-                "birthday": "03/14",
-                "email": "aaardvark@astsideprep.org",
-                "photo_url": "/static/images/placeholder.png",
-            }
-        )  # connor west's schedule
+
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
-    priv_settings = {"share_photo": True, "share_schedule": True}
-    if (not is_teacher_schedule(user_schedule)) and (
-        not is_teacher_schedule(target_schedule)
-    ):
-        priv_settings = {"share_photo": False, "share_schedule": False}
+    priv_settings = {"share_photo": False, "share_schedule": True}
+    if is_teacher_schedule(target_schedule):
+        priv_settings = {"share_photo": True, "share_schedule": True}
+    elif is_teacher_schedule(user_schedule):
+        # priv_settings = {"share_photo": True, "share_schedule": True}
+        # Could add later that it teachers see students' photos
+        priv_settings = {"share_photo": False, "share_schedule": True}
+    else:
         priv_obj = get_database_entry(target_user)
         if priv_obj:
-            priv_settings = dict(priv_obj.items())
+            if dict(priv_obj.items()).get("share_photo"):
+                priv_settings["share_photo"] = True
 
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
 
-    if priv_settings["share_photo"]:  # turn off all photos
+    if priv_settings["share_photo"]:
         target_schedule["photo_url"] = gen_photo_url(target_user, False)
     else:
         target_schedule["photo_url"] = "/static/images/placeholder.png"
@@ -677,7 +475,28 @@ def get_class_by_period(schedule, period):
             return c
 
 
-# Privacy feature removed: no /privacy route
+@app.route("/privacy", methods=["GET", "POST"])
+def handle_settings():
+    if "username" not in session:
+        abort(403)
+    user = get_database_entry(session["username"])
+
+    if request.method == "GET":
+        user_privacy_dict_raw = dict(user.items())
+        user_privacy_dict = {
+            "share_photo": user_privacy_dict_raw["share_photo"],
+            "share_schedule": True,
+        }
+        return json.dumps(user_privacy_dict)
+
+    elif request.method == "POST":
+        user.update(
+            {
+                "share_photo": request.form["share_photo"] == "true",
+            }
+        )
+        datastore_client.put(user)
+        return json.dumps({})
 
 
 @app.route("/search/<keyword>")

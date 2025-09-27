@@ -99,10 +99,8 @@ function openSettings() {
     const privacyDataOutput = JSON.parse(xhr.response);
 
     var sharePhoto = document.getElementById("sharephototoggle");
-    var shareSchedule = document.getElementById("sharescheduletoggle");
 
     sharePhoto.checked = privacyDataOutput.share_photo;
-    shareSchedule.checked = privacyDataOutput.share_schedule;
   };
 
   xhr.open("GET", "privacy", true);
@@ -112,16 +110,14 @@ function openSettings() {
 function submitUpdatePrivacy() {
   //does as the name suggests, it submits the update privacy data
   var share_photo = document.getElementById("sharephototoggle");
-  var share_schedule = document.getElementById("sharescheduletoggle");
-  sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
+  sendUpdatePrivacyRequest(share_photo.checked);
   document.getElementById("dialog").close();
 }
 
-function sendUpdatePrivacyRequest(share_photo, share_schedule) {
+function sendUpdatePrivacyRequest(share_photo) {
   var data = new FormData();
   //Appends to db
   data.append("share_photo", share_photo);
-  data.append("share_schedule", share_schedule);
   //New req
   xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function () {
@@ -182,6 +178,7 @@ function dateToNextTri() {
     // then loop back to the fall tri
     goToTri = 0;
   }
+
   // adjust the date to reflect this
   specifyDate(triStartDates[goToTri]);
 }
@@ -989,8 +986,7 @@ function cleanString(text) {
 function closePrivacyDialog() {
   document.getElementById("privacydialog").close();
   var share_photo = document.getElementById("initialsharephototoggle");
-  var share_schedule = document.getElementById("initialsharescheduletoggle");
-  sendUpdatePrivacyRequest(share_photo.checked, share_schedule.checked);
+  sendUpdatePrivacyRequest(share_photo.checked);
 }
 
 function changePrivacySettings() {
