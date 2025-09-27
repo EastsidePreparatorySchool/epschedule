@@ -9,6 +9,7 @@ PEOPLE_ENDPOINT_URL = "https://four11.eastsideprep.org/epschedule/people"
 COURSE_ENDPOINT_URL = "https://four11.eastsideprep.org/epsnet/courses/{}"
 SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/four11_key/versions/1"}
 
+
 @dataclasses.dataclass
 class Four11User:
     # stores a student from four11
@@ -24,7 +25,7 @@ class Four11User:
 
     def username(self):
         # returns the front thing before email @
-        return self.email.split("@")[0] 
+        return self.email.split("@")[0]
 
     def display_name(self):
         # python default uses pref name since it's listed first
@@ -48,7 +49,7 @@ class Four11Client:
     def __init__(self):
         # starts a session
         self._session = requests.Session()
-        # requests secrets 
+        # requests secrets
         secret_client = secretmanager.SecretManagerServiceClient()
         secret_response = secret_client.access_secret_version(request=SECRET_REQUEST)
         # sets API key based on decoded secret
