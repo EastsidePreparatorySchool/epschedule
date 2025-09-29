@@ -1046,4 +1046,17 @@ document.addEventListener("WebComponentsReady", () => {
     typeAhead.inputValue = "";
     closeSearchBar();
   });
+    const drawer = document.getElementById("drawerpanel");
+  if (drawer) {
+    drawer.addEventListener("transitionend", () => {
+      const active = document.activeElement;
+      if (active && active.classList && active.classList.contains("side-panel-boxes")) {
+        active.blur();
+      }
+      setTimeout(() => {
+        const a = document.activeElement;
+        if (a && a.classList && a.classList.contains("side-panel-boxes")) a.blur();
+      }, 50);
+    });
+  }
 });

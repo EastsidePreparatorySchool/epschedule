@@ -168,8 +168,9 @@ google-map {
 #mainheader {
   height: 100%;
   background: var(--lighter-background);
-  overflow: auto;
-  overflow-x: hidden;
+  /* Allow children (like the search suggestions) to overflow the header area */
+  overflow: visible;
+  overflow-x: visible;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -359,7 +360,8 @@ paper-toolbar {
 
 .headerbar {
   padding: 0px;
-  overflow-x: hidden;
+  /* Let animated pages and dropdowns escape clipping from the toolbar */
+  overflow: visible;
 }
 
 .searchbackground {
@@ -419,6 +421,21 @@ paper-toolbar {
 paper-typeahead-input {
   display: inline-flex;
   width: calc(100% - 60px);
+  /* Ensure suggestions can position over other content */
+  position: relative;
+  z-index: 20;
+}
+
+/* The suggestions popup inside the typeahead should be allowed to extend below the header */
+paper-typeahead-input .pt-suggestions,
+paper-typeahead-input ::slotted(.pt-suggestions) {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 50vh;
+  overflow-y: auto;
 }
 
 .wide {
@@ -503,6 +520,27 @@ paper-icon-item {
   text-decoration:none;
 }
 
+/* Make the Github updates dialog content scrollable when there are many commits */
+.github-dialog {
+  /* ensure dialog uses theme colors */
+  background-color: var(--background);
+  color: var(--text);
+}
+
+#GithubUpdateBox {
+  /* cap the box height to a sensible portion of the viewport and allow scrolling */
+  max-height: 70vh; /* 70% of viewport height */
+  overflow-y: auto;
+  padding: 12px 24px;
+  box-sizing: border-box;
+}
+
+#GHUpdateText {
+  /* ensure long content wraps and adds spacing between commit entries */
+  white-space: pre-wrap; /* preserve line breaks but wrap long lines */
+  word-break: break-word;
+}
+
 /* unvisited link */
 .GithubLink:link {
   color: var(--text);
@@ -522,4 +560,12 @@ paper-icon-item {
   color: blue;
   /* take off the underline */
   text-decoration: none;
+}
+.side-panel-boxes{
+  background-color: var(--background);
+  color: var(--text);
+}
+.side-panel-boxes:hover{
+  background-color: color-mix(in srgb, var(--background) 80%, white);
+  color: var(--text);
 }

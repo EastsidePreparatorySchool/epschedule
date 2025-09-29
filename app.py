@@ -1,3 +1,5 @@
+VERSION = "1.32.54"  # Massive UI update/complete backend rework is the first number, noticable bug fixes or UI updates are middle number, and any update that doesn't make that big of a difference, even if it just adds a backend thing, is the last number.
+
 import copy
 import datetime
 import json
@@ -22,7 +24,7 @@ SCHEDULE_INFO = None
 DAYS = None
 TERM_STARTS = []
 GITHUB_COMMITS = None
-NUM_COMMITS = 7
+NUM_COMMITS = 50
 
 
 def init_app(test_config=None):
@@ -232,8 +234,6 @@ def main():
                     {
                         "joined": datetime.datetime.utcnow(),
                         "share_photo": True,
-                        "share_schedule": True,
-                        # privacy fields removed
                     }
                 )
                 datastore_client.put(user)
@@ -248,6 +248,7 @@ def main():
     lunches = get_lunches_since_date(datetime.date.today() - datetime.timedelta(28))
 
     # Handler for how to serialize date objs into json
+    db_entry = get_database_entry(session["username"])
     response = make_response(
         render_template(
             "index.html",
@@ -259,6 +260,10 @@ def main():
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
             latest_commits=json.dumps(GITHUB_COMMITS),
             admin=is_admin(),
+            share_photo=str(
+                True if db_entry is None else dict(db_entry.items()).get("share_photo")
+            ).lower(),
+            version=VERSION,
         )
     )
     response.set_cookie("token", "", expires=0)
@@ -316,7 +321,7 @@ def get_class_schedule(user_class, term_id, censor=True):
                 if (not is_teacher_schedule(schedule)) or classobj[
                     "name"
                 ] == "Free Period":
-                    priv_settings = {"share_photo": False, "share_schedule": True}
+                    priv_settings = {"share_photo": False}
                     priv_obj = get_database_entry(schedule["username"])
                     if priv_obj:
                         if dict(priv_obj.items()).get("share_photo"):
@@ -358,13 +363,13 @@ def handle_user(target_user):
 
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
-    priv_settings = {"share_photo": False, "share_schedule": True}
+    priv_settings = {"share_photo": False}
     if (session["username"] == target_user) and session["username"] != "aaardvark":
-        priv_settings = {"share_photo": True, "share_schedule": True}
+        priv_settings = {"share_photo": True}
     elif is_teacher_schedule(target_schedule):
-        priv_settings = {"share_photo": True, "share_schedule": True}
+        priv_settings = {"share_photo": True}
     elif is_teacher_schedule(user_schedule):
-        priv_settings = {"share_photo": True, "share_schedule": True}
+        priv_settings = {"share_photo": True}
     else:
         priv_obj = get_database_entry(target_user)
         if priv_obj:
@@ -374,7 +379,7 @@ def handle_user(target_user):
     # Dont read it just believe it
     if is_admin():
         # admin mode
-        priv_settings = {"share_photo": True, "share_schedule": True}
+        priv_settings = {"share_photo": True}
 
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
@@ -503,13 +508,9 @@ def handle_settings():
     if "username" not in session:
         abort(403)
     user = get_database_entry(session["username"])
-
     if request.method == "GET":
         user_privacy_dict_raw = dict(user.items())
-        user_privacy_dict = {
-            "share_photo": user_privacy_dict_raw["share_photo"],
-            "share_schedule": True,
-        }
+        user_privacy_dict = {"share_photo": user_privacy_dict_raw["share_photo"]}
         return json.dumps(user_privacy_dict)
 
     elif request.method == "POST":
@@ -532,7 +533,7 @@ def handle_search(keyword):
         test_keyword = get_first_name(schedule) + " " + schedule["lastname"]
         if keyword.lower() in test_keyword.lower():
             results.append({"name": test_keyword, "username": schedule["username"]})
-            if len(results) >= 5:  # We only display five results
+            if len(results) >= 5:  # Allow up to 5 results
                 break
     return json.dumps(results)
 
@@ -555,7 +556,11 @@ def get_latest_github_commits():
     commitsArr = repo.get_commits()
     # print info about last commits
     result = []  # initialize array for it
-    for repo_num in range(NUM_COMMITS):
+    for repo_num in range(
+        commitsArr.totalCount
+        if not NUM_COMMITS
+        else min(NUM_COMMITS, commitsArr.totalCount)
+    ):
         # select the last few commits, get its name (title),
         # author (github name), date, and URL to the changes
         commit_name = commitsArr[repo_num].commit.message.split("\n")[0]
