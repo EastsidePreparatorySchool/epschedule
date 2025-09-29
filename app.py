@@ -246,6 +246,7 @@ def main():
     lunches = get_lunches_since_date(datetime.date.today() - datetime.timedelta(28))
 
     # Handler for how to serialize date objs into json
+    db_entry = get_database_entry(session["username"])
     response = make_response(
         render_template(
             "index.html",
@@ -258,7 +259,7 @@ def main():
             latest_commits=json.dumps(GITHUB_COMMITS),
             admin=is_admin(),
             share_photo=str(
-                dict(get_database_entry(session["username"]).items()).get("share_photo")
+                True if db_entry is None else dict(db_entry.items()).get("share_photo")
             ).lower(),
         )
     )
@@ -529,7 +530,7 @@ def handle_search(keyword):
         test_keyword = get_first_name(schedule) + " " + schedule["lastname"]
         if keyword.lower() in test_keyword.lower():
             results.append({"name": test_keyword, "username": schedule["username"]})
-            if len(results) >= 5:  # We only display five results
+            if len(results) >= 5:  # Allow up to 5 results
                 break
     return json.dumps(results)
 

@@ -168,8 +168,9 @@ google-map {
 #mainheader {
   height: 100%;
   background: var(--lighter-background);
-  overflow: auto;
-  overflow-x: hidden;
+  /* Allow children (like the search suggestions) to overflow the header area */
+  overflow: visible;
+  overflow-x: visible;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -359,7 +360,8 @@ paper-toolbar {
 
 .headerbar {
   padding: 0px;
-  overflow-x: hidden;
+  /* Let animated pages and dropdowns escape clipping from the toolbar */
+  overflow: visible;
 }
 
 .searchbackground {
@@ -419,6 +421,21 @@ paper-toolbar {
 paper-typeahead-input {
   display: inline-flex;
   width: calc(100% - 60px);
+  /* Ensure suggestions can position over other content */
+  position: relative;
+  z-index: 20;
+}
+
+/* The suggestions popup inside the typeahead should be allowed to extend below the header */
+paper-typeahead-input .pt-suggestions,
+paper-typeahead-input ::slotted(.pt-suggestions) {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 50vh;
+  overflow-y: auto;
 }
 
 .wide {
