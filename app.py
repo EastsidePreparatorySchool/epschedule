@@ -1,3 +1,5 @@
+VERSION = "1.32.54"  # Massive UI update/complete backend rework is the first number, noticable bug fixes or UI updates are middle number, and any update that doesn't make that big of a difference, even if it just adds a backend thing, is the last number.
+
 import copy
 import datetime
 import json
@@ -261,6 +263,7 @@ def main():
             share_photo=str(
                 True if db_entry is None else dict(db_entry.items()).get("share_photo")
             ).lower(),
+            version=VERSION,
         )
     )
     response.set_cookie("token", "", expires=0)
