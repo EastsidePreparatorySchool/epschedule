@@ -523,3 +523,11 @@ paper-icon-item {
   /* take off the underline */
   text-decoration: none;
 }
+.side-panel-boxes{
+  background-color: var(--background);
+  color: var(--text);
+}
+.side-panel-boxes:hover{
+  background-color: color-mix(in srgb, var(--background) 80%, white);
+  color: var(--text);
+}
