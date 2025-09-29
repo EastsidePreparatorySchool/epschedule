@@ -503,6 +503,27 @@ paper-icon-item {
   text-decoration:none;
 }
 
+/* Make the Github updates dialog content scrollable when there are many commits */
+.github-dialog {
+  /* ensure dialog uses theme colors */
+  background-color: var(--background);
+  color: var(--text);
+}
+
+#GithubUpdateBox {
+  /* cap the box height to a sensible portion of the viewport and allow scrolling */
+  max-height: 70vh; /* 70% of viewport height */
+  overflow-y: auto;
+  padding: 12px 24px;
+  box-sizing: border-box;
+}
+
+#GHUpdateText {
+  /* ensure long content wraps and adds spacing between commit entries */
+  white-space: pre-wrap; /* preserve line breaks but wrap long lines */
+  word-break: break-word;
+}
+
 /* unvisited link */
 .GithubLink:link {
   color: var(--text);

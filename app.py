@@ -22,7 +22,7 @@ SCHEDULE_INFO = None
 DAYS = None
 TERM_STARTS = []
 GITHUB_COMMITS = None
-NUM_COMMITS = 7
+NUM_COMMITS = 50
 
 
 def init_app(test_config=None):
@@ -552,7 +552,7 @@ def get_latest_github_commits():
     commitsArr = repo.get_commits()
     # print info about last commits
     result = []  # initialize array for it
-    for repo_num in range(NUM_COMMITS):
+    for repo_num in range(commitsArr.totalCount if not NUM_COMMITS else min(NUM_COMMITS,commitsArr.totalCount)):
         # select the last few commits, get its name (title),
         # author (github name), date, and URL to the changes
         commit_name = commitsArr[repo_num].commit.message.split("\n")[0]
