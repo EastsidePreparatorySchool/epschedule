@@ -258,11 +258,7 @@ def main():
             # gets the trimester starts in a format JS can parse
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
             latest_commits=json.dumps(GITHUB_COMMITS),
-            admin=(
-                session["username"] == "cwest"
-                or session["username"] == "ajosan"
-                or session["username"] == "rpudipeddi"
-            ),
+            admin=is_admin(),
         )
     )
     response.set_cookie("token", "", expires=0)
