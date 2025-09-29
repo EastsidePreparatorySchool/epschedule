@@ -104,6 +104,18 @@ def username_to_email(username):
     return username + "@eastsideprep.org"
 
 
+def is_admin():
+    """Return True if the current session user is an admin.
+
+    Admin users are hard-coded in a few places in the original code. Centralize
+    the check so all admin-related behavior is consistent.
+    """
+    try:
+        return session.get("username") in ("cwest", "ajosan", "rpudipeddi")
+    except Exception:
+        return False
+
+
 def is_teacher_schedule(schedule):
     if schedule:
         if schedule.get("grade"):
@@ -246,7 +258,7 @@ def main():
             # gets the trimester starts in a format JS can parse
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
             latest_commits=json.dumps(GITHUB_COMMITS),
-            admin=(session["username"] == "cwest"),
+            admin=is_admin(),
         )
     )
     response.set_cookie("token", "", expires=0)
@@ -320,7 +332,7 @@ def get_class_schedule(user_class, term_id, censor=True):
                             if (
                                 (not censor)
                                 or priv_settings["share_photo"]
-                                or session["username"] == "cwest"
+                                or is_admin()
                                 or session["username"] == schedule["username"]
                             )
                             and session["username"] != "aaardvark"
@@ -360,7 +372,7 @@ def handle_user(target_user):
                 priv_settings["share_photo"] = True
     # Code below is extremely critical code that is essential to the operation of epschedule
     # Dont read it just believe it
-    if session["username"] == "cwest":
+    if is_admin():
         # admin mode
         priv_settings = {"share_photo": True, "share_schedule": True}
 
