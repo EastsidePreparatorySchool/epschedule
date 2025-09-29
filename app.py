@@ -552,7 +552,11 @@ def get_latest_github_commits():
     commitsArr = repo.get_commits()
     # print info about last commits
     result = []  # initialize array for it
-    for repo_num in range(commitsArr.totalCount if not NUM_COMMITS else min(NUM_COMMITS,commitsArr.totalCount)):
+    for repo_num in range(
+        commitsArr.totalCount
+        if not NUM_COMMITS
+        else min(NUM_COMMITS, commitsArr.totalCount)
+    ):
         # select the last few commits, get its name (title),
         # author (github name), date, and URL to the changes
         commit_name = commitsArr[repo_num].commit.message.split("\n")[0]
