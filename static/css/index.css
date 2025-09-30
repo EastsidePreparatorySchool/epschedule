@@ -24,8 +24,11 @@
     display: none;
   }
   
-  .rightfloat:last-child:not([icon="search"]) {
+  .rightfloat:last-child:not([icon="search"],[id="sharephototoggle"]) {
     display: none;
+  }
+  .privtext1, .privtext2{
+    font-size:10px;
   }
 }
 
@@ -230,7 +233,7 @@ paper-toolbar {
 
 .inlinesettingsswitch {
   width: 100%;
-  height: 22px;
+  height: 8vh;
 }
 
 #popup .header {

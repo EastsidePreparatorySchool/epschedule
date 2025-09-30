@@ -264,6 +264,7 @@ def main():
                 True if db_entry is None else dict(db_entry.items()).get("share_photo")
             ).lower(),
             version=VERSION,
+            username=session.get("username"),
         )
     )
     response.set_cookie("token", "", expires=0)
@@ -388,7 +389,6 @@ def handle_user(target_user):
         target_schedule["photo_url"] = gen_photo_url(target_user, False)
     else:
         target_schedule["photo_url"] = "/static/images/placeholder.png"
-
     return json.dumps(target_schedule)
 
 

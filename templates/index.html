@@ -64,6 +64,7 @@
   <script src="static/js/index.js"></script>
 </head>
 <body unresolved="">
+  <span style="display: none !important;" id="namefjs">{{username}}</span>
   <neon-animated-pages id="pages" selected="0">
     <paper-drawer-panel id="drawerpanel" force-narrow>
       <paper-header-panel id="drawerheader" drawer>
@@ -209,9 +210,10 @@
       <div class="settingsdividerline"></div>
             <h3 class="privacypaneltitle">Privacy</h3>
       <div class="inlinesettingsswitch">
-        <span class="leftfloat padleft">Show other EPS students my photo</span>
+        <span id="privtext1" class="leftfloat padleft">Show other EPS students my photo</span>
         <paper-toggle-button class="rightfloat" id="sharephototoggle">
         </paper-toggle-button>
+        <span id="privtext2" class=""><br>Note that you will still be able to see your own photo</span>
       </div>
       <paper-button onclick="submitUpdatePrivacy()" raised
        class="settingsbutton" id="updatesettings">
