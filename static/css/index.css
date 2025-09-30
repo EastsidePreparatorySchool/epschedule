@@ -24,7 +24,7 @@
     display: none;
   }
   
-  .rightfloat:last-child:not([icon="search"]) {
+  .rightfloat:last-child:not([icon="search"],[id="sharephototoggle"]) {
     display: none;
   }
 }
