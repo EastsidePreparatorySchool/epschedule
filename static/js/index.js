@@ -539,7 +539,9 @@ function renderStudent(studentObj) {
     studentObj.photo_url +
     '" width="360px"' +
     "\" onerror=\"if (this.src != '/static/images/placeholder.png') this.src = '/static/images/placeholder.png';\">" +
-    '<div layout vertical><h3><span class="grade">' +
+    '<div layout vertical><h3>'+
+    (document.getElementById('namefjs').innerText===studentObj.username?"<span class='leftfloat padleft' style='font-size:12px; !important;font-weight: normal !important;'>You have photo sharing turned off, so others cannot see your photo</span><br>":'')+  
+    '<span class="grade">' +
     grade +
     "</span></h3>" +
     '<p><a href="mailto:' +
