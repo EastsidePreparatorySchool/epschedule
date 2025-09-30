@@ -24,7 +24,7 @@
     display: none;
   }
   
-  .rightfloat:last-child {
+  .rightfloat:last-child:not([icon="search"]) {
     display: none;
   }
 }
