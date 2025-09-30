@@ -540,7 +540,7 @@ function renderStudent(studentObj) {
     '" width="360px"' +
     "\" onerror=\"if (this.src != '/static/images/placeholder.png') this.src = '/static/images/placeholder.png';\">" +
     '<div layout vertical><h3>'+
-    (((document.getElementById('namefjs').innerText===studentObj.username)&document.getElementById("sharephototoggle").checked)?"<span class='leftfloat padleft' style='font-size:12px; !important;font-weight: normal !important;'>You have photo sharing turned off, so others cannot see your photo</span><br>":'')+  
+    (((document.getElementById('namefjs').innerText===studentObj.username)& !document.getElementById("sharephototoggle").checked)?"<span class='leftfloat padleft' style='font-size:12px; !important;font-weight: normal !important;'>You have photo sharing turned off, so others cannot see your photo</span><br>":'')+  
     '<span class="grade">' +
     grade +
     "</span></h3>" +
