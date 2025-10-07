@@ -27,7 +27,18 @@ jobs:
 
       - name: Export key
         run: echo '${{secrets.GCP_SERVICE_ACCOUNT}}' > service_account.json
+      
+      - name: Verify JSON syntax is still correct
+        uses: limitusus/json-syntax-check@v1
+        with:
+          pattern: "\\.json$"
 
+      - name: Verify style is still correct
+        run: |
+          autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check
+          black . --check
+          isort . --check --profile black
+      
       - name: Verify tests still pass
         run: python main_test.py
 
