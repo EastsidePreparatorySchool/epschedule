@@ -330,10 +330,36 @@
       is: 'x-schedule',
       behaviors: [SwipeableBehavior],
       properties: { entries: { notify: true } },
+      observers: [
+        'onEntriesChanged(entries)'
+      ],
       ready: function () {
         // disable vertical gestures on the card
         this.querySelector('paper-material').setScrollDirection('y');
         this.behaviors[0].disabled = true;
+      },
+      onEntriesChanged: function () {
+        // Reset any open dropdowns/selected states when entries change
+        var _this = this;
+        // Defer until DOM is stamped
+        setTimeout(function () {
+          try {
+            var selectedCards = _this.querySelectorAll('.card.selected');
+            for (var i = 0; i < selectedCards.length; i++) {
+              selectedCards[i].classList.remove('selected');
+            }
+            var collapses = _this.querySelectorAll('iron-collapse');
+            for (var j = 0; j < collapses.length; j++) {
+              collapses[j].opened = false;
+            }
+            var iconPages = _this.querySelectorAll('.optionicon iron-pages');
+            for (var k = 0; k < iconPages.length; k++) {
+              iconPages[k].selected = 0;
+            }
+          } catch (e) {
+            // no-op
+          }
+        }, 0);
       },
       and: function (a, b) {
         console.log(a);
