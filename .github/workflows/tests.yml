@@ -40,7 +40,6 @@ jobs:
           autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check
           black . --check
           isort . --check --profile black
-          npx prettier --check ."
-
+          npx prettier --check .
       - name: Test main
         run: python main_test.py
