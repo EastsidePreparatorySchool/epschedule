@@ -33,6 +33,9 @@ jobs:
         with:
           pattern: "\\.json$"
 
+      - name: Fix Prettier permissions
+        run: chmod +x ./node_modules/.bin/prettier
+
       - name: Verify style is still correct
         run: |
           autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check
