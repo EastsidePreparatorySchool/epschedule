@@ -71,6 +71,146 @@ function about() {
   about.open();
 }
 
+var currentPhotoCacheBuster = null;
+var photoPreviewObjectUrl = null;
+
+function withCacheBust(url, token) {
+  if (!url) {
+    return url;
+  }
+  var separator = url.indexOf("?") === -1 ? "?" : "&";
+  return url + separator + "cb=" + token;
+}
+
+function resetPhotoPreview(wrapper, img) {
+  if (photoPreviewObjectUrl) {
+    URL.revokeObjectURL(photoPreviewObjectUrl);
+    photoPreviewObjectUrl = null;
+  }
+  var previewWrapper = wrapper || document.getElementById("photo-preview");
+  var previewImg = img || document.getElementById("photo-preview-img");
+  if (previewImg) {
+    previewImg.removeAttribute("src");
+  }
+  if (previewWrapper) {
+    previewWrapper.hidden = true;
+  }
+}
+
+function bindPhotoPreviewEvents() {
+  var fileInput = document.getElementById("fileInput");
+  if (!fileInput || fileInput.dataset.previewBound === "true") {
+    return;
+  }
+  fileInput.dataset.previewBound = "true";
+
+  fileInput.addEventListener("change", function () {
+    var previewWrapper = document.getElementById("photo-preview");
+    var previewImg = document.getElementById("photo-preview-img");
+    if (photoPreviewObjectUrl) {
+      URL.revokeObjectURL(photoPreviewObjectUrl);
+      photoPreviewObjectUrl = null;
+    }
+    if (!previewWrapper || !previewImg) {
+      return;
+    }
+    var file = fileInput.files && fileInput.files[0];
+    if (!file) {
+      resetPhotoPreview(previewWrapper, previewImg);
+      return;
+    }
+    photoPreviewObjectUrl = URL.createObjectURL(file);
+    previewImg.src = photoPreviewObjectUrl;
+    previewWrapper.hidden = false;
+  });
+}
+
+function chpf(sobj) {
+  var container = document.getElementById("current_pic");
+  if (!container) {
+    return;
+  }
+  container.innerHTML = "";
+
+  var wrapper = document.createElement("div");
+  wrapper.className = "teacher";
+  wrapper.setAttribute("layout", "vertical");
+
+  var material = document.createElement("paper-material");
+  material.className = "header";
+  material.setAttribute("elevation", "2");
+
+  var holder = document.createElement("div");
+  holder.className = "photo-preview-container";
+
+  var currentSection = document.createElement("div");
+  currentSection.className = "photo-preview-section";
+
+  var currentLabel = document.createElement("p");
+  currentLabel.className = "photo-section-title";
+  currentLabel.textContent = "Current photo";
+
+  var currentImg = document.createElement("img");
+  currentImg.id = "current-photo-img";
+  currentImg.width = 120;
+  var cacheToken = currentPhotoCacheBuster || Date.now();
+  currentImg.src = withCacheBust(sobj.photo_url, cacheToken);
+  currentImg.onerror = function () {
+    if (this.src.indexOf("/static/images/placeholder.png") === -1) {
+      this.src = "/static/images/placeholder.png";
+    }
+  };
+
+  currentSection.appendChild(currentLabel);
+  currentSection.appendChild(currentImg);
+
+  var previewWrapper = document.createElement("div");
+  previewWrapper.id = "photo-preview";
+  previewWrapper.className = "photo-preview-section photo-preview";
+  previewWrapper.hidden = true;
+
+  var previewLabel = document.createElement("p");
+  previewLabel.className = "photo-section-title";
+  previewLabel.textContent = "Selected preview";
+
+  var previewImg = document.createElement("img");
+  previewImg.id = "photo-preview-img";
+  previewImg.width = 120;
+  previewImg.alt = "Selected photo preview";
+
+  previewWrapper.appendChild(previewLabel);
+  previewWrapper.appendChild(previewImg);
+
+  holder.appendChild(currentSection);
+  holder.appendChild(previewWrapper);
+  material.appendChild(holder);
+  wrapper.appendChild(material);
+  container.appendChild(wrapper);
+
+  resetPhotoPreview(previewWrapper, previewImg);
+}
+
+function changePhoto() {
+  //opens changephoto panel
+  var chp = document.getElementById("changephoto");
+  if (!chp) {
+    return;
+  }
+  var fileInput = document.getElementById("fileInput");
+  if (fileInput) {
+    fileInput.value = "";
+  }
+  bindPhotoPreviewEvents();
+  resetPhotoPreview();
+  currentPhotoCacheBuster = Date.now();
+  chp.open();
+  requestAdditionalData(
+    document.getElementById("namefjs").innerHTML,
+    "student",
+    chpf
+  );
+}
+
 function githubDisplay() {
   //opens github
   

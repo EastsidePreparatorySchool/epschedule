@@ -23,6 +23,10 @@
   .join-button {
     display: none;
   }
+
+  #changephoto .join-button {
+    display: block;
+  }
   
   .rightfloat:last-child:not([icon="search"],[id="sharephototoggle"]) {
     display: none;
@@ -72,7 +76,167 @@ neon-animated-pages {
   height: 100%;
 }
 
-#dialog {
+
+.photo-upload-button {
+  background-color: var(--lighter-background);
+  color: var(--text);
+  border: 2px solid #0DADBD;
+  padding: 8px;
+  border-radius: 8px;
+  width: 100%;
+  margin: 12px 0;
+  cursor: pointer;
+}
+
+#changephoto {
+  padding: 24px;
+  max-width: min(90vw, 420px);
+  width: min(90vw, 420px);
+  max-height: 90vh;
+  text-align: center;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background-color: var(--lighter-background);
+  border-radius: 12px;
+  color: var(--text);
+  scrollbar-width: thin;
+  scrollbar-color: #0dadbd33 transparent;
+}
+
+#changephoto::-webkit-scrollbar {
+  width: 8px;
+}
+
+#changephoto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#changephoto::-webkit-scrollbar-thumb {
+  background-color: #0dadbd99;
+  border-radius: 999px;
+  border: 2px solid var(--lighter-background);
+}
+
+#changephoto::-webkit-scrollbar-thumb:hover {
+  background-color: #0c8f9c;
+}
+
+#current_pic {
+  margin-bottom: 16px;
+}
+
+.photo-preview-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.photo-preview-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.photo-preview-container img {
+  border-radius: 8px;
+}
+
+.photo-section-title {
+  margin: 0;
+  font-weight: 600;
+  text-align: center;
+}
+
+.photo-preview {
+  margin-top: 0;
+}
+
+#photochangeform {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  align-items: stretch;
+}
+
+#photochangeform label {
+  font-size: 16px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+#photochangeform p {
+  color: gray;
+  font-size: 14px;
+  font-style: italic;
+  margin-top: 16px;
+}
+
+#changephoto .join-button {
+  margin: 16px auto;
+  width: 100%;
+  max-width: 260px;
+}
+
+#changephoto .teacher {
+  margin: 0;
+  width: 100%;
+}
+
+#changephoto .teacher div {
+  overflow: visible;
+}
+
+#changephoto paper-material {
+  background-color: var(--lighter-background);
+  border-radius: 12px;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#changephoto .photo-preview-container {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+}
+
+#changephoto .photo-preview-section {
+  align-items: center;
+  gap: 12px;
+}
+
+#changephoto .photo-preview-section img {
+  width: min(120px, 45vw);
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 600px) {
+  #changephoto {
+    padding: 16px;
+  }
+
+  #changephoto .photo-preview-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  #changephoto .photo-preview-section img {
+    width: min(160px, 70vw);
+  }
+
+  #changephoto .join-button {
+    max-width: none;
+  }
+}
+
+.dialog {
   color: var(--text); 
   background-color: var(--background);
 }

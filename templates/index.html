@@ -31,6 +31,7 @@
   <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/paper-toolbar/paper-toolbar.html">
   <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/paper-typeahead-input/paper-typeahead-input.html">
   <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/paper-toggle-button/paper-toggle-button.html">
+  <link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/image-icons.html">
   <!-- special-case this one icon from the action set -->
   <iron-iconset-svg name="action" size="24">
     <svg><defs>
@@ -100,9 +101,13 @@
             </iron-icon>
             <span class="side-panel-buttons">About</span>
           </paper-icon-item>
+          <paper-icon-item class="side-panel-boxes" onclick="changePhoto()" noink>
+            <iron-icon class="drawer-icon" icon="image:photo" item-icon>
+            </iron-icon>
+            <span class="side-panel-buttons">Change Photo</span>
+          </paper-icon-item>
+
           <p style="position: absolute;bottom: 0;left: 0;padding-left:20px;color:gray;">v{{version}}</p>
-
-
         </div>
       </paper-header-panel>
       <paper-header-panel id="mainheader" main>
@@ -204,7 +209,20 @@
     </div>
   </paper-dialog>
 
-  <paper-dialog id="dialog">
+
+<paper-dialog class="dialog" id="changephoto">
+    <div id="current_pic"></div>
+    <form id="photochangeform">
+      <label for="fileInput">Upload a file (Max: 10 MB):</label>
+      <br>
+      <input class="photo-upload-button" type="file" id="fileInput" accept="image/png,image/jpeg,image/jfif,image/webp" required><br>
+      <button class="join-button" type="submit">Change photo</button>
+      <p>Note that your photo will be manually reviewed before being changed. It must be school-appropriate and be a photo of you.</p>
+    </form>
+  </paper-dialog>
+
+
+  <paper-dialog class="dialog" id="dialog">
     <div id="settingspanel">
       <h2 class="settingstitle">Settings</h2>
       <div class="settingsdividerline"></div>
