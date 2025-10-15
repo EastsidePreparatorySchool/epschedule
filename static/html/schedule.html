@@ -1,19 +1,40 @@
-<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/polymer/polymer.html">
-<link rel="import"
-  href="https://epschedule-static.storage.googleapis.com/bower_components/paper-material/paper-material.html">
-<link rel="import"
-  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-collapse/iron-collapse.html">
-<link rel="import"
-  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import"
-  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/communication-icons.html">
-<link rel="import"
-  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/hardware-icons.html">
-<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-image/iron-image.html">
-<link rel="import" href="https://epschedule-static.storage.googleapis.com/bower_components/iron-list/iron-list.html">
-<link rel="import"
-  href="https://epschedule-static.storage.googleapis.com/bower_components/star-rating/star-rating.html">
-<link rel="import" href="swipeable-behavior.html">
+<link
+  rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/polymer/polymer.html"
+/>
+<link
+  rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/paper-material/paper-material.html"
+/>
+<link
+  rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-collapse/iron-collapse.html"
+/>
+<link
+  rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-flex-layout/iron-flex-layout.html"
+/>
+<link
+  rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/communication-icons.html"
+/>
+<link
+  rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-icons/hardware-icons.html"
+/>
+<link
+  rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-image/iron-image.html"
+/>
+<link
+  rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/iron-list/iron-list.html"
+/>
+<link
+  rel="import"
+  href="https://epschedule-static.storage.googleapis.com/bower_components/star-rating/star-rating.html"
+/>
+<link rel="import" href="swipeable-behavior.html" />
 
 <dom-module id="x-schedule">
   <style>
@@ -21,19 +42,19 @@
                      and #ids rather than [attributes].
     */
     [layout] {
-      @apply(--layout);
+      @apply (--layout);
     }
 
     [layout][vertical] {
-      @apply(--layout-vertical);
+      @apply (--layout-vertical);
     }
 
     [layout][center] {
-      @apply(--layout-center);
+      @apply (--layout-center);
     }
   </style>
   <style>
-    @media (prefers-color-scheme:light) {
+    @media (prefers-color-scheme: light) {
       :root {
         --background: #efefef;
         --lighter-background: white;
@@ -44,7 +65,7 @@
       }
     }
 
-    @media (prefers-color-scheme:dark) {
+    @media (prefers-color-scheme: dark) {
       :root {
         --background: #1f1f1f;
         --lighter-background: #292929;
@@ -64,7 +85,7 @@
       font-weight: 300;
       margin-bottom: 1px;
       border-radius: 2px;
-      transition: 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+      transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     :host-context(.no-transition) {
@@ -100,7 +121,7 @@
 
     .hybrid {
       width: 100%;
-      background-color: #F0B300;
+      background-color: #f0b300;
     }
 
     .hybrid p {
@@ -155,7 +176,6 @@
       background: var(--alt-color);
     }
 
-
     .student {
       background: var(--alt-color);
       padding: 2px;
@@ -181,7 +201,6 @@
       padding-right: 16px;
       font-size: 0.9rem;
     }
-
 
     .inline {
       position: relative;
@@ -215,7 +234,7 @@
       padding-right: 8px;
       width: 5px;
       height: 100%;
-      background-color: var(--background)
+      background-color: var(--background);
     }
 
     .classinfosubcontainer {
@@ -238,41 +257,71 @@
       <div layout="" vertical="">
         <template is="dom-if" if="{{allDayEvent}}">
           <div class="status">
-            <img src="{{allDayEvent.url}}"></img>
+            <img src="{{allDayEvent.url}}" />
             <p>{{allDayEvent.text}}</p>
           </div>
         </template>
-        <div class="hybrid">
-        </div>
+        <div class="hybrid"></div>
         <template is="dom-repeat" id="entryList" items="{{entries}}">
-          <div class="card" layout="" vertical="" xcenter="" on-tap="toggleExpand">
+          <div
+            class="card"
+            layout=""
+            vertical=""
+            xcenter=""
+            on-tap="toggleExpand"
+          >
             <div class="card-header" layout="" horizontal="" center="">
-              <img src="{{item.avatar}}"
-                onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';">
+              <img
+                src="{{item.avatar}}"
+                onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';"
+              />
               <div class="card-mid" layout="" vertical="">
                 <p item="time">
                   <template is="dom-if" if="{{!isCore()}}">
-                    <span>{{item.startTime}}</span> - <span>{{item.endTime}}</span>
+                    <span>{{item.startTime}}</span> -
+                    <span>{{item.endTime}}</span>
                   </template>
                   <template is="dom-if" if="{{hasTeacherAndRoom(item)}}">
-                    (<a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>,
-                    <a on-tap="roomThunk" item="link" target="_blank" href="{{linkFromRoom(item.room)}}">{{item.room}}</a>,
-                    {{item.period}} Period)
+                    (<a on-tap="teacherThunk" item="link" href="#"
+                      >{{getTeacherLastName(item)}}</a
+                    >,
+                    <a
+                      on-tap="roomThunk"
+                      item="link"
+                      target="_blank"
+                      href="{{linkFromRoom(item.room)}}"
+                      >{{item.room}}</a
+                    >, {{item.period}} Period)
                   </template>
                   <template is="dom-if" if="{{isCore()}}">
                     <!--If support for AND is ever added, use AND here instead of two IFS-->
                     <template is="dom-if" if="{{item.teacher}}">
-                      <a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>,
-                      <a on-tap="roomThunk" item="link" target="_blank" href="{{linkFromRoom(item.room)}}">{{item.room}}</a>,
-                      <a href="#">{{item.studentCount}} students</a>,
+                      <a on-tap="teacherThunk" item="link" href="#"
+                        >{{getTeacherLastName(item)}}</a
+                      >,
+                      <a
+                        on-tap="roomThunk"
+                        item="link"
+                        target="_blank"
+                        href="{{linkFromRoom(item.room)}}"
+                        >{{item.room}}</a
+                      >, <a href="#">{{item.studentCount}} students</a>,
                       {{item.period}} Period
                     </template>
                   </template>
                   <template is="dom-if" if="{{hasTeacherOnly(item)}}">
-                    (<a on-tap="teacherThunk" item="link" href="#">{{getTeacherLastName(item)}}</a>)
+                    (<a on-tap="teacherThunk" item="link" href="#"
+                      >{{getTeacherLastName(item)}}</a
+                    >)
                   </template>
                   <template is="dom-if" if="{{hasRoomOnly(item)}}">
-                    (<a on-tap="roomThunk" item="link" target="_blank" href="{{linkFromRoom(item.room)}}">{{item.room}}</a>)
+                    (<a
+                      on-tap="roomThunk"
+                      item="link"
+                      target="_blank"
+                      href="{{linkFromRoom(item.room)}}"
+                      >{{item.room}}</a
+                    >)
                   </template>
                 </p>
                 <h2>{{getName(item.name)}}</h2>
@@ -288,7 +337,11 @@
               </template>
             </div>
             <iron-collapse id="{{computeCollapseId(item)}}">
-              <template is="dom-if" if="{{isLunchWithDesc(item)}}" style="height:auto">
+              <template
+                is="dom-if"
+                if="{{isLunchWithDesc(item)}}"
+                style="height: auto"
+              >
                 <div layout vertical class="lunch">
                   <ul id="lunchtext">
                     <li>{{getLineInDesc(item, "0")}}</li>
@@ -299,17 +352,37 @@
               <template is="dom-if" if="{{displayClassOptions(item)}}">
                 <div class="altclassescontainer">
                   <div class="inline classinfosubcontainer" item="{{item}}">
-                    <a class="classemaillink" item="link" on-tap="removeThunk" href="#">EMAIL CLASS</a> | <span
-                      on-tap="periodThunk"> PERIOD INFO </span>
+                    <a
+                      class="classemaillink"
+                      item="link"
+                      on-tap="removeThunk"
+                      href="#"
+                      >EMAIL CLASS</a
+                    >
+                    | <span on-tap="periodThunk"> PERIOD INFO </span>
                   </div>
                 </div>
               </template>
               <template is="dom-if" if="{{!isLunchWithDesc(item)}}">
-                <iron-list items="{{item.students}}" grid class="studentgrid" style="height:20vh">
+                <iron-list
+                  items="{{item.students}}"
+                  grid
+                  class="studentgrid"
+                  style="height: 20vh"
+                >
                   <template>
-                    <div class="student" layout="" horizontal="" center="" on-tap="studentThunk">
-                      <img class="studentimage" src="{{item.photo_url}}"
-                        onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';">
+                    <div
+                      class="student"
+                      layout=""
+                      horizontal=""
+                      center=""
+                      on-tap="studentThunk"
+                    >
+                      <img
+                        class="studentimage"
+                        src="{{item.photo_url}}"
+                        onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';"
+                      />
 
                       <div id="studentname" class="studentname">
                         <span>{{item.firstname}} {{item.lastname}}</span>
@@ -325,17 +398,14 @@
     </paper-material>
   </template>
   <script>
-
     Polymer({
-      is: 'x-schedule',
+      is: "x-schedule",
       behaviors: [SwipeableBehavior],
       properties: { entries: { notify: true } },
-      observers: [
-        'onEntriesChanged(entries)'
-      ],
+      observers: ["onEntriesChanged(entries)"],
       ready: function () {
         // disable vertical gestures on the card
-        this.querySelector('paper-material').setScrollDirection('y');
+        this.querySelector("paper-material").setScrollDirection("y");
         this.behaviors[0].disabled = true;
       },
       onEntriesChanged: function () {
@@ -344,15 +414,15 @@
         // Defer until DOM is stamped
         setTimeout(function () {
           try {
-            var selectedCards = _this.querySelectorAll('.card.selected');
+            var selectedCards = _this.querySelectorAll(".card.selected");
             for (var i = 0; i < selectedCards.length; i++) {
-              selectedCards[i].classList.remove('selected');
+              selectedCards[i].classList.remove("selected");
             }
-            var collapses = _this.querySelectorAll('iron-collapse');
+            var collapses = _this.querySelectorAll("iron-collapse");
             for (var j = 0; j < collapses.length; j++) {
               collapses[j].opened = false;
             }
-            var iconPages = _this.querySelectorAll('.optionicon iron-pages');
+            var iconPages = _this.querySelectorAll(".optionicon iron-pages");
             for (var k = 0; k < iconPages.length; k++) {
               iconPages[k].selected = 0;
             }
@@ -368,9 +438,9 @@
       },
       getHeaderText: function (isOnCampus) {
         if (isOnCampus) {
-          return "🏫 On Campus"
+          return "🏫 On Campus";
         } else {
-          return "💻 Remote"
+          return "💻 Remote";
         }
       },
       displayClassOptions: function (item) {
@@ -386,14 +456,24 @@
         }
       },
       getName: function (name) {
-        name = name.replace('&', 'and');
+        name = name.replace("&", "and");
         return name; // Debug func
       },
       showChevron: function (item) {
         if (!this.expandable) {
           return false;
         }
-        var expandablePeriods = ["A", "B", "C", "D", "E", "F", "G", "H", "Advisory"];
+        var expandablePeriods = [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H",
+          "Advisory",
+        ];
         if (expandablePeriods.indexOf(item.period) >= 0 || item.lunchInfo) {
           return true;
         } else {
@@ -402,10 +482,10 @@
       },
       genClassEmailURL: function (students) {
         console.log(students);
-        console.log("Trying to render email!")
+        console.log("Trying to render email!");
         recipients = "";
         for (var i = 0; i < students.length; i++) {
-          recipients += students[i]['email'];
+          recipients += students[i]["email"];
 
           if (i < students.length - 1) {
             recipients += ",";
@@ -430,7 +510,7 @@
         return splitNames[splitNames.length - 1];
       },
       getIconURL: function (item) {
-        return "/96x96_photos/" + item.lastname + "_" + item.firstname + ".jpg"
+        return "/96x96_photos/" + item.lastname + "_" + item.firstname + ".jpg";
       },
       canRateLunch: function (strTime, isToday) {
         /*Takes in a time as a string, and returns
@@ -439,7 +519,8 @@
         var strArray = strTime.split(":"); // [minutes, seconds]
         var timeArray = [parseInt(strArray[0]), parseInt(strArray[1])];
 
-        if (timeArray[0] < 8) { // If it is a PM time
+        if (timeArray[0] < 8) {
+          // If it is a PM time
           timeArray[0] += 12; // Correct it
         }
 
@@ -448,9 +529,9 @@
         lunchStart.setHours(timeArray[0]);
         lunchStart.setMinutes(timeArray[1]);
 
-        var pastTime = (time.getTime() > lunchStart.getTime());
+        var pastTime = time.getTime() > lunchStart.getTime();
 
-        return (pastTime && isToday);
+        return pastTime && isToday;
       },
       computeCollapseId: function (item) {
         return "collapse-" + item.name + "-" + item.period;
@@ -471,8 +552,10 @@
         // want the lunch cards to toggle every time
         console.log(item.period);
 
-        if (item.period == "X") { // Don't expand for non-standard classes
-          if (item.name.includes("Lunch")) { // Except for lunch
+        if (item.period == "X") {
+          // Don't expand for non-standard classes
+          if (item.name.includes("Lunch")) {
+            // Except for lunch
             collapse.toggle();
           }
           return;
@@ -484,27 +567,29 @@
 
           // Squash all punctuation to underscores
           var cleanedClass = item.name.replace(/[\W]/g, "_");
-          var url = "class/" + item.period.toLowerCase() + "?term_id=" + item.termId;
+          var url =
+            "class/" + item.period.toLowerCase() + "?term_id=" + item.termId;
 
           xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
               // Change the chevron to a more-vert
               el.children[0].children[2].children[0].selected = 1;
               var obj = JSON.parse(this.responseText);
-              e.model.set('item.students', obj.students);
+              e.model.set("item.students", obj.students);
 
               // Calculate height
-              var height = (this.type == "full") ? 48 : 0;
-              height += Math.ceil(obj.students.length / 4) * (132);
+              var height = this.type == "full" ? 48 : 0;
+              height += Math.ceil(obj.students.length / 4) * 132;
               height += 8; // Add a little buffer at the bottom
-              console.log("Height is " + height.toString())
-              el.querySelector("iron-list").style.height = height.toString() + "px";
+              console.log("Height is " + height.toString());
+              el.querySelector("iron-list").style.height =
+                height.toString() + "px";
 
               if (el.querySelectorAll(".classemaillink").length) {
                 // Set class email address
                 recipients = "mailto:";
                 for (var i = 0; i < obj.students.length; i++) {
-                  recipients += obj.students[i]['email'];
+                  recipients += obj.students[i]["email"];
                   if (i < obj.students.length - 1) {
                     recipients += ";";
                   }
@@ -513,7 +598,7 @@
               }
               collapse.toggle();
             }
-          }
+          };
           xhr.open("GET", url, true);
           xhr.send();
         } else {
@@ -558,12 +643,16 @@
         e.stopPropagation();
       },
       linkFromRoom: function (room) {
-        var building = room.substring(0, room.indexOf('-')).toUpperCase();
-        var floor = room.substring(room.indexOf('-') + 1, room.indexOf('-') + 2).toUpperCase();
-        var newRoom = room.substring(room.indexOf('-') + 1).replace(/[^A-Za-z0-9]/g, "");
+        var building = room.substring(0, room.indexOf("-")).toUpperCase();
+        var floor = room
+          .substring(room.indexOf("-") + 1, room.indexOf("-") + 2)
+          .toUpperCase();
+        var newRoom = room
+          .substring(room.indexOf("-") + 1)
+          .replace(/[^A-Za-z0-9]/g, "");
         newRoom = building + "_" + floor + "_" + newRoom;
         var out = `http://epspaces.madeateps.org/?building=${building}&floor=${floor}&room=${newRoom}`;
-        
+
         return out;
       },
     });

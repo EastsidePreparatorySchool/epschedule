@@ -13,3 +13,8 @@ service_account*.json
 
 # Misc
 .DS_Store
+
+# NPM/Prettier files
+/node_modules
+package.json
+package-lock.json
