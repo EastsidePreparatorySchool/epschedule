@@ -207,13 +207,13 @@ function changePhoto() {
   requestAdditionalData(
     document.getElementById("namefjs").innerHTML,
     "student",
-    chpf
+    chpf,
   );
 }
 
 function githubDisplay() {
   //opens github
-  
+
   var gh = document.getElementById("Github");
   gh.open();
 }
@@ -289,7 +289,7 @@ var globalDate = getInitialDate();
 function getInitialDate() {
   date = new Date();
   switch (
-  date.getDay() // Falling through is intentional here
+    date.getDay() // Falling through is intentional here
   ) {
     case 6: // If Saturday, move the date forward twice
       date.setDate(date.getDate() + 2);
@@ -325,9 +325,11 @@ function dateToNextTri() {
 function specifyDate(goToDate) {
   globalDate = new Date(goToDate);
   globalDate.setDate(globalDate.getDate() + 1);
-  if (globalDate.getDay() == 6) { // Saturday
+  if (globalDate.getDay() == 6) {
+    // Saturday
     globalDate.setDate(globalDate.getDate() + 2); // Skip to Monday
-  } else if (globalDate.getDay() == 0) { // Sunday 
+  } else if (globalDate.getDay() == 0) {
+    // Sunday
     globalDate.setDate(globalDate.getDate() + 1); // Skip to Monday
   }
   console.log(globalDate);
@@ -418,9 +420,9 @@ function getGpsSuccess(position, roomObj) {
   var a =
     Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
     Math.cos(phi1) *
-    Math.cos(phi2) *
-    Math.sin(deltaLambda / 2) *
-    Math.sin(deltaLambda / 2);
+      Math.cos(phi2) *
+      Math.sin(deltaLambda / 2) *
+      Math.sin(deltaLambda / 2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   var d = radius * c;
   if (d > 200) {
@@ -628,7 +630,7 @@ function renderPeriod(periodObj) {
       "core",
       f,
       {},
-      false
+      false,
     );
 
     e.behaviors = [];
@@ -679,8 +681,11 @@ function renderStudent(studentObj) {
     studentObj.photo_url +
     '" width="360px"' +
     "\" onerror=\"if (this.src != '/static/images/placeholder.png') this.src = '/static/images/placeholder.png';\">" +
-    '<div layout vertical><h3>'+
-    (((document.getElementById('namefjs').innerText===studentObj.username)& !document.getElementById("sharephototoggle").checked)?"<span class='leftfloat padleft' style='font-size:12px; !important;font-weight: normal !important;'>You have photo sharing turned off, so others cannot see your photo</span><br>":'')+  
+    "<div layout vertical><h3>" +
+    ((document.getElementById("namefjs").innerText === studentObj.username) &
+    !document.getElementById("sharephototoggle").checked
+      ? "<span class='leftfloat padleft' style='font-size:12px; !important;font-weight: normal !important;'>You have photo sharing turned off, so others cannot see your photo</span><br>"
+      : "") +
     '<span class="grade">' +
     grade +
     "</span></h3>" +
@@ -965,7 +970,7 @@ function renderSchedule(
   type,
   scheduleElement,
   lunch_list,
-  expandable = true
+  expandable = true,
 ) {
   termId = getTermId(dateObj);
 
@@ -1009,7 +1014,7 @@ function renderSchedule(
         day,
         0,
         type,
-        lunchInfo
+        lunchInfo,
       );
       todaySchedule.push(scheduleObj);
     }
@@ -1028,7 +1033,7 @@ function renderSchedule(
         day,
         currentSlot,
         type,
-        lunchInfo
+        lunchInfo,
       );
       if (scheduleObj) {
         // If scheduleObj is not null
@@ -1188,16 +1193,21 @@ document.addEventListener("WebComponentsReady", () => {
     typeAhead.inputValue = "";
     closeSearchBar();
   });
-    const drawer = document.getElementById("drawerpanel");
+  const drawer = document.getElementById("drawerpanel");
   if (drawer) {
     drawer.addEventListener("transitionend", () => {
       const active = document.activeElement;
-      if (active && active.classList && active.classList.contains("side-panel-boxes")) {
+      if (
+        active &&
+        active.classList &&
+        active.classList.contains("side-panel-boxes")
+      ) {
         active.blur();
       }
       setTimeout(() => {
         const a = document.activeElement;
-        if (a && a.classList && a.classList.contains("side-panel-boxes")) a.blur();
+        if (a && a.classList && a.classList.contains("side-panel-boxes"))
+          a.blur();
       }, 50);
     });
   }

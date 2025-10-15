@@ -11,7 +11,7 @@ A schedule app for Eastside Preparatory School, built with [Google App Engine](h
 
 ## Running EPSchedule locally
 
-EPSchedule is designed to be *extremely* easy to get running locally - all you need are `git`, Python 3.7+, and `pip`. This does not work with Python 3.13 - just pip install eaech requirement individually. To set it up, just run:
+EPSchedule is designed to be _extremely_ easy to get running locally - all you need are `git`, Python 3.7+, and `pip`. This does not work with Python 3.13 - just pip install eaech requirement individually. To set it up, just run:
 
 ```
 git clone https://github.com/guberti/epschedule.git
@@ -21,13 +21,14 @@ pip install -r requirements.txt
 
 You'll then need to get service account credentials to access sensitive user data, like schedules, photos, and crypto keys. Email Justin Uberti (justin@uberti.name) and we'll send you a file - `epschedule-v2-xxxx.json` - which should be renamed to `service_account.json` and put in your `epschedule` folder. Then, just run
 
-```python main.py```
+`python main.py`
 
 and navigate to http://localhost:8080/, where a local version of EPSchedule will be running!
 
 ## Development
 
 ### Code style
+
 We try to follow the Black [Python](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html) and Google [JavaScript](https://google.github.io/styleguide/javascriptguide.xml) style guides. To auto-format your Python code, run
 
 ```
@@ -38,18 +39,21 @@ isort . --profile black
 from the command line.
 
 ### Running unit tests
-We use the [pytest](https://docs.pytest.org/en/stable/index.html) framework to test our Python code, and tests are run against all pull requests. To run the tests locally, simply run 
 
-```pytest```
+We use the [pytest](https://docs.pytest.org/en/stable/index.html) framework to test our Python code, and tests are run against all pull requests. To run the tests locally, simply run
+
+`pytest`
 
 from the command line.
 
 ### Contributing a patch
+
 From your fork of the epschedule repo, submit a pull request. Be sure that all tests pass, and you have followed the code style guides mentioned above.
 
 ### Updating the master schedule
+
 To recrawl or manually adjust the master period schedule (master_schedule.json), follow the instructions at [this link](https://github.com/guberti/epschedule/wiki/How-to-Crawl-schedules).
 
 ### More details
-For more details, see the EPSchedule [wiki](https://github.com/guberti/epschedule/wiki).
 
+For more details, see the EPSchedule [wiki](https://github.com/guberti/epschedule/wiki).

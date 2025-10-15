@@ -1,5 +1,5 @@
-@media (prefers-color-scheme:light){
-  :root{
+@media (prefers-color-scheme: light) {
+  :root {
     --background: #efefef;
     --lighter-background: white;
     --text: #1f1f1f;
@@ -8,9 +8,8 @@
   }
 }
 
-@media (prefers-color-scheme:dark)
-{
-  :root{
+@media (prefers-color-scheme: dark) {
+  :root {
     --background: #1f1f1f;
     --lighter-background: #292929;
     --text: #efefef;
@@ -19,7 +18,7 @@
   }
 }
 
-@media (max-width: 576px){
+@media (max-width: 576px) {
   .join-button {
     display: none;
   }
@@ -27,33 +26,34 @@
   #changephoto .join-button {
     display: block;
   }
-  
-  .rightfloat:last-child:not([icon="search"],[id="sharephototoggle"]) {
+
+  .rightfloat:last-child:not([icon="search"], [id="sharephototoggle"]) {
     display: none;
   }
-  .privtext1, .privtext2{
-    font-size:10px;
+  .privtext1,
+  .privtext2 {
+    font-size: 10px;
   }
 }
 
-@media (max-width: 768px){
+@media (max-width: 768px) {
   .join-button {
     font-size: 12px;
     padding: 10px 16px;
   }
-  
+
   .tooltip {
     display: none;
   }
-  
+
   .datepicker-toggle {
     display: none;
   }
-  
+
   .rightfloat {
     margin-left: 8px;
   }
-  
+
   .title {
     font-size: 16px;
     flex: 1;
@@ -68,7 +68,7 @@ html,
 body {
   height: 100%;
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   overflow-x: hidden;
 }
 
@@ -76,11 +76,10 @@ neon-animated-pages {
   height: 100%;
 }
 
-
 .photo-upload-button {
   background-color: var(--lighter-background);
   color: var(--text);
-  border: 2px solid #0DADBD;
+  border: 2px solid #0dadbd;
   padding: 8px;
   border-radius: 8px;
   width: 100%;
@@ -237,18 +236,18 @@ neon-animated-pages {
 }
 
 .dialog {
-  color: var(--text); 
+  color: var(--text);
   background-color: var(--background);
 }
 .join-dialog {
-  color: var(--text); 
+  color: var(--text);
   background-color: var(--background);
   overflow-y: auto;
   width: 600px;
 }
 
 .join-button {
-  background-color: #0DADBD;
+  background-color: #0dadbd;
   border: none;
   color: white;
   padding: 15px 32px;
@@ -340,7 +339,6 @@ google-map {
   overflow-x: visible;
   -webkit-overflow-scrolling: touch;
 }
-
 
 paper-toolbar {
   background: #0d47a1;
@@ -556,7 +554,7 @@ paper-toolbar {
 
 .periodsubcontainer {
   max-width: 600px;
-  background-color: #FFF;
+  background-color: #fff;
   margin: 0 auto;
 }
 
@@ -635,7 +633,7 @@ paper-icon-item {
   color: var(--text);
 }
 
-#aboutpanel{
+#aboutpanel {
   background-color: var(--background);
   color: var(--text);
 }
@@ -661,8 +659,8 @@ paper-icon-item {
   z-index: 1;
 }
 
-.github-dialog{
-  background-color:var(--background);
+.github-dialog {
+  background-color: var(--background);
 }
 
 .tooltip:hover .tooltiptext {
@@ -670,21 +668,21 @@ paper-icon-item {
 }
 
 .GithubUpdateBox {
-  text-align:center; 
-  background-color:var(--background);
+  text-align: center;
+  background-color: var(--background);
 }
 
 .GithubInnerP {
-  padding:12px; 
-  margin-bottom:12px; 
-  margin-top:0px; 
-  font-size:1.4rem; 
-  font-weight:300;
+  padding: 12px;
+  margin-bottom: 12px;
+  margin-top: 0px;
+  font-size: 1.4rem;
+  font-weight: 300;
 }
 
-.GithubTitleA{
-  color:var(--text); 
-  text-decoration:none;
+.GithubTitleA {
+  color: var(--text);
+  text-decoration: none;
 }
 
 /* Make the Github updates dialog content scrollable when there are many commits */
@@ -728,11 +726,11 @@ paper-icon-item {
   /* take off the underline */
   text-decoration: none;
 }
-.side-panel-boxes{
+.side-panel-boxes {
   background-color: var(--background);
   color: var(--text);
 }
-.side-panel-boxes:hover{
+.side-panel-boxes:hover {
   background-color: color-mix(in srgb, var(--background) 80%, white);
   color: var(--text);
 }

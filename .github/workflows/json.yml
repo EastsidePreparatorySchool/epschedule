@@ -3,10 +3,10 @@ name: json
 on:
   push:
     paths:
-      - '**.json'
+      - "**.json"
   pull_request:
     paths:
-      - '**.json'
+      - "**.json"
 
 jobs:
   test:

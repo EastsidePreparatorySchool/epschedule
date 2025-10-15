@@ -4,6 +4,7 @@ import os
 
 os.system("python -m isort . --profile black")
 os.system("python -m pytest")
+os.system(R"node_modules\.bin\prettier.cmd --write .")
 os.system("python -m black .")
 print("If there is anything below this line it needs to be fixed for tests to pass")
 os.system(

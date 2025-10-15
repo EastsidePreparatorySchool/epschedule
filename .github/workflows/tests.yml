@@ -32,6 +32,7 @@ jobs:
           autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check
           black . --check
           isort . --check --profile black
+          ./node_modules/.bin/prettier --check "**/*.{js,jsx,ts,tsx,json,css,scss,less,md,html,yml,yaml,graphql}"
 
       - name: Test main
         run: python main_test.py

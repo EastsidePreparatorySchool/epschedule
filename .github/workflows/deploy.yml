@@ -27,7 +27,7 @@ jobs:
 
       - name: Export key
         run: echo '${{secrets.GCP_SERVICE_ACCOUNT}}' > service_account.json
-      
+
       - name: Verify JSON syntax is still correct
         uses: limitusus/json-syntax-check@v1
         with:
@@ -38,7 +38,8 @@ jobs:
           autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check
           black . --check
           isort . --check --profile black
-      
+          ./node_modules/.bin/prettier --check "**/*.{js,jsx,ts,tsx,json,css,scss,less,md,html,yml,yaml,graphql}"
+
       - name: Verify tests still pass
         run: python main_test.py
 
