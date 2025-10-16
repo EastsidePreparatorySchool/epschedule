@@ -215,12 +215,14 @@
                 <paper-icon-button class="" icon="menu" paper-drawer-toggle>
                 </paper-icon-button>
                 <span class="title" id="day">Today</span>
-                <button
-                  onclick="window.open('https://forms.microsoft.com/r/sEqxAVt4PB')"
+                <a
+                  href="https://forms.microsoft.com/r/sEqxAVt4PB"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="join-button"
+                  aria-label="Join Hack Club (opens in a new tab)"
+                  >Join Hack Club</a
                 >
-                  Join Hack Club
-                </button>
                 <!-- Draw our calendar icon on top of the native picker -->
                 <span class="datepicker-toggle">
                   <span class="datepicker-toggle-button">
@@ -327,16 +329,17 @@
 
     <paper-dialog class="github-dialog" id="Github">
       <div id="GithubUpdateBox" class="GithubUpdateBox">
-        <h1>
-          <a
-            class="GithubTitleA"
-            href="https://github.com/EastsidePreparatorySchool/epschedule"
-          >
-            Latest Github Updates
-          </a>
-        </h1>
-        <div id="GHUpdateText"></div>
-        <br />
+        <div class="GithubInnerP">
+          <h1>
+            <a
+              class="GithubTitleA"
+              href="https://github.com/EastsidePreparatorySchool/epschedule"
+            >
+              Latest Github Updates
+            </a>
+          </h1>
+        </div>
+        <p id="GHUpdateText"></p>
       </div>
     </paper-dialog>
 
