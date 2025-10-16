@@ -18,10 +18,18 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Install node.js dependencies
+        run: npm install prettier
 
       - uses: "google-github-actions/auth@v2"
         with:
@@ -32,6 +40,6 @@ jobs:
           autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check
           black . --check
           isort . --check --profile black
-
+          npx prettier --check .
       - name: Test main
         run: python main_test.py
