@@ -207,48 +207,33 @@
               v{{version}}
             </p>
           </div>
-          <paper-icon-item class="side-panel-boxes" onclick="signOut()" noink>
-            <iron-icon class="drawer-icon" icon="account-circle" item-icon>
-            </iron-icon>
-            <span class="side-panel-buttons">Sign out</span>
-          </paper-icon-item>
-          <paper-icon-item class="side-panel-boxes" onclick="openSettings()" noink>
-            <iron-icon class="drawer-icon" icon="settings" item-icon>
-            </iron-icon>
-            <span class="side-panel-buttons">Settings</span>
-          </paper-icon-item>
-          <paper-icon-item class="side-panel-boxes" onclick="reportBug()" noink>
-            <iron-icon class="drawer-icon" icon="bug-report" item-icon>
-            </iron-icon>
-            <span class="side-panel-buttons">Report a bug</span>
-          </paper-icon-item>
-          <paper-icon-item class="side-panel-boxes" onclick="githubDisplay()" noink>
-            <iron-icon class="drawer-icon" icon="description" item-icon>
-            </iron-icon>
-            <span class="side-panel-buttons">See Latest Changes</span>
-          </paper-icon-item>
-          <paper-icon-item class="side-panel-boxes" onclick="about()" noink>
-            <iron-icon class="drawer-icon" icon="info" item-icon>
-            </iron-icon>
-            <span class="side-panel-buttons">About</span>
-          </paper-icon-item>
-          <p style="position: absolute;bottom: 0;left: 0;padding-left:20px;color:gray;">v{{version}}</p>
-
-
-        </div>
-      </paper-header-panel>
-      <paper-header-panel id="mainheader" main>
-        <paper-toolbar class="headerbar">
-          <neon-animated-pages class="headerbarpages" selected="0">
-            <div class="headerbarpage mainheader">
-              <paper-icon-button class="" icon="menu" paper-drawer-toggle>
-              </paper-icon-button>
-              <span class="title" id="day">Today</span>
-              <a href="https://forms.microsoft.com/r/sEqxAVt4PB" target="_blank" rel="noopener noreferrer" class="join-button" aria-label="Join Hack Club (opens in a new tab)">Join Hack Club</a>
-              <!-- Draw our calendar icon on top of the native picker -->
-              <span class="datepicker-toggle">
-                <span class="datepicker-toggle-button">
-                  <iron-icon icon="action:calendar">
+        </paper-header-panel>
+        <paper-header-panel id="mainheader" main>
+          <paper-toolbar class="headerbar">
+            <neon-animated-pages class="headerbarpages" selected="0">
+              <div class="headerbarpage mainheader">
+                <paper-icon-button class="" icon="menu" paper-drawer-toggle>
+                </paper-icon-button>
+                <span class="title" id="day">Today</span>
+                <a
+                  href="https://forms.microsoft.com/r/sEqxAVt4PB"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="join-button"
+                  aria-label="Join Hack Club (opens in a new tab)"
+                  >Join Hack Club</a
+                >
+                <!-- Draw our calendar icon on top of the native picker -->
+                <span class="datepicker-toggle">
+                  <span class="datepicker-toggle-button">
+                    <iron-icon icon="action:calendar"></iron-icon>
+                  </span>
+                  <input
+                    class="datepicker-input"
+                    type="date"
+                    id="date"
+                    onchange="selectDate()"
+                  />
                 </span>
                 <paper-icon-button
                   class="rightfloat"
@@ -344,16 +329,17 @@
 
     <paper-dialog class="github-dialog" id="Github">
       <div id="GithubUpdateBox" class="GithubUpdateBox">
-        <h1>
-          <a
-            class="GithubTitleA"
-            href="https://github.com/EastsidePreparatorySchool/epschedule"
-          >
-            Latest Github Updates
-          </a>
-        </h1>
-        <div id="GHUpdateText"></div>
-        <br />
+        <div class="GithubInnerP">
+          <h1>
+            <a
+              class="GithubTitleA"
+              href="https://github.com/EastsidePreparatorySchool/epschedule"
+            >
+              Latest Github Updates
+            </a>
+          </h1>
+        </div>
+        <p id="GHUpdateText"></p>
       </div>
     </paper-dialog>
 
