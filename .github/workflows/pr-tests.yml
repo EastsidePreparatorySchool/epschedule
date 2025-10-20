@@ -6,7 +6,7 @@ on:
 jobs:
   on-pr-from-branch:
     if: github.event.pull_request.head.repo.full_name == github.repository
-    name: Test
+    name: Test PR from branch
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
   
   on-pr-from-fork:
     if: github.event.pull_request.head.repo.full_name != github.repository
-    name: Fork Test
+    name: Test PR from fork
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
