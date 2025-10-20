@@ -27,7 +27,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Install node.js dependencies
-        run: npm install --verbose prettier
+        run: npm ci
 
       - name: Check style
         run: |
