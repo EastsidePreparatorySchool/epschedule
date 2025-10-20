@@ -26,6 +26,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Install node.js dependencies
+        run: npm install --verbose prettier
+
       - name: Check style
         run: |
           autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check
