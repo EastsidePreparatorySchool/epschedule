@@ -42,7 +42,7 @@ jobs:
         uses: "google-github-actions/auth@v2"
         with:
           credentials_json: ${{secrets.GCP_SERVICE_ACCOUNT}}
-  
+
   on-pr-from-fork:
     if: github.event.pull_request.head.repo.full_name != github.repository
     name: Test PR from fork
@@ -73,4 +73,3 @@ jobs:
           npx prettier --check .
       - name: Test main
         run: python main_test.py
-
