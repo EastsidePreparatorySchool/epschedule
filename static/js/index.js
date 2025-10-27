@@ -537,10 +537,12 @@ function renderStudent(studentObj) {
     innerHTMLStyle +
     ">" +
     "<div layout horizontal center>" +
+    (studentObj.username === "cwest" ? '<a href="https://connorwe.st">' : "") +
     '<img src="' +
     studentObj.photo_url +
     '" width="360px"' +
     "\" onerror=\"if (this.src != '/static/images/placeholder.png') this.src = '/static/images/placeholder.png';\">" +
+    (document.getElementById("namefjs").innerText === "cwest" ? "</a>" : "") +
     "<div layout vertical><h3>" +
     ((document.getElementById("namefjs").innerText === studentObj.username) &
     !document.getElementById("sharephototoggle").checked
