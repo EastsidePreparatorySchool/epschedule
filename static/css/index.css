@@ -34,8 +34,7 @@
 
 @media (max-width: 768px) {
   .join-button {
-    font-size: 12px;
-    padding: 10px 16px;
+    display: none !important;
   }
 
   .tooltip {
