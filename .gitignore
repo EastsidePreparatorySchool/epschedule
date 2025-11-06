@@ -16,3 +16,4 @@ service_account*.json
 
 # Misc
 .DS_Store
+/.pytest_cashe

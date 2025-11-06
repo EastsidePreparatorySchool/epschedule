@@ -824,6 +824,14 @@
         "times": "10:15-11:45"
       },
       {
+        "period": "US Advisory",
+        "times": "11:50-12:30"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "12:40-1:20"
+      },
+      {
         "period": "C",
         "times": "01:30-03:00"
       }
@@ -836,6 +844,14 @@
       {
         "period": "E",
         "times": "10:15-11:45"
+      },
+      {
+        "period": "US Advisory",
+        "times": "11:50-12:30"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "12:40-1:20"
       },
       {
         "period": "F",
