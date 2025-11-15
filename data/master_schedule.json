@@ -828,6 +828,10 @@
         "times": "11:50-12:30"
       },
       {
+        "period": "Lunch (MS)",
+        "times": "11:50-12:30"
+      },
+      {
         "period": "Lunch (US)",
         "times": "12:40-1:20"
       },
@@ -850,6 +854,10 @@
         "times": "11:50-12:30"
       },
       {
+        "period": "Lunch (MS)",
+        "times": "11:50-12:30"
+      },
+      {
         "period": "Lunch (US)",
         "times": "12:40-1:20"
       },
@@ -866,6 +874,10 @@
       {
         "period": "H",
         "times": "10:15-11:45"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "11:45-1:00"
       }
     ],
     "Grade Level Orientations": [
