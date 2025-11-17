@@ -824,7 +824,7 @@
         "times": "10:15-11:45"
       },
       {
-        "period": "US Advisory",
+        "period": "US Flex",
         "times": "11:50-12:30"
       },
       {
@@ -850,7 +850,7 @@
         "times": "10:15-11:45"
       },
       {
-        "period": "US Advisory",
+        "period": "US Flex",
         "times": "11:50-12:30"
       },
       {
@@ -877,7 +877,11 @@
       },
       {
         "period": "Lunch (US)",
-        "times": "11:45-1:00"
+        "times": "11:50-1:20"
+      },
+      {
+        "period": "Lunch (MS)",
+        "times": "11:50-1:20"
       }
     ],
     "Grade Level Orientations": [
