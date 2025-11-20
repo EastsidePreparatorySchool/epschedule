@@ -41,6 +41,24 @@ jobs:
 
       - name: Test main
         run: python main_test.py
+        
+      - name: Send email to Connor and Anmol
+        uses: dawidd6/action-send-mail@v6
+        with:
+          server_address: smtp.office365.com
+          server_port: 587
+          secure: true
+          username: epschedule@hotmail.com
+          password: ${{secrets.EPHMAIL_PASSWORD}}
+          subject: Github Pull Request Submitted
+          to: cwest@eastsideprep.org,ajosan@eastsideprep.org
+          from: EPSchedule
+          body: Pull request submitted. Please review at https://github.com/EastsidePreparatorySchool/epschedule/pulls
+          ignore_cert: true
+          convert_markdown: true
+          priority: low
+          nodemailerlog: false
+          nodemailerdebug: false
 
   on-pr-from-fork:
     if: github.event.pull_request.head.repo.full_name != github.repository
@@ -71,3 +89,20 @@ jobs:
           black . --check
           isort . --check --profile black
           npx prettier --check .
+      - name: Send email to Connor and Anmol
+        uses: dawidd6/action-send-mail@v6
+        with:
+          server_address: smtp.office365.com
+          server_port: 587
+          secure: true
+          username: epschedule@hotmail.com
+          password: ${{secrets.EPHMAIL_PASSWORD}}
+          subject: Github Pull Request Submitted
+          to: cwest@eastsideprep.org,ajosan@eastsideprep.org
+          from: EPSchedule
+          body: Pull request submitted. Please review at https://github.com/EastsidePreparatorySchool/epschedule/pulls
+          ignore_cert: true
+          convert_markdown: true
+          priority: low
+          nodemailerlog: false
+          nodemailerdebug: false
