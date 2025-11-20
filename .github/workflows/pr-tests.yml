@@ -43,7 +43,7 @@ jobs:
         run: python main_test.py
 
       - name: Send email to Connor and Anmol
-        uses: dawidd6/action-send-mail@v6.3.3
+        uses: dawidd6/action-send-mail@v6
         with:
           server_address: smtp.office365.com
           server_port: 465
@@ -90,7 +90,7 @@ jobs:
           isort . --check --profile black
           npx prettier --check .
       - name: Send email to Connor and Anmol
-        uses: dawidd6/action-send-mail@v6.3.3
+        uses: dawidd6/action-send-mail@v6
         with:
           server_address: smtp.office365.com
           server_port: 465
