@@ -46,7 +46,6 @@ jobs:
         uses: dawidd6/action-send-mail@v6
         with:
           server_address: smtp.office365.com
-          server_port: 587
           secure: true
           username: epschedule@hotmail.com
           password: ${{secrets.EPHMAIL_PASSWORD}}
@@ -93,7 +92,6 @@ jobs:
         uses: dawidd6/action-send-mail@v6
         with:
           server_address: smtp.office365.com
-          server_port: 587
           secure: true
           username: epschedule@hotmail.com
           password: ${{secrets.EPHMAIL_PASSWORD}}
