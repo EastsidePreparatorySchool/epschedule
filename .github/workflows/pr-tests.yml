@@ -41,7 +41,7 @@ jobs:
 
       - name: Test main
         run: python main_test.py
-        
+
       - name: Send email to Connor and Anmol
         uses: dawidd6/action-send-mail@v6
         with:
