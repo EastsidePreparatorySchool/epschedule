@@ -56,7 +56,7 @@ jobs:
           body: Pull request submitted. Please review at https://github.com/EastsidePreparatorySchool/epschedule/pulls
           ignore_cert: true
           convert_markdown: true
-          priority: low
+          priority: normal
           nodemailerlog: false
           nodemailerdebug: false
 
@@ -103,6 +103,6 @@ jobs:
           body: Pull request submitted. Please review at https://github.com/EastsidePreparatorySchool/epschedule/pulls
           ignore_cert: true
           convert_markdown: true
-          priority: low
+          priority: normal
           nodemailerlog: false
           nodemailerdebug: false
