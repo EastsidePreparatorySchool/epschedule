@@ -1,8 +1,8 @@
 cron:
-- description: update schedules
-  url: /cron/schedules
-  schedule: every 24 hours
+  - description: update schedules
+    url: /cron/schedules
+    schedule: every 24 hours
 
-- description: update lunches
-  url: /cron/update_lunch
-  schedule: every 24 hours
+  - description: update lunches
+    url: /cron/update_lunch
+    schedule: every 24 hours

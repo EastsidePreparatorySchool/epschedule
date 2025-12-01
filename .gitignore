@@ -11,5 +11,9 @@ epschedule-v2-*.json
 service_account.json
 service_account*.json
 
+# NPM/Prettier files
+/node_modules
+
 # Misc
 .DS_Store
+/.pytest_cashe
