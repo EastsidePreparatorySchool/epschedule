@@ -893,10 +893,12 @@ function renderSchedule(
         time: "",
         startTime: earlyDismissalTime,
         endTime: earlyDismissalTime,
-        avatar: isDarkMode() ? "/static/images/earlydismissal_dark.svg" : "/static/images/earlydismissal.svg",
+        avatar: isDarkMode()
+          ? "/static/images/earlydismissal_dark.svg"
+          : "/static/images/earlydismissal.svg",
         teacherLink: "",
         roomLink: "",
-        termId: termId
+        termId: termId,
       };
       todaySchedule.push(earlyDismissalObj);
     }
@@ -937,10 +939,12 @@ function renderSchedule(
         time: "",
         startTime: earlyDismissalTime,
         endTime: earlyDismissalTime, // Same time, just a marker
-        avatar: isDarkMode() ? "/static/images/earlydismissal_dark.svg" : "/static/images/earlydismissal.svg",
+        avatar: isDarkMode()
+          ? "/static/images/earlydismissal_dark.svg"
+          : "/static/images/earlydismissal.svg",
         teacherLink: "",
         roomLink: "",
-        termId: termId
+        termId: termId,
       };
       todaySchedule.push(earlyDismissalObj);
     }
