@@ -540,8 +540,6 @@ function renderStudent(studentObj) {
     (studentObj.username === "cwest" ? '<a href="https://connorwe.st">' : "") +
     '<img src="' +
     studentObj.photo_url +
-    "?t=" +
-    Date.now() +
     '" width="360px"' +
     "\" onerror=\"if (this.src != '/static/images/placeholder.png') this.src = '/static/images/placeholder.png';\">" +
     (document.getElementById("namefjs").innerText === "cwest" ? "</a>" : "") +
@@ -895,12 +893,10 @@ function renderSchedule(
         time: "",
         startTime: earlyDismissalTime,
         endTime: earlyDismissalTime,
-        avatar: isDarkMode()
-          ? "/static/images/earlydismissal_dark.svg"
-          : "/static/images/earlydismissal.svg",
+        avatar: isDarkMode() ? "/static/images/earlydismissal_dark.svg" : "/static/images/earlydismissal.svg",
         teacherLink: "",
         roomLink: "",
-        termId: termId,
+        termId: termId
       };
       todaySchedule.push(earlyDismissalObj);
     }
@@ -941,12 +937,10 @@ function renderSchedule(
         time: "",
         startTime: earlyDismissalTime,
         endTime: earlyDismissalTime, // Same time, just a marker
-        avatar: isDarkMode()
-          ? "/static/images/earlydismissal_dark.svg"
-          : "/static/images/earlydismissal.svg",
+        avatar: isDarkMode() ? "/static/images/earlydismissal_dark.svg" : "/static/images/earlydismissal.svg",
         teacherLink: "",
         roomLink: "",
-        termId: termId,
+        termId: termId
       };
       todaySchedule.push(earlyDismissalObj);
     }
