@@ -78,9 +78,7 @@ def get_term_starts(days):
     """Return a list of datetime objects for the start of each trimester."""
     return [
         find_day(days, ".*"),
-        find_day(days, ".*End.*Fall Term")
-        + datetime.timedelta(days=1)
-        + datetime.timedelta(days=9),
+        find_day(days, ".*End.*Fall Term") + datetime.timedelta(days=1),
         find_day(days, ".*End.*Winter Term") + datetime.timedelta(days=1),
     ]
 
@@ -277,24 +275,23 @@ def handle_class(period):
         abort(403)
 
     schedule = get_schedule(session["username"])
-    term = int(request.args.get("term_id"))
+    try:
+        term = int(request.args["term_id"])
+        class_name = next(
+            (
+                c
+                for c in schedule["classes"][term]
+                if c["period"].lower() == period.lower()
+            )
+        )
+    except:
+        abort(404)
 
-    class_name = next(
-        (c for c in schedule["classes"][term] if c["period"].lower() == period)
-    )
-
-    censor = not is_teacher_schedule(schedule)
-    class_schedule = get_class_schedule(class_name, term, censor=censor)
+    class_schedule = get_class_schedule(class_name, term)
     return json.dumps(class_schedule)
 
 
 # Functions to generate and censor class schedules
-
-
-# List of people who opted out of photo sharing
-def gen_opted_out_table():
-    # TODO write this
-    return set()
 
 
 def is_same_class(a, b):
@@ -305,16 +302,14 @@ def is_same_class(a, b):
     )
 
 
-def get_class_schedule(user_class, term_id, censor=True):
+def get_class_schedule(user_class, term_id):
     result = {
         "period": user_class["period"],
         "teacher": user_class["teacher_username"],
         "term_id": term_id,
         "students": [],
     }
-
-    opted_out = set()
-
+    user_is_teacher = is_teacher_schedule(get_schedule(session["username"]))
     for schedule in get_schedule_data().values():
         for classobj in schedule["classes"][term_id]:
             if is_same_class(user_class, classobj):
@@ -336,12 +331,11 @@ def get_class_schedule(user_class, term_id, censor=True):
                         "photo_url": (
                             gen_photo_url(schedule["username"], True)
                             if (
-                                (not censor)
-                                or priv_settings["share_photo"]
+                                priv_settings["share_photo"]
                                 or is_admin()
                                 or session["username"] == schedule["username"]
+                                or user_is_teacher
                             )
-                            and session["username"] != "aaardvark"
                             else "/static/images/placeholder_small.png"
                         ),
                     }
@@ -364,8 +358,10 @@ def handle_user(target_user):
 
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
+    if user_schedule is None or target_schedule is None:
+        abort(404)
     priv_settings = {"share_photo": False}
-    if (session["username"] == target_user) and session["username"] != "aaardvark":
+    if session["username"] == target_user:
         priv_settings = {"share_photo": True}
     elif is_teacher_schedule(target_schedule):
         priv_settings = {"share_photo": True}

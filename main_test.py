@@ -16,7 +16,7 @@ TEST_MASTER_SCHEDULE = [
 
 
 TEST_TEACHER = "jbriggs"
-TEST_STUDENT = "aaardvark"
+TEST_STUDENT = "bbison"
 TEST_STUDENT_NO_PIC = "aaardvark"
 
 
@@ -89,9 +89,9 @@ class NoAuthTests(unittest.TestCase):
     # Test that username being set from cookies is what we want
     def test_login(self):
         self.client.set_cookie(
-            key="token", value='{"email": "aaardvark@eastsideprep.org"}'
+            key="token", value='{"email": "bbison@eastsideprep.org"}'
         )
-        test_username = "aaardvark"
+        test_username = "bbison"
         with self.client as c:
             response = c.get("/")
             # Get username from session and compare it to actual one
@@ -101,7 +101,7 @@ class NoAuthTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-AUTHENTICATED_USER = "aaardvark"
+AUTHENTICATED_USER = "bbison"
 
 
 class AuthenticatedTest(unittest.TestCase):
@@ -160,6 +160,11 @@ class TestStudentEndpoint(AuthenticatedTest):
     def test_urls_showing_up(self):
         student_obj = self.check_username(TEST_STUDENT_NO_PIC)
         self.assertEqual(student_obj["photo_url"], "/static/images/placeholder.png")
+
+    # Test that a student who is sharing their pic returns their pic
+    def test_student_pics_showing_up(self):
+        student_obj = self.check_username(TEST_STUDENT)
+        self.assertNotEqual(student_obj["photo_url"], "/static/images/placeholder.png")
 
 
 TEST_SEARCH = "b"
