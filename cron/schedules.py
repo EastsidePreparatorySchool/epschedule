@@ -116,6 +116,9 @@ def download_schedule(client, username, year):
     if individual["birthday"]:
         person["birthday"] = individual["birthday"]
 
+    # Add early dismissal (for now, based on some criteria - can be modified)
+    person["early_dismissal"] = individual.get("early_dismissal", False)
+
     return person
 
 

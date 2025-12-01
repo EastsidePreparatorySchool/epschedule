@@ -273,7 +273,10 @@
             <div class="card-header" layout="" horizontal="" center="">
               <img
                 src="{{item.avatar}}"
-                onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';"
+                onerror="
+                  if (this.src != '/static/images/placeholder_small.png')
+                    this.src = '/static/images/placeholder_small.png';
+                "
               />
               <div class="card-mid" layout="" vertical="">
                 <p item="time">
@@ -381,7 +384,12 @@
                       <img
                         class="studentimage"
                         src="{{item.photo_url}}"
-                        onerror="if (this.src != '/static/images/placeholder_small.png') this.src = '/static/images/placeholder_small.png';"
+                        onerror="
+                          if (
+                            this.src != '/static/images/placeholder_small.png'
+                          )
+                            this.src = '/static/images/placeholder_small.png';
+                        "
                       />
 
                       <div id="studentname" class="studentname">

@@ -880,6 +880,26 @@ function renderSchedule(
       );
       todaySchedule.push(scheduleObj);
     }
+    // Add early dismissal if the student has it
+    if (schedule.early_dismissal && todaySchedule.length > 0) {
+      var lastEntry = todaySchedule[todaySchedule.length - 1];
+      var earlyDismissalTime = lastEntry.endTime;
+      var earlyDismissalObj = {
+        name: "Early Dismissal",
+        teacher: "",
+        teacherUsername: "",
+        room: "",
+        period: "ED",
+        time: "",
+        startTime: earlyDismissalTime,
+        endTime: earlyDismissalTime,
+        avatar: isDarkMode() ? "/static/images/earlydismissal_dark.svg" : "/static/images/earlydismissal.svg",
+        teacherLink: "",
+        roomLink: "",
+        termId: termId
+      };
+      todaySchedule.push(earlyDismissalObj);
+    }
     scheduleElement.entries = todaySchedule;
     scheduleElement.allDayEvent = null;
   } else if (day.length > 1) {
@@ -903,6 +923,26 @@ function renderSchedule(
         // Push scheduleObj to a list of class objs
         todaySchedule.push(scheduleObj);
       }
+    }
+    // Add early dismissal if the student has it
+    if (schedule.early_dismissal && todaySchedule.length > 0) {
+      var lastEntry = todaySchedule[todaySchedule.length - 1];
+      var earlyDismissalTime = lastEntry.endTime;
+      var earlyDismissalObj = {
+        name: "Early Dismissal",
+        teacher: "",
+        teacherUsername: "",
+        room: "",
+        period: "ED",
+        time: "",
+        startTime: earlyDismissalTime,
+        endTime: earlyDismissalTime, // Same time, just a marker
+        avatar: isDarkMode() ? "/static/images/earlydismissal_dark.svg" : "/static/images/earlydismissal.svg",
+        teacherLink: "",
+        roomLink: "",
+        termId: termId
+      };
+      todaySchedule.push(earlyDismissalObj);
     }
     // Add the list of schedules to scheduleElement's entries array
     scheduleElement.entries = todaySchedule;
