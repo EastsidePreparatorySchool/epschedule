@@ -824,6 +824,18 @@
         "times": "10:15-11:45"
       },
       {
+        "period": "US Flex",
+        "times": "11:50-12:30"
+      },
+      {
+        "period": "Lunch (MS)",
+        "times": "11:50-12:30"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "12:40-1:20"
+      },
+      {
         "period": "C",
         "times": "01:30-03:00"
       }
@@ -838,6 +850,18 @@
         "times": "10:15-11:45"
       },
       {
+        "period": "US Flex",
+        "times": "11:50-12:30"
+      },
+      {
+        "period": "Lunch (MS)",
+        "times": "11:50-12:30"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "12:40-1:20"
+      },
+      {
         "period": "F",
         "times": "01:30-03:00"
       }
@@ -850,6 +874,14 @@
       {
         "period": "H",
         "times": "10:15-11:45"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "11:50-1:20"
+      },
+      {
+        "period": "Lunch (MS)",
+        "times": "11:50-1:20"
       }
     ],
     "Grade Level Orientations": [
@@ -1144,9 +1176,9 @@
         "times": "02:30-03:05"
       }
     ],
-    "PDD (No School) (No School)": [
+    "PDD (No School)": [
       {
-        "period": "PDD (No School) (No School)",
+        "period": "PDD (No School)",
         "times": "08:00-03:15"
       }
     ],
@@ -1183,6 +1215,12 @@
     "Veterans Day_Tue": [
       {
         "period": "Veterans Day",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Voices in Action": [
+      {
+        "period": "Voices in Action",
         "times": "08:00-03:15"
       }
     ],
