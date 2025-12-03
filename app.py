@@ -422,7 +422,10 @@ def handle_period(period):
         abort(403)
 
     # TODO read this as a URL parameter
-    term = get_term_id()
+    try:
+        term = int(request.args["term_id"])
+    except:
+        term = get_term_id()
     schedule = get_schedule(session["username"])
     grade_range = get_grade_range(schedule["grade"])
     available = get_available(period, term, grade_range)
