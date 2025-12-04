@@ -193,7 +193,8 @@
     "gradyear": 2022,
     "username": "aaardvark",
     "advisor": "zzebra",
-    "grade": 11
+    "grade": 11,
+    "early_dismissal": true
   },
   "bbison": {
     "classes": [
