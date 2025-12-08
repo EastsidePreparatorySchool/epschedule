@@ -17,13 +17,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--verbose", action="store_true", help="Print debugging output."
     )
-    parser.add_argument(
-        "--username", help="Specific username to update (for photos)."
-    )
+    parser.add_argument("--username", help="Specific username to update (for photos).")
     args = parser.parse_args()
 
     start_time = time.time()
-    print(f"Updating {args.data}... dry run={args.dry_run} verbose={args.verbose} username={args.username}")
+    print(
+        f"Updating {args.data}... dry run={args.dry_run} verbose={args.verbose} username={args.username}"
+    )
     callable = None
     if args.data == "lunches":
         callable = update_lunch.read_lunches
