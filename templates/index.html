@@ -28,10 +28,8 @@
     />
     <link rel="manifest" href="/static/favicon/site.webmanifest" />
     <script src="https://epschedule-static.storage.googleapis.com/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-    <script
-      src="https://kit.fontawesome.com/a076d05399.js"
-      crossorigin="anonymous"
-    ></script>
+    <!-- Font Awesome (use CDN instead of kit to avoid domain-restrictions during local dev) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- gets icons -->
     <link
       rel="import"
@@ -453,5 +451,22 @@
       })();
     </script>
     {% endif %}
+    <!-- Global chat widget -->
+    <div id="global-chat" aria-live="polite">
+      <div id="chat-header">
+        <div class="chat-title"><i class="fas fa-comments"></i> <span>Global Chat</span></div>
+        <div class="chat-controls">
+          <span id="chat-unread" class="chat-unread" style="display:none;">0</span>
+          <button id="chat-toggle" class="chat-toggle-button" aria-label="Toggle chat" aria-expanded="false"><i class="fas fa-comments"></i></button>
+        </div>
+      </div>
+      <div id="chat-panel" style="display:none;">
+        <div id="chat-messages" role="log" aria-live="polite"></div>
+        <div class="chat-input-row">
+          <input id="chat-input" type="text" placeholder="Say something..." autocomplete="off" />
+          <button id="chat-send">Send</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
