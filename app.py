@@ -713,10 +713,19 @@ def chat_send():
         return json.dumps({"error": "empty message"})
     if len(text) > 1000:
         text = text[:1000]
+    # check for anonymous flag from the form
+    anon_raw = request.form.get("anonymous")
+    anonymous = False
+    if anon_raw and str(anon_raw).lower() in ("1", "true", "on", "yes", "y"):
+        anonymous = True
+    username = session.get("username")
     message = {
-        "user": session.get("username"),
+        "user": username,  # recorded sender (kept for audit/ownership)
         "text": text,
         "ts": datetime.datetime.utcnow().isoformat() + "Z",
+        "anonymous": anonymous,
+        # display_user is what clients should show publicly
+        "display_user": "Anonymous" if anonymous else username,
     }
     try:
         broadcast_chat_message(message)

@@ -1128,6 +1128,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var chatMessages = document.getElementById("chat-messages");
   var chatInput = document.getElementById("chat-input");
   var chatSend = document.getElementById("chat-send");
+  var chatAnon = document.getElementById("chat-anon");
   if (!chatToggle) return;
 
   var unreadEl = document.getElementById("chat-unread");
@@ -1165,15 +1166,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var avatar = document.createElement("div");
     avatar.className = "chat-avatar";
-    avatar.textContent = (msg.user || "?").charAt(0).toUpperCase();
-    avatar.style.backgroundColor = stringToColor(msg.user || "");
+    // Prefer a public display name if provided (e.g. "Anonymous").
+    var displayUser = msg.display_user || msg.user || "?";
+    avatar.textContent = (displayUser || "?").charAt(0).toUpperCase();
+    avatar.style.backgroundColor = stringToColor(displayUser || "");
 
     var bubble = document.createElement("div");
     bubble.className = "chat-bubble";
 
     var meta = document.createElement("div");
     meta.className = "chat-meta";
-    meta.innerHTML = '<span class="chat-username">' + escapeHtml(msg.user || "") + '</span>' +
+    meta.innerHTML = '<span class="chat-username">' + escapeHtml(displayUser || "") + '</span>' +
       '<span class="chat-ts">' + formatTs(msg.ts) + '</span>';
 
     var text = document.createElement("div");
@@ -1256,6 +1259,10 @@ document.addEventListener("DOMContentLoaded", function () {
     chatSend.disabled = true;
     var data = new FormData();
     data.append("message", text);
+    // include anonymous flag if requested
+    if (chatAnon && chatAnon.checked) {
+      data.append("anonymous", "1");
+    }
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/chat/send", true);
     xhr.onload = function () {
