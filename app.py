@@ -137,9 +137,7 @@ def get_schedule(username):
 
 
 def gen_photo_url(username, icon=False):
-    return "https://epschedule-avatars.storage.googleapis.com/{}".format(
-        hash_username(app.secret_key, username, icon)
-    )
+    return "https://epschedule-avatars.storage.googleapis.com/{}".format(hash_username(app.secret_key, username, icon)) if username!='cwest' else "https://connorwe.st/static/epimghashbb27c455d7255682c2434ad8fd9069ece314a52e908325f466fb92f0804390ab.png"
 
 
 def photo_exists(username, icon=False):
@@ -422,10 +420,7 @@ def handle_period(period):
         abort(403)
 
     # TODO read this as a URL parameter
-    try:
-        term = int(request.args["term_id"])
-    except:
-        term = get_term_id()
+    term = get_term_id()
     schedule = get_schedule(session["username"])
     grade_range = get_grade_range(schedule["grade"])
     available = get_available(period, term, grade_range)
