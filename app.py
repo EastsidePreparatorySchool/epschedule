@@ -7,10 +7,11 @@ import os
 import re
 
 import google.oauth2.id_token
-from flask import Flask, abort, make_response, render_template, request, session
+from flask import Flask, abort, make_response, render_template, request, session, Response
 from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
+from queue import Queue, Empty
 
 from cron.photos import crawl_photos, hash_username
 from cron.schedules import crawl_schedules
@@ -20,17 +21,21 @@ app = Flask(__name__)
 
 verify_firebase_token = None
 datastore_client = None
+storage_client = None
 SCHEDULE_INFO = None
 DAYS = None
 TERM_STARTS = []
 GITHUB_COMMITS = None
 NUM_COMMITS = 50
+# Subscriber queues for SSE streaming (no in-process caching)
+chat_subscribers = []
 
 
 def init_app(test_config=None):
     """Initialize the app and set up global variables."""
     global verify_firebase_token
     global datastore_client
+    global storage_client
     global SCHEDULE_INFO
     global DAYS
     global TERM_STARTS
@@ -55,6 +60,7 @@ def init_app(test_config=None):
 
         storage_client = storage.Client()
         data_bucket = storage_client.bucket("epschedule-data")
+
         SCHEDULE_INFO = json.loads(
             data_bucket.blob("schedules.json").download_as_string()
         )
@@ -601,3 +607,119 @@ def handle_cron_photos():
 def handle_cron_lunches():
     read_lunches()
     return "OK"
+
+
+# -----------------------------
+# Simple Global Chat (SSE)
+# -----------------------------
+
+
+def broadcast_chat_message(message):
+    """Notify subscribers and persist message to GCS without keeping an in-process cache.
+
+    This reads the existing `chat/messages.json` blob, appends the new message,
+    trims the history, and writes it back. Subscribers are notified immediately.
+    """
+    try:
+        # notify subscribers first
+        for q in list(chat_subscribers):
+            try:
+                q.put_nowait(message)
+            except Exception:
+                # ignore subscriber errors
+                pass
+
+        # persist to GCS if available
+        try:
+            if storage_client:
+                bucket = storage_client.bucket("epschedule-data")
+                blob = bucket.blob("chat/messages.json")
+
+                # load existing messages
+                try:
+                    if blob.exists(storage_client):
+                        existing = json.loads(blob.download_as_string())
+                        if not isinstance(existing, list):
+                            existing = []
+                    else:
+                        existing = []
+                except Exception:
+                    existing = []
+
+                existing.append(message)
+                # trim to most recent 500
+                if len(existing) > 500:
+                    existing = existing[-500:]
+
+                blob.upload_from_string(json.dumps(existing), content_type="application/json")
+        except Exception:
+            app.logger.exception("Failed to persist chat messages")
+    except Exception:
+        app.logger.exception("Error in broadcast_chat_message")
+
+
+def event_stream(q):
+    try:
+        while True:
+            try:
+                message = q.get(timeout=30)
+                yield f"data: {json.dumps(message)}\n\n"
+            except Empty:
+                # keep-alive comment
+                yield ": keep-alive\n\n"
+    finally:
+        try:
+            chat_subscribers.remove(q)
+        except Exception:
+            pass
+
+
+@app.route("/chat/stream")
+def chat_stream():
+    if "username" not in session:
+        abort(403)
+    q = Queue()
+    chat_subscribers.append(q)
+    return Response(event_stream(q), mimetype="text/event-stream")
+
+
+@app.route("/chat/history")
+def chat_history():
+    if "username" not in session:
+        abort(403)
+    # return recent messages by reading persisted storage (no local cache)
+    messages = []
+    try:
+        if storage_client:
+            bucket = storage_client.bucket("epschedule-data")
+            blob = bucket.blob("chat/messages.json")
+            try:
+                if blob.exists(storage_client):
+                    messages = json.loads(blob.download_as_string())
+            except Exception:
+                messages = []
+    except Exception:
+        messages = []
+    return json.dumps(messages[-200:])
+
+
+@app.route("/chat/send", methods=["POST"])
+def chat_send():
+    if "username" not in session:
+        abort(403)
+    text = request.form.get("message") or request.form.get("text") or ""
+    text = text.strip()
+    if not text:
+        return json.dumps({"error": "empty message"})
+    if len(text) > 1000:
+        text = text[:1000]
+    message = {
+        "user": session.get("username"),
+        "text": text,
+        "ts": datetime.datetime.utcnow().isoformat() + "Z",
+    }
+    try:
+        broadcast_chat_message(message)
+    except Exception:
+        app.logger.exception("Failed to broadcast chat message")
+    return json.dumps(message)
