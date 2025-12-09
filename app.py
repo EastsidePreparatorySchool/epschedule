@@ -137,7 +137,13 @@ def get_schedule(username):
 
 
 def gen_photo_url(username, icon=False):
-    return "https://epschedule-avatars.storage.googleapis.com/{}".format(hash_username(app.secret_key, username, icon)) if username!='cwest' else "https://connorwe.st/static/epimghashbb27c455d7255682c2434ad8fd9069ece314a52e908325f466fb92f0804390ab.png"
+    return (
+        "https://epschedule-avatars.storage.googleapis.com/{}".format(
+            hash_username(app.secret_key, username, icon)
+        )
+        if username != "cwest"
+        else "https://connorwe.st/static/epimghashbb27c455d7255682c2434ad8fd9069ece314a52e908325f466fb92f0804390ab.png"
+    )
 
 
 def photo_exists(username, icon=False):
