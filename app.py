@@ -460,7 +460,7 @@ def handle_period(period):
 @app.route("/eprtsi/")
 def eprtsi():
     return redirect(
-        f"https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/signin/?u={session["username"]}&h={hash_eprt(EPRT_KEY, session["username"]) if (EPRT_KEY is not None) and ("username" in session) else "No Key Error" }"
+        f'https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/signin/?u={session["username"]}&h={hash_eprt(EPRT_KEY, session["username"]) if (EPRT_KEY is not None) and ("username" in session) else "No Key Error" }'
     )
 
 
