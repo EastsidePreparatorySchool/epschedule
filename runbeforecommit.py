@@ -7,11 +7,19 @@
 
 import os
 
-os.system("python -m isort . --profile black")
-os.system("python -m pytest")
+connor = False
+
+# Feel free to add elifs for your own python paths if u have multiple versions. Just remember to change your flag back to False before committing.
+if connor:
+    p = R"C:\Users\cwest\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe"
+else:
+    p = "python"
+
+os.system(f"{p} -m isort . --profile black")
+os.system(f"{p} -m pytest")
 os.system("npx prettier --write .")
-os.system("python -m black .")
+os.system(f"{p} -m black .")
 print("If there is anything below this line it needs to be fixed for tests to pass")
 os.system(
-    "python -m autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check"
+    f"{p} -m autoflake . --remove-all-unused-imports --quiet --in-place -r --exclude venv --check"
 )
