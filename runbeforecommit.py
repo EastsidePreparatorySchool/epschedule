@@ -7,13 +7,14 @@
 
 import os
 
-connor = False
-
-# Feel free to add elifs for your own python paths if u have multiple versions. Just remember to change your flag back to False before committing.
-if connor:
-    p = R"C:\Users\cwest\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe"
-else:
-    p = "python"
+# Feel free to add cases for your own python paths if u have multiple versions.
+match input(
+    "Are you using specific python path? (Just press enter for default)\n"
+).lower():
+    case "c":
+        p = R"C:\Users\cwest\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe"
+    case _:
+        p = "python"
 
 os.system(f"{p} -m isort . --profile black")
 os.system(f"{p} -m pytest")
