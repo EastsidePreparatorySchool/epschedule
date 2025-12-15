@@ -459,9 +459,12 @@ def handle_period(period):
 # Functions for EPRT email verification using EPSchedule
 @app.route("/eprtsi/")
 def eprtsi():
-    return redirect(
-        f'https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/signin/?u={session["username"]}&h={hash_eprt(EPRT_KEY, session["username"]) if (EPRT_KEY is not None) and ("username" in session) else "No Key Error" }'
-    )
+    if (EPRT_KEY is not None) and ("username" in session):
+        return redirect(
+            f'https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/signin/?u={session["username"]}&h={hash_eprt(EPRT_KEY, session["username"])}'
+        )
+    else:
+        return redirect("https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/nli/")
 
 
 @app.route("/eprtsiv/<uh>")
@@ -470,7 +473,7 @@ def eprtsiv(uh):
         username, hash = uh.split(",")
         return (
             str(hash == hash_eprt(EPRT_KEY, username))
-            if (EPRT_KEY is not None) and ("username" in session)
+            if EPRT_KEY is not None
             else "False"
         )
     except:
