@@ -464,7 +464,9 @@ def eprtsi():
             f'https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/signin/?u={session["username"]}&h={hash_eprt(EPRT_KEY, session["username"])}'
         )
     else:
-        return redirect("https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/nli/")
+        return redirect(
+            "https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/nli/"
+        )
 
 
 @app.route("/eprtsiv/<uh>")
