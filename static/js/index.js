@@ -540,6 +540,8 @@ function renderStudent(studentObj) {
     (studentObj.username === "cwest" ? '<a href="https://connorwe.st">' : "") +
     '<img src="' +
     studentObj.photo_url +
+    "?t=" +
+    Date.now() +
     '" width="360px"' +
     "\" onerror=\"if (this.src != '/static/images/placeholder.png') this.src = '/static/images/placeholder.png';\">" +
     (document.getElementById("namefjs").innerText === "cwest" ? "</a>" : "") +

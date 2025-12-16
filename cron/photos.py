@@ -64,7 +64,7 @@ def upload_photo(bucket, filename, photo, verbose=False):
 # crawls all the photos from four11 and adds it to the EPSchedule bucket
 # run with dry_run=True if this is just a test and you don't want to actually upload
 # run with verbose=True if you want to see what's going on (90% of the time do this)
-def crawl_photos(dry_run=False, verbose=False):
+def crawl_photos(dry_run=False, verbose=False, target_username=None):
     # establishes clients for four11, secret manager
     four11_client = four11.Four11Client()
     secret_client = secretmanager.SecretManagerServiceClient()
@@ -83,6 +83,8 @@ def crawl_photos(dry_run=False, verbose=False):
     for user in people:
         photo_url = user.photo_url  # grab their photo URL
         username = user.username()  # grab their username
+        if target_username and username != target_username:
+            continue
         photo = download_photo_from_url(
             session, photo_url
         )  # download their photo from said url
@@ -101,21 +103,21 @@ def crawl_photos(dry_run=False, verbose=False):
         fullsize_filename = hash_username(key_bytes, username)
         if not dry_run:  # if its not a test run
             # upload the photo
-            upload_photo(avatar_bucket, fullsize_filename, photo)
+            upload_photo(avatar_bucket, fullsize_filename, photo, verbose)
 
         # Now crop photo
         cropped = crop_image(photo)
         icon_filename = hash_username(key_bytes, username, icon=True)
         if not dry_run:  # if its not a test run
             # upload the photo
-            upload_photo(avatar_bucket, icon_filename, cropped)
+            upload_photo(avatar_bucket, icon_filename, cropped, verbose)
 
         # For teachers, upload an unhashed grayscale photo for class
         if user.is_staff():  # if its a teacher
             grayscale = cropped.convert("L")  # uses pillow to map to grayscale
             if not dry_run:  # if its not a test run
                 # upload the photo
-                upload_photo(avatar_bucket, username + ".jpg", grayscale)
+                upload_photo(avatar_bucket, username + ".jpg", grayscale, verbose)
 
         if verbose:  # if you want to see whats happening
             # note that this person was just processed
