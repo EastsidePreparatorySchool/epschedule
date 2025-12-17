@@ -48,6 +48,11 @@ def hash_username(key, username, icon=False):
     return hashed.hexdigest() + ".jpg"
 
 
+def hash_eprt(key, username):
+    hashed = hmac.new(key, (username + "eprt").encode("utf-8"), hashlib.sha256)
+    return hashed.hexdigest()
+
+
 def upload_photo(bucket, filename, photo, verbose=False):
     # output to bytes
     with BytesIO() as output:

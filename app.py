@@ -7,12 +7,20 @@ import os
 import re
 
 import google.oauth2.id_token
-from flask import Flask, abort, make_response, render_template, request, session
+from flask import (
+    Flask,
+    abort,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    session,
+)
 from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
 
-from cron.photos import crawl_photos, hash_username
+from cron.photos import crawl_photos, hash_eprt, hash_username
 from cron.schedules import crawl_schedules
 from cron.update_lunch import get_lunches_since_date, read_lunches
 
@@ -25,6 +33,7 @@ DAYS = None
 TERM_STARTS = []
 GITHUB_COMMITS = None
 NUM_COMMITS = 50
+EPRT_KEY = None
 
 
 def init_app(test_config=None):
@@ -35,6 +44,7 @@ def init_app(test_config=None):
     global DAYS
     global TERM_STARTS
     global GITHUB_COMMITS
+    global EPRT_KEY
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -45,6 +55,9 @@ def init_app(test_config=None):
         secret_client = secretmanager.SecretManagerServiceClient()
         app.secret_key = secret_client.access_secret_version(
             request={"name": "projects/epschedule-v2/secrets/session_key/versions/1"}
+        ).payload.data
+        EPRT_KEY = secret_client.access_secret_version(
+            request={"name": "projects/epschedule-v2/secrets/eprt_verify/versions/1"}
         ).payload.data
 
         verify_firebase_token = (
@@ -443,7 +456,30 @@ def handle_period(period):
     )
 
 
-# Functions to generate period information
+# Functions for EPRT email verification using EPSchedule
+@app.route("/eprtsi/")
+def eprtsi():
+    if (EPRT_KEY is not None) and ("username" in session):
+        return redirect(
+            f'https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/signin/?u={session["username"]}&h={hash_eprt(EPRT_KEY, session["username"])}'
+        )
+    else:
+        return redirect(
+            "https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/nli/"
+        )
+
+
+@app.route("/eprtsiv/<uh>")
+def eprtsiv(uh):
+    try:
+        username, hash = uh.split(",")
+        return (
+            str(hash == hash_eprt(EPRT_KEY, username))
+            if EPRT_KEY is not None
+            else "False"
+        )
+    except:
+        return "False"
 
 
 def get_free_rooms(period, term):
