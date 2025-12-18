@@ -432,6 +432,7 @@ def sanitize_class(orig_class_obj):
 
     return class_obj  # Return the class object
 
+
 @app.route("/api/studentschedule/<key>")
 def api_student_schedule(key):
     if key == MOBILE_APP_KEY:
