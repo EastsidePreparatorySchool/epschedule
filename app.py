@@ -34,6 +34,7 @@ TERM_STARTS = []
 GITHUB_COMMITS = None
 NUM_COMMITS = 50
 EPRT_KEY = None
+MOBILE_APP_KEY = None
 
 
 def init_app(test_config=None):
@@ -58,6 +59,9 @@ def init_app(test_config=None):
         ).payload.data
         EPRT_KEY = secret_client.access_secret_version(
             request={"name": "projects/epschedule-v2/secrets/eprt_verify/versions/1"}
+        ).payload.data
+        MOBILE_APP_KEY = secret_client.access_secret_version(
+            request={"name": "projects/epschedule-v2/secrets/mobile_app/versions/1"}
         ).payload.data
 
         verify_firebase_token = (
@@ -427,6 +431,13 @@ def sanitize_class(orig_class_obj):
     class_obj["room"] = ""
 
     return class_obj  # Return the class object
+
+
+@app.route("/api/studentschedule/<key>")
+def api_student_schedule(key):
+    if key == MOBILE_APP_KEY:
+        return SCHEDULE_INFO
+    abort(403)
 
 
 @app.route("/period/<period>")
