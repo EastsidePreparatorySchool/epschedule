@@ -46,6 +46,7 @@ def init_app(test_config=None):
     global TERM_STARTS
     global GITHUB_COMMITS
     global EPRT_KEY
+    global MOBILE_APP_KEY
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -436,7 +437,7 @@ def sanitize_class(orig_class_obj):
 @app.route("/api/studentschedule/<key>")
 def api_student_schedule(key):
     if key == MOBILE_APP_KEY:
-        return SCHEDULE_INFO
+        return json.dumps(SCHEDULE_INFO)
     abort(403)
 
 
