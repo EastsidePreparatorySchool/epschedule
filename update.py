@@ -5,8 +5,11 @@ import time
 from cron import photos, schedules, update_lunch
 
 if __name__ == "__main__":
+    # Set up Google Application Credentials if not already set
     if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+    
+    # Parse command-line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("data", help="Which data update.")
     parser.add_argument(
@@ -20,10 +23,13 @@ if __name__ == "__main__":
     parser.add_argument("--username", help="Specific username to update (for photos).")
     args = parser.parse_args()
 
+    # Record start time for performance measurement
     start_time = time.time()
     print(
         f"Updating {args.data}... dry run={args.dry_run} verbose={args.verbose} username={args.username}"
     )
+    
+    # Determine which function to call based on the data type
     callable = None
     if args.data == "lunches":
         callable = update_lunch.read_lunches
@@ -35,8 +41,11 @@ if __name__ == "__main__":
         print("Invalid data type.")
         exit(1)
 
+    # Call the appropriate function with the provided arguments
     if args.data == "photos":
         callable(args.dry_run, args.verbose, args.username)
     else:
         callable(args.dry_run, args.verbose)
+    
+    # Print the time taken for the operation
     print("Operation took {:.2f} seconds".format(time.time() - start_time))
