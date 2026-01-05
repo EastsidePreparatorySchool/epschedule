@@ -5,13 +5,14 @@ import datetime
 import json
 import os
 import re
+from queue import Empty, Queue
 
 import google.oauth2.id_token
 from flask import (
     Flask,
+    Response,
     abort,
     make_response,
-    redirect,
     render_template,
     request,
     session,
@@ -20,7 +21,7 @@ from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
 
-from cron.photos import crawl_photos, hash_eprt, hash_username
+from cron.photos import crawl_photos, hash_username
 from cron.schedules import crawl_schedules
 from cron.update_lunch import get_lunches_since_date, read_lunches
 
@@ -28,25 +29,25 @@ app = Flask(__name__)
 
 verify_firebase_token = None
 datastore_client = None
+storage_client = None
 SCHEDULE_INFO = None
 DAYS = None
 TERM_STARTS = []
 GITHUB_COMMITS = None
 NUM_COMMITS = 50
-EPRT_KEY = None
-MOBILE_APP_KEY = None
+# Subscriber queues for SSE streaming (no in-process caching)
+chat_subscribers = []
 
 
 def init_app(test_config=None):
     """Initialize the app and set up global variables."""
     global verify_firebase_token
     global datastore_client
+    global storage_client
     global SCHEDULE_INFO
     global DAYS
     global TERM_STARTS
     global GITHUB_COMMITS
-    global EPRT_KEY
-    global MOBILE_APP_KEY
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -58,12 +59,6 @@ def init_app(test_config=None):
         app.secret_key = secret_client.access_secret_version(
             request={"name": "projects/epschedule-v2/secrets/session_key/versions/1"}
         ).payload.data
-        EPRT_KEY = secret_client.access_secret_version(
-            request={"name": "projects/epschedule-v2/secrets/eprt_verify/versions/1"}
-        ).payload.data
-        MOBILE_APP_KEY = secret_client.access_secret_version(
-            request={"name": "projects/epschedule-v2/secrets/mobile_app/versions/1"}
-        ).payload.data
 
         verify_firebase_token = (
             lambda token: google.oauth2.id_token.verify_firebase_token(
@@ -73,6 +68,7 @@ def init_app(test_config=None):
 
         storage_client = storage.Client()
         data_bucket = storage_client.bucket("epschedule-data")
+
         SCHEDULE_INFO = json.loads(
             data_bucket.blob("schedules.json").download_as_string()
         )
@@ -155,9 +151,25 @@ def get_schedule(username):
 
 
 def gen_photo_url(username, icon=False):
-    return "https://epschedule-avatars.storage.googleapis.com/{}".format(
-        hash_username(app.secret_key, username, icon)
-    )
+    blob_name = hash_username(app.secret_key, username, icon)
+    base = f"https://epschedule-avatars.storage.googleapis.com/{blob_name}"
+    # Try to append a version param based on blob update time to bust caches
+    try:
+        sc = globals().get("storage_client", None)
+        if sc:
+            bucket = sc.bucket("epschedule-avatars")
+            blob = bucket.blob(blob_name)
+            try:
+                blob.reload()
+                if blob.updated:
+                    ts = int(blob.updated.timestamp())
+                    return f"{base}?v={ts}"
+            except Exception:
+                # If metadata can't be fetched, fall back to base URL
+                pass
+    except Exception:
+        pass
+    return base
 
 
 def photo_exists(username, icon=False):
@@ -434,23 +446,13 @@ def sanitize_class(orig_class_obj):
     return class_obj  # Return the class object
 
 
-@app.route("/api/studentschedule/<key>")
-def api_student_schedule(key):
-    if key == MOBILE_APP_KEY.decode():
-        return json.dumps(SCHEDULE_INFO)
-    abort(403)
-
-
 @app.route("/period/<period>")
 def handle_period(period):
     if "username" not in session:
         abort(403)
 
     # TODO read this as a URL parameter
-    try:
-        term = int(request.args["term_id"])
-    except:
-        term = get_term_id()
+    term = get_term_id()
     schedule = get_schedule(session["username"])
     grade_range = get_grade_range(schedule["grade"])
     available = get_available(period, term, grade_range)
@@ -468,30 +470,7 @@ def handle_period(period):
     )
 
 
-# Functions for EPRT email verification using EPSchedule
-@app.route("/eprtsi/")
-def eprtsi():
-    if (EPRT_KEY is not None) and ("username" in session):
-        return redirect(
-            f'https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/signin/?u={session["username"]}&h={hash_eprt(EPRT_KEY, session["username"])}'
-        )
-    else:
-        return redirect(
-            "https://aetfg4afbdt7iwdvj3q46xylma0pzyyr.lambda-url.us-west-1.on.aws/nli/"
-        )
-
-
-@app.route("/eprtsiv/<uh>")
-def eprtsiv(uh):
-    try:
-        username, hash = uh.split(",")
-        return (
-            str(hash == hash_eprt(EPRT_KEY, username))
-            if EPRT_KEY is not None
-            else "False"
-        )
-    except:
-        return "False"
+# Functions to generate period information
 
 
 def get_free_rooms(period, term):
@@ -652,3 +631,130 @@ def handle_cron_photos():
 def handle_cron_lunches():
     read_lunches()
     return "OK"
+
+
+# -----------------------------
+# Simple Global Chat (SSE)
+# -----------------------------
+
+
+def broadcast_chat_message(message):
+    """Notify subscribers and persist message to GCS without keeping an in-process cache.
+
+    This reads the existing `chat/messages.json` blob, appends the new message,
+    trims the history, and writes it back. Subscribers are notified immediately.
+    """
+    try:
+        # notify subscribers first
+        for q in list(chat_subscribers):
+            try:
+                q.put_nowait(message)
+            except Exception:
+                # ignore subscriber errors
+                pass
+
+        # persist to GCS if available
+        try:
+            if storage_client:
+                bucket = storage_client.bucket("epschedule-data")
+                blob = bucket.blob("chat/messages.json")
+
+                # load existing messages
+                try:
+                    if blob.exists(storage_client):
+                        existing = json.loads(blob.download_as_string())
+                        if not isinstance(existing, list):
+                            existing = []
+                    else:
+                        existing = []
+                except Exception:
+                    existing = []
+
+                existing.append(message)
+                # trim to most recent 500
+                if len(existing) > 500:
+                    existing = existing[-500:]
+
+                blob.upload_from_string(
+                    json.dumps(existing), content_type="application/json"
+                )
+        except Exception:
+            app.logger.exception("Failed to persist chat messages")
+    except Exception:
+        app.logger.exception("Error in broadcast_chat_message")
+
+
+def event_stream(q):
+    try:
+        while True:
+            try:
+                message = q.get(timeout=30)
+                yield f"data: {json.dumps(message)}\n\n"
+            except Empty:
+                # keep-alive comment
+                yield ": keep-alive\n\n"
+    finally:
+        try:
+            chat_subscribers.remove(q)
+        except Exception:
+            pass
+
+
+@app.route("/chat/stream")
+def chat_stream():
+    if "username" not in session:
+        abort(403)
+    q = Queue()
+    chat_subscribers.append(q)
+    return Response(event_stream(q), mimetype="text/event-stream")
+
+
+@app.route("/chat/history")
+def chat_history():
+    if "username" not in session:
+        abort(403)
+    # return recent messages by reading persisted storage (no local cache)
+    messages = []
+    try:
+        if storage_client:
+            bucket = storage_client.bucket("epschedule-data")
+            blob = bucket.blob("chat/messages.json")
+            try:
+                if blob.exists(storage_client):
+                    messages = json.loads(blob.download_as_string())
+            except Exception:
+                messages = []
+    except Exception:
+        messages = []
+    return json.dumps(messages[-200:])
+
+
+@app.route("/chat/send", methods=["POST"])
+def chat_send():
+    if "username" not in session:
+        abort(403)
+    text = request.form.get("message") or request.form.get("text") or ""
+    text = text.strip()
+    if not text:
+        return json.dumps({"error": "empty message"})
+    if len(text) > 1000:
+        text = text[:1000]
+    # check for anonymous flag from the form
+    anon_raw = request.form.get("anonymous")
+    anonymous = False
+    if anon_raw and str(anon_raw).lower() in ("1", "true", "on", "yes", "y"):
+        anonymous = True
+    username = session.get("username")
+    message = {
+        "user": username,  # recorded sender (kept for audit/ownership)
+        "text": text,
+        "ts": datetime.datetime.utcnow().isoformat() + "Z",
+        "anonymous": anonymous,
+        # display_user is what clients should show publicly
+        "display_user": "Anonymous" if anonymous else username,
+    }
+    try:
+        broadcast_chat_message(message)
+    except Exception:
+        app.logger.exception("Failed to broadcast chat message")
+    return json.dumps(message)
