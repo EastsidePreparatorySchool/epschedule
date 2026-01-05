@@ -7,7 +7,15 @@ import os
 import re
 
 import google.oauth2.id_token
-from flask import Flask, abort, make_response, render_template, request, session, Response
+from flask import (
+    Flask,
+    abort,
+    make_response,
+    render_template,
+    request,
+    session,
+    Response,
+)
 from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
@@ -667,7 +675,9 @@ def broadcast_chat_message(message):
                 if len(existing) > 500:
                     existing = existing[-500:]
 
-                blob.upload_from_string(json.dumps(existing), content_type="application/json")
+                blob.upload_from_string(
+                    json.dumps(existing), content_type="application/json"
+                )
         except Exception:
             app.logger.exception("Failed to persist chat messages")
     except Exception:
