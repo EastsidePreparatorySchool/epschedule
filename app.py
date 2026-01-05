@@ -5,6 +5,7 @@ import datetime
 import json
 import os
 import re
+import time
 
 import google.oauth2.id_token
 from flask import Flask, abort, make_response, render_template, request, session, Response
@@ -328,22 +329,32 @@ def get_class_schedule(user_class, term_id):
                     if priv_obj:
                         if dict(priv_obj.items()).get("share_photo"):
                             priv_settings["share_photo"] = True
+                    # Only include a real avatar URL if the photo exists in storage.
+                    # This prevents returning stale URLs for deleted objects.
+                    if (
+                        (
+                            priv_settings["share_photo"]
+                            or is_admin()
+                            or session["username"] == schedule["username"]
+                            or user_is_teacher
+                        )
+                        and photo_exists(schedule["username"], True)
+                    ):
+                        photo_url = (
+                            gen_photo_url(schedule["username"], True)
+                            + "?t="
+                            + str(int(time.time() * 1000))
+                        )
+                    else:
+                        photo_url = "/static/images/placeholder_small.png"
+
                     student = {
                         "firstname": get_first_name(schedule),
                         "lastname": schedule["lastname"],
                         "grade": schedule["grade"],
                         "username": schedule["username"],
                         "email": username_to_email(schedule["username"]),
-                        "photo_url": (
-                            gen_photo_url(schedule["username"], True)
-                            if (
-                                priv_settings["share_photo"]
-                                or is_admin()
-                                or session["username"] == schedule["username"]
-                                or user_is_teacher
-                            )
-                            else "/static/images/placeholder_small.png"
-                        ),
+                        "photo_url": photo_url,
                     }
                     result["students"].append(student)
 
@@ -387,8 +398,10 @@ def handle_user(target_user):
     # Generate email address
     target_schedule["email"] = username_to_email(target_user)
 
-    if priv_settings["share_photo"]:
-        target_schedule["photo_url"] = gen_photo_url(target_user, False)
+    if priv_settings["share_photo"] and photo_exists(target_user, False):
+        target_schedule["photo_url"] = (
+            gen_photo_url(target_user, False) + "?t=" + str(int(time.time() * 1000))
+        )
     else:
         target_schedule["photo_url"] = "/static/images/placeholder.png"
     return json.dumps(target_schedule)
