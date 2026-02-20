@@ -73,7 +73,8 @@ def init_app(test_config=None):
             data_bucket.blob("schedules.json").download_as_string()
         )
         DAYS = json.loads(data_bucket.blob("master_schedule.json").download_as_string())
-        GITHUB_COMMITS = get_latest_github_commits()
+        # GITHUB_COMMITS = get_latest_github_commits()
+        # Keep as none until we figure out why it doesn't work
         datastore_client = datastore.Client()
     else:
         app.config.from_mapping(test_config)
