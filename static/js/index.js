@@ -1098,13 +1098,13 @@ document.addEventListener("WebComponentsReady", () => {
   if (typeAhead) {
     // Override _select to fix the index calculation bug in paper-typeahead-input
     var originalSelect = typeAhead._select;
-    typeAhead._select = function(e) {
-      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+    typeAhead._select = function (e) {
+      var suggestionsMenu = Polymer.dom(this.root).querySelector("paper-menu");
       if (suggestionsMenu) {
         var selectedItem = e.currentTarget;
-        var paperItems = suggestionsMenu.querySelectorAll('paper-item');
+        var paperItems = suggestionsMenu.querySelectorAll("paper-item");
         var index = Array.prototype.indexOf.call(paperItems, selectedItem);
-        
+
         if (index !== -1 && this._suggestions && this._suggestions[index]) {
           if (this.isCandidatesJson == true) {
             this.inputObject = this._suggestions[index];
@@ -1113,7 +1113,7 @@ document.addEventListener("WebComponentsReady", () => {
             this.inputValue = this._suggestions[index];
           }
           this._suggestions = [];
-          this.fire('pt-item-confirmed', e.target);
+          this.fire("pt-item-confirmed", e.target);
           this._typeahead = "";
           e.stopPropagation();
           return;
@@ -1124,15 +1124,18 @@ document.addEventListener("WebComponentsReady", () => {
 
     // Override _keyup to fix the index calculation bug for enter key
     var originalKeyup = typeAhead._keyup;
-    typeAhead._keyup = function(e) {
-      if (e.which == 13) { // Enter key
-        var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+    typeAhead._keyup = function (e) {
+      if (e.which == 13) {
+        // Enter key
+        var suggestionsMenu = Polymer.dom(this.root).querySelector(
+          "paper-menu",
+        );
         if (suggestionsMenu) {
           var selectedItem = suggestionsMenu.focusedItem;
           if (selectedItem) {
-            var paperItems = suggestionsMenu.querySelectorAll('paper-item');
+            var paperItems = suggestionsMenu.querySelectorAll("paper-item");
             var index = Array.prototype.indexOf.call(paperItems, selectedItem);
-            
+
             if (index !== -1 && this._suggestions && this._suggestions[index]) {
               if (this.isCandidatesJson == true) {
                 this.inputObject = this._suggestions[index];
@@ -1141,7 +1144,7 @@ document.addEventListener("WebComponentsReady", () => {
                 this.inputValue = this._suggestions[index];
               }
               this._suggestions = [];
-              this.fire('pt-item-confirmed', selectedItem);
+              this.fire("pt-item-confirmed", selectedItem);
               this._typeahead = "";
             }
           }
