@@ -1,4 +1,5 @@
 function renderGitHubCommits() {
+  if (!latestCommits) return;
   let updated = "";
   latestCommits.forEach((commit) => {
     // first create a date object
@@ -1094,13 +1095,72 @@ document.addEventListener("WebComponentsReady", () => {
   scheduleElement.addEventListener("swiped", scheduleSwiped, false);
   updateMainSchedule();
   var typeAhead = document.querySelector("paper-typeahead-input");
-  typeAhead.addEventListener("pt-item-confirmed", () => {
-    var obj = typeAhead.inputObject;
-    requestAdditionalData(obj.username, "student", renderStudent);
-    openPopup(obj.name);
-    typeAhead.inputValue = "";
-    closeSearchBar();
-  });
+  if (typeAhead) {
+    // Override _select to fix the index calculation bug in paper-typeahead-input
+    var originalSelect = typeAhead._select;
+    typeAhead._select = function(e) {
+      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+      if (suggestionsMenu) {
+        var selectedItem = e.currentTarget;
+        var paperItems = suggestionsMenu.querySelectorAll('paper-item');
+        var index = Array.prototype.indexOf.call(paperItems, selectedItem);
+        
+        if (index !== -1 && this._suggestions && this._suggestions[index]) {
+          if (this.isCandidatesJson == true) {
+            this.inputObject = this._suggestions[index];
+            this.inputValue = this._getDisplayValue(this.inputObject);
+          } else {
+            this.inputValue = this._suggestions[index];
+          }
+          this._suggestions = [];
+          this.fire('pt-item-confirmed', e.target);
+          this._typeahead = "";
+          e.stopPropagation();
+          return;
+        }
+      }
+      // Do not call originalSelect to prevent errors
+    };
+
+    // Override _keyup to fix the index calculation bug for enter key
+    var originalKeyup = typeAhead._keyup;
+    typeAhead._keyup = function(e) {
+      if (e.which == 13) { // Enter key
+        var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+        if (suggestionsMenu) {
+          var selectedItem = suggestionsMenu.focusedItem;
+          if (selectedItem) {
+            var paperItems = suggestionsMenu.querySelectorAll('paper-item');
+            var index = Array.prototype.indexOf.call(paperItems, selectedItem);
+            
+            if (index !== -1 && this._suggestions && this._suggestions[index]) {
+              if (this.isCandidatesJson == true) {
+                this.inputObject = this._suggestions[index];
+                this.inputValue = this._getDisplayValue(this.inputObject);
+              } else {
+                this.inputValue = this._suggestions[index];
+              }
+              this._suggestions = [];
+              this.fire('pt-item-confirmed', selectedItem);
+              this._typeahead = "";
+            }
+          }
+        }
+        return; // Do not call originalKeyup for Enter key to prevent errors
+      }
+      // Fallback to original for other keys or if something goes wrong
+      if (originalKeyup) originalKeyup.call(this, e);
+    };
+
+    typeAhead.addEventListener("pt-item-confirmed", () => {
+      var obj = typeAhead.inputObject;
+      if (!obj || !obj.username) return;
+      requestAdditionalData(obj.username, "student", renderStudent);
+      openPopup(obj.name);
+      typeAhead.inputValue = "";
+      closeSearchBar();
+    });
+  }
   const drawer = document.getElementById("drawerpanel");
   if (drawer) {
     drawer.addEventListener("transitionend", () => {
