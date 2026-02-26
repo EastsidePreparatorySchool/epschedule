@@ -5,9 +5,18 @@ import datetime
 import json
 import os
 import re
+from queue import Empty, Queue
 
 import google.oauth2.id_token
-from flask import Flask, abort, make_response, render_template, request, session, Response
+from flask import (
+    Flask,
+    Response,
+    abort,
+    make_response,
+    render_template,
+    request,
+    session,
+)
 from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
@@ -65,7 +74,8 @@ def init_app(test_config=None):
             data_bucket.blob("schedules.json").download_as_string()
         )
         DAYS = json.loads(data_bucket.blob("master_schedule.json").download_as_string())
-        GITHUB_COMMITS = get_latest_github_commits()
+        # GITHUB_COMMITS = get_latest_github_commits()
+        # Keep as none until we figure out why it doesn't work
         datastore_client = datastore.Client()
     else:
         app.config.from_mapping(test_config)
@@ -143,9 +153,25 @@ def get_schedule(username):
 
 
 def gen_photo_url(username, icon=False):
-    return "https://epschedule-avatars.storage.googleapis.com/{}".format(
-        hash_username(app.secret_key, username, icon)
-    )
+    blob_name = hash_username(app.secret_key, username, icon)
+    base = f"https://epschedule-avatars.storage.googleapis.com/{blob_name}"
+    # Try to append a version param based on blob update time to bust caches
+    try:
+        sc = globals().get("storage_client", None)
+        if sc:
+            bucket = sc.bucket("epschedule-avatars")
+            blob = bucket.blob(blob_name)
+            try:
+                blob.reload()
+                if blob.updated:
+                    ts = int(blob.updated.timestamp())
+                    return f"{base}?v={ts}"
+            except Exception:
+                # If metadata can't be fetched, fall back to base URL
+                pass
+    except Exception:
+        pass
+    return base
 
 
 def photo_exists(username, icon=False):
@@ -651,7 +677,9 @@ def broadcast_chat_message(message):
                 if len(existing) > 500:
                     existing = existing[-500:]
 
-                blob.upload_from_string(json.dumps(existing), content_type="application/json")
+                blob.upload_from_string(
+                    json.dumps(existing), content_type="application/json"
+                )
         except Exception:
             app.logger.exception("Failed to persist chat messages")
     except Exception:

@@ -5,7 +5,7 @@ from io import BytesIO
 import PIL
 import requests
 from google.cloud import secretmanager, storage
-from PIL import Image
+from PIL import Image, ImageOps
 
 from cron import four11
 
@@ -18,7 +18,16 @@ def download_photo_from_url(session, url):
     try:
         response = session.get(url)
         # open the image in the response given
-        return Image.open(BytesIO(response.content))
+        img = Image.open(BytesIO(response.content))
+        # Apply EXIF orientation so phone/embedded rotation is respected
+        try:
+            img = ImageOps.exif_transpose(img)
+        except Exception:
+            pass
+        # Ensure RGB for consistent JPEG saving later
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+        return img
     except PIL.UnidentifiedImageError:
         # if there is an error, just return none
         return None
@@ -27,15 +36,15 @@ def download_photo_from_url(session, url):
 def crop_image(img):
     if img.width > img.height:
         img = img.resize(((ICON_SIZE * img.width) // img.height, ICON_SIZE))
-        border = (img.width - ICON_SIZE) / 2
-        cropparams = (border, 0)
+        left = (img.width - ICON_SIZE) // 2
+        top = 0
     else:
         img = img.resize((ICON_SIZE, (ICON_SIZE * img.height) // img.width))
-        border = (img.height - ICON_SIZE) // 2
-        cropparams = (0, border)
-    return img.crop(
-        (*cropparams, img.width - cropparams[0], img.height - cropparams[1])
-    )
+        left = 0
+        top = (img.height - ICON_SIZE) // 2
+    right = img.width - left
+    bottom = img.height - top
+    return img.crop((left, top, right, bottom))
 
 
 def hash_username(key, username, icon=False):
@@ -54,10 +63,26 @@ def upload_photo(bucket, filename, photo, verbose=False):
         # save it in there as JPEG
         photo.save(output, format="JPEG")
         # read in value from the bytesio, then upload it to the bucket
-        bucket.blob(filename).upload_from_string(output.getvalue())
+        blob = bucket.blob(filename)
+        # upload with explicit content type
+        blob.upload_from_string(output.getvalue(), content_type="image/jpeg")
+        # set cache control so browsers/CDNs revalidate after uploads
+        try:
+            blob.cache_control = "public, max-age=0, no-cache, must-revalidate"
+            blob.patch()
+        except Exception:
+            pass
+        # Ensure the object is publicly readable (if bucket policy allows)
+        try:
+            blob.make_public()
+        except Exception:
+            pass
         if verbose:
             # if verbose, print the URL to the current file
-            print(bucket.blob(filename).public_url)
+            try:
+                print(blob.public_url)
+            except Exception:
+                print(f"Uploaded {filename}")
 
 
 # Takes about three minutes for ~450 photos
