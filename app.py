@@ -21,7 +21,7 @@ from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
 
-from cron.photos import crawl_photos, hash_username
+from cron.photos import crawl_photos, hash_eprt, hash_username
 from cron.schedules import crawl_schedules
 from cron.update_lunch import get_lunches_since_date, read_lunches
 
@@ -35,6 +35,8 @@ DAYS = None
 TERM_STARTS = []
 GITHUB_COMMITS = None
 NUM_COMMITS = 50
+EPRT_KEY = None
+DATA_BUCKET = None
 # Subscriber queues for SSE streaming (no in-process caching)
 chat_subscribers = []
 
@@ -48,6 +50,8 @@ def init_app(test_config=None):
     global DAYS
     global TERM_STARTS
     global GITHUB_COMMITS
+    global EPRT_KEY
+    global DATA_BUCKET
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -59,7 +63,9 @@ def init_app(test_config=None):
         app.secret_key = secret_client.access_secret_version(
             request={"name": "projects/epschedule-v2/secrets/session_key/versions/1"}
         ).payload.data
-
+        EPRT_KEY = secret_client.access_secret_version(
+            request={"name": "projects/epschedule-v2/secrets/eprt_verify/versions/1"}
+        ).payload.data
         verify_firebase_token = (
             lambda token: google.oauth2.id_token.verify_firebase_token(
                 token, requests.Request()
@@ -67,12 +73,12 @@ def init_app(test_config=None):
         )
 
         storage_client = storage.Client()
-        data_bucket = storage_client.bucket("epschedule-data")
+        DATA_BUCKET = storage_client.bucket("epschedule-data")
 
         SCHEDULE_INFO = json.loads(
-            data_bucket.blob("schedules.json").download_as_string()
+            DATA_BUCKET.blob("schedules.json").download_as_string()
         )
-        DAYS = json.loads(data_bucket.blob("master_schedule.json").download_as_string())
+        DAYS = json.loads(DATA_BUCKET.blob("master_schedule.json").download_as_string())
         # GITHUB_COMMITS = get_latest_github_commits()
         # Keep as none until we figure out why it doesn't work
         datastore_client = datastore.Client()
@@ -563,6 +569,29 @@ def handle_search(keyword):
             if len(results) >= 5:  # Allow up to 5 results
                 break
     return json.dumps(results)
+
+
+@app.route("/eprtsiv/<uh>")
+def eprtsiv(uh):
+    try:
+        username, hash = uh.split(",")
+        return (
+            str(hash == hash_eprt(EPRT_KEY, username))
+            if EPRT_KEY is not None
+            else "False"
+        )
+    except:
+        return "False"
+
+
+@app.route("/api/passes/<uh>")
+def passes(uh):
+    if eprtsiv(uh) != "True":
+        abort(403)
+    username = uh.split(",")[0]
+    if DATA_BUCKET:
+        return json.loads(DATA_BUCKET.blob(f"passes/{username}.pkpass"))
+    return json.dumps({"error": "Passes not available"})
 
 
 def get_first_name(schedule):
