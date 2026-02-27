@@ -1183,3 +1183,201 @@ document.addEventListener("WebComponentsReady", () => {
     });
   }
 });
+
+// Global chat initialization
+document.addEventListener("DOMContentLoaded", function () {
+  var chatToggle = document.getElementById("chat-toggle");
+  var chatPanel = document.getElementById("chat-panel");
+  var chatMessages = document.getElementById("chat-messages");
+  var chatInput = document.getElementById("chat-input");
+  var chatSend = document.getElementById("chat-send");
+  var chatAnon = document.getElementById("chat-anon");
+  if (!chatToggle) return;
+
+  var unreadEl = document.getElementById("chat-unread");
+  var currentUserEl = document.getElementById("namefjs");
+  var currentUser = currentUserEl ? currentUserEl.textContent.trim() : null;
+  var unreadCount = 0;
+
+  function stringToColor(str) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    var color = "#";
+    for (var i = 0; i < 3; i++) {
+      var value = (hash >> (i * 8)) & 0xff;
+      color += ("00" + value.toString(16)).substr(-2);
+    }
+    return color;
+  }
+
+  function formatTs(ts) {
+    try {
+      var d = new Date(ts);
+      return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function appendMessage(msg) {
+    if (!chatMessages) return;
+    var isMine = currentUser && msg.user === currentUser;
+    var item = document.createElement("div");
+    item.className = "chat-message" + (isMine ? " mine" : "");
+
+    var avatar = document.createElement("div");
+    avatar.className = "chat-avatar";
+    // Prefer a public display name if provided (e.g. "Anonymous").
+    var displayUser = msg.display_user || msg.user || "?";
+    avatar.textContent = (displayUser || "?").charAt(0).toUpperCase();
+    avatar.style.backgroundColor = stringToColor(displayUser || "");
+
+    var bubble = document.createElement("div");
+    bubble.className = "chat-bubble";
+
+    var meta = document.createElement("div");
+    meta.className = "chat-meta";
+    meta.innerHTML = '<span class="chat-username">' + escapeHtml(displayUser || "") + '</span>' +
+      '<span class="chat-ts">' + formatTs(msg.ts) + '</span>';
+
+    var text = document.createElement("div");
+    text.className = "chat-text";
+    text.innerHTML = escapeHtml(msg.text || "").replace(/\n/g, "<br>");
+
+    bubble.appendChild(meta);
+    bubble.appendChild(text);
+
+    if (isMine) {
+      item.appendChild(bubble);
+      item.appendChild(avatar);
+    } else {
+      item.appendChild(avatar);
+      item.appendChild(bubble);
+    }
+
+    chatMessages.appendChild(item);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>\"]+/g, function (s) {
+      return ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+      }[s]);
+    });
+  }
+
+  // toggle panel
+  chatToggle.addEventListener("click", function () {
+    var isHidden = !chatPanel || chatPanel.style.display === "none" || chatPanel.style.display === "";
+    if (isHidden) {
+      chatPanel.style.display = "flex";
+      chatInput.focus();
+      unreadCount = 0;
+      if (unreadEl) {
+        unreadEl.style.display = "none";
+        unreadEl.textContent = "0";
+      }
+      chatToggle.setAttribute("aria-expanded", "true");
+      var icon = chatToggle.querySelector("i");
+      if (icon) icon.className = "fas fa-chevron-down";
+    } else {
+      chatPanel.style.display = "none";
+      chatToggle.setAttribute("aria-expanded", "false");
+      var icon = chatToggle.querySelector("i");
+      if (icon) icon.className = "fas fa-comments";
+    }
+  });
+
+  // Ensure correct initial aria state
+  try {
+    chatToggle.setAttribute("aria-expanded", chatPanel && chatPanel.style.display !== "none" && chatPanel.style.display !== "" ? "true" : "false");
+  } catch (e) {}
+
+  // enable/disable send based on input
+  chatSend.disabled = !chatInput.value.trim();
+  chatInput.addEventListener("input", function () {
+    chatSend.disabled = !chatInput.value.trim();
+  });
+
+  chatSend.addEventListener("click", function () {
+    sendChat();
+  });
+
+  chatInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendChat();
+    }
+  });
+
+  function sendChat() {
+    var text = chatInput.value.trim();
+    if (!text) return;
+    chatSend.disabled = true;
+    var data = new FormData();
+    data.append("message", text);
+    // include anonymous flag if requested
+    if (chatAnon && chatAnon.checked) {
+      data.append("anonymous", "1");
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/chat/send", true);
+    xhr.onload = function () {
+      chatSend.disabled = false;
+      if (xhr.status === 200) {
+        chatInput.value = "";
+        chatInput.dispatchEvent(new Event("input"));
+      } else {
+        chatInput.value = "";
+        renderToast("Message failed to send");
+      }
+    };
+    xhr.onerror = function () {
+      chatSend.disabled = false;
+      renderToast("Network error sending message");
+    };
+    xhr.send(data);
+  }
+
+  // load history
+  var hxhr = new XMLHttpRequest();
+  hxhr.onreadystatechange = function () {
+    if (hxhr.readyState == 4 && hxhr.status == 200) {
+      var arr = JSON.parse(hxhr.responseText || "[]");
+       arr.forEach(appendMessage);
+       // scroll to bottom
+       if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  };
+  hxhr.open("GET", "/chat/history", true);
+  hxhr.send();
+
+  // SSE stream
+  var evtSource = null;
+  try {
+    evtSource = new EventSource("/chat/stream");
+    evtSource.onmessage = function (e) {
+      try {
+        var msg = JSON.parse(e.data);
+        appendMessage(msg);
+      } catch (err) {
+        // ignore keep-alive comments or parse errors
+      }
+    };
+    evtSource.onerror = function () {
+      // reconnect logic
+      setTimeout(function () {
+        if (evtSource) evtSource.close();
+        evtSource = new EventSource("/chat/stream");
+      }, 3000);
+    };
+  } catch (err) {
+    console.warn("EventSource not supported", err);
+  }
+});
