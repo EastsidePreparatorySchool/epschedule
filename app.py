@@ -1,4 +1,4 @@
-VERSION = "1.32.54"  # Massive UI update/complete backend rework is the first number, noticable bug fixes or UI updates are middle number, and any update that doesn't make that big of a difference, even if it just adds a backend thing, is the last number.
+VERSION = "1.32.55"  # Massive UI update/complete backend rework is the first number, noticable bug fixes or UI updates are middle number, and any update that doesn't make that big of a difference, even if it just adds a backend thing, is the last number.
 
 import copy
 import datetime
@@ -260,7 +260,9 @@ def main():
             claims = verify_firebase_token(token)
             session.permanent = True
             session["username"] = claims["email"].split("@")[0]
-
+            if session["username"] == "mtagsip":
+                session["username"] = "mcochrane-tagsip"
+            
             # Make them a privacy object if it doesn't exist
             key = get_user_key(session["username"])
             if not datastore_client.get(key):
