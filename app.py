@@ -262,7 +262,7 @@ def main():
             session["username"] = claims["email"].split("@")[0]
             if session["username"] == "mtagsip":
                 session["username"] = "mcochrane-tagsip"
-            
+
             # Make them a privacy object if it doesn't exist
             key = get_user_key(session["username"])
             if not datastore_client.get(key):
