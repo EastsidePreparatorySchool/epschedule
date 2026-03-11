@@ -424,42 +424,6 @@ def handle_user(target_user):
         target_schedule["photo_url"] = gen_photo_url(target_user, False)
     else:
         target_schedule["photo_url"] = "/static/images/placeholder.png"
-
-    # Persist a lightweight view event to GCS for later analytics, excluding self-views.
-    if session.get("username") != target_user:
-        try:
-            if storage_client:
-                bucket = storage_client.bucket("epschedule-data")
-                blob = bucket.blob("search/searches.json")
-
-                # Load existing events if present
-                try:
-                    if blob.exists(storage_client):
-                        existing = json.loads(blob.download_as_string())
-                        if not isinstance(existing, list):
-                            existing = []
-                    else:
-                        existing = []
-                except Exception:
-                    existing = []
-
-                entry = {
-                    "searcher": session.get("username"),
-                    "searched_user": target_user,
-                    "ts": datetime.datetime.utcnow().isoformat() + "Z",
-                }
-
-                existing.append(entry)
-                # Keep a bounded history to avoid unbounded growth
-                if len(existing) > 10000:
-                    existing = existing[-10000:]
-
-                blob.upload_from_string(
-                    json.dumps(existing), content_type="application/json"
-                )
-        except Exception:
-            app.logger.exception("Failed to persist search logs")
-
     return json.dumps(target_schedule)
 
 
