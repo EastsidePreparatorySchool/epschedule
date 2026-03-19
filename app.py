@@ -3,6 +3,7 @@ VERSION = "1.32.55"  # Massive UI update/complete backend rework is the first nu
 import copy
 import datetime
 import json
+import logging
 import os
 import re
 from queue import Empty, Queue
@@ -17,6 +18,7 @@ from flask import (
     request,
     session,
 )
+from github import Auth as GithubAuth
 from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
@@ -79,8 +81,9 @@ def init_app(test_config=None):
             DATA_BUCKET.blob("schedules.json").download_as_string()
         )
         DAYS = json.loads(DATA_BUCKET.blob("master_schedule.json").download_as_string())
-        # GITHUB_COMMITS = get_latest_github_commits()
-        # Keep as none until we figure out why it doesn't work
+        GITHUB_COMMITS = get_latest_github_commits()
+        if GITHUB_COMMITS is None:
+            GITHUB_COMMITS = []
         datastore_client = datastore.Client()
     else:
         app.config.from_mapping(test_config)
@@ -601,42 +604,40 @@ def get_first_name(schedule):
 
 
 def get_latest_github_commits():
-    # get token from secret client
-    secret_client = secretmanager.SecretManagerServiceClient()
-    gh_token = secret_client.access_secret_version(
-        request={"name": "projects/epschedule-v2/secrets/gh_token/versions/1"}
-    ).payload.data
-    # this uses PyGithub module
-    # using an access token from a person who can access epschedule
-    g = gh(gh_token.decode("utf-8"))
-    repo = g.get_repo("EastsidePreparatorySchool/epschedule")
-    # get arr of commits
-    commitsArr = repo.get_commits()
-    # print info about last commits
-    result = []  # initialize array for it
-    for repo_num in range(
-        commitsArr.totalCount
-        if not NUM_COMMITS
-        else min(NUM_COMMITS, commitsArr.totalCount)
-    ):
-        # select the last few commits, get its name (title),
-        # author (github name), date, and URL to the changes
-        commit_name = commitsArr[repo_num].commit.message.split("\n")[0]
-        commit_author = commitsArr[repo_num].commit.author.name
-        # raw date input from pygithub
-        raw_date = str(commitsArr[repo_num].commit.author.date)
-        commit_url = commitsArr[repo_num].html_url
-        # append it to the array as a dictionary object
-        result.append(
-            {
-                "name": commit_name,
-                "author": commit_author,
-                "date": raw_date,
-                "url": commit_url,
-            }
-        )
-    # return it
-    return result
+    try:
+        # get token from secret client
+        secret_client = secretmanager.SecretManagerServiceClient()
+        gh_token = secret_client.access_secret_version(
+            request={"name": "projects/epschedule-v2/secrets/gh_token/versions/latest"}
+        ).payload.data
+        # this uses PyGithub module
+        # using an access token from a person who can access epschedule
+        g = gh(auth=GithubAuth.Token(gh_token.decode("utf-8").strip()))
+        repo = g.get_repo("EastsidePreparatorySchool/epschedule")
+        # get arr of commits, limiting to NUM_COMMITS
+        result = []
+        commits = repo.get_commits()
+        for commit in commits[:NUM_COMMITS] if NUM_COMMITS else commits:
+            # select commits, get their name (title), author (github name), date, and URL to the changes
+            commit_name = commit.commit.message.split("\n")[0]
+            commit_author = commit.commit.author.name
+            # raw date input from pygithub
+            raw_date = str(commit.commit.author.date)
+            commit_url = commit.html_url
+            # append it to the array as a dictionary object
+            result.append(
+                {
+                    "name": commit_name,
+                    "author": commit_author,
+                    "date": raw_date,
+                    "url": commit_url,
+                }
+            )
+        # return it
+        return result
+    except Exception:
+        logging.exception("Failed to fetch GitHub commits")
+        return None
 
 
 # This is a post because it changes things
