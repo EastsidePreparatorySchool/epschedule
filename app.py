@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import re
+from io import BytesIO
 from queue import Empty, Queue
 
 import google.oauth2.id_token
@@ -22,8 +23,9 @@ from github import Auth as GithubAuth
 from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
+from PIL import Image, ImageOps
 
-from cron.photos import crawl_photos, hash_eprt, hash_username
+from cron.photos import crawl_photos, crop_image, hash_eprt, hash_username, upload_photo
 from cron.schedules import crawl_schedules
 from cron.update_lunch import get_lunches_since_date, read_lunches
 
@@ -41,6 +43,14 @@ EPRT_KEY = None
 DATA_BUCKET = None
 # Subscriber queues for SSE streaming (no in-process caching)
 chat_subscribers = []
+
+PHOTO_REQUESTS_BUCKET = "epschedule-photo-requests"
+ADMIN_EMAILS = [
+    "cwest@eastsideprep.org",
+    "ajosan@eastsideprep.org",
+    "rpudipeddi@eastsideprep.org",
+]
+MAX_PHOTO_BYTES = 10 * 1024 * 1024  # 10 MB
 
 
 def init_app(test_config=None):
@@ -791,3 +801,187 @@ def chat_send():
     except Exception:
         app.logger.exception("Failed to broadcast chat message")
     return json.dumps(message)
+
+
+# -----------------------------
+# Photo Change Requests
+# -----------------------------
+
+
+def send_photo_request_email(username):
+    """Send a notification email to admins about a new photo request."""
+    try:
+        import sendgrid
+        from sendgrid.helpers.mail import Mail
+
+        secret_client = secretmanager.SecretManagerServiceClient()
+        sendgrid_key = secret_client.access_secret_version(
+            request={
+                "name": "projects/epschedule-v2/secrets/sendgrid_key/versions/1"
+            }
+        ).payload.data.decode("utf-8")
+
+        sg = sendgrid.SendGridAPIClient(api_key=sendgrid_key)
+        message = Mail(
+            from_email="noreply@eastsideprep.org",
+            to_emails=ADMIN_EMAILS,
+            subject=f"EPSchedule: Photo Change Request from {username}",
+            html_content=(
+                f"<p>A photo change request has been submitted by "
+                f"<b>{username}</b> ({username_to_email(username)}).</p>"
+                f"<p>Log in to EPSchedule and open <b>Photo Requests</b> in the "
+                f"side menu to review and approve or deny the request.</p>"
+            ),
+        )
+        sg.send(message)
+    except Exception:
+        app.logger.exception("Failed to send photo request notification email")
+
+
+@app.route("/photo-request", methods=["POST"])
+def handle_photo_request():
+    """Accept an image upload, store it in the requests bucket, and notify admins."""
+    if "username" not in session:
+        abort(403)
+
+    username = session["username"]
+
+    if "photo" not in request.files:
+        return json.dumps({"error": "No photo uploaded"}), 400
+
+    photo_file = request.files["photo"]
+    if not photo_file.filename:
+        return json.dumps({"error": "No photo selected"}), 400
+
+    # Read and size-check the file
+    photo_bytes = photo_file.read(MAX_PHOTO_BYTES + 1)
+    if len(photo_bytes) > MAX_PHOTO_BYTES:
+        return json.dumps({"error": "Photo exceeds maximum size of 10 MB"}), 400
+
+    # Validate and normalise the image
+    try:
+        img = Image.open(BytesIO(photo_bytes))
+        img = ImageOps.exif_transpose(img)
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+    except Exception:
+        return json.dumps({"error": "Invalid image file"}), 400
+
+    # Upload to the requests bucket
+    if storage_client:
+        requests_bucket = storage_client.bucket(PHOTO_REQUESTS_BUCKET)
+        upload_photo(requests_bucket, f"{username}.jpg", img)
+
+    # Persist the request in Datastore
+    key = datastore_client.key("photo_request", username)
+    entity = datastore.Entity(key=key)
+    entity.update(
+        {
+            "username": username,
+            "submitted": datetime.datetime.utcnow(),
+            "status": "pending",
+        }
+    )
+    datastore_client.put(entity)
+
+    # Notify admins (best-effort)
+    send_photo_request_email(username)
+
+    return json.dumps({"success": True})
+
+
+@app.route("/admin/photo-requests")
+def handle_admin_photo_requests():
+    """Return a list of pending photo-change requests (admin only)."""
+    if not is_admin():
+        abort(403)
+
+    query = datastore_client.query(kind="photo_request")
+    query.add_filter("status", "=", "pending")
+    pending = list(query.fetch())
+
+    result = []
+    for req in pending:
+        req_username = req["username"]
+        photo_url = (
+            f"https://storage.googleapis.com/{PHOTO_REQUESTS_BUCKET}/{req_username}.jpg"
+        )
+        result.append(
+            {
+                "username": req_username,
+                "submitted": req["submitted"].isoformat(),
+                "photo_url": photo_url,
+            }
+        )
+
+    return json.dumps(result)
+
+
+@app.route("/admin/photo-requests/<username>/approve", methods=["POST"])
+def handle_approve_photo_request(username):
+    """Approve a photo request: move the photo to the avatars bucket (admin only)."""
+    if not is_admin():
+        abort(403)
+
+    key = datastore_client.key("photo_request", username)
+    req = datastore_client.get(key)
+    if not req:
+        return json.dumps({"error": "Request not found"}), 404
+
+    if storage_client:
+        requests_bucket = storage_client.bucket(PHOTO_REQUESTS_BUCKET)
+        avatars_bucket = storage_client.bucket("epschedule-avatars")
+
+        # Download the submitted photo
+        req_blob = requests_bucket.blob(f"{username}.jpg")
+        try:
+            img_bytes = req_blob.download_as_bytes()
+        except Exception:
+            return json.dumps({"error": "Photo not found in storage"}), 404
+
+        img = Image.open(BytesIO(img_bytes))
+
+        # Upload full-size and icon versions to the avatars bucket
+        upload_photo(avatars_bucket, hash_username(app.secret_key, username), img)
+        upload_photo(
+            avatars_bucket,
+            hash_username(app.secret_key, username, icon=True),
+            crop_image(img),
+        )
+
+        # Remove from the requests bucket
+        try:
+            req_blob.delete()
+        except Exception:
+            pass
+
+    # Mark as approved in Datastore
+    req.update({"status": "approved"})
+    datastore_client.put(req)
+
+    return json.dumps({"success": True})
+
+
+@app.route("/admin/photo-requests/<username>/deny", methods=["POST"])
+def handle_deny_photo_request(username):
+    """Deny a photo request: delete the photo and mark the request (admin only)."""
+    if not is_admin():
+        abort(403)
+
+    key = datastore_client.key("photo_request", username)
+    req = datastore_client.get(key)
+    if not req:
+        return json.dumps({"error": "Request not found"}), 404
+
+    if storage_client:
+        requests_bucket = storage_client.bucket(PHOTO_REQUESTS_BUCKET)
+        try:
+            requests_bucket.blob(f"{username}.jpg").delete()
+        except Exception:
+            pass
+
+    # Mark as denied in Datastore
+    req.update({"status": "denied"})
+    datastore_client.put(req)
+
+    return json.dumps({"success": True})
