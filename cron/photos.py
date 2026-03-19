@@ -9,6 +9,7 @@ from PIL import Image, ImageOps
 
 from cron import four11
 
+
 SECRET_REQUEST = {"name": "projects/epschedule-v2/secrets/session_key/versions/1"}
 ICON_SIZE = 96
 
