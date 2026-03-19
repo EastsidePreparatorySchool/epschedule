@@ -15,9 +15,9 @@ jobs:
       - name: Send notification email
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: ${{ secrets.MAIL_SERVER }}
-          server_port: ${{ secrets.MAIL_PORT }}
-          username: ${{ secrets.MAIL_USERNAME }}
+          server_address: "smtp-mail.outlook.com"
+          server_port: 587
+          username: "epschedule@hotmail.com"
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: "New PR: ${{ github.event.pull_request.title }}"
           to: ajosan@eastsideprep.org,cwest@eastsideprep.org
