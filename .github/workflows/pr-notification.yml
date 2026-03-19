@@ -1,0 +1,32 @@
+name: PR Notification
+
+on:
+  pull_request:
+    types: [opened, reopened]
+    branches: [master]
+
+jobs:
+  send-email:
+    name: Send PR notification email
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Send notification email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: "smtp-mail.outlook.com"
+          server_port: 587
+          username: "epschedule@hotmail.com"
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "New PR: ${{ github.event.pull_request.title }}"
+          to: ajosan@eastsideprep.org,cwest@eastsideprep.org
+          from: EPSchedule GitHub <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            A new pull request has been submitted to EPSchedule.
+
+            Title: ${{ github.event.pull_request.title }}
+            Author: ${{ github.event.pull_request.user.login }}
+            URL: ${{ github.event.pull_request.html_url }}
+
+            ${{ github.event.pull_request.body }}
