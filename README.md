@@ -46,7 +46,7 @@ We use the [pytest](https://docs.pytest.org/en/stable/index.html) framework to t
 
 from the command line.
 
-### Contributing a patch
+### Contributing a patch 
 
 From your fork of the epschedule repo, submit a pull request. Be sure that all tests pass, and you have followed the code style guides mentioned above.
 
