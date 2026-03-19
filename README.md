@@ -48,7 +48,7 @@ from the command line.
 
 ### Contributing a patch
 
-From your fork of the epschedule repo, submit a pull request. Be sure that all tests pass, and you have followed the code style guides mentioned above.
+From your fork of the  epschedule repo, submit a pull request. Be sure that all tests pass, and you have followed the code style guides mentioned above.
 
 ### Updating the master schedule
 
