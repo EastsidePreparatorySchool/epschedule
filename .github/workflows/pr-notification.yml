@@ -17,6 +17,7 @@ jobs:
         with:
           server_address: "smtp-mail.outlook.com"
           server_port: 587
+          secure: false
           username: "epschedule@hotmail.com"
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: "New PR: ${{ github.event.pull_request.title }}"
