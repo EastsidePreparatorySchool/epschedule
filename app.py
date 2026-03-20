@@ -392,7 +392,7 @@ def get_class_schedule(user_class, term_id):
     return result
 
 
-# TODO rename this to /user since it's for students and teachers
+# TODO rename this to /user since it's for students and teachers.
 @app.route("/student/<target_user>")
 def handle_user(target_user):
     if "username" not in session:
