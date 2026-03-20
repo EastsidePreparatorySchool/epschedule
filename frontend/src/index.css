@@ -47,7 +47,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+  font-family: "Roboto", "Segoe UI", Arial, sans-serif;
   background-color: var(--background);
   color: var(--text);
   overflow-x: hidden;
@@ -953,7 +953,7 @@ h3 {
   gap: 12px;
 }
 
-.settings-label input[type='checkbox'] {
+.settings-label input[type="checkbox"] {
   width: 18px;
   height: 18px;
   cursor: pointer;

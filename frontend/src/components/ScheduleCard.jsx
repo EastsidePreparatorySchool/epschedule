@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useAppContext } from '../context/AppContext';
-import { getClassData, fetchJSON } from '../utils/api';
-import { linkFromRoom } from '../utils/scheduleHelpers';
+import React, { useState } from "react";
+import { useAppContext } from "../context/AppContext";
+import { getClassData, fetchJSON } from "../utils/api";
+import { linkFromRoom } from "../utils/scheduleHelpers";
 
-const EXPANDABLE_PERIODS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'Advisory'];
+const EXPANDABLE_PERIODS = ["A", "B", "C", "D", "E", "F", "G", "H", "Advisory"];
 
 export default function ScheduleCard({ entry, currentDate, userSchedule }) {
   const [expanded, setExpanded] = useState(false);
@@ -33,7 +33,7 @@ export default function ScheduleCard({ entry, currentDate, userSchedule }) {
         const data = await getClassData(entry.period, entry.termId);
         setStudents(data.students || []);
       } catch {
-        showToast('Error loading class data');
+        showToast("Error loading class data");
         setLoading(false);
         return;
       }
@@ -47,21 +47,21 @@ export default function ScheduleCard({ entry, currentDate, userSchedule }) {
     if (!entry.teacherUsername) return;
     try {
       const data = await fetchJSON(`/student/${entry.teacherUsername}`);
-      openPopup(entry.teacher, 'student', data);
+      openPopup(entry.teacher, "student", data);
     } catch {
-      showToast('Error loading teacher data');
+      showToast("Error loading teacher data");
     }
   }
 
   async function handleStudentClick(e, student) {
     e.stopPropagation();
     const studentUsername = student.email.slice(0, -17); // strip @eastsideprep.org
-    const name = student.firstname + ' ' + student.lastname;
+    const name = student.firstname + " " + student.lastname;
     try {
       const data = await fetchJSON(`/student/${studentUsername}`);
-      openPopup(name, 'student', data);
+      openPopup(name, "student", data);
     } catch {
-      showToast('Error loading student data');
+      showToast("Error loading student data");
     }
   }
 
@@ -69,24 +69,29 @@ export default function ScheduleCard({ entry, currentDate, userSchedule }) {
     e.stopPropagation();
     try {
       const data = await fetchJSON(`/period/${entry.period}`);
-      openPopup(`${entry.period} Period`, 'period', { ...data, currentclass: entry });
+      openPopup(`${entry.period} Period`, "period", {
+        ...data,
+        currentclass: entry,
+      });
     } catch {
-      showToast('Error loading period data');
+      showToast("Error loading period data");
     }
   }
 
   function buildEmailURL() {
-    if (!students) return '#';
-    return 'mailto:' + students.map((s) => s.email).join(';');
+    if (!students) return "#";
+    return "mailto:" + students.map((s) => s.email).join(";");
   }
 
-  const teacherLastName = entry.teacher ? entry.teacher.split(' ').slice(-1)[0] : '';
+  const teacherLastName = entry.teacher
+    ? entry.teacher.split(" ").slice(-1)[0]
+    : "";
 
   return (
     <div
-      className={`schedule-card${expanded ? ' expanded' : ''}`}
+      className={`schedule-card${expanded ? " expanded" : ""}`}
       onClick={handleCardClick}
-      style={{ cursor: isExpandable ? 'pointer' : 'default' }}
+      style={{ cursor: isExpandable ? "pointer" : "default" }}
     >
       <div className="card-header">
         {entry.avatar && (
@@ -95,22 +100,27 @@ export default function ScheduleCard({ entry, currentDate, userSchedule }) {
             className="card-avatar"
             alt={entry.teacher || entry.name}
             onError={(e) => {
-              if (e.target.src !== window.location.origin + '/static/images/placeholder_small.png') {
-                e.target.src = '/static/images/placeholder_small.png';
+              if (
+                e.target.src !==
+                window.location.origin + "/static/images/placeholder_small.png"
+              ) {
+                e.target.src = "/static/images/placeholder_small.png";
               }
             }}
           />
         )}
         <div className="card-info">
           <p className="card-time">
-            {entry.startTime && entry.endTime && `${entry.startTime} – ${entry.endTime} `}
+            {entry.startTime &&
+              entry.endTime &&
+              `${entry.startTime} – ${entry.endTime} `}
             {entry.teacher && entry.room && (
               <>
                 (
                 <span className="teacher-link" onClick={handleTeacherClick}>
                   {teacherLastName}
                 </span>
-                ,{' '}
+                ,{" "}
                 <a
                   href={linkFromRoom(entry.room)}
                   target="_blank"
@@ -146,13 +156,13 @@ export default function ScheduleCard({ entry, currentDate, userSchedule }) {
               </>
             )}
           </p>
-          <h2 className="card-name">{entry.name.replace('&', 'and')}</h2>
+          <h2 className="card-name">{entry.name.replace(/&/g, "and")}</h2>
           {entry.lunchInfo && (
             <p className="card-lunch-summary">{entry.lunchInfo.summary}</p>
           )}
         </div>
         {isExpandable && (
-          <div className="card-chevron">{expanded ? '▲' : '▼'}</div>
+          <div className="card-chevron">{expanded ? "▲" : "▼"}</div>
         )}
       </div>
       {expanded && (
@@ -160,7 +170,9 @@ export default function ScheduleCard({ entry, currentDate, userSchedule }) {
           {isLunch ? (
             <ul className="lunch-details">
               {entry.lunchInfo.description &&
-                entry.lunchInfo.description.map((line, i) => <li key={i}>{line}</li>)}
+                entry.lunchInfo.description.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
             </ul>
           ) : (
             <>
@@ -172,7 +184,7 @@ export default function ScheduleCard({ entry, currentDate, userSchedule }) {
                 >
                   EMAIL CLASS
                 </a>
-                {' | '}
+                {" | "}
                 <span className="period-info-link" onClick={handlePeriodClick}>
                   PERIOD INFO
                 </span>
@@ -195,9 +207,11 @@ export default function ScheduleCard({ entry, currentDate, userSchedule }) {
                           onError={(e) => {
                             if (
                               e.target.src !==
-                              window.location.origin + '/static/images/placeholder_small.png'
+                              window.location.origin +
+                                "/static/images/placeholder_small.png"
                             ) {
-                              e.target.src = '/static/images/placeholder_small.png';
+                              e.target.src =
+                                "/static/images/placeholder_small.png";
                             }
                           }}
                         />

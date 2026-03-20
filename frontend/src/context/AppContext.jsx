@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 
 const AppContext = createContext(null);
 
@@ -20,7 +20,9 @@ export function AppProvider({ children }) {
   }
 
   return (
-    <AppContext.Provider value={{ toast, showToast, popup, openPopup, closePopup }}>
+    <AppContext.Provider
+      value={{ toast, showToast, popup, openPopup, closePopup }}
+    >
       {children}
     </AppContext.Provider>
   );
@@ -28,6 +30,6 @@ export function AppProvider({ children }) {
 
 export function useAppContext() {
   const ctx = useContext(AppContext);
-  if (!ctx) throw new Error('useAppContext must be used within AppProvider');
+  if (!ctx) throw new Error("useAppContext must be used within AppProvider");
   return ctx;
 }

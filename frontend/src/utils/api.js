@@ -7,7 +7,7 @@ export async function fetchJSON(url) {
 export async function postForm(url, data = {}) {
   const formData = new FormData();
   Object.entries(data).forEach(([k, v]) => formData.append(k, v));
-  const res = await fetch(url, { method: 'POST', body: formData });
+  const res = await fetch(url, { method: "POST", body: formData });
   if (!res.ok) {
     const json = await res.json().catch(() => ({}));
     throw new Error(json.error || `HTTP error ${res.status}`);
@@ -16,15 +16,15 @@ export async function postForm(url, data = {}) {
 }
 
 export async function logout() {
-  return postForm('/logout');
+  return postForm("/logout");
 }
 
 export async function updatePrivacy(sharePhoto) {
-  return postForm('/privacy', { share_photo: sharePhoto });
+  return postForm("/privacy", { share_photo: sharePhoto });
 }
 
 export async function getPrivacy() {
-  return fetchJSON('/privacy');
+  return fetchJSON("/privacy");
 }
 
 export async function getClassData(period, termId) {

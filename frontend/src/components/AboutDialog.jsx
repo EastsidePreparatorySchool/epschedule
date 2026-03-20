@@ -1,8 +1,11 @@
-import React from 'react';
+import React from "react";
 
 export default function AboutDialog({ onClose }) {
   return (
-    <div className="dialog-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div
+      className="dialog-overlay"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="dialog about-dialog">
         <h2>About</h2>
         <div>
@@ -20,7 +23,9 @@ export default function AboutDialog({ onClose }) {
             <a href="mailto:ajosan@eastsideprep.org">ajosan@eastsideprep.org</a>
           </p>
           <p>
-            <a href="mailto:rpudipeddi@eastsideprep.org">rpudipeddi@eastsideprep.org</a>
+            <a href="mailto:rpudipeddi@eastsideprep.org">
+              rpudipeddi@eastsideprep.org
+            </a>
           </p>
           <p>---Club leaders and managers of this project</p>
         </div>

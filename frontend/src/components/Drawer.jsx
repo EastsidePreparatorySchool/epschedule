@@ -1,8 +1,17 @@
-import React from 'react';
+import React from "react";
 
-export default function Drawer({ open, version, onClose, onSignOut, onSettings, onBug, onGitHub, onAbout }) {
+export default function Drawer({
+  open,
+  version,
+  onClose,
+  onSignOut,
+  onSettings,
+  onBug,
+  onGitHub,
+  onAbout,
+}) {
   return (
-    <nav className={`drawer ${open ? 'drawer-open' : ''}`}>
+    <nav className={`drawer ${open ? "drawer-open" : ""}`}>
       <div className="drawer-content">
         <div className="image-container">
           <img src="/static/images/epslogo.jpg" alt="EPS Logo" />

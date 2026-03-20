@@ -1,5 +1,5 @@
-import React from 'react';
-import ScheduleLite from './ScheduleLite';
+import React from "react";
+import ScheduleLite from "./ScheduleLite";
 
 export default function StudentDetail({
   personData,
@@ -25,15 +25,18 @@ export default function StudentDetail({
             You have photo sharing turned off, so others cannot see your photo
           </div>
         )}
-        {personData.username === 'cwest' ? (
+        {personData.username === "cwest" ? (
           <a href="https://connorwe.st">
             <img
               src={`${personData.photo_url}?t=${Date.now()}`}
               className="student-large-photo"
               alt={displayName}
               onError={(e) => {
-                if (e.target.src !== window.location.origin + '/static/images/placeholder.png') {
-                  e.target.src = '/static/images/placeholder.png';
+                if (
+                  e.target.src !==
+                  window.location.origin + "/static/images/placeholder.png"
+                ) {
+                  e.target.src = "/static/images/placeholder.png";
                 }
               }}
             />
@@ -44,21 +47,29 @@ export default function StudentDetail({
             className="student-large-photo"
             alt={displayName}
             onError={(e) => {
-              if (e.target.src !== window.location.origin + '/static/images/placeholder.png') {
-                e.target.src = '/static/images/placeholder.png';
+              if (
+                e.target.src !==
+                window.location.origin + "/static/images/placeholder.png"
+              ) {
+                e.target.src = "/static/images/placeholder.png";
               }
             }}
           />
         )}
         <div className="student-detail-info">
-          {personData.grade && <h3 className="student-grade">{personData.grade}th Grade</h3>}
+          {personData.grade && (
+            <h3 className="student-grade">{personData.grade}th Grade</h3>
+          )}
           <p>
-            <a href={`mailto:${personData.email.toLowerCase()}`}>Email {displayName}</a>
+            <a href={`mailto:${personData.email.toLowerCase()}`}>
+              Email {displayName}
+            </a>
           </p>
           {!isTeacher && personData.advisor && (
             <p>
-              Advisor:{' '}
-              {personData.advisor.charAt(1).toUpperCase() + personData.advisor.slice(2)}
+              Advisor:{" "}
+              {personData.advisor.charAt(1).toUpperCase() +
+                personData.advisor.slice(2)}
             </p>
           )}
           {isTeacher && personData.office && <p>Office: {personData.office}</p>}

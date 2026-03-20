@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { dateToString } from '../utils/dateUtils';
-import { useAppContext } from '../context/AppContext';
-import { fetchJSON } from '../utils/api';
+import React, { useState, useRef, useEffect } from "react";
+import { dateToString } from "../utils/dateUtils";
+import { useAppContext } from "../context/AppContext";
+import { fetchJSON } from "../utils/api";
 
 export default function Header({
   currentDate,
@@ -16,7 +16,7 @@ export default function Header({
   onSearchOpen,
   onSearchClose,
 }) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const searchInputRef = useRef(null);
   const { openPopup, showToast } = useAppContext();
@@ -27,7 +27,7 @@ export default function Header({
     if (searchOpen && searchInputRef.current) {
       setTimeout(() => searchInputRef.current?.focus(), 50);
     } else {
-      setQuery('');
+      setQuery("");
       setSuggestions([]);
     }
   }, [searchOpen]);
@@ -49,17 +49,17 @@ export default function Header({
 
   async function handleSelectSuggestion(person) {
     onSearchClose();
-    setQuery('');
+    setQuery("");
     setSuggestions([]);
     try {
       const data = await fetchJSON(`/student/${person.username}`);
-      openPopup(person.name, 'student', data);
+      openPopup(person.name, "student", data);
     } catch {
-      showToast('Error loading student data');
+      showToast("Error loading student data");
     }
   }
 
-  const dateInputValue = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+  const dateInputValue = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
 
   return (
     <header className="app-header">
@@ -90,26 +90,46 @@ export default function Header({
                 onChange={(e) => onDateSelect(e.target.value)}
               />
             </span>
-            <button className="icon-btn" onClick={onDateBack} aria-label="Previous day">
+            <button
+              className="icon-btn"
+              onClick={onDateBack}
+              aria-label="Previous day"
+            >
               ←
             </button>
-            <button className="icon-btn" onClick={onDateForward} aria-label="Next day">
+            <button
+              className="icon-btn"
+              onClick={onDateForward}
+              aria-label="Next day"
+            >
               →
             </button>
             <span className="tooltip">
-              <button className="icon-btn" onClick={onNextTri} aria-label="Next trimester">
+              <button
+                className="icon-btn"
+                onClick={onNextTri}
+                aria-label="Next trimester"
+              >
                 »
               </button>
               <span className="tooltiptext">Skip to Next Trimester</span>
             </span>
-            <button className="icon-btn" onClick={onSearchOpen} aria-label="Search">
+            <button
+              className="icon-btn"
+              onClick={onSearchOpen}
+              aria-label="Search"
+            >
               🔍
             </button>
           </div>
         </div>
       ) : (
         <div className="header-search">
-          <button className="icon-btn" onClick={onSearchClose} aria-label="Close search">
+          <button
+            className="icon-btn"
+            onClick={onSearchClose}
+            aria-label="Close search"
+          >
             ←
           </button>
           <div className="search-container">
@@ -121,8 +141,8 @@ export default function Header({
               value={query}
               onChange={handleSearchChange}
               onKeyDown={(e) => {
-                if (e.key === 'Escape') onSearchClose();
-                if (e.key === 'Enter' && suggestions.length > 0)
+                if (e.key === "Escape") onSearchClose();
+                if (e.key === "Enter" && suggestions.length > 0)
                   handleSelectSuggestion(suggestions[0]);
               }}
             />

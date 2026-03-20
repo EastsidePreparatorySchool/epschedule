@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import StudentDetail from './StudentDetail';
-import PeriodDetail from './PeriodDetail';
+import React, { useEffect } from "react";
+import StudentDetail from "./StudentDetail";
+import PeriodDetail from "./PeriodDetail";
 
 export default function PopupPanel({
   title,
@@ -19,21 +19,25 @@ export default function PopupPanel({
     function handleKey(e) {
       if (e.keyCode === 27) onClose();
     }
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
   return (
     <div className="popup-overlay">
       <div className="popup-panel">
         <div className="popup-header">
-          <button className="icon-btn popup-back" onClick={onClose} aria-label="Back">
+          <button
+            className="icon-btn popup-back"
+            onClick={onClose}
+            aria-label="Back"
+          >
             ←
           </button>
           <span className="popup-title">{title}</span>
         </div>
         <div className="popup-content">
-          {contentType === 'student' && (
+          {contentType === "student" && (
             <StudentDetail
               personData={data}
               currentDate={currentDate}
@@ -45,7 +49,7 @@ export default function PopupPanel({
               sharePhoto={sharePhoto}
             />
           )}
-          {contentType === 'period' && (
+          {contentType === "period" && (
             <PeriodDetail
               periodData={data}
               currentDate={currentDate}

@@ -1,6 +1,6 @@
-import React from 'react';
-import { buildScheduleEntries } from '../utils/scheduleHelpers';
-import { copyDate } from '../utils/dateUtils';
+import React from "react";
+import { buildScheduleEntries } from "../utils/scheduleHelpers";
+import { copyDate } from "../utils/dateUtils";
 
 export default function PeriodDetail({
   periodData,
@@ -16,11 +16,11 @@ export default function PeriodDetail({
   const { entries: altEntries } = buildScheduleEntries(
     copyDate(currentDate),
     periodData,
-    'core',
+    "core",
     days,
     lunches,
     triStartDates,
-    userSchedule
+    userSchedule,
   );
 
   // Build the single current class entry
@@ -28,8 +28,8 @@ export default function PeriodDetail({
   const currentEntries = currentClass ? [currentClass] : [];
 
   function stringifyRooms(arr) {
-    if (!arr || arr.length === 0) return 'None';
-    return arr.join(', ');
+    if (!arr || arr.length === 0) return "None";
+    return arr.join(", ");
   }
 
   return (
@@ -55,8 +55,8 @@ export default function PeriodDetail({
         <div className="period-subcontainer">
           <div className="period-heading">Empty rooms:</div>
           <div className="freeroomswarning">
-            These are the classrooms without a class taking place this period. You may use them
-            to work or study as you choose.
+            These are the classrooms without a class taking place this period.
+            You may use them to work or study as you choose.
           </div>
           <div>{stringifyRooms(periodData.freerooms)}</div>
         </div>

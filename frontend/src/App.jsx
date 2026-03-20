@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { AppProvider, useAppContext } from './context/AppContext';
-import Header from './components/Header';
-import Drawer from './components/Drawer';
-import Schedule from './components/Schedule';
-import PopupPanel from './components/PopupPanel';
-import Toast from './components/Toast';
-import SettingsDialog from './components/SettingsDialog';
-import AboutDialog from './components/AboutDialog';
-import GitHubDialog from './components/GitHubDialog';
-import { getInitialDate, adjustDate, dateToNextTri, copyDate } from './utils/dateUtils';
-import { buildScheduleEntries } from './utils/scheduleHelpers';
+import React, { useState, useEffect } from "react";
+import { AppProvider, useAppContext } from "./context/AppContext";
+import Header from "./components/Header";
+import Drawer from "./components/Drawer";
+import Schedule from "./components/Schedule";
+import PopupPanel from "./components/PopupPanel";
+import Toast from "./components/Toast";
+import SettingsDialog from "./components/SettingsDialog";
+import AboutDialog from "./components/AboutDialog";
+import GitHubDialog from "./components/GitHubDialog";
+import {
+  getInitialDate,
+  adjustDate,
+  dateToNextTri,
+  copyDate,
+} from "./utils/dateUtils";
+import { buildScheduleEntries } from "./utils/scheduleHelpers";
 
 function AppInner() {
   const appData = window.APP_DATA || {};
@@ -38,11 +43,11 @@ function AppInner() {
   const { entries, allDayEvent } = buildScheduleEntries(
     currentDate,
     userSchedule,
-    'full',
+    "full",
     days,
     lunches,
     triStartDates,
-    userSchedule
+    userSchedule,
   );
 
   useEffect(() => {
@@ -66,8 +71,8 @@ function AppInner() {
         closePopup();
       }
     }
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [drawerOpen, popup, searchOpen, currentDate, closePopup]);
 
   function handleDateBack() {
@@ -81,7 +86,7 @@ function AppInner() {
     setCurrentDate(d);
   }
   function handleDateSelect(dateStr) {
-    const parts = dateStr.split('-');
+    const parts = dateStr.split("-");
     setCurrentDate(new Date(parts[0], parts[1] - 1, parts[2]));
   }
   function handleNextTri() {
@@ -108,7 +113,9 @@ function AppInner() {
         version={version}
         onClose={() => setDrawerOpen(false)}
         onSignOut={() =>
-          import('./utils/api').then((m) => m.logout().then(() => location.reload()))
+          import("./utils/api").then((m) =>
+            m.logout().then(() => location.reload()),
+          )
         }
         onSettings={() => {
           setDrawerOpen(false);
@@ -116,7 +123,7 @@ function AppInner() {
         }}
         onBug={() => {
           setDrawerOpen(false);
-          window.open('https://forms.office.com/r/rwmhK8xw44');
+          window.open("https://forms.office.com/r/rwmhK8xw44");
         }}
         onGitHub={() => {
           setDrawerOpen(false);
@@ -162,11 +169,17 @@ function AppInner() {
       )}
       {toast && <Toast message={toast} />}
       {settingsOpen && (
-        <SettingsDialog sharePhoto={sharePhoto} onClose={() => setSettingsOpen(false)} />
+        <SettingsDialog
+          sharePhoto={sharePhoto}
+          onClose={() => setSettingsOpen(false)}
+        />
       )}
       {aboutOpen && <AboutDialog onClose={() => setAboutOpen(false)} />}
       {githubOpen && (
-        <GitHubDialog commits={latestCommits} onClose={() => setGithubOpen(false)} />
+        <GitHubDialog
+          commits={latestCommits}
+          onClose={() => setGithubOpen(false)}
+        />
       )}
     </div>
   );

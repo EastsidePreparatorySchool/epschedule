@@ -2,9 +2,9 @@
  * Schedule helper functions ported from the original Polymer frontend.
  */
 
-import { makeDateKey } from './dateUtils';
+import { makeDateKey } from "./dateUtils";
 
-export const IMAGE_CDN = 'https://epschedule-avatars.storage.googleapis.com/';
+export const IMAGE_CDN = "https://epschedule-avatars.storage.googleapis.com/";
 
 /** Returns 0, 1, or 2 for the current trimester index. */
 export function getTermId(dateObj, triStartDates) {
@@ -29,12 +29,15 @@ export function getScheduleTypeForDate(dateObj, days) {
 
 /** Returns "MS" for grade ≤8, otherwise "US". */
 export function getSchool(grade) {
-  return grade <= 8 ? 'MS' : 'US';
+  return grade <= 8 ? "MS" : "US";
 }
 
 /** Returns true for standard class periods (A–H plus Advisory). */
 export function isStandardClass(letter) {
-  return ['O', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'Advisory'].indexOf(letter) >= 0;
+  return (
+    ["O", "A", "B", "C", "D", "E", "F", "G", "H", "Advisory"].indexOf(letter) >=
+    0
+  );
 }
 
 /** Returns the lunch entry for the given date, or undefined. */
@@ -54,35 +57,45 @@ export function getLunchForDate(lunches, date) {
 
 /** Builds the EPSpaces room map URL for a given room string. */
 export function linkFromRoom(room) {
-  const dashIdx = room.indexOf('-');
+  const dashIdx = room.indexOf("-");
   const building = room.substring(0, dashIdx).toUpperCase();
   const floor = room.substring(dashIdx + 1, dashIdx + 2).toUpperCase();
-  const newRoom = building + '_' + floor + '_' + room.substring(dashIdx + 1).replace(/[^A-Za-z0-9]/g, '');
+  const newRoom =
+    building +
+    "_" +
+    floor +
+    "_" +
+    room.substring(dashIdx + 1).replace(/[^A-Za-z0-9]/g, "");
   return `http://epspaces.madeateps.org/?building=${building}&floor=${floor}&room=${newRoom}`;
 }
 
 /** Returns true if the OS/browser is in dark mode. */
 export function isDarkMode() {
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 }
 
 /** Attaches avatar and link fields to a scheduleObj in-place. */
 function addScheduleImages(scheduleObj, type) {
-  if (scheduleObj.teacher !== '' || type === 'core') {
-    scheduleObj.avatar = IMAGE_CDN + scheduleObj.teacherUsername + '.jpg';
-    scheduleObj.teacherLink = '/teacher/' + scheduleObj.teacher.toLowerCase().replace(/ /g, '_');
-  } else if (scheduleObj.period === 'X' || scheduleObj.name === 'Free Period') {
-    scheduleObj.teacherLink = '';
+  if (scheduleObj.teacher !== "" || type === "core") {
+    scheduleObj.avatar = IMAGE_CDN + scheduleObj.teacherUsername + ".jpg";
+    scheduleObj.teacherLink =
+      "/teacher/" + scheduleObj.teacher.toLowerCase().replace(/ /g, "_");
+  } else if (scheduleObj.period === "X" || scheduleObj.name === "Free Period") {
+    scheduleObj.teacherLink = "";
     const imageName = scheduleObj.name
       .toLowerCase()
-      .replace('/', '')
-      .replace(/\s/g, '')
-      .replace(/(\(.*?\))/g, '');
+      .replace("/", "")
+      .replace(/\s/g, "")
+      .replace(/(\(.*?\))/g, "");
     scheduleObj.avatar = isDarkMode()
-      ? '/static/images/' + imageName + '_dark.svg'
-      : '/static/images/' + imageName + '.svg';
+      ? "/static/images/" + imageName + "_dark.svg"
+      : "/static/images/" + imageName + ".svg";
   }
-  scheduleObj.roomLink = '/room/' + scheduleObj.room.toLowerCase().replace(/ /g, '_');
+  scheduleObj.roomLink =
+    "/room/" + scheduleObj.room.toLowerCase().replace(/ /g, "_");
 }
 
 /** Returns true if the given scheduleObj shares a period with the current user. */
@@ -93,7 +106,8 @@ function isSharedClass(scheduleObj, termid, userSchedule) {
     if (
       c.period === scheduleObj.period &&
       c.name === scheduleObj.name &&
-      (c.teacher_username != null ? c.teacher_username : '') === scheduleObj.teacherUsername
+      (c.teacher_username != null ? c.teacher_username : "") ===
+        scheduleObj.teacherUsername
     ) {
       return true;
     }
@@ -103,9 +117,9 @@ function isSharedClass(scheduleObj, termid, userSchedule) {
 
 /** Returns true if the period label belongs to the opposite school division. */
 function incorrectSchool(periodStr, school) {
-  const other = school === 'MS' ? 'US' : 'MS';
+  const other = school === "MS" ? "US" : "MS";
   if (periodStr.indexOf(other) !== -1) return true;
-  if (school === 'MS' && periodStr.indexOf('Seminars') !== -1) return true;
+  if (school === "MS" && periodStr.indexOf("Seminars") !== -1) return true;
   return false;
 }
 
@@ -113,12 +127,21 @@ function incorrectSchool(periodStr, school) {
  * Creates a single schedule entry object for one time slot.
  * Returns null if the slot should be skipped.
  */
-function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo, termId, userSchedule) {
+function createClassEntry(
+  schedule,
+  school,
+  day,
+  currentSlot,
+  type,
+  lunchInfo,
+  termId,
+  userSchedule,
+) {
   const slotPeriod = day[currentSlot].period;
 
   if (school && incorrectSchool(slotPeriod, school)) return null;
 
-  const period = slotPeriod.replace(' - ' + school, '');
+  const period = slotPeriod.replace(" - " + school, "");
 
   let scheduleObj;
   let foundClass = false;
@@ -136,13 +159,22 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo, t
             teacherUsername: clazz.teacher_username,
             room: clazz.room,
             period,
-            time: '',
+            time: "",
           };
-          if (type === 'core') {
-            scheduleObj.studentCount = clazz.students ? clazz.students.toString() : '0';
+          if (type === "core") {
+            scheduleObj.studentCount = clazz.students
+              ? clazz.students.toString()
+              : "0";
           }
         } else {
-          scheduleObj = { name: clazz.name, teacher: '', teacherUsername: '', room: '', period, time: '' };
+          scheduleObj = {
+            name: clazz.name,
+            teacher: "",
+            teacherUsername: "",
+            room: "",
+            period,
+            time: "",
+          };
         }
         foundClass = true;
         break;
@@ -150,26 +182,44 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo, t
     }
     if (!foundClass) return null;
   } else {
-    scheduleObj = { name: period, teacher: '', room: '', period: 'X', time: '' };
-    const LPC_COMMONS_CLASSES = ['Assembly', 'US Community', 'Lunch (US)', 'Lunch (MS)'];
+    scheduleObj = {
+      name: period,
+      teacher: "",
+      room: "",
+      period: "X",
+      time: "",
+    };
+    const LPC_COMMONS_CLASSES = [
+      "Assembly",
+      "US Community",
+      "Lunch (US)",
+      "Lunch (MS)",
+    ];
     if (LPC_COMMONS_CLASSES.includes(scheduleObj.name)) {
-      scheduleObj.room = 'LPC Commons';
+      scheduleObj.room = "LPC Commons";
     }
-    if (scheduleObj.name === 'Lunch (US)' || scheduleObj.name === 'Lunch (MS)') {
+    if (
+      scheduleObj.name === "Lunch (US)" ||
+      scheduleObj.name === "Lunch (MS)"
+    ) {
       scheduleObj.lunchInfo = lunchInfo;
     }
   }
 
-  if (scheduleObj.teacher === 'N/A') scheduleObj.teacher = '';
-  if (scheduleObj.room === 'N/A') scheduleObj.room = '';
+  if (scheduleObj.teacher === "N/A") scheduleObj.teacher = "";
+  if (scheduleObj.room === "N/A") scheduleObj.room = "";
 
-  if (type === 'full' || type === 'core') {
+  if (type === "full" || type === "core") {
     addScheduleImages(scheduleObj, type);
-  } else if (type === 'lite') {
+  } else if (type === "lite") {
     if (isStandardClass(scheduleObj.period)) {
-      scheduleObj.shared = isSharedClass(scheduleObj, schedule.termid, userSchedule);
+      scheduleObj.shared = isSharedClass(
+        scheduleObj,
+        schedule.termid,
+        userSchedule,
+      );
       if (scheduleObj.teacher) {
-        const parts = scheduleObj.teacher.split(' ');
+        const parts = scheduleObj.teacher.split(" ");
         scheduleObj.teacherLastName = parts[parts.length - 1];
       }
     } else {
@@ -179,8 +229,8 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo, t
 
   scheduleObj.termId = termId;
 
-  if (type !== 'core') {
-    const times = day[currentSlot].times.split('-');
+  if (type !== "core") {
+    const times = day[currentSlot].times.split("-");
     scheduleObj.startTime = times[0].trim();
     scheduleObj.endTime = times[1].trim();
   }
@@ -192,25 +242,43 @@ function createClassEntry(schedule, school, day, currentSlot, type, lunchInfo, t
  * Main schedule-building function.
  * Returns { entries: [...] | null, allDayEvent: null | { url, text } }
  */
-export function buildScheduleEntries(dateObj, schedule, type, days, lunches, triStartDates, userSchedule) {
+export function buildScheduleEntries(
+  dateObj,
+  schedule,
+  type,
+  days,
+  lunches,
+  triStartDates,
+  userSchedule,
+) {
   if (!schedule || !days) {
-    return { entries: null, allDayEvent: { url: '/static/images/epslogolarge.png', text: 'No School' } };
+    return {
+      entries: null,
+      allDayEvent: {
+        url: "/static/images/epslogolarge.png",
+        text: "No School",
+      },
+    };
   }
 
   const termId = getTermId(dateObj, triStartDates);
   let school = null;
-  if ((type === 'full' || type === 'lite') && schedule.grade != null) {
+  if ((type === "full" || type === "lite") && schedule.grade != null) {
     school = getSchool(schedule.grade);
   }
 
-  const lunchInfo = type === 'full' ? getLunchForDate(lunches || [], dateObj) : null;
+  const lunchInfo =
+    type === "full" ? getLunchForDate(lunches || [], dateObj) : null;
 
   // Core type: build from each class in the trimester, not from the day schedule
-  if (type === 'core') {
-    const termClasses = schedule.classes && schedule.classes[termId] ? schedule.classes[termId] : [];
+  if (type === "core") {
+    const termClasses =
+      schedule.classes && schedule.classes[termId]
+        ? schedule.classes[termId]
+        : [];
     const todaySchedule = [];
     for (let i = 0; i < termClasses.length; i++) {
-      const fakeDay = [{ period: termClasses[i].period, times: '' }];
+      const fakeDay = [{ period: termClasses[i].period, times: "" }];
       const obj = createClassEntry(
         { classes: [termClasses[i]] },
         school,
@@ -219,7 +287,7 @@ export function buildScheduleEntries(dateObj, schedule, type, days, lunches, tri
         type,
         lunchInfo,
         termId,
-        userSchedule
+        userSchedule,
       );
       if (obj) todaySchedule.push(obj);
     }
@@ -231,13 +299,19 @@ export function buildScheduleEntries(dateObj, schedule, type, days, lunches, tri
   if (!day) {
     return {
       entries: null,
-      allDayEvent: { url: '/static/images/epslogolarge.png', text: 'No School' },
+      allDayEvent: {
+        url: "/static/images/epslogolarge.png",
+        text: "No School",
+      },
     };
   }
   if (day.length === 1) {
     return {
       entries: null,
-      allDayEvent: { url: '/static/images/epslogolarge.png', text: day[0].period },
+      allDayEvent: {
+        url: "/static/images/epslogolarge.png",
+        text: day[0].period,
+      },
     };
   }
 
@@ -247,26 +321,35 @@ export function buildScheduleEntries(dateObj, schedule, type, days, lunches, tri
 
   const todaySchedule = [];
   for (let slot = 0; slot < day.length; slot++) {
-    const obj = createClassEntry(triSchedule, school, day, slot, type, lunchInfo, termId, userSchedule);
+    const obj = createClassEntry(
+      triSchedule,
+      school,
+      day,
+      slot,
+      type,
+      lunchInfo,
+      termId,
+      userSchedule,
+    );
     if (obj) todaySchedule.push(obj);
   }
 
   if (schedule.early_dismissal && todaySchedule.length > 0) {
     const last = todaySchedule[todaySchedule.length - 1];
     todaySchedule.push({
-      name: 'Early Dismissal',
-      teacher: '',
-      teacherUsername: '',
-      room: '',
-      period: 'ED',
-      time: '',
+      name: "Early Dismissal",
+      teacher: "",
+      teacherUsername: "",
+      room: "",
+      period: "ED",
+      time: "",
       startTime: last.endTime,
       endTime: last.endTime,
       avatar: isDarkMode()
-        ? '/static/images/earlydismissal_dark.svg'
-        : '/static/images/earlydismissal.svg',
-      teacherLink: '',
-      roomLink: '',
+        ? "/static/images/earlydismissal_dark.svg"
+        : "/static/images/earlydismissal.svg",
+      teacherLink: "",
+      roomLink: "",
       termId,
     });
   }

@@ -28,16 +28,32 @@ export function adjustDate(date, delta) {
 
 /** Returns a human-readable string like "Monday, 3/17". */
 export function dateToString(date) {
-  const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  return DAYS[date.getDay()] + ', ' + (date.getMonth() + 1) + '/' + date.getDate();
+  const DAYS = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  return (
+    DAYS[date.getDay()] + ", " + (date.getMonth() + 1) + "/" + date.getDate()
+  );
 }
 
 /** Returns a zero-padded YYYY-MM-DD string for use as a lookup key. */
 export function makeDateKey(date) {
   function toTwoDig(num) {
-    return num.toString().length === 1 ? '0' + num : num.toString();
+    return num.toString().length === 1 ? "0" + num : num.toString();
   }
-  return date.getFullYear() + '-' + toTwoDig(date.getMonth() + 1) + '-' + toTwoDig(date.getDate());
+  return (
+    date.getFullYear() +
+    "-" +
+    toTwoDig(date.getMonth() + 1) +
+    "-" +
+    toTwoDig(date.getDate())
+  );
 }
 
 /** Returns true if `d1` represents the same calendar day as today. */

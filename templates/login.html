@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
   <head>
     <title>Sign in to EPSchedule</title>
@@ -23,53 +24,19 @@
       href="/static/favicon/favicon-16x16.png"
     />
     <link rel="manifest" href="/static/favicon/site.webmanifest" />
-    <script src="https://epschedule-static.storage.googleapis.com/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script
+      type="module"
+      crossorigin
+      src="/static/dist/assets/login.js"
+    ></script>
     <link
-      rel="import"
-      href="https://epschedule-static.storage.googleapis.com/bower_components/polymer/polymer.html"
+      rel="modulepreload"
+      crossorigin
+      href="/static/dist/assets/client-chunk.js"
     />
-    <link
-      rel="import"
-      href="https://epschedule-static.storage.googleapis.com/bower_components/font-roboto/roboto.html"
-    />
-    <link
-      rel="import"
-      href="https://epschedule-static.storage.googleapis.com/bower_components/paper-button/paper-button.html"
-    />
-    <link
-      rel="import"
-      href="https://epschedule-static.storage.googleapis.com/bower_components/paper-toast/paper-toast.html"
-    />
-    <link
-      rel="import"
-      href="https://epschedule-static.storage.googleapis.com/bower_components/paper-typeahead-input/paper-typeahead-input.html"
-    />
-    <link rel="stylesheet" href="static/css/login.css" />
+    <link rel="stylesheet" crossorigin href="/static/dist/assets/login.css" />
   </head>
-  <body unresolved>
-    <paper-material class="card" elevation="2">
-      <div class="image-container">
-        <img src="static/images/epslogo.jpg" />
-      </div>
-      <h1>EPSchedule</h1>
-      <p class="copy">
-        The easiest way to keep track of your classes and classmates.
-      </p>
-      <paper-button onclick="microsoftLogin()" raised id="loginButton"
-        >SIGN IN</paper-button
-      >
-      <p class="copy" id="loginText">
-        <a href="#" id="toggle" class="link" onclick="switchToLogin()"
-          >Sign in</a
-        >
-      </p>
-    </paper-material>
-
-    <paper-toast id="toast" text="" duration="10000"></paper-toast>
-
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.14.4/firebase-auth.js"></script>
-    <script src="static/js/login.js"></script>
+  <body>
+    <div id="login-app"></div>
   </body>
 </html>

@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import ScheduleCard from './ScheduleCard';
+import React, { useRef } from "react";
+import ScheduleCard from "./ScheduleCard";
 
 export default function Schedule({
   entries,
