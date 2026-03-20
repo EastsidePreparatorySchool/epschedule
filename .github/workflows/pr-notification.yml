@@ -15,13 +15,13 @@ jobs:
       - name: Send notification email
         uses: dawidd6/action-send-mail@v16
         with:
-          server_address: "smtp.gmail.com"
+          server_address: "smtp-mail.outlook.com"
           server_port: 587
-          username: ${{ secrets.GMAIL_USER }}
-          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          username: "epschedule@hotmail.com"
+          password: ${{ secrets.MAIL_PASSWORD }}
           subject: "New PR: ${{ github.event.pull_request.title }}"
           to: ajosan@eastsideprep.org,cwest@eastsideprep.org
-          from: EPSchedule GitHub <${{ secrets.GMAIL_USER }}>
+          from: 'EPSchedule GitHub <epschedule@hotmail.com>'
           body: |
             A new pull request has been submitted to EPSchedule.
 
