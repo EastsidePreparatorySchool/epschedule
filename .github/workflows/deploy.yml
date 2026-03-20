@@ -28,6 +28,9 @@ jobs:
           pip install -r requirements.txt
           npm install prettier
 
+      - name: Build frontend
+        run: npm run build-frontend
+
       - uses: "google-github-actions/auth@v2"
         with:
           credentials_json: ${{secrets.GCP_SERVICE_ACCOUNT}}

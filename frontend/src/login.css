@@ -1,0 +1,105 @@
+/* EPSchedule login page */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+  background: #0d47a1;
+  padding: 20px;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.login-page {
+  width: 100%;
+  max-width: 400px;
+}
+
+.card {
+  background: white;
+  max-width: 360px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.image-container {
+  margin-bottom: 0;
+}
+
+.image-container img {
+  max-width: 100%;
+}
+
+h1 {
+  font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+  font-weight: 400;
+  margin: 8px 0;
+  color: #1f1f1f;
+}
+
+.copy {
+  font-size: 16px;
+  margin-bottom: 0;
+  color: #555;
+}
+
+.login-button {
+  display: block;
+  width: 100%;
+  margin: 12px auto;
+  padding: 12px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.15s ease;
+}
+
+.login-button:hover {
+  background: #1976d2;
+}
+
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #323232;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  animation: fadeInUp 0.2s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
