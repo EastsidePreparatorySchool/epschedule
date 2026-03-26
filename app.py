@@ -598,6 +598,7 @@ def passes(uh):
         return json.loads(DATA_BUCKET.blob(f"passes/{username}.pkpass"))
     return json.dumps({"error": "Passes not available"})
 
+
 @app.route("/api/pass/")
 def get_pass():
     if "username" not in session:
@@ -605,7 +606,6 @@ def get_pass():
     if DATA_BUCKET:
         return json.loads(DATA_BUCKET.blob(f"passes/{session['username']}.pkpass"))
     return json.dumps({"error": "Passes not available"})
-    
 
 
 def get_first_name(schedule):
