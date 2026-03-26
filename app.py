@@ -316,21 +316,27 @@ def handle_class(period):
     if "username" not in session:
         abort(403)
 
-    schedule = get_schedule(session["username"])
     try:
         term = int(request.args["term_id"])
-        class_name = next(
+    except:
+        abort(404)
+
+    target_usename = request.args.get("username", session["username"])
+    target_schedule = get_schedule(target_usename)
+    if target_schedule is None:
+        abort(404)
+    try:
+        target_class = next(
             (
                 c
-                for c in schedule["classes"][term]
+                for c in target_schedule["classes"][term]
                 if c["period"].lower() == period.lower()
             )
         )
     except:
         abort(404)
 
-    class_schedule = get_class_schedule(class_name, term)
-    return json.dumps(class_schedule)
+    return json.dumps(get_class_schedule(target_class, term))
 
 
 # Functions to generate and censor class schedules
@@ -596,6 +602,24 @@ def passes(uh):
     username = uh.split(",")[0]
     if DATA_BUCKET:
         return json.loads(DATA_BUCKET.blob(f"passes/{username}.pkpass"))
+    return json.dumps({"error": "Passes not available"})
+
+
+@app.route("/api/pass/")
+def get_pass():
+    if "username" not in session:
+        abort(403)
+    username = session["username"]
+    if DATA_BUCKET:
+        blob = DATA_BUCKET.blob(f"passes/{username}.pkpass")
+        if blob.exists():
+            return Response(
+                blob.download_as_bytes(),
+                mimetype="application/vnd.apple.pkpass",
+                headers={
+                    "Content-Disposition": f'attachment; filename="{username}.pkpass"'
+                },
+            )
     return json.dumps({"error": "Passes not available"})
 
 
