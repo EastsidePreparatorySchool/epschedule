@@ -603,8 +603,17 @@ def passes(uh):
 def get_pass():
     if "username" not in session:
         abort(403)
+    username = session["username"]
     if DATA_BUCKET:
-        return json.loads(DATA_BUCKET.blob(f"passes/{session['username']}.pkpass"))
+        blob = DATA_BUCKET.blob(f"passes/{username}.pkpass")
+        if blob.exists():
+            return Response(
+                blob.download_as_bytes(),
+                mimetype="application/vnd.apple.pkpass",
+                headers={
+                    "Content-Disposition": f'attachment; filename="{username}.pkpass"'
+                },
+            )
     return json.dumps({"error": "Passes not available"})
 
 
