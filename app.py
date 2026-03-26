@@ -316,21 +316,27 @@ def handle_class(period):
     if "username" not in session:
         abort(403)
 
-    schedule = get_schedule(session["username"])
     try:
         term = int(request.args["term_id"])
-        class_name = next(
+    except:
+        abort(404)
+
+    target_usename = request.args.get("username", session["username"])
+    target_schedule = get_schedule(target_usename)
+    if target_schedule is None:
+        abort(404)
+    try:
+        target_class = next(
             (
                 c
-                for c in schedule["classes"][term]
+                for c in target_schedule["classes"][term]
                 if c["period"].lower() == period.lower()
             )
         )
     except:
         abort(404)
 
-    class_schedule = get_class_schedule(class_name, term)
-    return json.dumps(class_schedule)
+    return json.dumps(get_class_schedule(target_class, term))
 
 
 # Functions to generate and censor class schedules
