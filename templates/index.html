@@ -222,7 +222,7 @@
                   rel="noopener noreferrer"
                   class="join-button"
                   aria-label="Join Hack Club (opens in a new tab)"
-                  >Join Hack Club</a
+                  >Join Hack Club (New form)</a
                 >
                 <!-- Draw our calendar icon on top of the native picker -->
                 <span class="datepicker-toggle">
@@ -454,5 +454,23 @@
       })();
     </script>
     {% endif %}
+    <!-- Global chat widget -->
+    <div id="global-chat" aria-live="polite">
+      <div id="chat-header">
+        <div class="chat-title"><i class="fas fa-comments"></i> <span>Global Chat</span></div>
+        <div class="chat-controls">
+          <span id="chat-unread" class="chat-unread" style="display:none;">0</span>
+          <button id="chat-toggle" class="chat-toggle-button" aria-label="Toggle chat" aria-expanded="false"><i class="fas fa-comments"></i></button>
+        </div>
+      </div>
+      <div id="chat-panel" style="display:none;">
+        <div id="chat-messages" role="log" aria-live="polite"></div>
+        <div class="chat-input-row">
+          <input id="chat-input" type="text" placeholder="Say something..." autocomplete="off" />
+          <label class="chat-anon-label"><input id="chat-anon" type="checkbox" /> Send anonymously</label>
+          <button id="chat-send">Send</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
