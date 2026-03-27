@@ -21,31 +21,83 @@ TEST_STUDENT_NO_PIC = "aaardvark"
 
 
 class FakeKey:
-    def __init__(self, name):
+    def __init__(self, kind, name):
+        self.kind = kind
         self.name = name
 
 
 class FakeEntity:
     def __init__(self, key):
         self.key = key
+        self._data = {}
 
     def get(self, prop):
+        if prop in self._data:
+            return self._data[prop]
         return self.key.name != TEST_STUDENT_NO_PIC
 
     def items(self):
         # Privacy fields removed — return minimal user properties used in tests
-        return {}
+        return self._data.items()
+
+    def update(self, d):
+        self._data.update(d)
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __setitem__(self, key, value):
+        self._data[key] = value
+
+
+class FakeQuery:
+    def __init__(self, store, kind):
+        self._store = store
+        self._kind = kind
+        self._filters = []
+
+    def add_filter(self, prop, op, value):
+        self._filters.append((prop, op, value))
+
+    def fetch(self):
+        results = []
+        for key, entity in self._store._entities.items():
+            if key[0] != self._kind:
+                continue
+            match = True
+            for prop, op, value in self._filters:
+                if op == "=" and entity._data.get(prop) != value:
+                    match = False
+                    break
+            if match:
+                results.append(entity)
+        return results
 
 
 class FakeDatastore:
-    def key(self, a, b):
-        return FakeKey(b)
+    def __init__(self):
+        self._entities = {}
+
+    def key(self, kind, name):
+        return FakeKey(kind, name)
 
     def get(self, key):
+        stored = self._entities.get((key.kind, key.name))
+        if stored is not None:
+            return stored
         return FakeEntity(key)
 
     def get_multi(self, keys):
-        return [FakeEntity(key) for key in keys]
+        return [self.get(k) for k in keys]
+
+    def put(self, entity):
+        self._entities[(entity.key.kind, entity.key.name)] = entity
+
+    def delete(self, key):
+        self._entities.pop((key.kind, key.name), None)
+
+    def query(self, kind=None):
+        return FakeQuery(self, kind)
 
 
 TEST_CONFIG = {
@@ -227,6 +279,154 @@ class TestLogout(AuthenticatedTest):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Sign in to EPSchedule", str(response.data))
+
+
+ADMIN_USER = "cwest"
+
+
+class AdminTest(unittest.TestCase):
+    """Base class for admin-authenticated tests."""
+
+    @classmethod
+    def setUpClass(cls):
+        init_app(TEST_CONFIG)
+
+    def setUp(self):
+        self.client = app.test_client()
+        with self.client.session_transaction() as sess:
+            sess["username"] = ADMIN_USER
+
+
+class TestPhotoRequestEndpointUnauth(unittest.TestCase):
+    """Photo-request endpoints require authentication."""
+
+    @classmethod
+    def setUpClass(cls):
+        init_app(TEST_CONFIG)
+
+    def setUp(self):
+        self.client = app.test_client()
+
+    def test_photo_request_unauthenticated(self):
+        response = self.client.post("/photo-request")
+        self.assertEqual(response.status_code, 403)
+
+    def test_admin_photo_requests_unauthenticated(self):
+        response = self.client.get("/admin/photo-requests")
+        self.assertEqual(response.status_code, 403)
+
+    def test_approve_unauthenticated(self):
+        response = self.client.post("/admin/photo-requests/bbison/approve")
+        self.assertEqual(response.status_code, 403)
+
+    def test_deny_unauthenticated(self):
+        response = self.client.post("/admin/photo-requests/bbison/deny")
+        self.assertEqual(response.status_code, 403)
+
+
+class TestPhotoRequestEndpointNonAdmin(AuthenticatedTest):
+    """Non-admin users cannot access admin photo-request endpoints."""
+
+    def test_admin_list_forbidden(self):
+        response = self.client.get("/admin/photo-requests")
+        self.assertEqual(response.status_code, 403)
+
+    def test_approve_forbidden(self):
+        response = self.client.post("/admin/photo-requests/bbison/approve")
+        self.assertEqual(response.status_code, 403)
+
+    def test_deny_forbidden(self):
+        response = self.client.post("/admin/photo-requests/bbison/deny")
+        self.assertEqual(response.status_code, 403)
+
+
+class TestPhotoRequestSubmit(AuthenticatedTest):
+    """Tests for POST /photo-request (non-admin user uploading a photo)."""
+
+    def _make_jpeg_bytes(self):
+        """Return a minimal 10x10 JPEG as bytes."""
+        import io
+
+        from PIL import Image
+
+        img = Image.new("RGB", (10, 10), color=(128, 64, 32))
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG")
+        return buf.getvalue()
+
+    def test_no_file_returns_400(self):
+        response = self.client.post("/photo-request", data={})
+        self.assertEqual(response.status_code, 400)
+        result = json.loads(response.data)
+        self.assertIn("error", result)
+
+    def test_invalid_file_returns_400(self):
+        data = {"photo": (b"not-an-image", "bad.jpg")}
+        response = self.client.post(
+            "/photo-request",
+            data=data,
+            content_type="multipart/form-data",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_valid_jpeg_accepted(self):
+        import io
+
+        jpeg_bytes = self._make_jpeg_bytes()
+        data = {"photo": (io.BytesIO(jpeg_bytes), "photo.jpg")}
+        response = self.client.post(
+            "/photo-request",
+            data=data,
+            content_type="multipart/form-data",
+        )
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.assertTrue(result.get("success"))
+
+
+class TestAdminPhotoRequests(AdminTest):
+    """Tests for admin photo-request management endpoints."""
+
+    def _seed_request(self, username):
+        """Directly insert a fake pending request into FakeDatastore."""
+        import app as app_module
+
+        ds = app_module.datastore_client
+        key = ds.key("photo_request", username)
+        entity = ds.get(key)
+        entity.update(
+            {
+                "username": username,
+                "submitted": __import__("datetime").datetime(2024, 1, 1),
+                "status": "pending",
+            }
+        )
+        ds.put(entity)
+
+    def test_list_returns_pending(self):
+        self._seed_request("bbison")
+        response = self.client.get("/admin/photo-requests")
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.data)
+        usernames = [r["username"] for r in results]
+        self.assertIn("bbison", usernames)
+
+    def test_deny_request(self):
+        self._seed_request("bbison")
+        response = self.client.post("/admin/photo-requests/bbison/deny")
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.assertTrue(result.get("success"))
+
+    def test_approve_request_no_storage(self):
+        """Approve without a real storage client: photo fetch will fail gracefully."""
+        self._seed_request("bbison")
+        response = self.client.post("/admin/photo-requests/bbison/approve")
+        # storage_client is None in tests, so the blob download is skipped and
+        # the entity is marked approved – expect a 200 success response.
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.data)
+        self.assertTrue(result.get("success"))
 
 
 if __name__ == "__main__":
