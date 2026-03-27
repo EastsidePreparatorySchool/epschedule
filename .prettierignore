@@ -1,1 +1,4 @@
 gha-creds-*.json
+static/dist/
+frontend/node_modules/
+.pytest_cache

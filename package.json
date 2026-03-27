@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build-frontend": "cd frontend && npm ci && npm run build"
+  },
   "devDependencies": {
     "prettier": "3.6.2"
   }

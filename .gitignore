@@ -13,6 +13,7 @@ service_account*.json
 
 # NPM/Prettier files
 /node_modules
+/frontend/node_modules
 
 # Misc
 .DS_Store

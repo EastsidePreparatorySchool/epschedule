@@ -1,0 +1,1124 @@
+/* =====================================================================
+   EPSchedule – main stylesheet (React/Vite version)
+   ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* CSS custom properties – light / dark mode                             */
+/* --------------------------------------------------------------------- */
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #efefef;
+    --lighter-background: #ffffff;
+    --text: #1f1f1f;
+    --alt-text: #efefef;
+    --icon: #000000;
+    --card-bg: #ffffff;
+    --card-border: #e0e0e0;
+    --muted-text: #757575;
+    --link-color: #1565c0;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1f1f1f;
+    --lighter-background: #292929;
+    --text: #efefef;
+    --alt-text: #1f1f1f;
+    --icon: #ffffff;
+    --card-bg: #292929;
+    --card-border: #3a3a3a;
+    --muted-text: #9e9e9e;
+    --link-color: #90caf9;
+  }
+}
+
+/* --------------------------------------------------------------------- */
+/* Reset & base                                                           */
+/* --------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+  background-color: var(--background);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--link-color);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------- */
+/* App root                                                               */
+/* --------------------------------------------------------------------- */
+.app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* --------------------------------------------------------------------- */
+/* Header / Toolbar                                                       */
+/* --------------------------------------------------------------------- */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #0d47a1;
+  color: white;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  overflow: visible;
+}
+
+.header-main,
+.header-search {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white;
+}
+
+.admin-label {
+  color: #90caf9;
+  font-size: 14px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------- */
+/* Icon button (transparent toolbar buttons)                             */
+/* --------------------------------------------------------------------- */
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: background 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.icon-btn:active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* --------------------------------------------------------------------- */
+/* Join Hack Club button                                                  */
+/* --------------------------------------------------------------------- */
+.join-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 16px;
+  margin-right: 8px;
+  background-color: transparent;
+  color: white;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.05s ease;
+  flex-shrink: 0;
+}
+
+.join-button:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.join-button:active {
+  transform: translateY(1px);
+}
+
+/* --------------------------------------------------------------------- */
+/* Date picker overlay trick                                             */
+/* --------------------------------------------------------------------- */
+.datepicker-toggle {
+  display: inline-block;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.datepicker-toggle-button {
+  font-size: 18px;
+  line-height: 32px;
+  display: block;
+  text-align: center;
+  pointer-events: none;
+}
+
+.datepicker-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.datepicker-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------- */
+/* Tooltip                                                                */
+/* --------------------------------------------------------------------- */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: #323232;
+  color: #fff;
+  text-align: center;
+  font-size: 11px;
+  border-radius: 4px;
+  padding: 4px 6px;
+  position: absolute;
+  z-index: 200;
+  top: calc(100% + 6px);
+  right: 0;
+  pointer-events: none;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+/* --------------------------------------------------------------------- */
+/* Search bar                                                             */
+/* --------------------------------------------------------------------- */
+.search-container {
+  flex: 1;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1f1f1f;
+}
+
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: white;
+  color: #1f1f1f;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.search-suggestion-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.search-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.search-suggestion-item:hover {
+  background: #e3f2fd;
+}
+
+/* --------------------------------------------------------------------- */
+/* Navigation Drawer                                                      */
+/* --------------------------------------------------------------------- */
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 256px;
+  z-index: 300;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  background: var(--lighter-background);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+}
+
+.drawer-open {
+  transform: translateX(0);
+}
+
+.drawer-content {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0 16px;
+}
+
+.drawer-content .image-container {
+  padding: 16px;
+  text-align: center;
+}
+
+.drawer-content .image-container img {
+  max-width: 100%;
+  max-height: 100px;
+}
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.drawer-item:hover {
+  background: rgba(128, 128, 128, 0.15);
+}
+
+.drawer-icon {
+  margin-right: 16px;
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.drawer-version {
+  margin-top: auto;
+  padding: 16px 16px 0;
+  color: var(--muted-text);
+  font-size: 12px;
+}
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 290;
+}
+
+/* --------------------------------------------------------------------- */
+/* Main content                                                           */
+/* --------------------------------------------------------------------- */
+.main-content {
+  flex: 1;
+  background: var(--background);
+}
+
+/* --------------------------------------------------------------------- */
+/* Schedule container                                                     */
+/* --------------------------------------------------------------------- */
+.schedule-container {
+  width: 90%;
+  margin: 24px auto;
+}
+
+@media (min-width: 720px) {
+  .schedule-container {
+    width: 540px;
+  }
+}
+
+/* --------------------------------------------------------------------- */
+/* All-day event (No School / special day)                               */
+/* --------------------------------------------------------------------- */
+.all-day-event {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 16px;
+  gap: 16px;
+}
+
+.all-day-image {
+  max-width: 200px;
+  width: 100%;
+}
+
+.all-day-text {
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--text);
+  margin: 0;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------- */
+/* Schedule list                                                          */
+/* --------------------------------------------------------------------- */
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.schedule-empty {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--muted-text);
+  font-size: 16px;
+}
+
+/* --------------------------------------------------------------------- */
+/* Schedule card                                                          */
+/* --------------------------------------------------------------------- */
+.schedule-card {
+  background: var(--card-bg);
+  border-radius: 4px;
+  margin-bottom: 2px;
+  overflow: hidden;
+  transition: box-shadow 0.15s ease;
+}
+
+.schedule-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+.card-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--background);
+}
+
+.card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-time {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted-text);
+  line-height: 1.4;
+}
+
+.card-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.card-lunch-summary {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted-text);
+}
+
+.card-chevron {
+  color: var(--muted-text);
+  font-size: 12px;
+  flex-shrink: 0;
+  padding-left: 8px;
+}
+
+/* --------------------------------------------------------------------- */
+/* Card expanded content                                                  */
+/* --------------------------------------------------------------------- */
+.card-expanded {
+  padding: 0 16px 16px;
+}
+
+.class-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.class-email-link {
+  color: #1565c0;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.class-email-link:hover {
+  text-decoration: underline;
+}
+
+.period-info-link {
+  color: #1565c0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.period-info-link:hover {
+  text-decoration: underline;
+}
+
+.teacher-link {
+  color: var(--link-color);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.teacher-link:hover {
+  text-decoration: underline;
+}
+
+.loading {
+  padding: 16px;
+  color: var(--muted-text);
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------- */
+/* Student grid (expanded class view)                                    */
+/* --------------------------------------------------------------------- */
+.student-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-top: 8px;
+}
+
+@media (max-width: 480px) {
+  .student-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.student-cell {
+  position: relative;
+  cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+.student-cell:hover .student-name {
+  opacity: 1;
+}
+
+.student-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.student-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  font-size: 10px;
+  padding: 3px 4px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  line-height: 1.2;
+}
+
+/* --------------------------------------------------------------------- */
+/* Lunch details                                                          */
+/* --------------------------------------------------------------------- */
+.lunch-details {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------- */
+/* Lite schedule (popup view)                                            */
+/* --------------------------------------------------------------------- */
+.schedule-lite {
+  background: var(--lighter-background);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.lite-date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--background);
+}
+
+.lite-nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.lite-nav-btn:hover {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.lite-date {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted-text);
+  text-align: center;
+}
+
+.lite-card {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.lite-card:last-child {
+  border-bottom: none;
+}
+
+.lite-hidden {
+  opacity: 0.5;
+}
+
+.lite-shared {
+  width: 6px;
+  flex-shrink: 0;
+}
+
+.lite-shared.shared {
+  background: #1565c0;
+}
+
+.lite-shared.not-shared {
+  background: var(--card-border);
+}
+
+.lite-info {
+  flex: 1;
+  padding: 10px 14px;
+}
+
+.lite-time {
+  margin: 0 0 2px;
+  font-size: 12px;
+  color: var(--muted-text);
+}
+
+.lite-time a {
+  color: var(--link-color);
+}
+
+.lite-name {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.lite-no-school {
+  padding: 24px;
+  text-align: center;
+  color: var(--muted-text);
+  font-size: 15px;
+}
+
+/* --------------------------------------------------------------------- */
+/* Popup panel (slide-over)                                              */
+/* --------------------------------------------------------------------- */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.popup-panel {
+  width: 100%;
+  max-width: 540px;
+  height: 100%;
+  background: var(--background);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.25);
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0d47a1;
+  color: white;
+  height: 56px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.popup-back {
+  flex-shrink: 0;
+}
+
+.popup-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popup-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --------------------------------------------------------------------- */
+/* Student detail                                                         */
+/* --------------------------------------------------------------------- */
+.student-detail {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-detail-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 16px;
+  gap: 12px;
+  background: var(--lighter-background);
+}
+
+.photo-sharing-notice {
+  font-size: 12px;
+  color: var(--muted-text);
+  font-style: italic;
+  text-align: center;
+}
+
+.student-large-photo {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: var(--background);
+}
+
+@media (min-width: 400px) {
+  .student-large-photo {
+    width: 240px;
+    height: 240px;
+  }
+}
+
+.student-detail-info {
+  text-align: center;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.student-detail-info p {
+  margin: 4px 0;
+}
+
+.student-grade {
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0 0 4px;
+}
+
+/* --------------------------------------------------------------------- */
+/* Period detail                                                          */
+/* --------------------------------------------------------------------- */
+.period-detail {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 16px;
+  gap: 16px;
+}
+
+.period-column {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.period-subcontainer {
+  background: var(--card-bg);
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.period-heading {
+  font-size: 18px;
+  font-weight: 300;
+  text-align: center;
+  padding-bottom: 12px;
+  color: var(--text);
+}
+
+.freeroomswarning {
+  color: var(--muted-text);
+  font-size: 13px;
+  font-style: italic;
+  padding-bottom: 10px;
+  line-height: 1.5;
+}
+
+.period-alt-entry,
+.period-current-entry {
+  font-size: 14px;
+  color: var(--text);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--card-border);
+  line-height: 1.4;
+}
+
+.period-alt-entry:last-child,
+.period-current-entry:last-child {
+  border-bottom: none;
+}
+
+.period-none {
+  color: var(--muted-text);
+  font-size: 14px;
+}
+
+/* --------------------------------------------------------------------- */
+/* Dialogs (Settings, About, GitHub)                                     */
+/* --------------------------------------------------------------------- */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.dialog {
+  background: var(--lighter-background);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.settings-title {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.settings-divider {
+  border: none;
+  border-top: 1px solid var(--card-border);
+  margin: 0 -24px;
+}
+
+.privacypaneltitle {
+  margin-top: 16px;
+  font-size: 16px;
+}
+
+.settings-row {
+  margin-top: 12px;
+}
+
+.settings-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  cursor: pointer;
+  gap: 12px;
+}
+
+.settings-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.settings-note {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--muted-text);
+}
+
+.settings-ok-btn {
+  display: block;
+  margin-top: 24px;
+  padding: 10px 24px;
+  background: #1565c0;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.settings-ok-btn:hover {
+  background: #0d47a1;
+}
+
+.about-dialog,
+.github-dialog {
+  max-width: 480px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.about-dialog h2,
+.github-dialog h1 {
+  margin-bottom: 16px;
+  font-weight: 400;
+}
+
+.about-dialog div,
+.github-dialog div {
+  margin-bottom: 12px;
+}
+
+.about-dialog p,
+.github-dialog p {
+  margin: 4px 0;
+}
+
+.github-title-link {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 22px;
+}
+
+.github-title-link:hover {
+  text-decoration: underline;
+}
+
+.github-commits {
+  max-height: 50vh;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.github-commit-link {
+  display: block;
+  padding: 8px 0;
+  text-decoration: none;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.github-commit-link:link {
+  color: var(--text);
+}
+
+.github-commit-link:visited {
+  color: #7e57c2;
+}
+
+.github-commit-link:hover {
+  color: #1565c0;
+}
+
+.dialog-close-btn {
+  display: block;
+  margin-top: 20px;
+  padding: 8px 20px;
+  background: transparent;
+  color: #1565c0;
+  border: 1px solid #1565c0;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.dialog-close-btn:hover {
+  background: rgba(21, 101, 192, 0.1);
+}
+
+/* --------------------------------------------------------------------- */
+/* Toast notification                                                     */
+/* --------------------------------------------------------------------- */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #323232;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  max-width: calc(100vw - 32px);
+  animation: fadeInUp 0.2s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* --------------------------------------------------------------------- */
+/* Responsive: mobile                                                     */
+/* --------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .join-button {
+    display: none !important;
+  }
+
+  .tooltip {
+    display: none;
+  }
+
+  .datepicker-toggle {
+    display: none;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .join-button {
+    display: none;
+  }
+
+  .student-large-photo {
+    width: 160px;
+    height: 160px;
+  }
+}
