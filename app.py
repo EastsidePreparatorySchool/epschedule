@@ -19,6 +19,7 @@ from flask import (
     session,
 )
 from github import Auth as GithubAuth
+from github import BadCredentialsException
 from github import Github as gh
 from google.auth.transport import requests
 from google.cloud import datastore, secretmanager, storage
@@ -642,7 +643,14 @@ def get_latest_github_commits():
         # this uses PyGithub module
         # using an access token from a person who can access epschedule
         g = gh(auth=GithubAuth.Token(gh_token.decode("utf-8").strip()))
-        repo = g.get_repo("EastsidePreparatorySchool/epschedule")
+        try:
+            repo = g.get_repo("EastsidePreparatorySchool/epschedule")
+        except BadCredentialsException:
+            # Token is invalid; fall back to unauthenticated (works for public repos)
+            logging.warning(
+                "GitHub token has bad credentials, falling back to unauthenticated access"
+            )
+            repo = gh().get_repo("EastsidePreparatorySchool/epschedule")
         # get arr of commits, limiting to NUM_COMMITS
         result = []
         commits = repo.get_commits()
