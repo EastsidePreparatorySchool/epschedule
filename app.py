@@ -605,6 +605,11 @@ def passes(uh):
     return json.dumps({"error": "Passes not available"})
 
 
+@app.route("/privacy/")
+def serve_privacy_policy():
+    return render_template("privacypolicy.html")
+
+
 @app.route("/api/pass/")
 def get_pass():
     if "username" not in session:
