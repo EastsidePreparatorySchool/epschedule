@@ -605,7 +605,7 @@ def passes(uh):
     return json.dumps({"error": "Passes not available"})
 
 
-@app.route("/privacy-policy")
+@app.route("/privacy-policy/")
 def serve_privacy_policy():
     return render_template("privacypolicy.html")
 
