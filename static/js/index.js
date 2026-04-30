@@ -137,6 +137,120 @@ function sendUpdatePrivacyRequest(share_photo) {
   xhr.send(data);
 }
 
+// Photo change request functions
+
+function openPhotoRequestDialog() {
+  document.getElementById("dialog").close();
+  document.getElementById("photo-request-preview").innerHTML = "";
+  document.getElementById("photo-request-input").value = "";
+  document.getElementById("photo-request-dialog").open();
+}
+
+function previewPhotoRequest(input) {
+  var preview = document.getElementById("photo-request-preview");
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      preview.innerHTML =
+        '<img src="' +
+        e.target.result +
+        '" style="max-width: 200px; max-height: 200px; display: block;" />';
+    };
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    preview.innerHTML = "";
+  }
+}
+
+function submitPhotoRequest() {
+  var input = document.getElementById("photo-request-input");
+  if (!input.files || !input.files[0]) {
+    renderToast("Please select a photo first.");
+    return;
+  }
+  var data = new FormData();
+  data.append("photo", input.files[0]);
+  sendPostMessage(
+    "photo-request",
+    function () {
+      document.getElementById("photo-request-dialog").close();
+      renderToast(
+        "Photo request submitted! A maintainer will review it shortly.",
+      );
+    },
+    data,
+  );
+}
+
+function openAdminPhotoRequests() {
+  var dialog = document.getElementById("admin-photo-requests-dialog");
+  if (!dialog) return;
+  document.getElementById("photo-requests-list").innerHTML = "Loading\u2026";
+  dialog.open();
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      renderPhotoRequests(JSON.parse(xhr.responseText));
+    }
+  };
+  xhr.open("GET", "admin/photo-requests", true);
+  xhr.send();
+}
+
+function renderPhotoRequests(requests) {
+  var list = document.getElementById("photo-requests-list");
+  if (!requests || requests.length === 0) {
+    list.innerHTML = "<p>No pending photo requests.</p>";
+    return;
+  }
+  var html = "";
+  requests.forEach(function (req) {
+    html +=
+      '<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd;">';
+    html += "<div><b>" + req.username + "</b>";
+    html +=
+      ' <span style="color: gray; font-size: 0.9em;">(' +
+      new Date(req.submitted).toLocaleString() +
+      ")</span></div>";
+    if (req.photo_url) {
+      html +=
+        '<img src="' +
+        req.photo_url +
+        '" style="max-width: 120px; max-height: 120px; margin: 5px 0; display: block;" />';
+    }
+    html +=
+      '<paper-button raised onclick="approvePhotoRequest(\'' +
+      req.username +
+      '\')" style="background: #4CAF50; color: white;">Approve</paper-button>';
+    html +=
+      '<paper-button raised onclick="denyPhotoRequest(\'' +
+      req.username +
+      '\')" style="background: #f44336; color: white; margin-left: 5px;">Deny</paper-button>';
+    html += "</div>";
+  });
+  list.innerHTML = html;
+}
+
+function approvePhotoRequest(username) {
+  sendPostMessage(
+    "admin/photo-requests/" + username + "/approve",
+    function () {
+      renderToast("Photo request for " + username + " approved!");
+      openAdminPhotoRequests();
+    },
+  );
+}
+
+function denyPhotoRequest(username) {
+  sendPostMessage(
+    "admin/photo-requests/" + username + "/deny",
+    function () {
+      renderToast("Photo request for " + username + " denied.");
+      openAdminPhotoRequests();
+    },
+  );
+}
+
 function scheduleSwiped(evt) {
   if (evt.detail.direction == "left") {
     dateForward();

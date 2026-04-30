@@ -196,6 +196,16 @@
               <iron-icon class="drawer-icon" icon="info" item-icon> </iron-icon>
               <span class="side-panel-buttons">About</span>
             </paper-icon-item>
+            {% if admin %}
+            <paper-icon-item
+              class="side-panel-boxes"
+              onclick="openAdminPhotoRequests()"
+              noink
+            >
+              <iron-icon class="drawer-icon" icon="image" item-icon> </iron-icon>
+              <span class="side-panel-buttons">Photo Requests</span>
+            </paper-icon-item>
+            {% endif %}
             <p
               style="
                 position: absolute;
@@ -372,8 +382,71 @@
         >
           OK
         </paper-button>
+        <div class="settingsdividerline"></div>
+        <h3 class="privacypaneltitle">Photo</h3>
+        <paper-button
+          onclick="openPhotoRequestDialog()"
+          raised
+          class="settingsbutton"
+        >
+          Request Photo Change
+        </paper-button>
       </div>
     </paper-dialog>
+
+    <paper-dialog id="photo-request-dialog">
+      <div id="photo-request-panel">
+        <h2 class="settingstitle">Request Photo Change</h2>
+        <div class="settingsdividerline"></div>
+        <p>
+          Upload a new photo. A maintainer will review and approve your request.
+        </p>
+        <div>
+          <input
+            type="file"
+            id="photo-request-input"
+            accept="image/*"
+            onchange="previewPhotoRequest(this)"
+            style="margin: 10px 0"
+          />
+        </div>
+        <div
+          id="photo-request-preview"
+          style="margin: 10px 0; min-height: 50px"
+        ></div>
+        <paper-button
+          onclick="submitPhotoRequest()"
+          raised
+          class="settingsbutton"
+          id="photo-request-submit"
+        >
+          Submit
+        </paper-button>
+        <paper-button
+          onclick="document.getElementById('photo-request-dialog').close()"
+          class="settingsbutton"
+        >
+          Cancel
+        </paper-button>
+      </div>
+    </paper-dialog>
+
+    {% if admin %}
+    <paper-dialog id="admin-photo-requests-dialog">
+      <div id="admin-photo-requests-panel">
+        <h2 class="settingstitle">Photo Requests</h2>
+        <div class="settingsdividerline"></div>
+        <div id="photo-requests-list">Loading&hellip;</div>
+        <paper-button
+          onclick="document.getElementById('admin-photo-requests-dialog').close()"
+          class="settingsbutton"
+          style="margin-top: 10px"
+        >
+          Close
+        </paper-button>
+      </div>
+    </paper-dialog>
+    {% endif %}
     <paper-toast id="toast" text="" duration="10000"></paper-toast>
     <script>
       document.getElementById("sharephototoggle").checked={{share_photo}};
