@@ -7,6 +7,8 @@ import logging
 import os
 import re
 from queue import Empty, Queue
+import hashlib
+import urllib.request
 
 import google.oauth2.id_token
 from flask import (
@@ -398,12 +400,20 @@ def get_class_schedule(user_class, term_id):
     return result
 
 
-# TODO rename this to /user since it's for students and teachers
-@app.route("/student/<target_user>")
-def handle_user(target_user):
+@app.route("/lunches/")
+def handle_lunches():
     if "username" not in session:
         abort(403)
+    return json.dumps(get_lunches_since_date(datetime.date.today() - datetime.timedelta(28)))
 
+# TODO rename this to /user since it's for students and teachers
+@app.route("/student/<target_user>")
+def handle_user(target_user,jsd=False):
+    if "username" not in session:
+        abort(403)
+    
+    if(target_user[0]=='[' and target_user[-1]==']'):
+        return json.dumps([handle_user(u,True) for u in target_user[1:-1].split(',')])
     user_schedule = get_schedule(session["username"])
     target_schedule = get_schedule(target_user)
     if user_schedule is None or target_schedule is None:
@@ -430,10 +440,16 @@ def handle_user(target_user):
     target_schedule["email"] = username_to_email(target_user)
 
     if priv_settings["share_photo"]:
-        target_schedule["photo_url"] = gen_photo_url(target_user, False)
+        target_schedule["photo_url"] = gen_photo_url(target_user, jsd)
+        if jsd:
+            h = hashlib.sha256()
+            with urllib.request.urlopen(target_schedule["photo_url"]) as r:
+                for chunk in iter(lambda: r.read(65536), b""):
+                    h.update(chunk)
+            target_schedule["photo_hash"] = h.hexdigest()
     else:
         target_schedule["photo_url"] = "/static/images/placeholder.png"
-    return json.dumps(target_schedule)
+    return json.dumps(target_schedule) if not jsd else target_schedule
 
 
 def sanitize_schedule(orig_schedule, user_schedule):
