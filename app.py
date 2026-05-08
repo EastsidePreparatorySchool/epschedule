@@ -2,14 +2,11 @@ VERSION = "1.32.55"  # Massive UI update/complete backend rework is the first nu
 
 import copy
 import datetime
-import hashlib
 import json
 import logging
 import os
 import re
 import time
-import urllib.request
-from concurrent.futures import ThreadPoolExecutor
 from queue import Empty, Queue
 
 import google.oauth2.id_token
@@ -43,7 +40,12 @@ GITHUB_COMMITS = None
 NUM_COMMITS = 50
 EPRT_KEY = None
 DATA_BUCKET = None
-PHOTO_HASHES = {}
+_PHOTO_VERSIONS = {}  # {blob_name: int_timestamp}
+_PHOTO_VERSIONS_FETCHED = 0.0  # unix time of last successful fetch
+_PHOTO_VERSIONS_TTL = 600  # seconds
+_PRIV_CACHE = {}
+_PRIV_CACHE_FETCHED = 0.0
+_PRIV_CACHE_TTL = 15  # seconds
 # Subscriber queues for SSE streaming (no in-process caching)
 chat_subscribers = []
 
@@ -167,26 +169,48 @@ def get_schedule(username):
     return schedules[username]
 
 
+def get_priv_cache():
+    global _PRIV_CACHE, _PRIV_CACHE_FETCHED
+    now = time.time()
+    if _PRIV_CACHE and (now - _PRIV_CACHE_FETCHED) < _PRIV_CACHE_TTL:
+        return _PRIV_CACHE
+    if datastore_client is None:
+        return _PRIV_CACHE  # empty in tests
+    try:
+        usernames = list(get_schedule_data().keys())
+        entries = get_database_entries(usernames)
+        _PRIV_CACHE = dict(zip(usernames, entries))
+        _PRIV_CACHE_FETCHED = now
+    except Exception:
+        app.logger.exception("Failed to fetch priv cache; serving stale entries")
+    return _PRIV_CACHE
+
+
+def _get_photo_versions():
+    global _PHOTO_VERSIONS, _PHOTO_VERSIONS_FETCHED
+    now = time.time()
+    if _PHOTO_VERSIONS and (now - _PHOTO_VERSIONS_FETCHED) < _PHOTO_VERSIONS_TTL:
+        return _PHOTO_VERSIONS
+    sc = globals().get("storage_client", None)
+    if not sc:
+        return _PHOTO_VERSIONS  # empty in tests
+    try:
+        versions = {}
+        for blob in sc.bucket("epschedule-avatars").list_blobs():
+            if blob.updated:
+                versions[blob.name] = int(blob.updated.timestamp())
+        _PHOTO_VERSIONS = versions
+        _PHOTO_VERSIONS_FETCHED = now
+    except Exception:
+        app.logger.exception("Failed to list avatar bucket; serving stale versions")
+    return _PHOTO_VERSIONS
+
+
 def gen_photo_url(username, icon=False):
     blob_name = hash_username(app.secret_key, username, icon)
     base = f"https://epschedule-avatars.storage.googleapis.com/{blob_name}"
-    # Try to append a version param based on blob update time to bust caches
-    try:
-        sc = globals().get("storage_client", None)
-        if sc:
-            bucket = sc.bucket("epschedule-avatars")
-            blob = bucket.blob(blob_name)
-            try:
-                blob.reload()
-                if blob.updated:
-                    ts = int(blob.updated.timestamp())
-                    return f"{base}?v={ts}"
-            except Exception:
-                # If metadata can't be fetched, fall back to base URL
-                pass
-    except Exception:
-        pass
-    return base
+    ts = _get_photo_versions().get(blob_name)
+    return f"{base}?v={ts}" if ts else base
 
 
 def photo_exists(username, icon=False):
@@ -417,19 +441,16 @@ def handle_lunches():
 # TODO rename this to /user since it's for students and teachers
 @app.route("/student/<target_user>")
 def handle_user(target_user, jsd=False, su=""):
-    global PHOTO_HASHES
     if (not jsd) and ("username" not in session):
         abort(403)
     if not su:
         su = session["username"]
     if target_user == "_all_":
-        return handle_user("[{}]".format(",".join(get_schedule_data().keys())), su=su)
+        return handle_user("[{}]".format(",".join(get_schedule_data().keys())))
     if target_user[0] == "[" and target_user[-1] == "]":
-        with ThreadPoolExecutor(max_workers=25) as ex:
-            results = list(
-                ex.map(lambda u: handle_user(u, True, su), target_user[1:-1].split(","))
-            )
-        return json.dumps(results)
+        return json.dumps(
+            [handle_user(u, True, su) for u in target_user[1:-1].split(",")]
+        )
     user_schedule = get_schedule(su)
     target_schedule = get_schedule(target_user)
     if user_schedule is None or target_schedule is None:
@@ -442,7 +463,7 @@ def handle_user(target_user, jsd=False, su=""):
     elif is_teacher_schedule(user_schedule):
         priv_settings = {"share_photo": True}
     else:
-        priv_obj = get_database_entry(target_user)
+        priv_obj = get_priv_cache().get(target_user)
         if priv_obj:
             if dict(priv_obj.items()).get("share_photo"):
                 priv_settings["share_photo"] = True
@@ -456,35 +477,13 @@ def handle_user(target_user, jsd=False, su=""):
     target_schedule["email"] = username_to_email(target_user)
 
     if priv_settings["share_photo"]:
-        if jsd:
-            pht = PHOTO_HASHES.get(target_user)
-            if pht and pht[0] + 3600 >= time.time():
-                target_schedule["photo_url"] = pht[2]
-                target_schedule["photo_hash"] = pht[1]
-                if pht[1] == "no_need_for_hash;placeholder":
-                    target_schedule["photo_url"] = "/static/images/placeholder.png"
-            else:
-                target_schedule["photo_url"] = gen_photo_url(target_user, jsd)
-                try:
-                    h = hashlib.sha256()
-                    with urllib.request.urlopen(target_schedule["photo_url"]) as r:
-                        for chunk in iter(lambda: r.read(65536), b""):
-                            h.update(chunk)
-                    target_schedule["photo_hash"] = h.hexdigest()
-                except Exception:
-                    target_schedule["photo_url"] = "/static/images/placeholder.png"
-                    target_schedule["photo_hash"] = "no_need_for_hash;placeholder"
-                PHOTO_HASHES[target_user] = (
-                    time.time(),
-                    target_schedule["photo_hash"],
-                    target_schedule["photo_url"],
-                )
-        else:
-            target_schedule["photo_url"] = gen_photo_url(target_user, jsd)
-            target_schedule["photo_hash"] = "no_need_for_hash;full_qual_image"
+        target_schedule["photo_url"] = gen_photo_url(target_user, jsd)
     else:
-        target_schedule["photo_url"] = "/static/images/placeholder.png"
-        target_schedule["photo_hash"] = "no_need_for_hash;placeholder"
+        target_schedule["photo_url"] = (
+            "/static/images/placeholder_small.png"
+            if jsd
+            else "/static/images/placeholder.png"
+        )
     return json.dumps(target_schedule) if not jsd else target_schedule
 
 
