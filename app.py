@@ -45,7 +45,7 @@ _PHOTO_VERSIONS_FETCHED = 0.0  # unix time of last successful fetch
 _PHOTO_VERSIONS_TTL = 600  # seconds
 _PRIV_CACHE = {}
 _PRIV_CACHE_FETCHED = 0.0
-_PRIV_CACHE_TTL = 15  # seconds
+_PRIV_CACHE_TTL = 5  # seconds
 # Subscriber queues for SSE streaming (no in-process caching)
 chat_subscribers = []
 
@@ -449,18 +449,18 @@ def handle_user(target_user, jsd=False, su=""):
         return handle_user("[{}]".format(",".join(get_schedule_data().keys())))
     if target_user[0] == "[" and target_user[-1] == "]":
         return json.dumps(
-            [handle_user(u, True, su) for u in target_user[1:-1].split(",")]
+            {u: handle_user(u, True, su) for u in target_user[1:-1].split(",")}
         )
     user_schedule = get_schedule(su)
     target_schedule = get_schedule(target_user)
     if user_schedule is None or target_schedule is None:
         abort(404)
     priv_settings = {"share_photo": False}
-    if su == target_user:
-        priv_settings = {"share_photo": True}
-    elif is_teacher_schedule(target_schedule):
-        priv_settings = {"share_photo": True}
-    elif is_teacher_schedule(user_schedule):
+    if (
+        su == target_user
+        or is_teacher_schedule(target_schedule)
+        or is_teacher_schedule(user_schedule)
+    ):
         priv_settings = {"share_photo": True}
     else:
         priv_obj = get_priv_cache().get(target_user)
