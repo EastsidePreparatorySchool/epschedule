@@ -7,7 +7,9 @@ import json
 import logging
 import os
 import re
+import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from queue import Empty, Queue
 
 import google.oauth2.id_token
@@ -41,6 +43,7 @@ GITHUB_COMMITS = None
 NUM_COMMITS = 50
 EPRT_KEY = None
 DATA_BUCKET = None
+PHOTO_HASHES = {}
 # Subscriber queues for SSE streaming (no in-process caching)
 chat_subscribers = []
 
@@ -130,12 +133,14 @@ def username_to_email(username):
     return username + "@eastsideprep.org"
 
 
-def is_admin():
+def is_admin(usr=None):
     """Return True if the current session user is an admin.
 
     Admin users are hard-coded in a few places in the original code. Centralize
     the check so all admin-related behavior is consistent.
     """
+    if usr is not None:
+        return usr in ("cwest", "ajosan", "rpudipeddi")
     try:
         return session.get("username") in ("cwest", "ajosan", "rpudipeddi")
     except Exception:
@@ -411,18 +416,26 @@ def handle_lunches():
 
 # TODO rename this to /user since it's for students and teachers
 @app.route("/student/<target_user>")
-def handle_user(target_user, jsd=False):
-    if "username" not in session:
+def handle_user(target_user, jsd=False, su=""):
+    global PHOTO_HASHES
+    if (not jsd) and ("username" not in session):
         abort(403)
-
+    if not su:
+        su = session["username"]
+    if target_user == "_all_":
+        return handle_user("[{}]".format(",".join(get_schedule_data().keys())), su=su)
     if target_user[0] == "[" and target_user[-1] == "]":
-        return json.dumps([handle_user(u, True) for u in target_user[1:-1].split(",")])
-    user_schedule = get_schedule(session["username"])
+        with ThreadPoolExecutor(max_workers=25) as ex:
+            results = list(
+                ex.map(lambda u: handle_user(u, True, su), target_user[1:-1].split(","))
+            )
+        return json.dumps(results)
+    user_schedule = get_schedule(su)
     target_schedule = get_schedule(target_user)
     if user_schedule is None or target_schedule is None:
         abort(404)
     priv_settings = {"share_photo": False}
-    if session["username"] == target_user:
+    if su == target_user:
         priv_settings = {"share_photo": True}
     elif is_teacher_schedule(target_schedule):
         priv_settings = {"share_photo": True}
@@ -435,7 +448,7 @@ def handle_user(target_user, jsd=False):
                 priv_settings["share_photo"] = True
     # Code below is extremely critical code that is essential to the operation of epschedule
     # Dont read it just believe it
-    if is_admin():
+    if is_admin(su):
         # admin mode
         priv_settings = {"share_photo": True}
 
@@ -443,15 +456,35 @@ def handle_user(target_user, jsd=False):
     target_schedule["email"] = username_to_email(target_user)
 
     if priv_settings["share_photo"]:
-        target_schedule["photo_url"] = gen_photo_url(target_user, jsd)
         if jsd:
-            h = hashlib.sha256()
-            with urllib.request.urlopen(target_schedule["photo_url"]) as r:
-                for chunk in iter(lambda: r.read(65536), b""):
-                    h.update(chunk)
-            target_schedule["photo_hash"] = h.hexdigest()
+            pht = PHOTO_HASHES.get(target_user)
+            if pht and pht[0] + 3600 >= time.time():
+                target_schedule["photo_url"] = pht[2]
+                target_schedule["photo_hash"] = pht[1]
+                if pht[1] == "no_need_for_hash;placeholder":
+                    target_schedule["photo_url"] = "/static/images/placeholder.png"
+            else:
+                target_schedule["photo_url"] = gen_photo_url(target_user, jsd)
+                try:
+                    h = hashlib.sha256()
+                    with urllib.request.urlopen(target_schedule["photo_url"]) as r:
+                        for chunk in iter(lambda: r.read(65536), b""):
+                            h.update(chunk)
+                    target_schedule["photo_hash"] = h.hexdigest()
+                except Exception:
+                    target_schedule["photo_url"] = "/static/images/placeholder.png"
+                    target_schedule["photo_hash"] = "no_need_for_hash;placeholder"
+                PHOTO_HASHES[target_user] = (
+                    time.time(),
+                    target_schedule["photo_hash"],
+                    target_schedule["photo_url"],
+                )
+        else:
+            target_schedule["photo_url"] = gen_photo_url(target_user, jsd)
+            target_schedule["photo_hash"] = "no_need_for_hash;full_qual_image"
     else:
         target_schedule["photo_url"] = "/static/images/placeholder.png"
+        target_schedule["photo_hash"] = "no_need_for_hash;placeholder"
     return json.dumps(target_schedule) if not jsd else target_schedule
 
 
