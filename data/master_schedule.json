@@ -821,19 +821,15 @@
       },
       {
         "period": "B",
-        "times": "10:15-11:45"
-      },
-      {
-        "period": "US Flex",
-        "times": "11:50-12:30"
+        "times": "10:45-12:15"
       },
       {
         "period": "Lunch (US)",
-        "times": "12:40-1:20"
+        "times": "12:15-1:00"
       },
       {
         "period": "C",
-        "times": "01:30-03:00"
+        "times": "01:00-02:30"
       }
     ],
     "Finals D,E,F": [
@@ -843,19 +839,15 @@
       },
       {
         "period": "E",
-        "times": "10:15-11:45"
-      },
-      {
-        "period": "US Flex",
-        "times": "11:50-12:30"
+        "times": "10:45-12:15"
       },
       {
         "period": "Lunch (US)",
-        "times": "12:40-1:20"
+        "times": "12:15-1:00"
       },
       {
         "period": "F",
-        "times": "01:30-03:00"
+        "times": "01:00-02:30"
       }
     ],
     "Finals G,H": [
@@ -865,7 +857,11 @@
       },
       {
         "period": "H",
-        "times": "10:15-11:45"
+        "times": "10:45-12:15"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "12:15-1:00"
       }
     ],
     "Grade Level Orientations": [
