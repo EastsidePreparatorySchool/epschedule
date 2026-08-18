@@ -48,6 +48,9 @@
   </head>
   <body unresolved>
     <paper-material class="card" elevation="2">
+      {% if schedule_notice %}
+      <div class="schedule-notice" role="status">{{ schedule_notice }}</div>
+      {% endif %}
       <div class="image-container">
         <img src="static/images/epslogo.jpg" />
       </div>

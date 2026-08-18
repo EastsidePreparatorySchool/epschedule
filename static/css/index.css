@@ -162,6 +162,18 @@ neon-animated-pages {
   color: #2196f3;
 }
 
+.schedule-notice {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 16px;
+  color: #4a3400;
+  background: #fff3cd;
+  border-bottom: 1px solid #e6c767;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+}
+
 .image-container {
   text-align: center;
 }

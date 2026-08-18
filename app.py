@@ -40,6 +40,7 @@ GITHUB_COMMITS = None
 NUM_COMMITS = 50
 EPRT_KEY = None
 DATA_BUCKET = None
+LOCAL_SCHEDULE_NOTICE = None
 _PHOTO_VERSIONS = {}  # {blob_name: int_timestamp}
 _PHOTO_VERSIONS_FETCHED = 0.0  # unix time of last successful fetch
 _PHOTO_VERSIONS_TTL = 600  # seconds
@@ -61,6 +62,7 @@ def init_app(test_config=None):
     global GITHUB_COMMITS
     global EPRT_KEY
     global DATA_BUCKET
+    global LOCAL_SCHEDULE_NOTICE
     app.permanent_session_lifetime = datetime.timedelta(days=3650)
     if test_config is None:
         # Authenticate ourselves
@@ -84,10 +86,23 @@ def init_app(test_config=None):
         storage_client = storage.Client()
         DATA_BUCKET = storage_client.bucket("epschedule-data")
 
-        SCHEDULE_INFO = json.loads(
-            DATA_BUCKET.blob("schedules.json").download_as_string()
-        )
+        local_schedule_path = os.path.join("data", "schedules.json")
+        if os.path.exists(local_schedule_path):
+            with open(local_schedule_path, encoding="utf-8") as schedule_file:
+                SCHEDULE_INFO = json.load(schedule_file)
+            LOCAL_SCHEDULE_NOTICE = (
+                "Notice: These are last year's courses, carried forward temporarily. "
+                "This year's overall calendar and schedule structure is shown. "
+                "Courses will be updated when this year's schedules are released."
+            )
+        else:
+            SCHEDULE_INFO = json.loads(
+                DATA_BUCKET.blob("schedules.json").download_as_string()
+            )
+            LOCAL_SCHEDULE_NOTICE = None
         DAYS = json.loads(DATA_BUCKET.blob("master_schedule.json").download_as_string())
+        if len(DAYS) > 2 and DAYS[2].get("schedule_notice"):
+            LOCAL_SCHEDULE_NOTICE = DAYS[2]["schedule_notice"]
         GITHUB_COMMITS = get_latest_github_commits()
         if GITHUB_COMMITS is None:
             GITHUB_COMMITS = []
@@ -102,16 +117,61 @@ def init_app(test_config=None):
         SCHEDULE_INFO = app.config["SCHEDULES"]
         DAYS = app.config["MASTER_SCHEDULE"]
         GITHUB_COMMITS = []
+        LOCAL_SCHEDULE_NOTICE = app.config.get("SCHEDULE_NOTICE")
     TERM_STARTS = get_term_starts(DAYS[0])
 
 
 def get_term_starts(days):
     """Return a list of datetime objects for the start of each trimester."""
-    return [
-        find_day(days, ".*"),
-        find_day(days, ".*End.*Fall Term") + datetime.timedelta(days=1),
-        find_day(days, ".*End.*Winter Term") + datetime.timedelta(days=1),
-    ]
+    try:
+        return [
+            find_day(days, ".*"),
+            find_day(days, ".*End.*Fall Term") + datetime.timedelta(days=1),
+            find_day(days, ".*End.*Winter Term") + datetime.timedelta(days=1),
+        ]
+    except AssertionError:
+        # Newer Four11 calendars omit the old explicit term-end markers.
+        # Derive the starts from the published break/finals boundaries instead.
+        dated_days = sorted(
+            (datetime.datetime.strptime(day, "%Y-%m-%d").date(), label)
+            for day, label in days.items()
+            if label
+        )
+        first_day = dated_days[0][0]
+        winter_break = [day for day, label in dated_days if label == "Winter Break"]
+        winter_start = (
+            next(day for day, label in dated_days if day > max(winter_break))
+            if winter_break
+            else first_day + datetime.timedelta(days=120)
+        )
+        finals = [
+            day
+            for day, label in dated_days
+            if day > winter_start and "Finals" in label
+        ]
+        finals_end = min(finals) if finals else None
+        if finals_end:
+            for day, label in dated_days:
+                if (
+                    day > finals_end
+                    and (day - finals_end).days <= 3
+                    and "Finals" in label
+                ):
+                    finals_end = day
+        spring_start = (
+            next(
+                (
+                    day
+                    for day, label in dated_days
+                    if day > finals_end
+                    and re.search(r"_[A-Z][a-z]{2}$", label)
+                ),
+                finals_end + datetime.timedelta(days=1),
+            )
+            if finals
+            else winter_start + datetime.timedelta(days=90)
+        )
+        return [first_day, winter_start, spring_start]
 
 
 def find_day(days, regex):
@@ -262,7 +322,9 @@ def photo_exists(username, icon=False):
 
 
 def gen_login_response():
-    template = make_response(render_template("login.html"))
+    template = make_response(
+        render_template("login.html", schedule_notice=LOCAL_SCHEDULE_NOTICE)
+    )
     # Clear all cookies
     session.pop("username", None)
     template.set_cookie("token", "", expires=0)
@@ -330,6 +392,7 @@ def main():
             # gets the trimester starts in a format JS can parse
             term_starts=json.dumps([d.isoformat() for d in TERM_STARTS]),
             latest_commits=json.dumps(GITHUB_COMMITS),
+            schedule_notice=LOCAL_SCHEDULE_NOTICE,
             admin=is_admin(),
             share_photo=str(
                 True if db_entry is None else dict(db_entry.items()).get("share_photo")
