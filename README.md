@@ -11,11 +11,20 @@ A schedule app for Eastside Preparatory School, built with [Google App Engine](h
 
 ## Running EPSchedule locally
 
-EPSchedule is designed to be _extremely_ easy to get running locally - all you need are `git`, Python 3.7+, and `pip`. This does not work with Python 3.13 - just pip install eaech requirement individually. To set it up, just run:
+EPSchedule is designed to be _extremely_ easy to get running locally with Python 3.11 and `pip`. Python 3.11 matches the App Engine runtime in `app.yaml` and the pinned Google Cloud dependencies. To set it up, run:
 
 ```
 git clone https://github.com/guberti/epschedule.git
 cd epschedule
+pip install -r requirements.txt
+```
+
+On Windows, create and activate a virtual environment first:
+
+```
+py -3.11 -m venv venv
+venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
