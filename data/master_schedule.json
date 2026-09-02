@@ -199,7 +199,9 @@
     "2026-06-04": "MS Culminating E-H",
     "2026-06-05": "Finals A,B,C",
     "2026-06-08": "Finals D,E,F",
-    "2026-06-09": "Finals G,H"
+    "2026-06-09": "Finals G,H",
+    "2026-06-10": "Senior Reception",
+    "2026-06-12": "Graduation"
   },
   {
     "A-D_Fri": [
@@ -1163,6 +1165,18 @@
     "PDD": [
       {
         "period": "PDD",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Senior Reception": [
+      {
+        "period": "Senior Reception",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Graduation": [
+      {
+        "period": "Graduation",
         "times": "08:00-03:15"
       }
     ],
