@@ -390,6 +390,10 @@
     ],
     "Convocation, A-H": [
       {
+        "period": "Convocation",
+        "times": "08:30-09:00"
+      },
+      {
         "period": "A",
         "times": "09:10-09:40"
       },
@@ -411,7 +415,7 @@
       },
       {
         "period": "E",
-        "times": "11:45-12:55"
+        "times": "11:45-12:15"
       },
       {
         "period": "Lunch (US)",
