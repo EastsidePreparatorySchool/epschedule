@@ -1,3 +1,5 @@
+# Don't forget to add End Fall Term and End Winter Term after finals after creation
+
 import json
 import time
 from datetime import date, timedelta
@@ -6,8 +8,8 @@ from urllib.error import HTTPError
 
 BASE_URL = "https://four11.eastsideprep.org/epsnet/schedule_for_date?date="
 
-START_DATE = date(2025, 8, 30)
-END_DATE = date(2026, 6, 10)
+START_DATE = date(2026, 8, 27)
+END_DATE = date(2027, 6, 11)
 
 delta = END_DATE - START_DATE
 schedules = {}
