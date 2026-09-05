@@ -1,60 +1,64 @@
 [
   {
+    "2026-08-27": "Advisor Conferences",
+    "2026-08-28": "Advisor Conferences",
+    "2026-08-31": "PD Day: Opening Meetings",
+    "2026-09-01": "PD Day: Opening Meetings",
     "2026-09-02": "Convocation, A-H",
-    "2026-09-03": "Grade Level Orientations",
-    "2026-09-04": "Grade Level Orientations",
+    "2026-09-03": "Fall Orientations",
+    "2026-09-04": "Fall Orientations",
     "2026-09-07": "Labor Day",
-    "2026-09-08": "E-H_Tue",
-    "2026-09-09": "D-A_Wed",
-    "2026-09-10": "H-E_Thu",
-    "2026-09-11": "A-D_Fri",
-    "2026-09-14": "E-H_Mon",
-    "2026-09-15": "D-A_Tue",
-    "2026-09-16": "H-E_Wed",
-    "2026-09-17": "A-D_Thu",
-    "2026-09-18": "E-H_Fri",
-    "2026-09-21": "D-A_Mon",
-    "2026-09-22": "H-E_Tue",
-    "2026-09-23": "A-D_Wed",
-    "2026-09-24": "E-H_Thu",
-    "2026-09-25": "D-A_Fri",
-    "2026-09-28": "H-E_Mon",
-    "2026-09-29": "A-D_Tue",
-    "2026-09-30": "E-H_Wed",
-    "2026-10-01": "Fall Break",
-    "2026-10-02": "Fall Break",
-    "2026-10-05": "D-A_Mon",
-    "2026-10-06": "H-E_Tue",
-    "2026-10-07": "A-D_Wed",
-    "2026-10-08": "E-H_Thu",
-    "2026-10-09": "PDD",
-    "2026-10-12": "D-A_Mon",
-    "2026-10-13": "H-E_Tue",
-    "2026-10-14": "A-D_Wed",
-    "2026-10-15": "E-H_Thu",
-    "2026-10-16": "D-A_Fri",
-    "2026-10-19": "H-E_Mon",
-    "2026-10-20": "A-D_Tue",
-    "2026-10-21": "E-H_Wed",
-    "2026-10-22": "Student-Parent-Teacher Conferences",
-    "2026-10-23": "Student-Parent-Teacher Conferences",
-    "2026-10-26": "D-A_Mon",
-    "2026-10-27": "H-E_Tue",
-    "2026-10-28": "A-D_Wed",
-    "2026-10-29": "E-H_Thu",
-    "2026-10-30": "D-A_Fri",
-    "2026-11-02": "H-E_Mon",
-    "2026-11-03": "A-D_Tue",
-    "2026-11-04": "E-H_Wed",
-    "2026-11-05": "D-A_Thu",
-    "2026-11-06": "H-E_Fri",
-    "2026-11-09": "A-D_Mon",
-    "2026-11-10": "E-H_Tue",
+    "2026-09-08": "A-D_Tue",
+    "2026-09-09": "E-H_Wed",
+    "2026-09-10": "D-A_Thu",
+    "2026-09-11": "H-E_Fri",
+    "2026-09-14": "A-D_Mon",
+    "2026-09-15": "E-H_Tue",
+    "2026-09-16": "D-A_Wed",
+    "2026-09-17": "H-E_Thu",
+    "2026-09-18": "Fall Break",
+    "2026-09-21": "Fall Break",
+    "2026-09-22": "A-D_Tue",
+    "2026-09-23": "E-H_Wed",
+    "2026-09-24": "D-A_Thu",
+    "2026-09-25": "H-E_Fri",
+    "2026-09-28": "A-D_Mon",
+    "2026-09-29": "E-H_Tue",
+    "2026-09-30": "D-A_Wed",
+    "2026-10-01": "H-E_Thu",
+    "2026-10-02": "A-D_Fri",
+    "2026-10-05": "E-H_Mon",
+    "2026-10-06": "D-A_Tue",
+    "2026-10-07": "H-E_Wed",
+    "2026-10-08": "A-D_Thu",
+    "2026-10-09": "PD Day",
+    "2026-10-12": "E-H_Mon",
+    "2026-10-13": "D-A_Tue",
+    "2026-10-14": "H-E_Wed",
+    "2026-10-15": "A-D_Thu",
+    "2026-10-16": "E-H_Fri",
+    "2026-10-19": "D-A_Mon",
+    "2026-10-20": "H-E_Tue",
+    "2026-10-21": "A-D_Wed",
+    "2026-10-22": "Student-Guardian-Teacher Conferences",
+    "2026-10-23": "Student-Guardian-Teacher Conferences",
+    "2026-10-26": "E-H_Mon",
+    "2026-10-27": "D-A_Tue",
+    "2026-10-28": "H-E_Wed",
+    "2026-10-29": "A-D_Thu",
+    "2026-10-30": "E-H_Fri",
+    "2026-11-02": "D-A_Mon",
+    "2026-11-03": "H-E_Tue",
+    "2026-11-04": "A-D_Wed",
+    "2026-11-05": "E-H_Thu",
+    "2026-11-06": "D-A_Fri",
+    "2026-11-09": "H-E_Mon",
+    "2026-11-10": "A-D_Tue",
     "2026-11-11": "Veterans Day",
-    "2026-11-12": "D-A_Thu",
-    "2026-11-13": "H-E_Fri",
-    "2026-11-16": "A-D_Mon",
-    "2026-11-17": "E-H_Tue",
+    "2026-11-12": "E-H_Thu",
+    "2026-11-13": "D-A_Fri",
+    "2026-11-16": "H-E_Mon",
+    "2026-11-17": "O, A-H",
     "2026-11-18": "Finals A,B,C",
     "2026-11-19": "Finals D,E,F",
     "2026-11-20": "Finals G,H",
@@ -63,7 +67,8 @@
     "2026-11-25": "Thanksgiving Break",
     "2026-11-26": "Thanksgiving Break",
     "2026-11-27": "Thanksgiving Break",
-    "2026-11-30": "End Fall Term",
+    "2026-11-28": "End Fall Term",
+    "2026-11-30": "PD Day",
     "2026-12-01": "A-D_Tue",
     "2026-12-02": "E-H_Wed",
     "2026-12-03": "D-A_Thu",
@@ -88,68 +93,69 @@
     "2026-12-30": "Winter Break",
     "2026-12-31": "Winter Break",
     "2027-01-01": "Winter Break",
-    "2027-01-04": "A-D_Mon",
-    "2027-01-05": "E-H_Tue",
-    "2027-01-06": "D-A_Wed",
-    "2027-01-07": "H-E_Thu",
-    "2027-01-08": "A-D_Fri",
-    "2027-01-11": "E-H_Mon",
-    "2027-01-12": "D-A_Tue",
-    "2027-01-13": "H-E_Wed",
-    "2027-01-14": "A-D_Thu",
-    "2027-01-15": "PDD",
+    "2027-01-04": "D-A_Mon",
+    "2027-01-05": "H-E_Tue",
+    "2027-01-06": "A-D_Wed",
+    "2027-01-07": "E-H_Thu",
+    "2027-01-08": "D-A_Fri",
+    "2027-01-11": "H-E_Mon",
+    "2027-01-12": "A-D_Tue",
+    "2027-01-13": "E-H_Wed",
+    "2027-01-14": "D-A_Thu",
+    "2027-01-15": "PD Day",
     "2027-01-18": "MLK Jr. Day",
-    "2027-01-19": "E-H_Tue",
-    "2027-01-20": "D-A_Wed",
-    "2027-01-21": "H-E_Thu",
-    "2027-01-22": "A-D_Fri",
-    "2027-01-25": "Voices in Action",
-    "2027-01-26": "E-H_Tue",
-    "2027-01-27": "D-A_Wed",
-    "2027-01-28": "H-E_Thu",
-    "2027-01-29": "A-D_Fri",
-    "2027-02-01": "E-H_Mon",
-    "2027-02-02": "D-A_Tue",
-    "2027-02-03": "H-E_Wed",
-    "2027-02-04": "A-D_Thu",
-    "2027-02-05": "E-H_Fri",
-    "2027-02-08": "D-A_Mon",
-    "2027-02-09": "H-E_Tue",
-    "2027-02-10": "A-D_Wed",
-    "2027-02-11": "E-H_Thu",
-    "2027-02-12": "PDD",
-    "2027-02-15": "Presidents day",
+    "2027-01-19": "H-E_Tue",
+    "2027-01-20": "A-D_Wed",
+    "2027-01-21": "E-H_Thu",
+    "2027-01-22": "D-A_Fri",
+    "2027-01-25": "H-E_Mon",
+    "2027-01-26": "A-D_Tue",
+    "2027-01-27": "E-H_Wed",
+    "2027-01-28": "D-A_Thu",
+    "2027-01-29": "H-E_Fri",
+    "2027-02-01": "A-D_Mon",
+    "2027-02-02": "E-H_Tue",
+    "2027-02-03": "D-A_Wed",
+    "2027-02-04": "H-E_Thu",
+    "2027-02-05": "A-D_Fri",
+    "2027-02-08": "E-H_Mon",
+    "2027-02-09": "D-A_Tue",
+    "2027-02-10": "H-E_Wed",
+    "2027-02-11": "A-D_Thu",
+    "2027-02-12": "PD Day",
+    "2027-02-15": "Presidents Day",
     "2027-02-16": "Mid-Winter Break",
     "2027-02-17": "Mid-Winter Break",
     "2027-02-18": "Mid-Winter Break",
     "2027-02-19": "Mid-Winter Break",
-    "2027-02-22": "D-A_Mon",
-    "2027-02-23": "H-E_Tue",
-    "2027-02-24": "A-D_Wed",
-    "2027-02-25": "E-H_Thu",
-    "2027-02-26": "D-A_Fri",
-    "2027-03-01": "H-E_Mon",
-    "2027-03-02": "O, A-H",
+    "2027-02-22": "E-H_Mon",
+    "2027-02-23": "D-A_Tue",
+    "2027-02-24": "H-E_Wed",
+    "2027-02-25": "A-D_Thu",
+    "2027-02-26": "E-H_Fri",
+    "2027-03-01": "D-A_Mon",
+    "2027-03-02": "H-E_Tue",
     "2027-03-03": "Finals A,B,C",
     "2027-03-04": "Finals D,E,F",
     "2027-03-05": "Finals G,H",
-    "2027-03-08": "End Winter Term",
-    "2027-03-09": "O, A-H",
-    "2027-03-10": "A-D_Wed",
-    "2027-03-11": "E-H_Thu",
-    "2027-03-12": "D-A_Fri",
-    "2027-03-15": "H-E_Mon",
-    "2027-03-16": "A-D_Tue",
-    "2027-03-17": "E-H_Wed",
-    "2027-03-18": "D-A_Thu",
-    "2027-03-19": "H-E_Fri",
-    "2027-03-22": "A-D_Mon",
-    "2027-03-23": "E-H_Tue",
-    "2027-03-24": "D-A_Wed",
-    "2027-03-25": "H-E_Thu",
-    "2027-03-26": "A-D_Fri",
-    "2027-03-29": "E-H_Mon",
-    "2027-03-30": "D-A_Tue",
+    "2027-03-07": "End Winter Term",
+    "2027-03-08": "PD Day",
+    "2027-03-09": "A-D_Tue",
+    "2027-03-10": "E-H_Wed",
+    "2027-03-11": "D-A_Thu",
+    "2027-03-12": "H-E_Fri",
+    "2027-03-15": "A-D_Mon",
+    "2027-03-16": "E-H_Tue",
+    "2027-03-17": "D-A_Wed",
+    "2027-03-18": "H-E_Thu",
+    "2027-03-19": "A-D_Fri",
+    "2027-03-22": "E-H_Mon",
+    "2027-03-23": "D-A_Tue",
+    "2027-03-24": "H-E_Wed",
+    "2027-03-25": "A-D_Thu",
+    "2027-03-26": "E-H_Fri",
+    "2027-03-29": "D-A_Mon",
+    "2027-03-30": "Voices in Action",
     "2027-03-31": "H-E_Wed",
     "2027-04-01": "A-D_Thu",
     "2027-04-02": "E-H_Fri",
@@ -163,7 +169,7 @@
     "2027-04-14": "Spring Break",
     "2027-04-15": "Spring Break",
     "2027-04-16": "Spring Break",
-    "2027-04-19": "PDD",
+    "2027-04-19": "PD Day",
     "2027-04-20": "D-A_Tue",
     "2027-04-21": "H-E_Wed",
     "2027-04-22": "A-D_Thu",
@@ -172,7 +178,7 @@
     "2027-04-27": "H-E_Tue",
     "2027-04-28": "A-D_Wed",
     "2027-04-29": "E-H_Thu",
-    "2027-04-30": "Student Led Conferences",
+    "2027-04-30": "Student-Led Conferences",
     "2027-05-03": "D-A_Mon",
     "2027-05-04": "H-E_Tue",
     "2027-05-05": "A-D_Wed",
@@ -187,19 +193,22 @@
     "2027-05-18": "E-H_Tue",
     "2027-05-19": "D-A_Wed",
     "2027-05-20": "H-E_Thu",
-    "2027-05-21": "PDD",
-    "2027-05-24": "A-D_Mon",
-    "2027-05-25": "E-H_Tue",
-    "2027-05-26": "D-A_Wed",
-    "2027-05-27": "H-E_Thu",
-    "2027-05-28": "A-D_Fri",
+    "2027-05-21": "A-D_Fri",
+    "2027-05-24": "E-H_Mon",
+    "2027-05-25": "D-A_Tue",
+    "2027-05-26": "H-E_Wed",
+    "2027-05-27": "A-D_Thu",
+    "2027-05-28": "PD Day",
     "2027-05-31": "Memorial Day",
     "2027-06-01": "E-H_Tue",
     "2027-06-02": "MS Culminating A-D",
     "2027-06-03": "MS Culminating E-H",
-    "2027-06-04": "Finals A,B,C",
-    "2027-06-07": "Finals D,E,F",
-    "2027-06-08": "Finals G,H"
+    "2027-06-04": "Spring Finals A,B,C",
+    "2027-06-07": "Spring Finals D,E,F",
+    "2027-06-08": "Spring Finals G,H",
+    "2027-06-09": "Senior Dinner",
+    "2027-06-10": "Continuation",
+    "2027-06-11": "Graduation"
   },
   {
     "A-D_Fri": [
@@ -255,6 +264,10 @@
       },
       {
         "period": "Class Meeting / Assembly - US",
+        "times": "11:10-11:45"
+      },
+      {
+        "period": "Advisory - US",
         "times": "11:10-11:45"
       },
       {
@@ -388,11 +401,19 @@
         "times": "01:50-03:00"
       }
     ],
-    "Convocation, A-H": [
+    "Advisor Conferences": [
       {
-        "period": "Convocation",
-        "times": "08:30-09:00"
-      },
+        "period": "Advisor Conferences",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Continuation": [
+      {
+        "period": "Continuation",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Convocation, A-H": [
       {
         "period": "A",
         "times": "09:10-09:40"
@@ -415,7 +436,7 @@
       },
       {
         "period": "E",
-        "times": "11:45-12:15"
+        "times": "11:45-12:55"
       },
       {
         "period": "Lunch (US)",
@@ -487,6 +508,10 @@
       },
       {
         "period": "Class Meeting / Assembly - US",
+        "times": "11:10-11:45"
+      },
+      {
+        "period": "Advisory - US",
         "times": "11:10-11:45"
       },
       {
@@ -676,6 +701,10 @@
         "times": "11:10-11:45"
       },
       {
+        "period": "Advisory - US",
+        "times": "11:10-11:45"
+      },
+      {
         "period": "Advisory - MS",
         "times": "11:45-12:20"
       },
@@ -812,21 +841,15 @@
         "times": "08:00-03:15"
       }
     ],
-    "End Fall Term": [
-      {
-        "period": "End Fall Term",
-        "times": "08:00-03:15"
-      }
-    ],
-    "End Winter Term": [
-      {
-        "period": "End Winter Term",
-        "times": "08:00-03:15"
-      }
-    ],
     "Fall Break": [
       {
         "period": "Fall Break",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Fall Orientations": [
+      {
+        "period": "Fall Orientations",
         "times": "08:00-03:15"
       }
     ],
@@ -837,15 +860,11 @@
       },
       {
         "period": "B",
-        "times": "10:45-12:15"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "12:15-01:00"
+        "times": "10:15-11:45"
       },
       {
         "period": "C",
-        "times": "01:00-02:30"
+        "times": "01:30-03:00"
       }
     ],
     "Finals D,E,F": [
@@ -855,15 +874,11 @@
       },
       {
         "period": "E",
-        "times": "10:45-12:15"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "12:15-01:00"
+        "times": "10:15-11:45"
       },
       {
         "period": "F",
-        "times": "01:00-02:30"
+        "times": "01:30-03:00"
       }
     ],
     "Finals G,H": [
@@ -873,16 +888,12 @@
       },
       {
         "period": "H",
-        "times": "10:45-12:15"
-      },
-      {
-        "period": "Lunch (US)",
-        "times": "12:15-01:00"
+        "times": "10:15-11:45"
       }
     ],
-    "Grade Level Orientations": [
+    "Graduation": [
       {
-        "period": "Grade Level Orientations",
+        "period": "Graduation",
         "times": "08:00-03:15"
       }
     ],
@@ -939,6 +950,10 @@
       },
       {
         "period": "Class Meeting / Assembly - US",
+        "times": "11:10-11:45"
+      },
+      {
+        "period": "Advisory - US",
         "times": "11:10-11:45"
       },
       {
@@ -1155,7 +1170,7 @@
       },
       {
         "period": "E",
-        "times": "11:30-12:05"
+        "times": "11:30-12:50"
       },
       {
         "period": "Lunch (MS)",
@@ -1178,15 +1193,27 @@
         "times": "02:30-03:05"
       }
     ],
-    "PDD": [
+    "PD Day": [
       {
-        "period": "PDD",
+        "period": "PD Day",
         "times": "08:00-03:15"
       }
     ],
-    "Presidents day": [
+    "PD Day: Opening Meetings": [
       {
-        "period": "Presidents day",
+        "period": "PD Day: Opening Meetings",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Presidents Day": [
+      {
+        "period": "Presidents Day",
+        "times": "08:00-03:15"
+      }
+    ],
+    "Senior Dinner": [
+      {
+        "period": "Senior Dinner",
         "times": "08:00-03:15"
       }
     ],
@@ -1196,15 +1223,53 @@
         "times": "08:00-03:15"
       }
     ],
-    "Student Led Conferences": [
+    "Spring Finals A,B,C": [
       {
-        "period": "Student Led Conferences",
+        "period": "A",
+        "times": "08:30-10:00"
+      },
+      {
+        "period": "B",
+        "times": "10:45-12:15"
+      },
+      {
+        "period": "C",
+        "times": "01:00-02:30"
+      }
+    ],
+    "Spring Finals D,E,F": [
+      {
+        "period": "D",
+        "times": "08:30-10:00"
+      },
+      {
+        "period": "E",
+        "times": "10:45-12:15"
+      },
+      {
+        "period": "F",
+        "times": "01:00-02:30"
+      }
+    ],
+    "Spring Finals G,H": [
+      {
+        "period": "G",
+        "times": "08:30-10:00"
+      },
+      {
+        "period": "H",
+        "times": "10:45-12:15"
+      }
+    ],
+    "Student-Guardian-Teacher Conferences": [
+      {
+        "period": "Student-Guardian-Teacher Conferences",
         "times": "08:00-03:15"
       }
     ],
-    "Student-Parent-Teacher Conferences": [
+    "Student-Led Conferences": [
       {
-        "period": "Student-Parent-Teacher Conferences",
+        "period": "Student-Led Conferences",
         "times": "08:00-03:15"
       }
     ],
@@ -1215,12 +1280,6 @@
       }
     ],
     "Veterans Day": [
-      {
-        "period": "Veterans Day",
-        "times": "08:00-03:15"
-      }
-    ],
-    "Veterans Day_Tue": [
       {
         "period": "Veterans Day",
         "times": "08:00-03:15"
