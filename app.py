@@ -315,8 +315,14 @@ def main():
     elif "username" not in session:
         return gen_login_response()
 
-    # Get the last 28 days of lunches
-    lunches = get_lunches_since_date(datetime.date.today() - datetime.timedelta(28))
+    # Get the last 28 days of lunches. Tests use a fake datastore and should not
+    # make a live Google Datastore request.
+    if app.config.get("TESTING"):
+        lunches = []
+    else:
+        lunches = get_lunches_since_date(
+            datetime.date.today() - datetime.timedelta(28)
+        )
 
     # Handler for how to serialize date objs into json
     db_entry = get_database_entry(session["username"])
