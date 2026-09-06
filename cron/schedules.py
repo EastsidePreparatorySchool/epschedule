@@ -28,6 +28,8 @@ FREE_PERIOD_CLASS = {
     "department": None,
 }
 MAX_ERRORS = 10
+# Four11 uses this value when a birthday has not been provided.
+MISSING_BIRTHDAY = "03/14"
 
 
 # Return the year of the current graduating class
@@ -112,9 +114,11 @@ def download_schedule(client, username, year):
     if person["gradyear"]:
         person["grade"] = 12 - (person["gradyear"] - year)
 
-    # Add birthday
-    if individual["birthday"]:
-        person["birthday"] = individual["birthday"]
+    # Add birthday. Four11 currently returns 03/14 as a placeholder when the
+    # birthday is missing; do not publish that placeholder as a real birthday.
+    birthday = individual.get("birthday")
+    if birthday and birthday != MISSING_BIRTHDAY:
+        person["birthday"] = birthday
 
     # Add early dismissal (for now, based on some criteria - can be modified)
     person["early_dismissal"] = individual.get("early_dismissal", False)
@@ -134,7 +138,7 @@ def download_schedule_with_retry(client, username, year):
                 raise e
 
 
-def crawl_schedules(dry_run=False, verbose=False):
+def crawl_schedules(dry_run=False, verbose=False, target_username=None):
     school_year = get_current_school_year()
 
     # Open the bucket
@@ -145,6 +149,10 @@ def crawl_schedules(dry_run=False, verbose=False):
 
     four11_client = four11.Four11Client()
     usernames = [u.username() for u in four11_client.get_people()]
+    if target_username:
+        usernames = [username for username in usernames if username == target_username]
+        if not usernames:
+            raise ValueError(f"Could not find username {target_username}")
 
     for username in usernames:
         try:
@@ -187,8 +195,15 @@ def crawl_schedules(dry_run=False, verbose=False):
 
     # Now do the upload, unless it's a dry run
     if not dry_run:
+        schedules_to_upload = schedules
+        if target_username:
+            existing_schedules = json.loads(
+                data_bucket.blob("schedules.json").download_as_string()
+            )
+            existing_schedules.update(schedules)
+            schedules_to_upload = existing_schedules
         schedule_blob = data_bucket.blob("schedules.json")
-        schedule_blob.upload_from_string(json.dumps(schedules))
+        schedule_blob.upload_from_string(json.dumps(schedules_to_upload))
 
 
 # Manual Crawl Code

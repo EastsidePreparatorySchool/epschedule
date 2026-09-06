@@ -17,7 +17,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--verbose", action="store_true", help="Print debugging output."
     )
-    parser.add_argument("--username", help="Specific username to update (for photos).")
+    parser.add_argument(
+        "--username", help="Specific username to update (for photos or schedules)."
+    )
     args = parser.parse_args()
 
     start_time = time.time()
@@ -36,6 +38,8 @@ if __name__ == "__main__":
         exit(1)
 
     if args.data == "photos":
+        callable(args.dry_run, args.verbose, args.username)
+    elif args.data == "schedules":
         callable(args.dry_run, args.verbose, args.username)
     else:
         callable(args.dry_run, args.verbose)
