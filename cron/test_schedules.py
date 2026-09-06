@@ -81,7 +81,9 @@ def test_crawl_schedules_filters_to_target_username(monkeypatch):
 
     monkeypatch.setattr(schedules.four11, "Four11Client", lambda: client)
     monkeypatch.setattr(
-        schedules.storage, "Client", lambda: SimpleNamespace(bucket=lambda _: FakeBucket())
+        schedules.storage,
+        "Client",
+        lambda: SimpleNamespace(bucket=lambda _: FakeBucket()),
     )
 
     schedules.crawl_schedules(target_username="ajosan")
