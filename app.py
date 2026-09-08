@@ -1,4 +1,4 @@
-VERSION = "1.32.55"  # Massive UI update/complete backend rework is the first number, noticable bug fixes or UI updates are middle number, and any update that doesn't make that big of a difference, even if it just adds a backend thing, is the last number.
+VERSION = "1.32.56"  # Massive UI update/complete backend rework is the first number, noticable bug fixes or UI updates are middle number, and any update that doesn't make that big of a difference, even if it just adds a backend thing, is the last number.
 
 import copy
 import datetime
@@ -179,7 +179,19 @@ def get_priv_cache():
     try:
         usernames = list(get_schedule_data().keys())
         entries = get_database_entries(usernames)
-        _PRIV_CACHE = dict(zip(usernames, entries))
+        # get_multi() does not preserve key order and omits missing entities,
+        # so map each entity back to its own key name rather than zipping.
+        # Zipping silently pairs users with other people's privacy settings.
+        cache = {}
+        for entry in entries:
+            if entry is None:
+                continue
+            key = getattr(entry, "key", None)
+            name = getattr(key, "name", None) if key is not None else None
+            if name is None:
+                continue
+            cache[name] = entry
+        _PRIV_CACHE = cache
         _PRIV_CACHE_FETCHED = now
     except Exception:
         app.logger.exception("Failed to fetch priv cache; serving stale entries")
