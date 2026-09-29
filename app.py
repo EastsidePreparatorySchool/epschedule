@@ -696,7 +696,7 @@ def get_pass():
 
 
 @app.route("/api/androidpass/")
-def get_pass():
+def get_android_pass():
     if "username" not in session:
         abort(403)
     username = session["username"]
