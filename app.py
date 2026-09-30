@@ -15,6 +15,7 @@ from flask import (
     Response,
     abort,
     make_response,
+    redirect,
     render_template,
     request,
     session,
