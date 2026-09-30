@@ -695,6 +695,19 @@ def get_pass():
     return json.dumps({"error": "Passes not available"})
 
 
+@app.route("/api/androidpass/")
+def get_android_pass():
+    if "username" not in session:
+        abort(403)
+    username = session["username"]
+    if DATA_BUCKET:
+        blob = DATA_BUCKET.blob(f"androidpasses/{username}.jwt")
+        if blob.exists():
+            token = blob.download_as_text().strip()
+            return redirect(f"https://pay.google.com/gp/v/save/{token}")
+    return json.dumps({"error": "Passes not available"})
+
+
 def get_first_name(schedule):
     return schedule.get("preferred_name") or schedule["firstname"]
 
