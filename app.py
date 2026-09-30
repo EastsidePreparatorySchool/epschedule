@@ -15,10 +15,10 @@ from flask import (
     Response,
     abort,
     make_response,
+    redirect,
     render_template,
     request,
     session,
-    redirect,
 )
 from github import Auth as GithubAuth
 from github import Github as gh
