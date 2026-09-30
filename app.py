@@ -18,6 +18,7 @@ from flask import (
     render_template,
     request,
     session,
+    redirect,
 )
 from github import Auth as GithubAuth
 from github import Github as gh
