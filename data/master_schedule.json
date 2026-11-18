@@ -863,6 +863,14 @@
         "times": "10:30-12:00"
       },
       {
+        "period": "US Flex",
+        "times": "12:00-12:45"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "12:45-1:30"
+      },
+      {
         "period": "C",
         "times": "01:30-03:00"
       }
@@ -875,6 +883,14 @@
       {
         "period": "E",
         "times": "10:30-12:00"
+      },
+      {
+        "period": "US Flex",
+        "times": "12:00-12:45"
+      },
+      {
+        "period": "Lunch (US)",
+        "times": "12:45-1:30"
       },
       {
         "period": "F",
